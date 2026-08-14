@@ -592,8 +592,6 @@ function openOperatorPaymentModal(op) {
     `;
     bsModal.show();
 }
-    bsModal.show();
-}
 
 function triggerModalPaymentSuccess(opName) {
     const modalBody = document.getElementById('paymentModalBody');
