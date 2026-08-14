@@ -913,6 +913,37 @@ footer h4, footer h5, footer .text-warning, footer i.text-warning {
 .babi-hot-bread-widget {
     transition: all 0.3s ease;
 }
+
+.navbar {
+    transition: all 0.3s ease;
+}
+
+/* Compact & Refined Navbar Brand Logo */
+.navbar-brand-logo {
+    height: 34px !important;
+    max-height: 34px !important;
+    width: auto !important;
+    border-radius: 6px !important;
+    margin-right: 8px !important;
+    object-fit: contain;
+    transition: transform 0.2s ease;
+}
+.navbar-brand:hover .navbar-brand-logo {
+    transform: scale(1.04);
+}
+.navbar-brand-title {
+    font-size: 0.9rem !important;
+    font-family: 'Inter', sans-serif !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.3px;
+    color: #ffffff !important;
+}
+.navbar-brand-subtitle {
+    font-size: 1.15rem !important;
+    font-family: 'Great Vibes', cursive !important;
+    margin-top: -4px !important;
+    color: var(--primary, #fbbf24) !important;
+}
 .babi-hot-bread-flame {
     display: inline-block;
     filter: drop-shadow(0 2px 8px rgba(239, 68, 68, 0.4));
