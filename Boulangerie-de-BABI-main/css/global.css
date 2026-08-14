@@ -944,6 +944,29 @@ footer h4, footer h5, footer .text-warning, footer i.text-warning {
     margin-top: -4px !important;
     color: var(--primary, #fbbf24) !important;
 }
+
+/* Compact & Refined Footer Brand Logo */
+.footer-brand-logo {
+    height: 32px !important;
+    max-height: 32px !important;
+    width: auto !important;
+    border-radius: 6px !important;
+    margin-right: 8px !important;
+    object-fit: contain;
+}
+.footer-brand-title {
+    font-size: 0.95rem !important;
+    font-family: 'Inter', sans-serif !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.3px;
+    color: #ffffff !important;
+}
+.footer-brand-subtitle {
+    font-size: 1.15rem !important;
+    font-family: 'Great Vibes', cursive !important;
+    margin-top: -3px !important;
+    color: var(--primary, #fbbf24) !important;
+}
 .babi-hot-bread-flame {
     display: inline-block;
     filter: drop-shadow(0 2px 8px rgba(239, 68, 68, 0.4));
