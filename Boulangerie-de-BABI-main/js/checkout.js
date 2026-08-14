@@ -603,8 +603,11 @@ function openOperatorPaymentModal(op) {
                 </div>
 
                 <div class="mb-3">
-                    <label class="form-label fw-bold small text-dark">Votre Numéro Wave (+225)</label>
-                    <input type="tel" class="form-control text-dark fw-bold" id="modalWavePhone" value="${phoneVal}" placeholder="Ex: 07 04 38 92 01" style="color: #111827 !important; background-color: #ffffff !important;">
+                    <label class="form-label fw-bold small text-dark">Votre Numéro Wave</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-white fw-bold text-dark border-end-0"><span class="me-1">🇨🇮</span> +225</span>
+                        <input type="tel" class="form-control text-dark fw-bold border-start-0 ps-1" id="modalWavePhone" value="${phoneVal}" placeholder="07 04 38 92 01" style="color: #111827 !important; background-color: #ffffff !important;">
+                    </div>
                 </div>
 
                 <div class="p-3 bg-light rounded border mb-3 text-center">
@@ -632,8 +635,11 @@ function openOperatorPaymentModal(op) {
                 </div>
 
                 <div class="mb-3">
-                    <label class="form-label fw-bold small text-dark">Numéro Orange Money (+225)</label>
-                    <input type="tel" class="form-control text-dark fw-bold" id="modalOmPhone" value="${phoneVal}" placeholder="Ex: 07 07 12 34 56" style="color: #111827 !important; background-color: #ffffff !important;">
+                    <label class="form-label fw-bold small text-dark">Numéro Orange Money</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-white fw-bold text-dark border-end-0"><span class="me-1">🇨🇮</span> +225</span>
+                        <input type="tel" class="form-control text-dark fw-bold border-start-0 ps-1" id="modalOmPhone" value="${phoneVal}" placeholder="07 07 12 34 56" style="color: #111827 !important; background-color: #ffffff !important;">
+                    </div>
                 </div>
 
                 <div class="mb-3">
@@ -664,8 +670,11 @@ function openOperatorPaymentModal(op) {
                 </div>
 
                 <div class="mb-3">
-                    <label class="form-label fw-bold small text-dark">Numéro MTN MoMo (+225)</label>
-                    <input type="tel" class="form-control text-dark fw-bold" id="modalMtnPhone" value="${phoneVal}" placeholder="Ex: 05 05 12 34 56" style="color: #111827 !important; background-color: #ffffff !important;">
+                    <label class="form-label fw-bold small text-dark">Numéro MTN MoMo</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-white fw-bold text-dark border-end-0"><span class="me-1">🇨🇮</span> +225</span>
+                        <input type="tel" class="form-control text-dark fw-bold border-start-0 ps-1" id="modalMtnPhone" value="${phoneVal}" placeholder="05 05 12 34 56" style="color: #111827 !important; background-color: #ffffff !important;">
+                    </div>
                 </div>
 
                 <div class="p-3 rounded-3 mb-3 text-center" style="background: #fefce8; border: 2px solid #eab308;">
@@ -691,8 +700,11 @@ function openOperatorPaymentModal(op) {
                 </div>
 
                 <div class="mb-3">
-                    <label class="form-label fw-bold small text-dark">Numéro Moov Money (+225)</label>
-                    <input type="tel" class="form-control text-dark fw-bold" id="modalMoovPhone" value="${phoneVal}" placeholder="Ex: 01 01 12 34 56" style="color: #111827 !important; background-color: #ffffff !important;">
+                    <label class="form-label fw-bold small text-dark">Numéro Moov Money</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-white fw-bold text-dark border-end-0"><span class="me-1">🇨🇮</span> +225</span>
+                        <input type="tel" class="form-control text-dark fw-bold border-start-0 ps-1" id="modalMoovPhone" value="${phoneVal}" placeholder="01 01 12 34 56" style="color: #111827 !important; background-color: #ffffff !important;">
+                    </div>
                 </div>
 
                 <div class="p-3 rounded-3 mb-3 text-center" style="background: #f0f9ff; border: 2px solid #0066CC;">

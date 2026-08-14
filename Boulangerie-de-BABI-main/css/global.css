@@ -1,7 +1,17 @@
 img {
-    width: 100%;
+    max-width: 100%;
     height: auto;
-    object-fit: cover;
+}
+
+.modal-app-logo {
+    width: 80px !important;
+    height: 80px !important;
+    max-width: 80px !important;
+    object-fit: contain !important;
+    border-radius: 18px !important;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+    display: inline-block !important;
+    margin: 0 auto 12px auto !important;
 }
 
 :root {
