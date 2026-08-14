@@ -50,11 +50,25 @@
             </a>
 
             <!-- Search Bar (Desktop) -->
-            <div class="d-none d-lg-flex flex-grow-1 mx-4" style="max-width: 480px;">
-                <div class="input-group">
-                    <input type="text" class="form-control border-0 shadow-none py-2" placeholder="Cherchez un délice, du pain..." style="border-radius: 8px 0 0 8px;">
-                    <button class="btn btn-warning px-4 text-dark fw-bold" type="button" style="border-radius: 0 8px 8px 0; background: #fb923c; border: none;">CHERCHER</button>
-                </div>
+            <div class="d-none d-lg-flex flex-grow-1 header-search-container mx-4">
+                <form class="babi-search-form w-100 m-0" role="search" onsubmit="event.preventDefault();">
+                    <div class="babi-search-wrapper">
+                        <i class="fa-solid fa-magnifying-glass babi-search-icon"></i>
+                        <input type="text" class="babi-search-input"
+                            placeholder="Pain chaud, croissant, gâteau, bissap..." 
+                            aria-label="Rechercher un produit"
+                            autocomplete="off"
+                            spellcheck="false">
+                        <button type="button" class="search-clear-btn" title="Effacer la recherche" aria-label="Effacer">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                        <kbd class="babi-search-kbd d-none d-xl-inline-flex" title="Raccourci clavier">Ctrl K</kbd>
+                        <button type="submit" class="babi-search-btn">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                            <span>Rechercher</span>
+                        </button>
+                    </div>
+                </form>
             </div>
 
             <!-- Header Actions -->
@@ -228,5 +242,9 @@
         renderWishlistPage();
     });
     </script>
+    <script src="js/cart.js"></script>
+    <script src="js/cart_actions.js"></script>
+    <script src="js/wishlist.js"></script>
+    <script src="js/search.js"></script>
 </body>
 </html>

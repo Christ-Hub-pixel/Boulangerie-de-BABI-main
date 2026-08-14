@@ -143,10 +143,12 @@
                     </div>
                     <h3 class="fw-bold mb-2" style="color: var(--babi-chocolate);">Suivi de Commande GPS</h3>
                     <p class="text-muted small mb-4">Entrez votre numéro de téléphone pour afficher la position du livreur en temps réel.</p>
-                    <div class="input-group input-group-lg mb-2 shadow-sm rounded-pill overflow-hidden border">
-                        <span class="input-group-text bg-white border-0 text-muted ps-3"><i class="fa-solid fa-phone"></i></span>
-                        <input type="text" id="phone-input" class="form-control border-0 shadow-none px-2 fs-6" placeholder="Ex: 0704389201">
-                        <button class="btn btn-warning fw-bold px-4 text-dark" style="background:#fb923c; border:none;" onclick="trackOrder()">RECHERCHER</button>
+                    <div class="input-group input-group-lg mb-2 shadow-sm rounded-pill overflow-hidden border" style="border-color: rgba(251, 191, 36, 0.4) !important;">
+                        <span class="input-group-text bg-white border-0 text-warning ps-3"><i class="fa-solid fa-phone"></i></span>
+                        <input type="text" id="phone-input" class="form-control border-0 shadow-none px-2 fs-6" placeholder="Numéro de téléphone (ex: 0704389201)">
+                        <button class="btn btn-warning fw-bold px-4 text-dark babi-search-btn" onclick="trackOrder()">
+                            <i class="fa-solid fa-satellite-dish me-1"></i> Suivre
+                        </button>
                     </div>
                 </div>
             </div>

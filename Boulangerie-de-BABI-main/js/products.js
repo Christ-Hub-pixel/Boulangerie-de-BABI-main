@@ -201,8 +201,11 @@ async function loadProducts() {
     const container = document.getElementById('product-grid');
     if(container) {
         const urlParams = new URLSearchParams(window.location.search);
+        const searchQuery = urlParams.get('search');
         const cat = urlParams.get('cat');
-        if (cat) {
+        if (searchQuery) {
+            searchProducts(searchQuery);
+        } else if (cat) {
             filterCat(cat);
         } else {
             renderProductsPage();
@@ -466,6 +469,38 @@ window.sortProducts = function(sortType) {
     currentPage = 1;
     renderProductsPage();
 }
+
+window.searchProducts = function(query) {
+    if (!query || query.trim() === '') {
+        currentFilteredList = [...allProducts];
+        const headingEl = document.querySelector('.products-heading-title');
+        if (headingEl) headingEl.innerText = 'Tous les Produits';
+    } else {
+        const q = query.toLowerCase().trim();
+        currentFilteredList = allProducts.filter(p => 
+            (p.nom && p.nom.toLowerCase().includes(q)) || 
+            (p.categorie && p.categorie.toLowerCase().includes(q)) ||
+            (p.description && p.description.toLowerCase().includes(q))
+        );
+        const headingEl = document.querySelector('.products-heading-title');
+        if (headingEl) {
+            headingEl.innerHTML = `Résultats pour "<span class="text-warning">${query}</span>" <button class="btn btn-sm btn-outline-secondary ms-2 py-0 px-2 rounded-pill" onclick="clearCatalogSearch()"><i class="fa-solid fa-xmark me-1"></i>Effacer</button>`;
+        }
+    }
+    
+    currentFilteredList.sort((a, b) => a.nom.localeCompare(b.nom, 'fr', { sensitivity: 'base' }));
+    currentPage = 1;
+    renderProductsPage();
+};
+
+window.clearCatalogSearch = function() {
+    const searchInputs = document.querySelectorAll('.babi-search-input, input[type="text"]');
+    searchInputs.forEach(i => i.value = '');
+    const newUrl = new URL(window.location.href);
+    newUrl.searchParams.delete('search');
+    window.history.pushState({}, '', newUrl);
+    searchProducts('');
+};
 
 document.addEventListener('DOMContentLoaded', () => {
     loadProducts();

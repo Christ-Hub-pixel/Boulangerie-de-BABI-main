@@ -36,12 +36,25 @@
             </a>
             
             <!-- Search Bar (Desktop) -->
-            <div class="d-none d-lg-flex flex-grow-1 mx-4">
-                <div class="input-group">
-                    <span class="input-group-text bg-white border-0"><i class="fa-solid fa-search text-muted"></i></span>
-                    <input type="text" class="form-control border-0 shadow-none py-2" placeholder="Cherchez un produit, une pâtisserie...">
-                    <button class="btn btn-primary px-4 fw-bold">CHERCHER</button>
-                </div>
+            <div class="d-none d-lg-flex flex-grow-1 header-search-container mx-3">
+                <form class="babi-search-form w-100 m-0" role="search" onsubmit="event.preventDefault();">
+                    <div class="babi-search-wrapper">
+                        <i class="fa-solid fa-magnifying-glass babi-search-icon"></i>
+                        <input type="text" class="babi-search-input"
+                            placeholder="Pain chaud, croissant, gâteau, bissap..." 
+                            aria-label="Rechercher un produit"
+                            autocomplete="off"
+                            spellcheck="false">
+                        <button type="button" class="search-clear-btn" title="Effacer la recherche" aria-label="Effacer">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                        <kbd class="babi-search-kbd d-none d-xl-inline-flex" title="Raccourci clavier">Ctrl K</kbd>
+                        <button type="submit" class="babi-search-btn">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                            <span>Rechercher</span>
+                        </button>
+                    </div>
+                </form>
             </div>
 
             <!-- Icons (Desktop & Mobile) -->
@@ -70,11 +83,23 @@
         </div>
         
         <!-- Search Bar (Mobile) -->
-        <div class="container d-lg-none mt-2 pb-1">
-            <div class="input-group">
-                <span class="input-group-text bg-white border-0 py-1"><i class="fa-solid fa-search text-muted"></i></span>
-                <input type="text" class="form-control border-0 shadow-none py-1" placeholder="Cherchez un produit...">
-            </div>
+        <div class="container d-lg-none mt-2 pb-1 header-search-mobile">
+            <form class="babi-search-form w-100 m-0" role="search" onsubmit="event.preventDefault();">
+                <div class="babi-search-wrapper">
+                    <i class="fa-solid fa-magnifying-glass babi-search-icon"></i>
+                    <input type="text" class="babi-search-input" 
+                        placeholder="Pain, croissant, gâteau, jus..." 
+                        aria-label="Rechercher un produit"
+                        autocomplete="off"
+                        spellcheck="false">
+                    <button type="button" class="search-clear-btn" title="Effacer la recherche" aria-label="Effacer">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                    <button type="submit" class="babi-search-btn px-2 py-1">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </button>
+                </div>
+            </form>
         </div>
     </nav>
     
@@ -355,5 +380,7 @@
     <script src="js/script.js"></script>
     <script src="js/auth.js"></script>
     <script src="js/cart_actions.js"></script>
+    <script src="js/wishlist.js"></script>
+    <script src="js/search.js"></script>
 </body>
 </html>
