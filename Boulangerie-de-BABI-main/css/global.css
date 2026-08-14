@@ -977,6 +977,30 @@ footer h4, footer h5, footer .text-warning, footer i.text-warning {
     margin-top: -3px !important;
     color: var(--primary, #fbbf24) !important;
 }
+
+/* Official Côte d'Ivoire Flag Component (Orange, Blanc, Vert) */
+.flag-ci {
+    display: inline-block;
+    width: 20px;
+    height: 14px;
+    border-radius: 2px;
+    vertical-align: middle;
+    background: linear-gradient(to right, #FF8200 33.33%, #FFFFFF 33.33%, #FFFFFF 66.66%, #009E60 66.66%);
+    box-shadow: 0 0 1px rgba(0, 0, 0, 0.4);
+    flex-shrink: 0;
+    margin-right: 5px;
+}
+.flag-ci-sm {
+    width: 16px;
+    height: 11px;
+}
+.flag-ci-lg {
+    width: 26px;
+    height: 18px;
+    border-radius: 3px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+}
+
 .babi-hot-bread-flame {
     display: inline-block;
     filter: drop-shadow(0 2px 8px rgba(239, 68, 68, 0.4));

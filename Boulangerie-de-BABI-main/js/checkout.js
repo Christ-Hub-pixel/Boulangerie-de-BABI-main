@@ -572,7 +572,7 @@ function openOperatorPaymentModal(op) {
             <div class="mb-3">
                 <label class="form-label fw-bold small text-dark">Votre Numéro Wave</label>
                 <div class="input-group">
-                    <span class="input-group-text bg-white fw-bold text-dark border-end-0"><span class="me-1">🇨🇮</span> +225</span>
+                    <span class="input-group-text bg-white fw-bold text-dark border-end-0 d-flex align-items-center"><span class="flag-ci"></span> +225</span>
                     <input type="tel" class="form-control text-dark fw-bold border-start-0 ps-1" id="modalWavePhone" value="${phoneVal}" placeholder="07 04 38 92 01" style="color: #111827 !important; background-color: #ffffff !important;">
                 </div>
             </div>
