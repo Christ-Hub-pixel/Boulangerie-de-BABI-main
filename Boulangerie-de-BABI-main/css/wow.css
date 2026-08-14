@@ -1,0 +1,123 @@
+/* =========================================
+   BABI PREMIUM WOW DESIGN (OPTION A)
+   ========================================= */
+
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
+
+:root {
+    --primary: #D4AF37; /* Premium Gold */
+    --primary-light: #F9F3E3;
+    --primary-dark: #B5952F;
+    --secondary: #2C1E16; /* Deep Chocolate Brown */
+    --accent: #E86A33; /* Warm Orange for notifications */
+    --bg-color: #FAF9F6; /* Off-white / Cream */
+    --text-main: #333333;
+}
+
+body {
+    font-family: 'Outfit', sans-serif !important;
+    background-color: var(--bg-color);
+    color: var(--text-main);
+}
+
+/* Glassmorphism Navbar */
+.navbar, nav.fixed-top {
+    background: rgba(255, 255, 255, 0.85) !important;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05) !important;
+}
+
+.bg-dark, .bg-primary {
+    background-color: var(--secondary) !important;
+}
+
+.text-primary {
+    color: var(--primary) !important;
+}
+.btn-primary {
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark)) !important;
+    border: none !important;
+    color: #fff !important;
+    font-weight: 600 !important;
+    border-radius: 50px !important;
+    transition: all 0.3s ease !important;
+    box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(212, 175, 55, 0.5);
+    background: linear-gradient(135deg, var(--primary-dark), var(--primary)) !important;
+}
+
+/* Product Cards Premium Look */
+.card {
+    border: none !important;
+    border-radius: 20px !important;
+    background: #ffffff !important;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.03) !important;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+    overflow: hidden;
+}
+
+.card:hover {
+    transform: translateY(-8px) !important;
+    box-shadow: 0 15px 30px rgba(0,0,0,0.08) !important;
+}
+
+.card img {
+    transition: transform 0.5s ease;
+}
+
+.card:hover img {
+    transform: scale(1.05);
+}
+
+/* Badges */
+.badge.bg-danger, .cart-badge {
+    background-color: var(--accent) !important;
+}
+
+/* Category Filter Bar (produits.html) */
+#visual-categories .btn {
+    border: 1px solid rgba(0,0,0,0.1);
+    color: var(--text-main);
+    background: #fff;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+#visual-categories .btn:hover {
+    background: var(--primary-light);
+    color: var(--primary-dark);
+    border-color: var(--primary);
+}
+#visual-categories .btn.bg-dark {
+    background: var(--secondary) !important;
+    color: #fff !important;
+    border-color: var(--secondary);
+}
+
+/* Footer Premium */
+footer {
+    background: var(--secondary) !important;
+    color: rgba(255,255,255,0.8) !important;
+    border-top: 5px solid var(--primary);
+}
+footer h6 {
+    color: var(--primary) !important;
+    letter-spacing: 1px;
+    font-weight: 700;
+}
+
+/* Headings */
+h1, h2, h3, h4, h5, h6 {
+    font-weight: 700 !important;
+    letter-spacing: -0.5px;
+}
+
+/* Smooth Scrolling */
+html {
+    scroll-behavior: smooth;
+}

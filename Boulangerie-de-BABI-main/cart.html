@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panier - Boulangerie de Babi</title>
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/global.css">
+    <link rel="stylesheet" href="css/animations.css">
+</head>
+<body style="background-color: #f5f5f5;">
+<!-- E-commerce Navbar -->
+    <nav class="navbar navbar-expand-lg fixed-top py-2" style="background: rgba(43, 22, 12, 0.95); backdrop-filter: blur(10px); box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+        <div class="container align-items-center">
+            <!-- Toggler for Mobile Sidebar -->
+            <button class="navbar-toggler border-0 px-1 me-2 text-white" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileSidebar">
+                <i class="fa-solid fa-bars fs-2"></i>
+            </button>
+
+            <!-- Logo -->
+            <a class="navbar-brand d-flex align-items-center text-decoration-none me-auto me-lg-4" href="index.html">
+                <img src="assets/logo.png" alt="Logo" style="height: 45px; border-radius: 8px; margin-right: 10px;">
+                <div class="d-flex flex-column lh-1">
+                    <span class="fw-bold text-white" style="font-size: clamp(1rem, 2.5vw, 1.2rem); font-family: 'Inter', sans-serif;">Boulangerie</span>
+                    <span class="text-primary" style="font-size: clamp(1.2rem, 3.5vw, 1.5rem); font-family: 'Great Vibes', cursive; margin-top: -5px;">de Babi</span>
+                </div>
+            </a>
+            
+            <!-- Search Bar (Desktop) -->
+            <div class="d-none d-lg-flex flex-grow-1 mx-4">
+                <div class="input-group">
+                    <span class="input-group-text bg-white border-0"><i class="fa-solid fa-search text-muted"></i></span>
+                    <input type="text" class="form-control border-0 shadow-none py-2" placeholder="Cherchez un produit, une pâtisserie...">
+                    <button class="btn btn-primary px-4 fw-bold">CHERCHER</button>
+                </div>
+            </div>
+
+            <!-- Icons (Desktop & Mobile) -->
+            <div class="d-flex align-items-center gap-3 gap-lg-4">
+                <a href="connexion.html" class="text-white text-decoration-none d-flex align-items-center gap-2">
+                    <i class="fa-regular fa-user fs-4"></i>
+                    <div class="d-none d-lg-flex flex-column lh-1">
+                        <span style="font-size: 0.75rem; color: #ccc;">Bonjour, Connectez-vous</span>
+                        <span class="fw-bold" style="font-size: 0.9rem;">Mon Compte <i class="fa-solid fa-chevron-down ms-1" style="font-size:0.7rem;"></i></span>
+                    </div>
+                </a>
+                
+                <a href="apropos.html" class="text-white text-decoration-none d-none d-lg-flex align-items-center gap-2">
+                    <i class="fa-regular fa-circle-question fs-4"></i>
+                    <div class="d-flex flex-column lh-1">
+                        <span class="fw-bold mt-2" style="font-size: 0.9rem;">Aide <i class="fa-solid fa-chevron-down ms-1" style="font-size:0.7rem;"></i></span>
+                    </div>
+                </a>
+
+                <a href="cart.html" class="position-relative text-white text-decoration-none d-flex align-items-center gap-2">
+                    <i class="fa-solid fa-cart-shopping fs-4"></i>
+                    <span class="position-absolute top-0 start-0 translate-middle badge rounded-pill bg-danger cart-badge ms-2 mt-1" style="font-size: 0.6em;display:none;">0</span>
+                    <span class="d-none d-lg-block fw-bold mt-1">Panier</span>
+                </a>
+            </div>
+        </div>
+        
+        <!-- Search Bar (Mobile) -->
+        <div class="container d-lg-none mt-2 pb-1">
+            <div class="input-group">
+                <span class="input-group-text bg-white border-0 py-1"><i class="fa-solid fa-search text-muted"></i></span>
+                <input type="text" class="form-control border-0 shadow-none py-1" placeholder="Cherchez un produit...">
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Offcanvas Mobile Sidebar -->
+    <div class="offcanvas offcanvas-start" tabindex="-1" id="mobileSidebar">
+        <div class="offcanvas-header bg-dark text-white">
+            <h5 class="offcanvas-title"><i class="fa-solid fa-wheat-awn text-primary"></i> Boulangerie de Babi</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
+        </div>
+        <div class="offcanvas-body p-0">
+            <div class="list-group list-group-flush">
+                <a href="index.html" class="list-group-item list-group-item-action fw-bold"><i class="fa-solid fa-house me-2"></i> Accueil</a>
+                <a href="produits.html" class="list-group-item list-group-item-action"><i class="fa-solid fa-bread-slice me-2"></i> Pains</a>
+                <a href="produits.html" class="list-group-item list-group-item-action"><i class="fa-solid fa-cookie me-2"></i> Viennoiseries</a>
+                <a href="produits.html" class="list-group-item list-group-item-action"><i class="fa-solid fa-cake-candles me-2"></i> Pâtisseries</a>
+                <a href="produits.html" class="list-group-item list-group-item-action"><i class="fa-solid fa-mug-hot me-2"></i> Boissons</a>
+                <a href="fidelite.html" class="list-group-item list-group-item-action"><i class="fa-solid fa-gift me-2"></i> Fidélité</a>
+                <a href="contact.html" class="list-group-item list-group-item-action"><i class="fa-solid fa-envelope me-2"></i> Contact</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cart Content -->
+    <div class="container my-4" style="margin-top: 130px !important;">
+        <div class="row g-4">
+            <!-- Left Column: Cart Items -->
+            <div class="col-lg-9">
+                <div class="bg-white rounded shadow-sm" id="cartContainer">
+                    <div class="border-bottom p-3 d-flex justify-content-between align-items-center">
+                        <h4 class="mb-0 fw-bold" id="cartTitle">Panier</h4>
+                        <button class="btn btn-sm btn-outline-danger border-0" id="clearCartBtn" onclick="clearCart()" style="display:none;font-size:0.8rem;">
+                            <i class="fa-solid fa-trash me-1"></i>Vider le panier
+                        </button>
+                    </div>
+                    <!-- Items rendered dynamically here -->
+                    <div id="cartItemsList"></div>
+                    <!-- Empty state -->
+                    <div id="cartEmptyState" class="text-center py-5" style="display:none;">
+                        <i class="fa-solid fa-bag-shopping text-muted" style="font-size:4rem;"></i>
+                        <h5 class="mt-3 text-muted">Votre panier est vide</h5>
+                        <p class="text-muted">Ajoutez des délicieux produits depuis notre catalogue !</p>
+                        <a href="produits.html" class="btn btn-primary fw-bold text-dark px-4">
+                            <i class="fa-solid fa-bread-slice me-2"></i>Voir les produits
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Cart Summary -->
+            <div class="col-lg-3">
+                <div class="bg-white rounded shadow-sm p-3 sticky-top summary-box" style="top: 120px;">
+                    <h6 class="fw-bold border-bottom pb-2 mb-3">RÉSUMÉ DU PANIER</h6>
+                    <div class="d-flex justify-content-between mb-2 fs-sm">
+                        <span class="subtotal-label">Sous-total</span>
+                        <span class="fw-bold total-val">0 FCFA</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-3 fs-sm text-muted">
+                        <span>Livraison</span>
+                        <span class="text-end ms-2">Calculée à l'étape suivante</span>
+                    </div>
+                    <hr class="my-2">
+                    <div class="d-flex justify-content-between mb-3">
+                        <span class="fw-bold">Total</span>
+                        <span class="fw-bold fs-5 text-primary grand-total-val">0 FCFA</span>
+                    </div>
+                    <a href="checkout.html" class="btn btn-primary w-100 fw-bold btn-pulse text-dark py-2 shadow-sm" id="checkoutBtn" onclick="return handleCheckoutButtonClick(event)">PASSER LA COMMANDE</a>
+                    <a href="produits.html" class="btn btn-outline-secondary w-100 mt-2" style="font-size:0.8rem;">← Continuer mes achats</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/cart_actions.js"></script>
+    <script src="js/cart.js"></script>
+
+
+<!-- Footer -->
+            <!-- Unified Luxury Footer -->
+    <footer class="mt-5 text-white py-5" style="background: rgba(43, 22, 12, 0.96); border-top: 3px solid #fb923c;">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-4 col-md-6">
+                    <div class="d-flex align-items-center mb-3">
+                        <img src="assets/logo.png" alt="Logo" height="45" class="me-2 rounded-2">
+                        <div class="d-flex flex-column lh-1">
+                            <span class="fw-bold text-white fs-5" style="font-family: 'Playfair Display', serif;">Boulangerie</span>
+                            <span class="text-warning fs-6 fw-bold" style="letter-spacing: 1px;">DE BABI</span>
+                        </div>
+                    </div>
+                    <p class="text-white small">L'excellence de la boulangerie et pâtisserie artisanale à Abidjan. Pains croustillants, viennoiseries dorées, pâtisseries fines et jus 100% naturels.</p>
+                    <div class="d-flex gap-2">
+                        <a href="https://maps.app.goo.gl/6JrQ1ryZj2KeD5zG7" target="_blank" class="btn btn-outline-warning btn-sm rounded-circle"><i class="fa-solid fa-location-dot"></i></a>
+                        <a href="tel:2722564123" class="btn btn-outline-warning btn-sm rounded-circle"><i class="fa-solid fa-phone"></i></a>
+                        <a href="tel:0704389201" class="btn btn-outline-warning btn-sm rounded-circle"><i class="fa-solid fa-mobile-screen"></i></a>
+                    </div>
+                </div>
+
+                <div class="col-lg-2 col-md-6">
+                    <h5 class="fw-bold text-warning mb-3">NAVIGATION</h5>
+                    <ul class="list-unstyled small lh-lg mb-0">
+                        <li><a href="index.html" class="text-white text-decoration-none hover-warning"><i class="fa-solid fa-chevron-right text-warning me-1 small"></i> Accueil</a></li>
+                        <li><a href="produits.html" class="text-white text-decoration-none hover-warning"><i class="fa-solid fa-chevron-right text-warning me-1 small"></i> Nos Produits</a></li>
+                        <li><a href="favoris.html" class="text-white text-decoration-none hover-warning"><i class="fa-solid fa-chevron-right text-warning me-1 small"></i> Mes Favoris</a></li>
+                        <li><a href="suivi.html" class="text-white text-decoration-none hover-warning"><i class="fa-solid fa-chevron-right text-warning me-1 small"></i> Suivi Commande</a></li>
+                        <li><a href="fidelite.html" class="text-white text-decoration-none hover-warning"><i class="fa-solid fa-chevron-right text-warning me-1 small"></i> Club Fidélité</a></li>
+                    </ul>
+                </div>
+
+                <div class="col-lg-3 col-md-6">
+                    <h5 class="fw-bold text-warning mb-3">HORAIRES DE LA BOUTIQUE</h5>
+                    <p class="text-white small mb-1"><i class="fa-solid fa-clock text-warning me-2"></i> Lundi - Dimanche : 05h45 - 23h00</p>
+                    <h6 class="fw-bold text-warning mt-3 mb-2" style="font-size:0.9rem;">SORTIES DE PAIN CHAUDS</h6>
+                    <p class="text-white small mb-1">06h00 • 09h00 • 14h00 • 17h00 • 18h00</p>
+                </div>
+
+                <div class="col-lg-3 col-md-6">
+                    <h5 class="fw-bold text-warning mb-3">CONTACT BOUTIQUE</h5>
+                    <p class="text-white small mb-1"><i class="fa-solid fa-location-dot text-warning me-2"></i> Cocody Riviera 2, Abidjan - CI</p>
+                    <p class="text-white small mb-1"><i class="fa-solid fa-phone text-warning me-2"></i> <strong>Fixe :</strong> <a href="tel:2722564123" class="text-white text-decoration-none">27 22 56 41 23</a></p>
+                    <p class="text-white small mb-1"><i class="fa-solid fa-mobile-screen-button text-warning me-2"></i> <strong>Mobiles :</strong> <a href="tel:0704389201" class="text-white text-decoration-none">07 04 38 92 01</a> / <a href="tel:0706817977" class="text-white text-decoration-none">07 06 81 79 77</a></p>
+                    <a href="contact.html" class="btn btn-warning btn-sm w-100 fw-bold mt-2 rounded-pill" style="background:#fb923c; border:none; color:#2b160c;">
+                        <i class="fa-solid fa-paper-plane me-1"></i> Nous Contacter
+                    </a>
+                </div>
+            </div>
+
+            <div class="border-top border-secondary mt-5 pt-3 text-center text-muted small">
+                &copy; 2026 Boulangerie de Babi. Tous droits réservés.
+            </div>
+        </div>
+    </footer>
+
+<!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+    <script src="js/store_schedule.js"></script>
+    <script src="js/script.js"></script>
+    <script src="js/auth.js"></script>
+</body>
+</html>

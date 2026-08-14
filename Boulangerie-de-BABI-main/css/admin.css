@@ -1,0 +1,253 @@
+
+:root {
+    --admin-sidebar-bg: #1e1e2f;
+    --admin-sidebar-text: #8e8e9f;
+    --admin-sidebar-active: #ffffff;
+    --admin-sidebar-active-bg: #27293d;
+    --admin-bg: #f4f5f7;
+    --admin-card: #ffffff;
+    
+    /* Status Colors */
+    --status-new-bg: #ffe4e6;
+    --status-new-text: #e11d48;
+    --status-prep-bg: #fef3c7;
+    --status-prep-text: #d97706;
+    --status-route-bg: #dbeafe;
+    --status-route-text: #2563eb;
+    --status-done-bg: #dcfce7;
+    --status-done-text: #16a34a;
+}
+
+body {
+    background-color: var(--admin-bg);
+    margin: 0;
+    overflow-x: hidden;
+    font-family: 'Inter', sans-serif;
+}
+
+/* Layout */
+.admin-wrapper {
+    display: flex;
+    height: 100vh;
+}
+
+/* Sidebar */
+.admin-sidebar {
+    width: 260px;
+    background: var(--admin-sidebar-bg);
+    color: var(--admin-sidebar-text);
+    display: flex;
+    flex-direction: column;
+    transition: all 0.3s ease;
+}
+
+.admin-sidebar .brand {
+    padding: 20px;
+    color: #fff;
+    font-size: 1.2rem;
+    font-weight: bold;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.admin-menu {
+    list-style: none;
+    padding: 0;
+    margin: 20px 0;
+}
+
+.admin-menu li {
+    margin: 5px 15px;
+}
+
+.admin-menu a {
+    color: var(--admin-sidebar-text);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-weight: 500;
+    transition: 0.2s;
+}
+
+.admin-menu a:hover, .admin-menu a.active {
+    color: var(--admin-sidebar-active);
+    background: var(--admin-sidebar-active-bg);
+}
+
+.admin-menu a i {
+    font-size: 1.1rem;
+}
+
+/* Main Content */
+.admin-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+}
+
+/* Topbar */
+.admin-topbar {
+    background: var(--admin-card);
+    height: 70px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 30px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+}
+
+.admin-topbar .search-bar {
+    position: relative;
+    width: 300px;
+}
+
+.admin-topbar .search-bar input {
+    width: 100%;
+    padding: 10px 15px 10px 40px;
+    border-radius: 20px;
+    border: 1px solid #e2e8f0;
+    background: #f8fafc;
+}
+
+.admin-topbar .search-bar i {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #94a3b8;
+}
+
+/* Content Area */
+.admin-content {
+    padding: 30px;
+}
+
+/* Stat Cards */
+.stat-card {
+    background: var(--admin-card);
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.stat-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+}
+
+.stat-icon.primary { background: #e0e7ff; color: #4f46e5; }
+.stat-icon.success { background: #dcfce7; color: #16a34a; }
+.stat-icon.warning { background: #fef3c7; color: #d97706; }
+
+.stat-details h3 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1e293b;
+}
+
+.stat-details span {
+    color: #64748b;
+    font-size: 0.9rem;
+}
+
+/* Orders Table */
+.orders-table-wrapper {
+    background: var(--admin-card);
+    border-radius: 12px;
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+    overflow: hidden;
+    margin-top: 30px;
+}
+
+.orders-table-header {
+    padding: 20px;
+    border-bottom: 1px solid #f1f5f9;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.orders-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.orders-table th {
+    text-align: left;
+    padding: 15px 20px;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    color: #64748b;
+    background: #f8fafc;
+    font-weight: 600;
+}
+
+.orders-table td {
+    padding: 15px 20px;
+    border-bottom: 1px solid #f1f5f9;
+    vertical-align: middle;
+    font-size: 0.95rem;
+    color: #334155;
+}
+
+/* Status Badges */
+.status-badge {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    display: inline-block;
+}
+.status-badge.status-nouveau { background: var(--status-new-bg); color: var(--status-new-text); }
+.status-badge.status-preparation { background: var(--status-prep-bg); color: var(--status-prep-text); }
+.status-badge.status-route { background: var(--status-route-bg); color: var(--status-route-text); }
+.status-badge.status-livre { background: var(--status-done-bg); color: var(--status-done-text); }
+
+/* Action Button */
+.btn-action {
+    padding: 6px 12px;
+    border-radius: 6px;
+    border: none;
+    background: #f1f5f9;
+    color: #475569;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s;
+}
+.btn-action:hover {
+    background: #e2e8f0;
+}
+.btn-action.btn-accept {
+    background: #4f46e5;
+    color: white;
+}
+.btn-action.btn-accept:hover {
+    background: #4338ca;
+}
+
+/* Animations */
+@keyframes blink {
+    0% { opacity: 1; }
+    50% { opacity: 0.4; }
+    100% { opacity: 1; }
+}
+.new-order-row {
+    animation: blink 2s infinite;
+    background-color: #fffbfa;
+}

@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Paiement Sécurisé - Boulangerie de Babi</title>
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/global.css">
+    <link rel="stylesheet" href="css/animations.css">
+</head>
+<body style="background-color: #f5f5f5;" class="d-flex flex-column min-vh-100">
+
+    <!-- Secure Header -->
+    <header class="shadow-sm fixed-top" style="background: rgba(43, 22, 12, 0.95); backdrop-filter: blur(10px);">
+        <div class="container d-flex justify-content-between align-items-center py-3">
+            <a class="text-decoration-none d-flex align-items-center" href="index.html">
+                <img src="assets/logo.png" alt="Logo" style="height: 45px; border-radius: 8px; margin-right: 10px;">
+                <div class="d-flex flex-column lh-1">
+                    <span class="fw-bold text-white" style="font-size: clamp(1rem, 2.5vw, 1.2rem); font-family: 'Inter', sans-serif;">Boulangerie</span>
+                    <span class="text-primary" style="font-size: clamp(1.2rem, 3.5vw, 1.5rem); font-family: 'Great Vibes', cursive; margin-top: -5px;">de Babi</span>
+                </div>
+            </a>
+            <div class="d-flex align-items-center text-white fw-bold">
+                <i class="fa-solid fa-lock fs-4 me-2 text-success"></i>
+                <span class="d-none d-md-inline">Paiement 100% Sécurisé</span>
+            </div>
+        </div>
+    </header>
+
+    <div class="container" style="margin-top: 100px; margin-bottom: 50px;">
+        <div class="row g-4 align-items-start">
+            <!-- Left Column: Checkout Funnel Accordion -->
+            <div class="col-lg-8">
+                <div id="checkoutAlertBox" class="d-none alert alert-danger fw-bold shadow-sm mb-3 align-items-center gap-2" role="alert" style="border-left: 4px solid #dc3545;"></div>
+                <div class="accordion" id="checkoutAccordion">
+                    
+                    <!-- Etape 1: ADRESSE -->
+                    <div class="accordion-item border-0 bg-white rounded shadow-sm mb-3">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button fw-bold fs-5 text-dark" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true">
+                                <i class="fa-regular fa-circle-check text-success me-2"></i> 1. ADRESSE DE LIVRAISON
+                            </button>
+                        </h2>
+                        <div id="collapseOne" class="accordion-collapse collapse show" data-bs-parent="#checkoutAccordion">
+                            <div class="accordion-body border-top">
+                                <div class="row g-3">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label fs-sm text-muted mb-1">Prénom et Nom</label>
+                                        <input type="text" class="form-control shadow-none" placeholder="Ex: Kouassi Jean">
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label fs-sm text-muted mb-1">Numéro de téléphone</label>
+                                        <input type="tel" class="form-control shadow-none" placeholder="Ex: 07 04 38 92 01">
+                                    </div>
+                                    <div class="col-12 mb-3">
+                                        <label class="form-label fs-sm text-dark mb-1 fw-bold"><i class="fa-solid fa-map-location-dot text-warning me-1"></i> Commune de Livraison à Abidjan</label>
+                                        <select class="form-select shadow-none fw-bold" id="communeSelect" onchange="updateDeliveryByCommune()">
+                                            <option value="" disabled selected>-- Sélectionnez votre commune (Calcul automatique des km) --</option>
+                                            <option value="Cocody - Riviera 2 / Palmeraie" data-km="2.5">Cocody - Riviera 2 / Riviera 3 / Palmeraie (~2.5 km - 500 FCFA)</option>
+                                            <option value="Cocody - Deux-Plateaux / Angré" data-km="4.5">Cocody - Deux-Plateaux / Centre / Angré (~4.5 km - 1 000 FCFA)</option>
+                                            <option value="Plateau" data-km="7.0">Plateau - Centre des Affaires (~7.0 km - 1 500 FCFA)</option>
+                                            <option value="Adjamé" data-km="7.5">Adjamé - Marché / Forum (~7.5 km - 1 500 FCFA)</option>
+                                            <option value="Marcory Zone 4" data-km="7.8">Marcory - Zone 4 / Biétry (~7.8 km - 1 500 FCFA)</option>
+                                            <option value="Treichville" data-km="9.0">Treichville - Avenue 16 / Port (~9.0 km - 2 000 FCFA)</option>
+                                            <option value="Koumassi" data-km="9.5">Koumassi - Centre / Remblais (~9.5 km - 2 000 FCFA)</option>
+                                            <option value="Bingerville" data-km="10.5">Bingerville - Centre / Akandjé (~10.5 km - 2 000 FCFA)</option>
+                                            <option value="Attécoubé" data-km="11.0">Attécoubé - Centre / Sebroko (~11.0 km - 2 000 FCFA)</option>
+                                            <option value="Abobo" data-km="13.5">Abobo - Gare / Centre (~13.5 km - 2 500 FCFA)</option>
+                                            <option value="Port-Bouët" data-km="14.0">Port-Bouët - Aéroport / Vridi (~14.0 km - 2 500 FCFA)</option>
+                                            <option value="Yopougon" data-km="16.0">Yopougon - Niangon / Siporex (~16.0 km - 2 500 FCFA)</option>
+                                        </select>
+                                    </div>
+
+                                    <!-- CALCULATEUR KILOMÉTRIQUE & BARÈMES -->
+                                    <div class="col-12 mb-3">
+                                        <div id="kmDeliveryCard" class="card border-0 rounded-3 p-3 shadow-sm" style="background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%); border-left: 4px solid #f97316 !important;">
+                                            <div class="d-flex align-items-center justify-content-between mb-2">
+                                                <span class="small fw-bold text-dark"><i class="fa-solid fa-route text-warning me-1"></i> Distance depuis notre four (Riviera 2) :</span>
+                                                <span class="badge bg-dark text-white px-3 py-1 fs-xs" id="displayDistanceKm">2.5 km (Proximité)</span>
+                                            </div>
+                                            <div class="d-flex align-items-center justify-content-between mb-2">
+                                                <span class="small fw-bold text-dark"><i class="fa-solid fa-motorcycle text-warning me-1"></i> Frais de livraison calculés :</span>
+                                                <span class="fw-bold text-danger fs-6" id="displayDeliveryFee">500 FCFA</span>
+                                            </div>
+                                            <div class="border-top pt-2 mt-2">
+                                                <div class="fs-xs text-muted mb-1 fw-bold"><i class="fa-solid fa-scale-balanced me-1"></i> Barème Kilométrique Officiel (Abidjan) :</div>
+                                                <div class="d-flex flex-wrap gap-2 fs-xs">
+                                                    <span class="badge" style="background:#fff; color:#2b160c; border:1px solid #fed7aa;">0-3 km = 500 F</span>
+                                                    <span class="badge" style="background:#fff; color:#2b160c; border:1px solid #fed7aa;">3-5 km = 1 000 F</span>
+                                                    <span class="badge" style="background:#fff; color:#2b160c; border:1px solid #fed7aa;">5-8 km = 1 500 F</span>
+                                                    <span class="badge" style="background:#fff; color:#2b160c; border:1px solid #fed7aa;">8-12 km = 2 000 F</span>
+                                                    <span class="badge" style="background:#fff; color:#2b160c; border:1px solid #fed7aa;">+12 km = 2 500 F</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-12">
+                                        <label class="form-label fs-sm text-dark mb-1 fw-bold">Localisation Porte-à-Porte 🎯</label>
+                                        <div class="input-group">
+                                            <button type="button" class="btn btn-warning fw-bold text-dark px-3 shadow-sm d-flex align-items-center gap-2" id="geoBtn" onclick="getLocationDoorToDoor()" style="background:#fb923c; border:none;">
+                                                <i class="fa-solid fa-location-crosshairs text-danger fs-5"></i> 📍 Me géolocaliser GPS
+                                            </button>
+                                            <input type="text" class="form-control shadow-none py-2" id="addressInput" placeholder="Ou saisissez l'adresse / repère (Ex: Villa 45, Porte B)">
+                                        </div>
+                                        <div id="geoStatus" class="alert alert-success d-none py-2 px-3 small align-items-center gap-2 mt-2 mb-0 rounded-3">
+                                            <i class="fa-solid fa-circle-check fs-5 text-success"></i>
+                                            <div><strong>Position GPS Porte-à-Porte capturée !</strong> <span id="geoCoordsText"></span></div>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 text-end mt-4">
+                                        <button class="btn btn-primary fw-bold text-dark px-4" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo">CONFIRMER L'ADRESSE</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Etape 2: LIVRAISON -->
+                    <div class="accordion-item border-0 bg-white rounded shadow-sm mb-3">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed fw-bold fs-5 text-dark" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false">
+                                <i class="fa-regular fa-circle text-primary me-2"></i> 2. DÉTAILS DE LIVRAISON
+                            </button>
+                        </h2>
+                        <div id="collapseTwo" class="accordion-collapse collapse" data-bs-parent="#checkoutAccordion">
+                            <div class="accordion-body border-top">
+                                <h6 class="fw-bold mb-3">Choisissez votre mode de livraison</h6>
+                                
+                                <label class="border rounded p-3 mb-2 border-primary w-100 cursor-pointer delivery-card active-delivery" id="deliveryCard1" style="background-color: rgba(244, 180, 0, 0.05); cursor: pointer;">
+                                    <div class="form-check m-0">
+                                        <input class="form-check-input" type="radio" name="delivery" id="d1" checked onchange="updateDeliveryHighlight()">
+                                        <div class="d-flex justify-content-between ms-2">
+                                            <span class="fw-bold">Livraison à Domicile (Express GPS)</span>
+                                            <span class="fw-bold text-dark" id="deliveryFeeDisplay">500 FCFA</span>
+                                        </div>
+                                    </div>
+                                    <small class="text-muted ms-4 d-block mt-1" id="deliveryFeeSubtitle">Livraison garantie par nos livreurs GPS — Distance calculée : 2.5 km (Tarif de base 0-3 km : 500 FCFA).</small>
+                                </label>
+                                
+                                <label class="border rounded p-3 w-100 cursor-pointer delivery-card" id="deliveryCard2" style="cursor: pointer;">
+                                    <div class="form-check m-0">
+                                        <input class="form-check-input" type="radio" name="delivery" id="d2" onchange="updateDeliveryHighlight()">
+                                        <div class="d-flex justify-content-between ms-2">
+                                            <span class="fw-bold">Retrait en Boutique (Click & Collect)</span>
+                                            <span class="fw-bold text-success">Gratuit</span>
+                                        </div>
+                                    </div>
+                                    <small class="text-muted ms-4 d-block mt-1">Boutique de Cocody Riviera 2. Votre commande sera prête dans 15 min.</small>
+                                </label>
+
+                                <!-- Special Instructions / Order Notes -->
+                                <div class="mt-4 pt-3 border-top">
+                                    <label class="form-label fw-bold small text-dark mb-1">
+                                        <i class="fa-solid fa-note-sticky text-warning me-1"></i> Instructions pour le boulanger / livreur (Optionnel)
+                                    </label>
+                                    <textarea class="form-control shadow-none small" id="orderNotesInput" rows="2" placeholder="Ex: Bien dorer la croûte, trancher la baguette, appeler en arrivant devant le portail..."></textarea>
+                                </div>
+
+                                <div class="col-12 text-end mt-4">
+                                    <button class="btn btn-primary fw-bold text-dark px-4" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree">CONFIRMER LA LIVRAISON</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Etape 3: PAIEMENT (Jumia Style) -->
+                    <div class="accordion-item border-0 bg-white rounded shadow-sm mb-3">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed fw-bold fs-5 text-dark" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false">
+                                <i class="fa-regular fa-circle text-primary me-2"></i> 3. MODE DE PAIEMENT
+                            </button>
+                        </h2>
+                        <div id="collapseThree" class="accordion-collapse collapse" data-bs-parent="#checkoutAccordion">
+                            <div class="accordion-body border-top">
+                                
+                                <!-- Mobile Money -->
+                                 <div class="border rounded p-3 mb-3 w-100 border-primary" id="card_momo_box" style="background-color: rgba(244, 180, 0, 0.05);">
+                                     <label class="form-check m-0 d-flex align-items-center cursor-pointer" for="p_momo">
+                                         <input class="form-check-input mt-0" type="radio" name="payment" id="p_momo" checked onclick="togglePaymentMode('momo')">
+                                         <div class="ms-3">
+                                             <span class="fw-bold d-block text-dark">Mobile Money (Wave, Orange, MTN, Moov) <span class="badge bg-warning text-dark ms-2" style="font-size:10px;">Recommandé</span></span>
+                                             <small class="text-muted">Paiement instantané par votre compte mobile en Côte d'Ivoire.</small>
+                                         </div>
+                                     </label>
+
+                                     <!-- Operator Selection Grid -->
+                                     <div class="mt-3 p-3 bg-white rounded border" id="operatorSection">
+                                         <p class="fs-sm fw-bold text-dark mb-2"><i class="fa-solid fa-mobile-screen me-1 text-warning"></i> Sélectionnez votre réseau de paiement :</p>
+                                         <div class="row g-2">
+                                             <div class="col-6 col-md-3">
+                                                 <button type="button" class="btn operator-card w-100 border rounded p-2 text-center shadow-sm active-operator d-flex flex-column align-items-center justify-content-center" id="op_wave" onclick="selectOperator('wave')" style="border-color:#1dc4e9 !important; background:#f0fbfd; min-height:85px;">
+                                                     <img src="assets/wave_money.png" alt="Wave CI" style="width:36px; height:36px; object-fit:contain; pointer-events:none;" class="mb-1">
+                                                     <div class="fw-bold small text-dark" style="pointer-events:none;">Wave CI</div>
+                                                 </button>
+                                             </div>
+                                             <div class="col-6 col-md-3">
+                                                 <button type="button" class="btn operator-card w-100 border rounded p-2 text-center shadow-sm d-flex flex-column align-items-center justify-content-center" id="op_orange" onclick="selectOperator('orange')" style="border-color:#eee; background:#fff; min-height:85px;">
+                                                     <img src="assets/orange_money.svg" alt="Orange Money" style="width:36px; height:36px; object-fit:contain; pointer-events:none;" class="mb-1">
+                                                     <div class="fw-bold small text-dark" style="pointer-events:none;">Orange Money</div>
+                                                 </button>
+                                             </div>
+                                             <div class="col-6 col-md-3">
+                                                 <button type="button" class="btn operator-card w-100 border rounded p-2 text-center shadow-sm d-flex flex-column align-items-center justify-content-center" id="op_mtn" onclick="selectOperator('mtn')" style="border-color:#eee; background:#fff; min-height:85px;">
+                                                     <img src="assets/mtn_money.svg" alt="MTN MoMo" style="width:72px; height:36px; object-fit:contain; pointer-events:none;" class="mb-1">
+                                                     <div class="fw-bold small text-dark" style="pointer-events:none;">MTN MoMo</div>
+                                                 </button>
+                                             </div>
+                                             <div class="col-6 col-md-3">
+                                                 <button type="button" class="btn operator-card w-100 border rounded p-2 text-center shadow-sm d-flex flex-column align-items-center justify-content-center" id="op_moov" onclick="selectOperator('moov')" style="border-color:#eee; background:#fff; min-height:85px;">
+                                                     <img src="assets/moov_money.svg" alt="Moov Money" style="width:36px; height:36px; object-fit:contain; pointer-events:none;" class="mb-1">
+                                                     <div class="fw-bold small text-dark" style="pointer-events:none;">Moov Money</div>
+                                                 </button>
+                                             </div>
+                                         </div>
+                                         <input type="hidden" id="selectedOperatorInput" value="wave">
+
+                                         <!-- Dynamic Specialized Inline Payment Form -->
+                                         <div class="mt-3 p-3 rounded border" id="operatorFormContainer" style="background: #f0fbfd; border-color: #1dc4e9 !important;">
+                                             <div class="d-flex align-items-center gap-2 mb-2">
+                                                 <img src="assets/wave_money.png" id="opFormLogo" style="width:28px; height:28px; object-fit:contain;">
+                                                 <h6 class="fw-bold mb-0 text-dark" id="opFormTitle">Formulaire de paiement Wave CI</h6>
+                                             </div>
+                                             <div class="row g-2 align-items-center">
+                                                 <div class="col-md-7">
+                                                     <label class="form-label fs-xs text-muted mb-1">Numéro de téléphone à débiter</label>
+                                                     <div class="input-group input-group-sm">
+                                                         <span class="input-group-text bg-white fw-bold">+225</span>
+                                                         <input type="tel" class="form-control shadow-none" id="momoPhoneInput" placeholder="Ex: 07 04 38 92 01">
+                                                     </div>
+                                                 </div>
+                                                 <div class="col-md-5">
+                                                     <label class="form-label fs-xs text-muted mb-1">Mode d'exécution</label>
+                                                     <div class="badge w-100 py-2 text-white fw-bold text-center" id="opFormBadge" style="background:#1dc4e9; font-size:11px;">
+                                                         ⚡ API Directe Wave QR / App
+                                                     </div>
+                                                 </div>
+                                             </div>
+                                             <div class="mt-2 small text-muted d-flex align-items-center gap-1" id="opFormNote">
+                                                 <i class="fa-solid fa-shield-halved text-success me-1"></i> Une notification de débit sécurisé sera envoyée à ce numéro.
+                                             </div>
+                                         </div>
+                                     </div>
+                                 </div>
+
+                                <!-- Cash on Delivery -->
+                                <div class="border rounded p-3 mb-3 w-100" id="card_cash_box" style="cursor: pointer; background-color: #fff;">
+                                    <label class="form-check m-0 d-flex align-items-center cursor-pointer" for="p_cash">
+                                        <input class="form-check-input mt-0" type="radio" name="payment" id="p_cash" onclick="togglePaymentMode('cash')">
+                                        <div class="ms-3">
+                                            <span class="fw-bold d-block text-dark">Paiement à la livraison (Espèces & Appoint)</span>
+                                            <small class="text-muted">Payez en cash au livreur lors de la remise de votre commande.</small>
+                                        </div>
+                                        <div class="ms-auto text-success">
+                                            <i class="fa-solid fa-money-bill-wave fs-3"></i>
+                                        </div>
+                                    </label>
+
+                                    <!-- Cash Change Selector -->
+                                    <div class="mt-3 p-3 rounded border d-none" id="cashSection" style="background:#f8fafc; border-color:#cbd5e1 !important;">
+                                        <p class="fs-xs fw-bold text-dark mb-2"><i class="fa-solid fa-coins text-warning me-1"></i> Monnaie à prévoir par le livreur (pour votre confort) :</p>
+                                        <div class="d-flex flex-wrap gap-2">
+                                            <button type="button" class="btn btn-sm btn-outline-dark fw-bold active-change" onclick="selectCashChange(this, 'exact')">Monnaie exacte</button>
+                                            <button type="button" class="btn btn-sm btn-outline-dark fw-bold" onclick="selectCashChange(this, '2000')">Billet de 2 000 F</button>
+                                            <button type="button" class="btn btn-sm btn-outline-dark fw-bold" onclick="selectCashChange(this, '5000')">Billet de 5 000 F</button>
+                                            <button type="button" class="btn btn-sm btn-outline-dark fw-bold" onclick="selectCashChange(this, '10000')">Billet de 10 000 F</button>
+                                        </div>
+                                        <div class="mt-2 small text-muted" style="font-size:11px;">
+                                            <i class="fa-solid fa-circle-info text-primary me-1"></i> Notre livreur aura la monnaie prête lors de l'arrivée.
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- BANDEAU DE RÉASSURANCE DE LA CARTE DE PAIEMENT -->
+                                <div class="alert alert-light border d-flex align-items-center gap-3 py-2 px-3 mb-4 small rounded-3" style="background:#fdfbf7; border-color:#fed7aa !important;">
+                                    <i class="fa-solid fa-shield-halved text-success fs-3"></i>
+                                    <div>
+                                        <div class="fw-bold text-dark">Paiement 100% Sécurisé (Wave CI, Orange, MTN, Moov & Cash)</div>
+                                        <div class="text-muted" style="font-size:11px;">Vos transactions Mobile Money sont directes et sans frais additionnels. Payez aussi en espèces à la livraison.</div>
+                                    </div>
+                                </div>
+
+                                <div class="col-12 text-center">
+                                    <button type="button" id="accordionPlaceOrderBtn" class="btn btn-warning fw-bold text-dark w-100 py-3 fs-5 shadow-sm rounded-3" style="background:#fb923c; border:none;" onclick="submitBabiOrder()">
+                                        <i class="fa-solid fa-check-circle me-2"></i>CONFIRMER ET PAYER
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Right Column: Order Summary (Sticky) -->
+            <div class="col-lg-4">
+                <div class="bg-white rounded shadow-sm p-3 sticky-top" id="checkoutSummaryBox" style="top: 85px;">
+                    <h6 class="fw-bold border-bottom pb-2 mb-3">RÉSUMÉ DE LA COMMANDE</h6>
+                    
+                    <div class="d-flex justify-content-between mb-2 fs-sm">
+                        <span>Sous-total de l'article</span>
+                        <span class="fw-bold">1650 FCFA</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-3 fs-sm border-bottom pb-3">
+                        <span>Frais de livraison</span>
+                        <span class="fw-bold text-success">Gratuit</span>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between mb-4">
+                        <span class="fw-bold fs-5">Total</span>
+                        <span class="fw-bold fs-5 text-primary">1650 FCFA</span>
+                    </div>
+                    
+                    <button type="button" class="btn btn-warning w-100 fw-bold text-dark shadow-sm py-3 fs-6 rounded-3" style="background:#fb923c; border:none;" onclick="submitBabiOrder()">
+                        <i class="fa-solid fa-check-circle me-2"></i>PASSER LA COMMANDE
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Minimalist Footer -->
+    <!-- Unified Luxury Footer -->
+    <footer class="mt-5 text-white py-5" style="background: rgba(43, 22, 12, 0.96); border-top: 3px solid #fb923c;">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-4 col-md-6">
+                    <div class="d-flex align-items-center mb-3">
+                        <img src="assets/logo.png" alt="Logo" height="45" class="me-2 rounded-2">
+                        <div class="d-flex flex-column lh-1">
+                            <span class="fw-bold text-white fs-5" style="font-family: 'Playfair Display', serif;">Boulangerie</span>
+                            <span class="text-warning fs-6 fw-bold" style="letter-spacing: 1px;">DE BABI</span>
+                        </div>
+                    </div>
+                    <p class="text-white small">L'excellence de la boulangerie et pâtisserie artisanale à Abidjan. Pains croustillants, viennoiseries dorées, pâtisseries fines et jus 100% naturels.</p>
+                    <div class="d-flex gap-2">
+                        <a href="https://maps.app.goo.gl/6JrQ1ryZj2KeD5zG7" target="_blank" class="btn btn-outline-warning btn-sm rounded-circle"><i class="fa-solid fa-location-dot"></i></a>
+                        <a href="tel:2722564123" class="btn btn-outline-warning btn-sm rounded-circle"><i class="fa-solid fa-phone"></i></a>
+                        <a href="tel:0704389201" class="btn btn-outline-warning btn-sm rounded-circle"><i class="fa-solid fa-mobile-screen"></i></a>
+                    </div>
+                </div>
+
+                <div class="col-lg-2 col-md-6">
+                    <h5 class="fw-bold text-warning mb-3">NAVIGATION</h5>
+                    <ul class="list-unstyled small lh-lg mb-0">
+                        <li><a href="index.html" class="text-white text-decoration-none hover-warning"><i class="fa-solid fa-chevron-right text-warning me-1 small"></i> Accueil</a></li>
+                        <li><a href="produits.html" class="text-white text-decoration-none hover-warning"><i class="fa-solid fa-chevron-right text-warning me-1 small"></i> Nos Produits</a></li>
+                        <li><a href="favoris.html" class="text-white text-decoration-none hover-warning"><i class="fa-solid fa-chevron-right text-warning me-1 small"></i> Mes Favoris</a></li>
+                        <li><a href="suivi.html" class="text-white text-decoration-none hover-warning"><i class="fa-solid fa-chevron-right text-warning me-1 small"></i> Suivi Commande</a></li>
+                        <li><a href="fidelite.html" class="text-white text-decoration-none hover-warning"><i class="fa-solid fa-chevron-right text-warning me-1 small"></i> Club Fidélité</a></li>
+                    </ul>
+                </div>
+
+                <div class="col-lg-3 col-md-6">
+                    <h5 class="fw-bold text-warning mb-3">HORAIRES DE LA BOUTIQUE</h5>
+                    <p class="text-white small mb-1"><i class="fa-solid fa-clock text-warning me-2"></i> Lundi - Dimanche : 05h45 - 23h00</p>
+                    <h6 class="fw-bold text-warning mt-3 mb-2" style="font-size:0.9rem;">SORTIES DE PAIN CHAUDS</h6>
+                    <p class="text-white small mb-1">06h00 • 09h00 • 14h00 • 17h00 • 18h00</p>
+                </div>
+
+                <div class="col-lg-3 col-md-6">
+                    <h5 class="fw-bold text-warning mb-3">CONTACT BOUTIQUE</h5>
+                    <p class="text-white small mb-1"><i class="fa-solid fa-location-dot text-warning me-2"></i> Cocody Riviera 2, Abidjan - CI</p>
+                    <p class="text-white small mb-1"><i class="fa-solid fa-phone text-warning me-2"></i> <strong>Fixe :</strong> <a href="tel:2722564123" class="text-white text-decoration-none">27 22 56 41 23</a></p>
+                    <p class="text-white small mb-1"><i class="fa-solid fa-mobile-screen-button text-warning me-2"></i> <strong>Mobiles :</strong> <a href="tel:0704389201" class="text-white text-decoration-none">07 04 38 92 01</a> / <a href="tel:0706817977" class="text-white text-decoration-none">07 06 81 79 77</a></p>
+                    <a href="contact.html" class="btn btn-warning btn-sm w-100 fw-bold mt-2 rounded-pill" style="background:#fb923c; border:none; color:#2b160c;">
+                        <i class="fa-solid fa-paper-plane me-1"></i> Nous Contacter
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Wave / Orange Money Direct Payment Modal (Option B) -->
+    <div class="modal fade" id="paymentModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg rounded-4" style="overflow: hidden;">
+                <div class="modal-header text-white border-0 py-3" id="paymentModalHeader" style="background: #2b160c;">
+                    <h5 class="modal-title fw-bold" id="paymentModalTitle">
+                        <i class="fa-solid fa-shield-halved me-2 text-warning"></i>Paiement Mobile Sécurisé
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4 text-center" id="paymentModalBody">
+                    <!-- Dynamic Wave or Orange Money content rendered by checkout.js -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script src="js/cart_actions.js"></script>
+    <script src="js/checkout.js"></script>
+    <script src="js/store_schedule.js"></script>
+</body>
+</html>
