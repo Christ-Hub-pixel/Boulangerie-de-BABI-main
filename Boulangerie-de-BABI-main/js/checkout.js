@@ -66,15 +66,7 @@ function applyKilometerDeliveryCalculation(km, label) {
 }
 
 function getSelectedDeliveryCost() {
-    const deliveryRadio = document.querySelector('input[name="delivery"]:checked');
-    if (deliveryRadio && (deliveryRadio.id === 'd2' || deliveryRadio.value === 'pickup')) {
-        return 0; // Retrait gratuit
-    }
-    const subtotal = typeof getCartTotal === 'function' ? getCartTotal() : 0;
-    if (subtotal >= 3500) {
-        return 0; // Livraison OFFERTE dès 3500 FCFA
-    }
-    return window.currentDeliveryFee !== undefined ? window.currentDeliveryFee : 500; // Par défaut : 500 FCFA (Proximité <= 3 km)
+    return 0; // Retrait en Boutique 100% GRATUIT
 }
 
 function renderCheckoutSummary() {
@@ -104,16 +96,14 @@ function renderCheckoutSummary() {
     `;
     }).join('');
 
-    const freeShippingBanner = subtotal >= 3500 
-        ? `<div class="alert alert-success py-2 px-3 small fw-bold mb-3 d-flex align-items-center"><i class="fa-solid fa-gift text-success me-2 fs-5"></i> 🎉 Félicitations ! Livraison OFFERTE (Achats >= 3 500 FCFA)</div>`
-        : `<div class="alert alert-warning py-2 px-3 small mb-3"><i class="fa-solid fa-truck-fast text-dark me-1"></i> Plus que <strong>${(3500 - subtotal).toLocaleString()} FCFA</strong> pour la <strong>Livraison GRATUITE</strong> !</div>`;
+    const clickAndCollectBanner = `<div class="alert alert-success py-2 px-3 small fw-bold mb-3 d-flex align-items-center"><i class="fa-solid fa-store text-success me-2 fs-5"></i> ⚡ Click & Collect : Retrait Gratuit & Sans File d'Attente !</div>`;
 
     summaryBox.innerHTML = `
         <h6 class="fw-bold border-bottom pb-2 mb-3" style="color:#2b160c;">
             <i class="fa-solid fa-receipt me-1 text-warning"></i> RÉSUMÉ DE LA COMMANDE
         </h6>
 
-        ${freeShippingBanner}
+        ${clickAndCollectBanner}
         
         <div class="items-list mb-3" style="max-height: 220px; overflow-y: auto;">
             ${itemsHtml}
@@ -253,23 +243,27 @@ function submitBabiOrder(isAlreadyValidated = false) {
     }
 
     // Read form inputs & validate required fields
+    const clientNameInput = document.getElementById('clientNameInput');
+    const clientPhoneInput = document.getElementById('clientPhoneInput');
+    const pickupSlotSelect = document.getElementById('pickupSlotSelect');
+
     const inputs = document.querySelectorAll('#collapseOne input, #collapseOne select');
-    const nameInput = inputs[0];
-    const phoneInput = inputs[1];
-    const fullName = nameInput ? nameInput.value.trim() : '';
-    const phone = phoneInput ? phoneInput.value.trim() : '';
+    const fullName = clientNameInput ? clientNameInput.value.trim() : (inputs[0] ? inputs[0].value.trim() : '');
+    const phone = clientPhoneInput ? clientPhoneInput.value.trim() : (inputs[1] ? inputs[1].value.trim() : '');
+    const pickupSlot = pickupSlotSelect ? pickupSlotSelect.value : 'Dès que possible (~15-20 min)';
 
     const alertBox = document.getElementById('checkoutAlertBox');
     if (!fullName || !phone) {
         if (alertBox) {
+            alertBox.classList.remove('d-none');
             alertBox.className = "alert alert-danger fw-bold shadow-sm mb-3 align-items-center gap-2 d-flex";
             alertBox.innerHTML = `<i class="fa-solid fa-triangle-exclamation fs-5 text-danger"></i> <div><strong>Champs obligatoires :</strong> Veuillez renseigner votre Prénom, Nom et Numéro de téléphone à l'Étape 1.</div>`;
             alertBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
         } else {
             alert('Veuillez renseigner votre Prénom, Nom et Numéro de téléphone.');
         }
-        if (nameInput && !fullName) nameInput.classList.add('is-invalid');
-        if (phoneInput && !phone) phoneInput.classList.add('is-invalid');
+        if (clientNameInput && !fullName) clientNameInput.classList.add('is-invalid');
+        if (clientPhoneInput && !phone) clientPhoneInput.classList.add('is-invalid');
         const collapseOne = document.getElementById('collapseOne');
         if (collapseOne && typeof bootstrap !== 'undefined') {
             new bootstrap.Collapse(collapseOne, { show: true });
@@ -277,23 +271,20 @@ function submitBabiOrder(isAlreadyValidated = false) {
         return;
     } else {
         if (alertBox) alertBox.classList.add('d-none');
-        if (nameInput) nameInput.classList.remove('is-invalid');
-        if (phoneInput) phoneInput.classList.remove('is-invalid');
+        if (clientNameInput) clientNameInput.classList.remove('is-invalid');
+        if (clientPhoneInput) clientPhoneInput.classList.remove('is-invalid');
     }
 
-    const communeSelect = document.querySelector('#collapseOne select');
-    const commune = communeSelect ? communeSelect.value : 'Cocody';
-    const address = inputs[2] ? inputs[2].value.trim() : 'Riviera 2, Abidjan';
-
-    const deliveryRadio = document.querySelector('input[name="delivery"]:checked');
-    const deliveryMethod = deliveryRadio && deliveryRadio.id === 'd2' ? 'Retrait en Boutique' : 'Livraison à Domicile (Express)';
-    const deliveryCost = getSelectedDeliveryCost();
+    const commune = 'Cocody Riviera 2';
+    const address = 'Boulangerie de BABI (Fournil Riviera 2)';
+    const deliveryMethod = 'Retrait en Boutique (Click & Collect)';
+    const deliveryCost = 0;
 
     const paymentRadio = document.querySelector('input[name="payment"]:checked');
     const isMobileMoney = paymentRadio ? paymentRadio.id !== 'p_cash' : true;
     const selectedOperatorCode = document.getElementById('selectedOperatorInput') ? document.getElementById('selectedOperatorInput').value : 'wave';
     
-    let paymentMethod = 'Paiement à la livraison';
+    let paymentMethod = 'Paiement au comptoir (Espèces)';
     if (isMobileMoney) {
         if (selectedOperatorCode === 'orange') paymentMethod = 'Orange Money';
         else if (selectedOperatorCode === 'mtn') paymentMethod = 'MTN Mobile Money';
@@ -317,13 +308,14 @@ function submitBabiOrder(isAlreadyValidated = false) {
         phone: phone || '07 04 38 92 01',
         commune: commune,
         address: address,
+        pickupSlot: pickupSlot,
         delivery_method: deliveryMethod,
         payment_method: paymentMethod,
         payment_status: isMobileMoney ? 'paye' : 'en_attente',
         items: items,
         itemsSummary: items.map(i => `${i.name || i.title} (x${i.qty || i.quantity || 1})`).join(', '),
         subtotal: subtotal,
-        delivery_cost: deliveryCost,
+        delivery_cost: 0,
         promo_code: window.appliedPromoCode || '',
         promo_discount: promoDiscount,
         total_price: grandTotal,
@@ -333,7 +325,7 @@ function submitBabiOrder(isAlreadyValidated = false) {
         createdAt: new Date().toISOString()
     };
 
-    // Génération automatique du lien WhatsApp avec reçu et suivi GPS
+    // Génération automatique du lien WhatsApp avec reçu et point de retrait
     const whatsappUrl = generateWhatsAppOrderUrl(newOrder);
     newOrder.whatsappUrl = whatsappUrl;
 
@@ -391,33 +383,32 @@ window.generateWhatsAppOrderUrl = function(order) {
     const items = order.items || [];
     const itemsLines = items.map(i => `  • ${(i.name || i.title || '').toUpperCase()} (x${i.qty || i.quantity || 1}) — ${((i.price || 0) * (i.qty || i.quantity || 1)).toLocaleString()} FCFA`).join('\n');
 
-    let msg = `🥖 *COMMANDE REÇUE — BOULANGERIE DE BABI*\n`;
+    let msg = `🥖 *NOUVELLE COMMANDE — BOULANGERIE DE BABI*\n`;
     msg += `━━━━━━━━━━━━━━━━━━━━━\n`;
     msg += `📋 *Réf Commande :* #${order.id}\n`;
     msg += `👤 *Client :* ${order.clientName || 'Client'}\n`;
     msg += `📞 *Téléphone :* ${order.phone || ''}\n`;
-    msg += `📍 *Adresse de Livraison :* ${order.commune || 'Abidjan'}, ${order.address || ''}\n`;
-    msg += `🛵 *Mode :* ${order.delivery_method === 'express' ? 'Livraison Express Moto' : (order.delivery_method === 'retrait' ? 'Retrait en Boutique' : 'Livraison Standard')}\n`;
-    msg += `💳 *Paiement :* ${order.payment_method || 'Mobile Money'} (${order.payment_status === 'paye' ? '✅ PAYÉ' : '⏳ À payer'})\n`;
+    msg += `⚡ *Mode :* Retrait en Boutique (Click & Collect)\n`;
+    msg += `📍 *Lieu de Retrait :* Cocody Riviera 2 (Fournil BABI)\n`;
+    msg += `⏰ *Créneau :* ${order.pickupSlot || 'Dès que possible (~15-20 min)'}\n`;
+    msg += `💳 *Paiement :* ${order.payment_method || 'Mobile Money'} (${order.payment_status === 'paye' ? '✅ PAYÉ' : '⏳ À régler au comptoir'})\n`;
     if (order.confCode) {
-        msg += `🔒 *Code Secret Livraison :* ${order.confCode}\n`;
+        msg += `🔑 *Code Retrait Comptoir :* ${order.confCode}\n`;
     }
     msg += `━━━━━━━━━━━━━━━━━━━━━\n`;
     msg += `🛒 *DÉTAIL DU PANIER :*\n${itemsLines || '  • ' + (order.itemsSummary || 'Produits variés')}\n`;
     msg += `━━━━━━━━━━━━━━━━━━━━━\n`;
     msg += `💰 *Sous-total :* ${(order.subtotal || 0).toLocaleString()} FCFA\n`;
-    if (order.delivery_cost) {
-        msg += `🛵 *Frais de Livraison :* ${order.delivery_cost.toLocaleString()} FCFA\n`;
-    }
+    msg += `✨ *Frais de Retrait :* 0 FCFA (GRATUIT)\n`;
     if (order.promo_discount) {
         msg += `🎁 *Remise Promo (${order.promo_code}) :* -${order.promo_discount.toLocaleString()} FCFA\n`;
     }
-    msg += `💎 *TOTAL GÉNÉRAL :* *${(order.total_price || 0).toLocaleString()} FCFA*\n`;
+    msg += `💎 *TOTAL À RÉGLER :* *${(order.total_price || 0).toLocaleString()} FCFA*\n`;
     if (order.notes) {
         msg += `📝 *Remarques :* ${order.notes}\n`;
     }
     msg += `━━━━━━━━━━━━━━━━━━━━━\n`;
-    msg += `📍 *SUIVRE MA COMMANDE EN TEMPS RÉEL (GPS) :*\n${trackingUrl}\n\n`;
+    msg += `📱 *SUIVRE L'ÉTAT DE PRÉPARATION :*\n${trackingUrl}\n\n`;
     msg += `_Boulangerie de BABI — Cocody Riviera 2, Abidjan_ 🥖✨`;
 
     return `https://api.whatsapp.com/send?phone=${bakeryWhatsApp}&text=${encodeURIComponent(msg)}`;

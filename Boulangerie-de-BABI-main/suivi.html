@@ -139,15 +139,15 @@
             <div class="col-md-7 col-lg-6">
                 <div class="card shadow-lg border-0 rounded-4 p-4 text-center bg-white">
                     <div class="bg-warning bg-opacity-20 text-warning rounded-circle p-3 mx-auto mb-3" style="width:64px;height:64px;display:flex;align-items:center;justify-content:center;">
-                        <i class="fa-solid fa-satellite-dish fs-2"></i>
+                        <i class="fa-solid fa-store fs-2"></i>
                     </div>
-                    <h3 class="fw-bold mb-2" style="color: var(--babi-chocolate);">Suivi de Commande GPS</h3>
-                    <p class="text-muted small mb-4">Entrez votre numéro de téléphone pour afficher la position du livreur en temps réel.</p>
+                    <h3 class="fw-bold mb-2" style="color: var(--babi-chocolate);">Suivi de Préparation & Retrait</h3>
+                    <p class="text-muted small mb-4">Entrez votre numéro de téléphone pour suivre la cuisson et savoir quand votre commande est prête au comptoir.</p>
                     <div class="input-group input-group-lg mb-2 shadow-sm rounded-pill overflow-hidden border" style="border-color: rgba(251, 191, 36, 0.4) !important;">
                         <span class="input-group-text bg-white border-0 text-warning ps-3"><i class="fa-solid fa-phone"></i></span>
                         <input type="text" id="phone-input" class="form-control border-0 shadow-none px-2 fs-6" placeholder="Numéro de téléphone (ex: 0704389201)">
                         <button class="btn btn-warning fw-bold px-4 text-dark babi-search-btn" onclick="trackOrder()">
-                            <i class="fa-solid fa-satellite-dish me-1"></i> Suivre
+                            <i class="fa-solid fa-store me-1"></i> Suivre
                         </button>
                     </div>
                 </div>
@@ -160,7 +160,7 @@
             <div class="card shadow-sm border-0 rounded-4 p-4 mb-4 bg-white">
                 <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
                     <div>
-                        <span class="badge bg-warning text-dark fw-bold px-3 py-2 rounded-pill mb-2"><i class="fa-solid fa-bolt me-1"></i> LIVRAISON EN DIRECT</span>
+                        <span class="badge bg-warning text-dark fw-bold px-3 py-2 rounded-pill mb-2"><i class="fa-solid fa-store me-1"></i> CLICK & COLLECT — RETRAIT EN BOUTIQUE</span>
                         <h2 class="fw-bold mb-1" style="color: var(--babi-chocolate);">Commande <span id="order-id-display" class="text-warning">#---</span></h2>
                         <div class="text-muted fs-6">Montant total: <span id="order-total" class="fw-bold text-dark">---</span> | Mode: <span id="order-payment" class="fw-semibold">---</span></div>
                     </div>
@@ -177,15 +177,15 @@
                     </div>
                     <div class="timeline-step" id="step-preparation">
                         <div class="timeline-icon"><i class="fa-solid fa-fire-burner"></i></div>
-                        <div class="timeline-label">Cuisson Pain</div>
+                        <div class="timeline-label">Au Fournil</div>
                     </div>
                     <div class="timeline-step" id="step-livraison">
-                        <div class="timeline-icon"><i class="fa-solid fa-motorcycle"></i></div>
-                        <div class="timeline-label">En Scooter</div>
+                        <div class="timeline-icon"><i class="fa-solid fa-bag-shopping"></i></div>
+                        <div class="timeline-label">Prête au Comptoir</div>
                     </div>
                     <div class="timeline-step" id="step-livre">
-                        <div class="timeline-icon"><i class="fa-solid fa-house-circle-check"></i></div>
-                        <div class="timeline-label">Livré</div>
+                        <div class="timeline-icon"><i class="fa-solid fa-circle-check"></i></div>
+                        <div class="timeline-label">Récupérée</div>
                     </div>
                 </div>
             </div>
@@ -194,14 +194,18 @@
             <div class="position-relative mb-4">
                 <div id="map"></div>
                 
-                <!-- Driver Alert Floating Overlay -->
+                <!-- Pickup Point Floating Overlay -->
                 <div id="driver-alert" class="position-absolute bottom-0 start-50 translate-middle-x mb-4 p-3 bg-dark text-white rounded-4 shadow-lg d-flex align-items-center gap-3" style="z-index: 1000; border:1px solid #fb923c; display: none !important;">
-                    <img src="https://ui-avatars.com/api/?name=Koffi+Livreur&background=fb923c&color=2b160c" class="rounded-circle border border-2 border-warning" width="48">
-                    <div>
-                        <div class="fw-bold text-warning">Koffi (Votre livreur BABI)</div>
-                        <div class="small text-light"><i class="fa-solid fa-motorcycle text-warning me-1"></i> Est en route vers chez vous !</div>
+                    <div class="bg-warning text-dark rounded-circle p-2 d-flex align-items-center justify-content-center" style="width:44px;height:44px;">
+                        <i class="fa-solid fa-store fs-5"></i>
                     </div>
-                    <a href="tel:0704389201" class="btn btn-success rounded-circle ms-2 shadow-sm d-flex align-items-center justify-content-center" style="width:40px;height:40px;"><i class="fa-solid fa-phone"></i></a>
+                    <div>
+                        <div class="fw-bold text-warning">Point de Retrait : Riviera 2</div>
+                        <div class="small text-light">Commande prête à être récupérée au comptoir !</div>
+                    </div>
+                    <a href="https://maps.app.goo.gl/6JrQ1ryZj2KeD5zG7" target="_blank" class="btn btn-warning btn-sm rounded-pill text-dark fw-bold ms-2 px-3 shadow-sm">
+                        <i class="fa-solid fa-diamond-turn-right me-1"></i> Itinéraire
+                    </a>
                 </div>
             </div>
 
@@ -236,9 +240,9 @@
 
             <!-- Confirmation Code Box -->
             <div id="confirmation-code-box" class="card shadow-sm border-0 rounded-4 p-4 mt-4 text-center bg-white" style="display: none;">
-                <h6 class="fw-bold text-muted mb-2"><i class="fa-solid fa-lock text-warning me-2"></i> CODE DE LIVRAISON CONFIDENTIEL</h6>
+                <h6 class="fw-bold text-muted mb-2"><i class="fa-solid fa-lock text-warning me-2"></i> CODE DE RETRAIT AU COMPTOIR</h6>
                 <div class="display-3 fw-bold text-warning tracking-widest" id="order-conf-code" style="letter-spacing: 10px;">----</div>
-                <p class="text-muted small mt-2 mb-0"><i class="fa-solid fa-shield-halved text-success me-1"></i> Communiquez ce code au livreur à la réception de votre paquet.</p>
+                <p class="text-muted small mt-2 mb-0"><i class="fa-solid fa-shield-halved text-success me-1"></i> Présentez ce code au comptoir pour retirer votre sachet sans attente.</p>
             </div>
             
             <div class="card shadow-sm border-0 rounded-4 p-4 mt-4 bg-white">

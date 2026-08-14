@@ -36,131 +36,100 @@
                 <div id="checkoutAlertBox" class="d-none alert alert-danger fw-bold shadow-sm mb-3 align-items-center gap-2" role="alert" style="border-left: 4px solid #dc3545;"></div>
                 <div class="accordion" id="checkoutAccordion">
                     
-                    <!-- Etape 1: ADRESSE -->
+                    <!-- Etape 1: COORDONNÉES & CRÉNEAU -->
                     <div class="accordion-item border-0 bg-white rounded shadow-sm mb-3">
                         <h2 class="accordion-header">
                             <button class="accordion-button fw-bold fs-5 text-dark" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true">
-                                <i class="fa-regular fa-circle-check text-success me-2"></i> 1. ADRESSE DE LIVRAISON
+                                <i class="fa-regular fa-circle-check text-success me-2"></i> 1. COORDONNÉES & CRÉNEAU DE RETRAIT
                             </button>
                         </h2>
                         <div id="collapseOne" class="accordion-collapse collapse show" data-bs-parent="#checkoutAccordion">
                             <div class="accordion-body border-top">
+                                <div class="alert alert-warning py-2 px-3 small d-flex align-items-center gap-2 mb-3 rounded-3" style="background:#fffbeb; border: 1px solid #fde68a;">
+                                    <i class="fa-solid fa-store text-warning fs-5"></i>
+                                    <div><strong>Retrait Express au Fournil :</strong> Votre commande sera préparée avec amour et mise de côté au comptoir. Pas d'attente en caisse !</div>
+                                </div>
+
                                 <div class="row g-3">
-                                    <div class="col-md-6 mb-3">
-                                        <label class="form-label fs-sm text-muted mb-1">Prénom et Nom</label>
-                                        <input type="text" class="form-control shadow-none" placeholder="Ex: Kouassi Jean">
+                                    <div class="col-md-6 mb-2">
+                                        <label class="form-label fs-sm text-dark fw-bold mb-1">Nom et Prénom du client *</label>
+                                        <input type="text" class="form-control shadow-none" id="clientNameInput" placeholder="Ex: Kouassi Jean" required>
                                     </div>
-                                    <div class="col-md-6 mb-3">
-                                        <label class="form-label fs-sm text-muted mb-1">Numéro de téléphone</label>
-                                        <input type="tel" class="form-control shadow-none" placeholder="Ex: 07 04 38 92 01">
+                                    <div class="col-md-6 mb-2">
+                                        <label class="form-label fs-sm text-dark fw-bold mb-1">Numéro de téléphone *</label>
+                                        <input type="tel" class="form-control shadow-none" id="clientPhoneInput" placeholder="Ex: 07 04 38 92 01" required>
                                     </div>
-                                    <div class="col-12 mb-3">
-                                        <label class="form-label fs-sm text-dark mb-1 fw-bold"><i class="fa-solid fa-map-location-dot text-warning me-1"></i> Commune de Livraison à Abidjan</label>
-                                        <select class="form-select shadow-none fw-bold" id="communeSelect" onchange="updateDeliveryByCommune()">
-                                            <option value="" disabled selected>-- Sélectionnez votre commune (Calcul automatique des km) --</option>
-                                            <option value="Cocody - Riviera 2 / Palmeraie" data-km="2.5">Cocody - Riviera 2 / Riviera 3 / Palmeraie (~2.5 km - 500 FCFA)</option>
-                                            <option value="Cocody - Deux-Plateaux / Angré" data-km="4.5">Cocody - Deux-Plateaux / Centre / Angré (~4.5 km - 1 000 FCFA)</option>
-                                            <option value="Plateau" data-km="7.0">Plateau - Centre des Affaires (~7.0 km - 1 500 FCFA)</option>
-                                            <option value="Adjamé" data-km="7.5">Adjamé - Marché / Forum (~7.5 km - 1 500 FCFA)</option>
-                                            <option value="Marcory Zone 4" data-km="7.8">Marcory - Zone 4 / Biétry (~7.8 km - 1 500 FCFA)</option>
-                                            <option value="Treichville" data-km="9.0">Treichville - Avenue 16 / Port (~9.0 km - 2 000 FCFA)</option>
-                                            <option value="Koumassi" data-km="9.5">Koumassi - Centre / Remblais (~9.5 km - 2 000 FCFA)</option>
-                                            <option value="Bingerville" data-km="10.5">Bingerville - Centre / Akandjé (~10.5 km - 2 000 FCFA)</option>
-                                            <option value="Attécoubé" data-km="11.0">Attécoubé - Centre / Sebroko (~11.0 km - 2 000 FCFA)</option>
-                                            <option value="Abobo" data-km="13.5">Abobo - Gare / Centre (~13.5 km - 2 500 FCFA)</option>
-                                            <option value="Port-Bouët" data-km="14.0">Port-Bouët - Aéroport / Vridi (~14.0 km - 2 500 FCFA)</option>
-                                            <option value="Yopougon" data-km="16.0">Yopougon - Niangon / Siporex (~16.0 km - 2 500 FCFA)</option>
+                                    <div class="col-md-6 mb-2">
+                                        <label class="form-label fs-sm text-dark fw-bold mb-1"><i class="fa-solid fa-clock text-warning me-1"></i> Créneau de retrait souhaité</label>
+                                        <select class="form-select shadow-none fw-bold" id="pickupSlotSelect">
+                                            <option value="Dès que possible (15-20 min)" selected>⚡ Dès que possible (~15 à 20 min)</option>
+                                            <option value="Dans 1 heure">🕐 Dans 1 heure</option>
+                                            <option value="Ce midi (12h30 - 13h30)">☀️ Ce midi (12h30 - 13h30)</option>
+                                            <option value="Goûter de 16h00">🧁 Pour le goûter (16h00 - 17h00)</option>
+                                            <option value="Fournée du soir (18h00 - Pain Chaud)">🔥 Fournée du soir (18h00 - Pain tout chaud)</option>
                                         </select>
                                     </div>
-
-                                    <!-- CALCULATEUR KILOMÉTRIQUE & BARÈMES -->
-                                    <div class="col-12 mb-3">
-                                        <div id="kmDeliveryCard" class="card border-0 rounded-3 p-3 shadow-sm" style="background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%); border-left: 4px solid #f97316 !important;">
-                                            <div class="d-flex align-items-center justify-content-between mb-2">
-                                                <span class="small fw-bold text-dark"><i class="fa-solid fa-route text-warning me-1"></i> Distance depuis notre four (Riviera 2) :</span>
-                                                <span class="badge bg-dark text-white px-3 py-1 fs-xs" id="displayDistanceKm">2.5 km (Proximité)</span>
-                                            </div>
-                                            <div class="d-flex align-items-center justify-content-between mb-2">
-                                                <span class="small fw-bold text-dark"><i class="fa-solid fa-motorcycle text-warning me-1"></i> Frais de livraison calculés :</span>
-                                                <span class="fw-bold text-danger fs-6" id="displayDeliveryFee">500 FCFA</span>
-                                            </div>
-                                            <div class="border-top pt-2 mt-2">
-                                                <div class="fs-xs text-muted mb-1 fw-bold"><i class="fa-solid fa-scale-balanced me-1"></i> Barème Kilométrique Officiel (Abidjan) :</div>
-                                                <div class="d-flex flex-wrap gap-2 fs-xs">
-                                                    <span class="badge" style="background:#fff; color:#2b160c; border:1px solid #fed7aa;">0-3 km = 500 F</span>
-                                                    <span class="badge" style="background:#fff; color:#2b160c; border:1px solid #fed7aa;">3-5 km = 1 000 F</span>
-                                                    <span class="badge" style="background:#fff; color:#2b160c; border:1px solid #fed7aa;">5-8 km = 1 500 F</span>
-                                                    <span class="badge" style="background:#fff; color:#2b160c; border:1px solid #fed7aa;">8-12 km = 2 000 F</span>
-                                                    <span class="badge" style="background:#fff; color:#2b160c; border:1px solid #fed7aa;">+12 km = 2 500 F</span>
-                                                </div>
-                                            </div>
-                                        </div>
+                                    <div class="col-md-6 mb-2">
+                                        <label class="form-label fs-sm text-dark fw-bold mb-1"><i class="fa-solid fa-location-dot text-danger me-1"></i> Point de retrait</label>
+                                        <input type="text" class="form-control shadow-none bg-light" id="addressInput" value="Cocody Riviera 2 (Boulangerie de BABI)" readonly>
                                     </div>
 
-                                    <div class="col-12">
-                                        <label class="form-label fs-sm text-dark mb-1 fw-bold">Localisation Porte-à-Porte 🎯</label>
-                                        <div class="input-group">
-                                            <button type="button" class="btn btn-warning fw-bold text-dark px-3 shadow-sm d-flex align-items-center gap-2" id="geoBtn" onclick="getLocationDoorToDoor()" style="background:#fb923c; border:none;">
-                                                <i class="fa-solid fa-location-crosshairs text-danger fs-5"></i> 📍 Me géolocaliser GPS
-                                            </button>
-                                            <input type="text" class="form-control shadow-none py-2" id="addressInput" placeholder="Ou saisissez l'adresse / repère (Ex: Villa 45, Porte B)">
-                                        </div>
-                                        <div id="geoStatus" class="alert alert-success d-none py-2 px-3 small align-items-center gap-2 mt-2 mb-0 rounded-3">
-                                            <i class="fa-solid fa-circle-check fs-5 text-success"></i>
-                                            <div><strong>Position GPS Porte-à-Porte capturée !</strong> <span id="geoCoordsText"></span></div>
-                                        </div>
-                                    </div>
-                                    <div class="col-12 text-end mt-4">
-                                        <button class="btn btn-primary fw-bold text-dark px-4" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo">CONFIRMER L'ADRESSE</button>
+                                    <div class="col-12 text-end mt-3">
+                                        <button class="btn btn-primary fw-bold text-dark px-4" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo">CONFIRMER & VOIR LE POINT DE RETRAIT</button>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Etape 2: LIVRAISON -->
+                    <!-- Etape 2: POINT DE RETRAIT EN BOUTIQUE -->
                     <div class="accordion-item border-0 bg-white rounded shadow-sm mb-3">
                         <h2 class="accordion-header">
                             <button class="accordion-button collapsed fw-bold fs-5 text-dark" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false">
-                                <i class="fa-regular fa-circle text-primary me-2"></i> 2. DÉTAILS DE LIVRAISON
+                                <i class="fa-regular fa-circle text-primary me-2"></i> 2. LIEU DU RETRAIT (CLICK & COLLECT)
                             </button>
                         </h2>
                         <div id="collapseTwo" class="accordion-collapse collapse" data-bs-parent="#checkoutAccordion">
                             <div class="accordion-body border-top">
-                                <h6 class="fw-bold mb-3">Choisissez votre mode de livraison</h6>
                                 
-                                <label class="border rounded p-3 mb-2 border-primary w-100 cursor-pointer delivery-card active-delivery" id="deliveryCard1" style="background-color: rgba(244, 180, 0, 0.05); cursor: pointer;">
-                                    <div class="form-check m-0">
-                                        <input class="form-check-input" type="radio" name="delivery" id="d1" checked onchange="updateDeliveryHighlight()">
-                                        <div class="d-flex justify-content-between ms-2">
-                                            <span class="fw-bold">Livraison à Domicile (Express GPS)</span>
-                                            <span class="fw-bold text-dark" id="deliveryFeeDisplay">500 FCFA</span>
+                                <div class="card border-0 rounded-4 p-3 mb-3 shadow-sm" style="background: linear-gradient(135deg, #fffaf0 0%, #fef3c7 100%); border: 1px solid #fde68a !important;">
+                                    <div class="d-flex align-items-start gap-3">
+                                        <div class="bg-warning text-dark rounded-circle p-3 d-flex align-items-center justify-content-center flex-shrink-0" style="width:50px;height:50px;">
+                                            <i class="fa-solid fa-store fs-4"></i>
+                                        </div>
+                                        <div>
+                                            <span class="badge bg-success text-white px-3 py-1 rounded-pill fw-bold mb-1">
+                                                <i class="fa-solid fa-check me-1"></i> RETRAIT 100% GRATUIT
+                                            </span>
+                                            <h5 class="fw-bold mb-1" style="color:#2b160c; font-family:'Playfair Display', serif;">
+                                                Boulangerie de BABI — Riviera 2
+                                            </h5>
+                                            <p class="text-muted small mb-2">
+                                                <i class="fa-solid fa-location-dot text-danger me-1"></i> <strong>Adresse :</strong> Cocody Riviera 2, Boulevard Sainte Famille, Abidjan.<br>
+                                                <i class="fa-solid fa-clock text-warning me-1"></i> <strong>Horaires :</strong> Lundi au Dimanche de 05h45 à 23h00 (Non-stop).
+                                            </p>
+                                            <div class="d-flex flex-wrap gap-2">
+                                                <a href="https://maps.app.goo.gl/6JrQ1ryZj2KeD5zG7" target="_blank" class="btn btn-dark btn-sm rounded-pill px-3 fw-bold">
+                                                    <i class="fa-solid fa-diamond-turn-right text-warning me-1"></i> Itinéraire Google Maps
+                                                </a>
+                                                <a href="tel:2722564123" class="btn btn-outline-dark btn-sm rounded-pill px-3 fw-semibold">
+                                                    <i class="fa-solid fa-phone me-1"></i> Appeler la Caisse
+                                                </a>
+                                            </div>
                                         </div>
                                     </div>
-                                    <small class="text-muted ms-4 d-block mt-1" id="deliveryFeeSubtitle">Livraison garantie par nos livreurs GPS — Distance calculée : 2.5 km (Tarif de base 0-3 km : 500 FCFA).</small>
-                                </label>
-                                
-                                <label class="border rounded p-3 w-100 cursor-pointer delivery-card" id="deliveryCard2" style="cursor: pointer;">
-                                    <div class="form-check m-0">
-                                        <input class="form-check-input" type="radio" name="delivery" id="d2" onchange="updateDeliveryHighlight()">
-                                        <div class="d-flex justify-content-between ms-2">
-                                            <span class="fw-bold">Retrait en Boutique (Click & Collect)</span>
-                                            <span class="fw-bold text-success">Gratuit</span>
-                                        </div>
-                                    </div>
-                                    <small class="text-muted ms-4 d-block mt-1">Boutique de Cocody Riviera 2. Votre commande sera prête dans 15 min.</small>
-                                </label>
+                                </div>
 
                                 <!-- Special Instructions / Order Notes -->
-                                <div class="mt-4 pt-3 border-top">
+                                <div class="mt-3">
                                     <label class="form-label fw-bold small text-dark mb-1">
-                                        <i class="fa-solid fa-note-sticky text-warning me-1"></i> Instructions pour le boulanger / livreur (Optionnel)
+                                        <i class="fa-solid fa-note-sticky text-warning me-1"></i> Remarques pour le fournil (Optionnel)
                                     </label>
-                                    <textarea class="form-control shadow-none small" id="orderNotesInput" rows="2" placeholder="Ex: Bien dorer la croûte, trancher la baguette, appeler en arrivant devant le portail..."></textarea>
+                                    <textarea class="form-control shadow-none small" id="orderNotesInput" rows="2" placeholder="Ex: Bien dorer la croûte, trancher la baguette, emballer les croissants séparément..."></textarea>
                                 </div>
 
                                 <div class="col-12 text-end mt-4">
-                                    <button class="btn btn-primary fw-bold text-dark px-4" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree">CONFIRMER LA LIVRAISON</button>
+                                    <button class="btn btn-primary fw-bold text-dark px-4" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree">PASSER AU PAIEMENT</button>
                                 </div>
                             </div>
                         </div>

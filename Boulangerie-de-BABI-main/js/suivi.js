@@ -9,39 +9,35 @@ let currentPhone = null;
 let currentStatus = null;
 
 // Abidjan coordinates
-const bakeryCoords = [5.3772845, -3.9272566]; // Cocody Riviera 2 // Plateau
-const customerCoords = [5.3773, -3.9273]; // Riviera 2
+const bakeryCoords = [5.3772845, -3.9272566]; // Cocody Riviera 2 (Fournil BABI)
 
 function initMap() {
-    map = L.map('map').setView([5.3564, -3.9767], 12);
+    map = L.map('map').setView(bakeryCoords, 15);
     L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
         attribution: '&copy; OpenStreetMap contributors &copy; CARTO'
     }).addTo(map);
 
     // Bakery Icon
     const bakeryIcon = L.divIcon({
-        html: '<div style="background:#e11d48; color:white; border-radius:50%; width:30px; height:30px; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 5px rgba(0,0,0,0.3); border:2px solid white;"><i class="fa-solid fa-store"></i></div>',
-        className: '', iconSize: [30, 30], iconAnchor: [15, 15]
+        html: '<div style="background:#ea580c; color:white; border-radius:50%; width:38px; height:38px; display:flex; align-items:center; justify-content:center; box-shadow:0 3px 10px rgba(234, 88, 12, 0.5); border:3px solid white;"><i class="fa-solid fa-store fs-6"></i></div>',
+        className: '', iconSize: [38, 38], iconAnchor: [19, 19]
     });
-    bakeryMarker = L.marker(bakeryCoords, {icon: bakeryIcon}).addTo(map).bindPopup("<b>Boulangerie de BABI</b>");
-
-    // Customer Icon
-    const customerIcon = L.divIcon({
-        html: '<div style="background:#3b82f6; color:white; border-radius:50%; width:30px; height:30px; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 5px rgba(0,0,0,0.3); border:2px solid white;"><i class="fa-solid fa-house"></i></div>',
-        className: '', iconSize: [30, 30], iconAnchor: [15, 15]
-    });
-    customerMarker = L.marker(customerCoords, {icon: customerIcon}).addTo(map).bindPopup("<b>Votre Adresse</b>");
-
-    // Delivery Bike Icon
-    const bikeIcon = L.divIcon({
-        html: '<div class="pulse-marker" style="display:flex; align-items:center; justify-content:center; color:white; font-size:10px;"><i class="fa-solid fa-motorcycle"></i></div>',
-        className: '', iconSize: [20, 20], iconAnchor: [10, 10]
-    });
-    deliveryMarker = L.marker(bakeryCoords, {icon: bikeIcon}); // Not added to map yet
+    bakeryMarker = L.marker(bakeryCoords, {icon: bakeryIcon}).addTo(map)
+        .bindPopup(`
+            <div style="font-family:'Inter',sans-serif; text-align:center; padding:4px;">
+                <strong style="color:#2b160c; font-size:13px;">🥖 Boulangerie de BABI</strong><br>
+                <small class="text-muted">Fournil & Point de Retrait Click & Collect</small><br>
+                <div class="mt-2">
+                    <a href="https://maps.app.goo.gl/6JrQ1ryZj2KeD5zG7" target="_blank" class="btn btn-warning btn-sm fw-bold text-dark px-3 py-1" style="font-size:11px; border-radius:12px;">
+                        <i class="fa-solid fa-diamond-turn-right me-1"></i> Ouvrir Itinéraire GPS
+                    </a>
+                </div>
+            </div>
+        `).openPopup();
 }
 
 function updateTimeline(status) {
-    const s = status.toLowerCase();
+    const s = (status || '').toLowerCase();
     document.querySelectorAll('.timeline-step').forEach(el => {
         el.classList.remove('active', 'done');
     });
@@ -51,86 +47,62 @@ function updateTimeline(status) {
     const stepL = document.getElementById('step-livraison');
     const stepF = document.getElementById('step-livre');
 
+    const driverAlert = document.getElementById('driver-alert');
+
     if(s.includes('nouveau')) {
         stepN.classList.add('active');
+        if (driverAlert) driverAlert.style.setProperty('display', 'none', 'important');
     } 
     else if(s.includes('preparation') || s.includes('préparation')) {
         stepN.classList.add('done');
         stepP.classList.add('active');
+        if (driverAlert) driverAlert.style.setProperty('display', 'none', 'important');
     }
-    else if(s.includes('en livraison') || s.includes('livraison')) {
+    else if(s.includes('en livraison') || s.includes('livraison') || s.includes('pret') || s.includes('prête')) {
         stepN.classList.add('done');
         stepP.classList.add('done');
         stepL.classList.add('active');
-        startDeliveryAnimation();
+        if (driverAlert) driverAlert.style.setProperty('display', 'flex', 'important');
     }
-    else if(s.includes('livre') || s.includes('livré')) {
+    else if(s.includes('livre') || s.includes('livré') || s.includes('retire') || s.includes('retiré')) {
         stepN.classList.add('done');
         stepP.classList.add('done');
         stepL.classList.add('done');
         stepF.classList.add('active');
-        stopDeliveryAnimation(true);
+        if (driverAlert) driverAlert.style.setProperty('display', 'none', 'important');
     }
     
     // Update Badge
     const badge = document.getElementById('order-badge');
-    badge.innerText = status;
-    badge.className = 'badge rounded-pill px-3 py-2 fs-6 ';
-    if(s.includes('nouveau')) badge.classList.add('bg-danger');
-    else if(s.includes('preparation')) badge.classList.add('bg-warning', 'text-dark');
-    else if(s.includes('livraison')) badge.classList.add('bg-info', 'text-white');
-    else if(s.includes('livre')) badge.classList.add('bg-success');
-    else badge.classList.add('bg-secondary');
+    if (badge) {
+        badge.className = 'badge rounded-pill px-3 py-2 fs-6 ';
+        if(s.includes('nouveau')) {
+            badge.innerText = 'Reçue & En attente';
+            badge.classList.add('bg-secondary');
+        } else if(s.includes('preparation') || s.includes('préparation')) {
+            badge.innerText = 'Au Fournil (Cuisson)';
+            badge.classList.add('bg-warning', 'text-dark');
+        } else if(s.includes('livraison') || s.includes('pret') || s.includes('prête')) {
+            badge.innerText = 'Prête au Comptoir !';
+            badge.classList.add('bg-success', 'text-white');
+        } else if(s.includes('livre') || s.includes('retire')) {
+            badge.innerText = 'Commande Récupérée';
+            badge.classList.add('bg-dark');
+        } else {
+            badge.innerText = status;
+            badge.classList.add('bg-primary');
+        }
+    }
 }
 
 function startDeliveryAnimation() {
-    if(isAnimating) return;
-    isAnimating = true;
-    
-    document.getElementById('driver-alert').style.setProperty('display', 'flex', 'important');
-    deliveryMarker.addTo(map);
-    
-    // Simple straight line animation for demonstration
-    let startLat = bakeryCoords[0];
-    let startLng = bakeryCoords[1];
-    let endLat = customerCoords[0];
-    let endLng = customerCoords[1];
-    
-    let progress = 0;
-    
-    window.animationInterval = setInterval(() => {
-        progress += 0.005; // speed
-        if(progress >= 1) {
-            progress = 1;
-            // Loop it back to 0.2 to make it seem like he's still moving around the area if not delivered yet
-            if(currentStatus && !currentStatus.toLowerCase().includes('livre')) {
-                progress = 0.5; // Jumps back a bit
-            }
-        }
-        
-        let curLat = startLat + (endLat - startLat) * progress;
-        let curLng = startLng + (endLng - startLng) * progress;
-        
-        deliveryMarker.setLatLng([curLat, curLng]);
-        
-        // Slightly pan map to follow
-        if(progress > 0.1 && progress < 0.9) {
-            map.panTo([curLat, curLng], {animate: true, duration: 1});
-        }
-    }, 1000);
+    const alert = document.getElementById('driver-alert');
+    if (alert) alert.style.setProperty('display', 'flex', 'important');
 }
 
 function stopDeliveryAnimation(delivered) {
-    if(window.animationInterval) clearInterval(window.animationInterval);
-    isAnimating = false;
-    document.getElementById('driver-alert').style.setProperty('display', 'none', 'important');
-    
-    if(delivered) {
-        deliveryMarker.setLatLng(customerCoords); // Arrived!
-        map.setView(customerCoords, 15);
-    } else {
-        if(map.hasLayer(deliveryMarker)) map.removeLayer(deliveryMarker);
-    }
+    const alert = document.getElementById('driver-alert');
+    if (alert) alert.style.setProperty('display', 'none', 'important');
 }
 
 async function fetchOrderStatus() {
