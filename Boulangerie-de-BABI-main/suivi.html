@@ -242,18 +242,21 @@
             </div>
             
             <div class="card shadow-sm border-0 rounded-4 p-4 mt-4 bg-white">
-                <div class="d-flex justify-content-between align-items-center mb-3">
+                <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-3">
                     <h5 class="fw-bold mb-0" style="color: var(--babi-chocolate);"><i class="fa-solid fa-basket-shopping text-warning me-2"></i> Contenu de la commande</h5>
-                    <div class="d-flex gap-2">
-                        <button class="btn btn-warning btn-sm rounded-pill px-3 fw-bold text-dark" onclick="openRatingModal()">
-                            <i class="fa-solid fa-star me-1"></i> Donnez votre avis
+                    <div class="d-flex flex-wrap gap-2">
+                        <a id="btn-whatsapp-receipt" href="#" target="_blank" class="btn btn-success btn-sm rounded-pill px-3 fw-bold shadow-sm d-flex align-items-center gap-1">
+                            <i class="fa-brands fa-whatsapp fs-6"></i> <span>Reçu WhatsApp</span>
+                        </a>
+                        <button class="btn btn-dark btn-sm rounded-pill px-3 fw-bold shadow-sm d-flex align-items-center gap-1" onclick="openThermalReceiptModal()">
+                            <i class="fa-solid fa-receipt text-warning"></i> <span>Ticket Thermique 80mm</span>
                         </button>
-                        <button class="btn btn-outline-dark btn-sm rounded-pill px-3 fw-bold" onclick="printOfficialReceipt()">
-                            <i class="fa-solid fa-print me-1 text-warning"></i> Reçu Officiel
+                        <button class="btn btn-warning btn-sm rounded-pill px-3 fw-bold text-dark d-flex align-items-center gap-1" onclick="openRatingModal()">
+                            <i class="fa-solid fa-star"></i> <span>Avis</span>
                         </button>
                     </div>
                 </div>
-                <p id="order-items" class="mb-0 text-muted fs-6"></p>
+                <div id="order-items" class="mb-0 text-muted fs-6 p-3 bg-light rounded-3 border"></div>
             </div>
             
         </div>
@@ -315,61 +318,100 @@
     <script src="js/store_schedule.js"></script>
     <script src="js/script.js"></script>
 
-    <!-- Printable Thermal Ticket (Official Format) -->
-    <div id="printable-receipt" class="d-none d-print-block">
-        <style>
-            @media print {
-                body > * { display: none !important; }
-                #printable-receipt { 
-                    display: block !important; 
-                    width: 80mm; 
-                    margin: 0 auto; 
-                    padding: 10px; 
-                    font-family: 'Courier New', Courier, monospace !important; 
-                    font-size: 12px; 
-                    color: #000 !important; 
-                    background: #fff !important; 
-                }
-                .ticket-logo { width: 70px; display: block; margin: 0 auto 5px auto; }
-                .ticket-divider { border-top: 1px dashed #000; margin: 6px 0; }
-            }
-        </style>
-        <div class="text-center mb-2">
-            <img src="assets/logo.png" class="ticket-logo" alt="Logo BB">
-            <div style="font-size: 14px; font-weight: bold;">BOULANGERIE DE BABI</div>
-            <div style="font-size: 10px;">TEL: 2722564123 / 0704389201 / 0706817977</div>
-            <div style="font-weight: bold; margin-top: 2px;">Recu</div>
-        </div>
-        <div style="font-size: 11px; margin-bottom: 6px;">
-            <div>Receipt: <span id="rec-id">2512</span></div>
-            <div>Date: <span id="rec-date">22 juil. 2026 12:07:54</span></div>
-            <div>Terminal: ONLINE-WEB</div>
-            <div>Caissier(e): CAISSES 1</div>
-        </div>
-        <div class="ticket-divider"></div>
-        <div style="font-size: 11px; font-weight: bold; display: flex; justify-content: space-between;">
-            <span style="flex: 2;">Article</span>
-            <span style="flex: 1; text-align: center;">Prix</span>
-            <span style="flex: 1; text-align: center;">Qte</span>
-            <span style="flex: 1; text-align: right;">Valeur</span>
-        </div>
-        <div class="ticket-divider"></div>
-        <div id="rec-items-list" style="font-size: 11px;"></div>
-        <div class="ticket-divider"></div>
-        <div style="font-size: 11px;">
-            <div>Items count: <span id="rec-count">0</span></div>
-            <div style="display: flex; justify-content: space-between; font-weight: bold; font-size: 13px; margin-top: 4px;">
-                <span>Total TTC</span>
-                <span id="rec-total">F 0</span>
+    <!-- Thermal Receipt Modal Preview & Printable Ticket (80mm) -->
+    <div class="modal fade" id="thermalReceiptModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-sm">
+            <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
+                <div class="modal-header bg-dark text-white border-0 py-2 px-3 d-flex justify-content-between align-items-center">
+                    <span class="small fw-bold text-warning"><i class="fa-solid fa-receipt me-1"></i> Reçu de Caisse 80mm</span>
+                    <button type="button" class="btn-close btn-close-white btn-sm" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-3 bg-light d-flex justify-content-center">
+                    <!-- The Actual Paper Receipt -->
+                    <div id="printable-receipt" class="bg-white p-3 shadow-sm rounded-1 text-dark" style="width: 100%; max-width: 320px; font-family: 'Courier New', Courier, monospace; font-size: 11px; line-height: 1.35; border: 1px solid #e2e8f0;">
+                        <div class="text-center mb-2">
+                            <img src="assets/logo.png" style="width: 55px; height: auto;" class="ticket-logo mb-1" alt="Logo BABI">
+                            <div class="fw-bold fs-6" style="letter-spacing: 1px;">BOULANGERIE DE BABI</div>
+                            <div style="font-size: 9px;" class="text-muted">COCODY RIVIERA 2 — ABIDJAN</div>
+                            <div style="font-size: 9px;" class="text-muted">TÉL : +225 07 04 38 92 01 / 27 22 56 41 23</div>
+                            <div class="fw-bold mt-1 text-uppercase" style="border-top: 1px dashed #000; border-bottom: 1px dashed #000; padding: 2px 0;">
+                                TICKET DE CAISSE OFFICIEL
+                            </div>
+                        </div>
+
+                        <div class="mb-2" style="font-size: 10px;">
+                            <div>COMMANDE : <b id="rec-id">#BABI-CMD-000</b></div>
+                            <div>DATE : <span id="rec-date">--/--/---- --:--</span></div>
+                            <div>CLIENT : <span id="rec-client" class="fw-bold">Client</span></div>
+                            <div>TÉL : <span id="rec-phone">--</span></div>
+                            <div>DESTINATION : <span id="rec-dest">Abidjan</span></div>
+                            <div>MODE : <span id="rec-delivery-mode">Livraison Moto</span></div>
+                        </div>
+
+                        <div style="border-top: 1px dashed #000; margin: 4px 0;"></div>
+                        <div class="fw-bold d-flex justify-content-between" style="font-size: 10px;">
+                            <span style="flex: 2;">ARTICLE</span>
+                            <span style="flex: 1; text-align: center;">P.U</span>
+                            <span style="flex: 0.8; text-align: center;">QTÉ</span>
+                            <span style="flex: 1.2; text-align: right;">TOTAL</span>
+                        </div>
+                        <div style="border-top: 1px dashed #000; margin: 4px 0;"></div>
+
+                        <div id="rec-items-list" class="my-1"></div>
+
+                        <div style="border-top: 1px dashed #000; margin: 4px 0;"></div>
+                        <div style="font-size: 10px;">
+                            <div class="d-flex justify-content-between">
+                                <span>Sous-total :</span>
+                                <span id="rec-subtotal" class="fw-bold">0 FCFA</span>
+                            </div>
+                            <div class="d-flex justify-content-between" id="rec-delivery-row">
+                                <span>Frais de livraison :</span>
+                                <span id="rec-delivery-fee">0 FCFA</span>
+                            </div>
+                            <div class="d-flex justify-content-between text-success" id="rec-discount-row" style="display: none;">
+                                <span>Remise Code Promo :</span>
+                                <span id="rec-discount">-0 FCFA</span>
+                            </div>
+                            <div class="d-flex justify-content-between fw-bold fs-6 mt-1 pt-1" style="border-top: 1px solid #000;">
+                                <span>TOTAL PAYÉ :</span>
+                                <span id="rec-total">0 FCFA</span>
+                            </div>
+                            <div class="d-flex justify-content-between text-muted" style="font-size: 9px; margin-top: 2px;">
+                                <span>PAIEMENT :</span>
+                                <span id="rec-payment" class="fw-bold text-dark text-uppercase">MOBILE MONEY (WAVE)</span>
+                            </div>
+                            <div class="text-center mt-1" id="rec-paid-stamp">
+                                <span class="badge bg-success text-white px-2 py-1" style="font-size: 9px;">✓ PAYÉ / VALIDÉ</span>
+                            </div>
+                        </div>
+
+                        <div style="border-top: 1px dashed #000; margin: 6px 0;"></div>
+
+                        <!-- Dynamic QR Code for GPS Tracking -->
+                        <div class="text-center my-2">
+                            <div class="small fw-bold mb-1" style="font-size: 8.5px;">SCANNEZ POUR LE SUIVI GPS EN DIRECT :</div>
+                            <img id="rec-qr-code" src="https://api.qrserver.com/v1/create-qr-code/?size=110x110&data=https%3A%2F%2Fboulangeriedebabi.ci%2Fsuivi.html" alt="QR Code Suivi GPS" style="width: 95px; height: 95px; margin: 0 auto; display: block; border: 1px solid #ddd; padding: 2px;">
+                            <div style="font-size: 8px; color: #64748b;" class="mt-1">boulangeriedebabi.ci/suivi</div>
+                        </div>
+
+                        <div style="border-top: 1px dashed #000; margin: 6px 0;"></div>
+                        <div class="text-center" style="font-size: 8.5px;">
+                            <div class="fw-bold">MERCI POUR VOTRE COMMANDE !</div>
+                            <div>Le bon pain croustillant au cœur d'Abidjan ✨</div>
+                            <div class="text-muted mt-1">Fournée artisanale • Service 7j/7</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer bg-white border-0 p-2 d-flex gap-2">
+                    <button type="button" class="btn btn-warning flex-grow-1 fw-bold btn-sm rounded-pill text-dark shadow-sm" onclick="printOfficialReceipt()">
+                        <i class="fa-solid fa-print me-1"></i> Imprimer le Reçu (80mm)
+                    </button>
+                    <a id="rec-modal-whatsapp" href="#" target="_blank" class="btn btn-success btn-sm rounded-pill px-3 fw-bold shadow-sm" title="Partager sur WhatsApp">
+                        <i class="fa-brands fa-whatsapp"></i>
+                    </a>
+                </div>
             </div>
-            <div style="display: flex; justify-content: space-between; margin-top: 2px;">
-                <span>Paiement (<span id="rec-payment">Mobile Money</span>)</span>
-                <span id="rec-paid">F 0</span>
-            </div>
-        </div>
-        <div class="ticket-divider"></div>
-        <div style="text-align: center; font-size: 10px; margin-top: 8px;">
-            Merci de votre visite à la Boulangerie de Babi !<br>A bientôt !
         </div>
     </div>
 

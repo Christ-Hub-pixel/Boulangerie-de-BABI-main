@@ -211,14 +211,22 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (confCodeEl) confCodeEl.innerText = currentOrder.confCode;
             }
 
+            // Update WhatsApp receipt button
+            const whatsappBtn = document.getElementById('btn-whatsapp-receipt');
+            if (whatsappBtn) {
+                const whatsappUrl = typeof window.generateWhatsAppOrderUrl === 'function' 
+                    ? window.generateWhatsAppOrderUrl(currentOrder)
+                    : (currentOrder.whatsappUrl || '#');
+                whatsappBtn.href = whatsappUrl;
+            }
+
             updateTimeline(currentOrder.status || 'En livraison');
             startDeliveryAnimation();
         }
     } catch(e) {}
 });
 
-
-window.printOfficialReceipt = function() {
+window.openThermalReceiptModal = function() {
     let order = null;
     try {
         order = JSON.parse(localStorage.getItem('babi_current_order'));
@@ -226,60 +234,140 @@ window.printOfficialReceipt = function() {
     
     if (!order) {
         order = {
-            id: '2512',
-            date: new Date().toLocaleString('fr-FR'),
-            total_price: 2000,
-            payment_method: 'Espèces',
-            itemsSummary: 'PAIN AU CHOCOLAT x2, CROISSANT x2'
+            id: 'BABI-CMD-2512',
+            clientName: 'Client Passant',
+            phone: '0704389201',
+            commune: 'Cocody Riviera 2',
+            address: 'Près de l’Église Sainte Famille',
+            delivery_method: 'standard',
+            subtotal: 2500,
+            delivery_cost: 500,
+            promo_discount: 0,
+            total_price: 3000,
+            payment_method: 'Wave Mobile Money',
+            payment_status: 'paye',
+            createdAt: new Date().toISOString(),
+            items: [
+                { name: 'Baguette Traditionnelle Croustillante', price: 350, qty: 2 },
+                { name: 'Croissant Pur Beurre Doré', price: 600, qty: 2 },
+                { name: 'Jus de Bissap Artisanal 500ml', price: 1100, qty: 1 }
+            ]
         };
     }
 
+    populateThermalReceiptData(order);
+
+    const modalEl = document.getElementById('thermalReceiptModal');
+    if (modalEl && typeof bootstrap !== 'undefined') {
+        const bsModal = new bootstrap.Modal(modalEl);
+        bsModal.show();
+    }
+};
+
+function populateThermalReceiptData(order) {
+    if (!order) return;
+
+    const origin = window.location.origin || '';
+    const basePath = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/') + 1);
+    const trackingUrl = `${origin}${basePath}suivi.html?orderId=${order.id}&phone=${encodeURIComponent(order.phone || '')}`;
+
     const recId = document.getElementById('rec-id');
     const recDate = document.getElementById('rec-date');
+    const recClient = document.getElementById('rec-client');
+    const recPhone = document.getElementById('rec-phone');
+    const recDest = document.getElementById('rec-dest');
+    const recDeliveryMode = document.getElementById('rec-delivery-mode');
     const recList = document.getElementById('rec-items-list');
-    const recCount = document.getElementById('rec-count');
+    const recSubtotal = document.getElementById('rec-subtotal');
+    const recDeliveryFee = document.getElementById('rec-delivery-fee');
+    const recDeliveryRow = document.getElementById('rec-delivery-row');
+    const recDiscount = document.getElementById('rec-discount');
+    const recDiscountRow = document.getElementById('rec-discount-row');
     const recTotal = document.getElementById('rec-total');
     const recPayment = document.getElementById('rec-payment');
-    const recPaid = document.getElementById('rec-paid');
+    const recQrCode = document.getElementById('rec-qr-code');
+    const recModalWhatsapp = document.getElementById('rec-modal-whatsapp');
 
-    if (recId) recId.innerText = order.id || '2512';
-    if (recDate) recDate.innerText = order.date || new Date().toLocaleString('fr-FR');
-    if (recPayment) recPayment.innerText = order.payment_method || 'Mobile Money';
-    if (recTotal) recTotal.innerText = 'F ' + (order.total_price || 2000).toLocaleString();
-    if (recPaid) recPaid.innerText = 'F ' + (order.total_price || 2000).toLocaleString();
+    const d = order.createdAt ? new Date(order.createdAt) : new Date();
+    const formattedDate = d.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' }) + ' ' + d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
 
+    if (recId) recId.innerText = '#' + (order.id || 'BABI-100');
+    if (recDate) recDate.innerText = formattedDate;
+    if (recClient) recClient.innerText = order.clientName || 'Client';
+    if (recPhone) recPhone.innerText = order.phone || '--';
+    if (recDest) recDest.innerText = `${order.commune || 'Abidjan'}, ${order.address || ''}`;
+    if (recDeliveryMode) recDeliveryMode.innerText = order.delivery_method === 'express' ? 'Livraison Express Moto' : (order.delivery_method === 'retrait' ? 'Retrait en Boutique' : 'Livraison Standard');
+    
+    if (recPayment) recPayment.innerText = (order.payment_method || 'Mobile Money') + (order.payment_status === 'paye' ? ' (VALIDÉ)' : '');
+
+    const sub = order.subtotal || (order.total_price ? order.total_price - (order.delivery_cost || 0) : 0);
+    if (recSubtotal) recSubtotal.innerText = (sub || 0).toLocaleString() + ' FCFA';
+    
+    if (order.delivery_cost && recDeliveryFee) {
+        recDeliveryFee.innerText = order.delivery_cost.toLocaleString() + ' FCFA';
+        if (recDeliveryRow) recDeliveryRow.style.display = 'flex';
+    } else if (recDeliveryRow && order.delivery_method === 'retrait') {
+        recDeliveryRow.style.display = 'none';
+    }
+
+    if (order.promo_discount && order.promo_discount > 0 && recDiscount) {
+        recDiscount.innerText = `-${order.promo_discount.toLocaleString()} FCFA`;
+        if (recDiscountRow) recDiscountRow.style.display = 'flex';
+    } else if (recDiscountRow) {
+        recDiscountRow.style.display = 'none';
+    }
+
+    if (recTotal) recTotal.innerText = (order.total_price || sub || 0).toLocaleString() + ' FCFA';
+
+    // Articles list
     if (recList) {
         let itemsHtml = '';
-        let totalItemsCount = 0;
-        
-        let cartItems = order.cartItems || [];
-        if (cartItems.length === 0 && order.itemsSummary) {
-            itemsHtml = `<div style="display: flex; justify-content: space-between; margin: 3px 0;">
-                <span style="flex: 2;">${order.itemsSummary.toUpperCase()}</span>
-                <span style="flex: 1; text-align: center;">F ${order.total_price}</span>
-                <span style="flex: 1; text-align: center;">x1</span>
-                <span style="flex: 1; text-align: right;">F ${order.total_price}</span>
-            </div>`;
-            totalItemsCount = 1;
-        } else if (cartItems.length > 0) {
-            cartItems.forEach(item => {
+        const items = order.items || order.cartItems || [];
+        if (items.length > 0) {
+            items.forEach(item => {
                 const q = item.qty || item.quantity || 1;
                 const p = item.price || item.prix || 0;
                 const val = p * q;
-                totalItemsCount += q;
                 itemsHtml += `
-                <div style="display: flex; justify-content: space-between; margin: 3px 0;">
-                    <span style="flex: 2;">${(item.name || item.title || '').toUpperCase()}</span>
-                    <span style="flex: 1; text-align: center;">F ${p}</span>
-                    <span style="flex: 1; text-align: center;">x${q}</span>
-                    <span style="flex: 1; text-align: right;">F ${val.toLocaleString()}</span>
+                <div class="d-flex justify-content-between my-1" style="font-size: 9.5px;">
+                    <span style="flex: 2; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${item.name || item.title}">${(item.name || item.title || '').toUpperCase()}</span>
+                    <span style="flex: 1; text-align: center;">${p.toLocaleString()}</span>
+                    <span style="flex: 0.8; text-align: center;">x${q}</span>
+                    <span style="flex: 1.2; text-align: right; font-weight:bold;">${val.toLocaleString()}</span>
                 </div>`;
             });
+        } else if (order.itemsSummary) {
+            itemsHtml = `
+            <div class="d-flex justify-content-between my-1" style="font-size: 9.5px;">
+                <span style="flex: 2;">${order.itemsSummary.toUpperCase()}</span>
+                <span style="flex: 1; text-align: center;">--</span>
+                <span style="flex: 0.8; text-align: center;">x1</span>
+                <span style="flex: 1.2; text-align: right; font-weight:bold;">${(order.total_price || 0).toLocaleString()}</span>
+            </div>`;
         }
         recList.innerHTML = itemsHtml;
-        if (recCount) recCount.innerText = totalItemsCount;
     }
 
+    // QR Code
+    if (recQrCode) {
+        recQrCode.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(trackingUrl)}`;
+    }
+
+    // WhatsApp
+    if (recModalWhatsapp) {
+        const whatsappUrl = typeof window.generateWhatsAppOrderUrl === 'function' 
+            ? window.generateWhatsAppOrderUrl(order)
+            : (order.whatsappUrl || '#');
+        recModalWhatsapp.href = whatsappUrl;
+    }
+}
+
+window.printOfficialReceipt = function() {
+    let order = null;
+    try {
+        order = JSON.parse(localStorage.getItem('babi_current_order'));
+    } catch(e) {}
+    populateThermalReceiptData(order);
     window.print();
 };
 

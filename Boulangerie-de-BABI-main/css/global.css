@@ -906,3 +906,69 @@ footer h4, footer h5, footer .text-warning, footer i.text-warning {
 #paymentModal .modal-header * {
     color: #ffffff !important;
 }
+
+/* ================================================================
+   HOT BREAD WIDGET & OVEN ALERTS
+   ================================================================ */
+.babi-hot-bread-widget {
+    transition: all 0.3s ease;
+}
+.babi-hot-bread-flame {
+    display: inline-block;
+    filter: drop-shadow(0 2px 8px rgba(239, 68, 68, 0.4));
+}
+
+/* ================================================================
+   OFFICIAL THERMAL RECEIPT (80mm & PRINT MEDIA)
+   ================================================================ */
+@media print {
+    body * {
+        visibility: hidden !important;
+    }
+    #thermalReceiptModal,
+    #thermalReceiptModal * {
+        visibility: visible !important;
+    }
+    #thermalReceiptModal .modal-header,
+    #thermalReceiptModal .modal-footer,
+    #thermalReceiptModal .btn-close {
+        display: none !important;
+    }
+    #thermalReceiptModal {
+        position: absolute !important;
+        left: 0 !important;
+        top: 0 !important;
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        background: transparent !important;
+    }
+    #thermalReceiptModal .modal-dialog {
+        max-width: 100% !important;
+        margin: 0 !important;
+    }
+    #thermalReceiptModal .modal-content {
+        border: none !important;
+        box-shadow: none !important;
+        background: transparent !important;
+    }
+    #printable-receipt {
+        display: block !important;
+        width: 80mm !important;
+        max-width: 80mm !important;
+        margin: 0 auto !important;
+        padding: 8px !important;
+        border: none !important;
+        box-shadow: none !important;
+        color: #000000 !important;
+        background: #ffffff !important;
+        font-family: 'Courier New', Courier, monospace !important;
+    }
+    #printable-receipt * {
+        color: #000000 !important;
+        background: transparent !important;
+    }
+    #printable-receipt img {
+        filter: grayscale(100%) contrast(150%) !important;
+    }
+}

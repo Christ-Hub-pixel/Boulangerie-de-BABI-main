@@ -333,6 +333,10 @@ function submitBabiOrder(isAlreadyValidated = false) {
         createdAt: new Date().toISOString()
     };
 
+    // Génération automatique du lien WhatsApp avec reçu et suivi GPS
+    const whatsappUrl = generateWhatsAppOrderUrl(newOrder);
+    newOrder.whatsappUrl = whatsappUrl;
+
     // Helper to finish order
     const finalizeOrder = () => {
         fetch('/api/orders', {
@@ -364,7 +368,7 @@ function submitBabiOrder(isAlreadyValidated = false) {
             localStorage.removeItem('babi_cart');
         }
 
-        window.location.href = `suivi.html?orderId=${orderId}`;
+        window.location.href = `suivi.html?orderId=${orderId}&phone=${encodeURIComponent(newOrder.phone)}`;
     };
 
     if (isMobileMoney && !isAlreadyValidated) {
@@ -376,6 +380,48 @@ function submitBabiOrder(isAlreadyValidated = false) {
 
     finalizeOrder();
 }
+
+window.generateWhatsAppOrderUrl = function(order) {
+    if (!order) return '#';
+    const bakeryWhatsApp = "2250704389201";
+    const origin = window.location.origin || '';
+    const basePath = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/') + 1);
+    const trackingUrl = `${origin}${basePath}suivi.html?orderId=${order.id}&phone=${encodeURIComponent(order.phone || '')}`;
+
+    const items = order.items || [];
+    const itemsLines = items.map(i => `  • ${(i.name || i.title || '').toUpperCase()} (x${i.qty || i.quantity || 1}) — ${((i.price || 0) * (i.qty || i.quantity || 1)).toLocaleString()} FCFA`).join('\n');
+
+    let msg = `🥖 *COMMANDE REÇUE — BOULANGERIE DE BABI*\n`;
+    msg += `━━━━━━━━━━━━━━━━━━━━━\n`;
+    msg += `📋 *Réf Commande :* #${order.id}\n`;
+    msg += `👤 *Client :* ${order.clientName || 'Client'}\n`;
+    msg += `📞 *Téléphone :* ${order.phone || ''}\n`;
+    msg += `📍 *Adresse de Livraison :* ${order.commune || 'Abidjan'}, ${order.address || ''}\n`;
+    msg += `🛵 *Mode :* ${order.delivery_method === 'express' ? 'Livraison Express Moto' : (order.delivery_method === 'retrait' ? 'Retrait en Boutique' : 'Livraison Standard')}\n`;
+    msg += `💳 *Paiement :* ${order.payment_method || 'Mobile Money'} (${order.payment_status === 'paye' ? '✅ PAYÉ' : '⏳ À payer'})\n`;
+    if (order.confCode) {
+        msg += `🔒 *Code Secret Livraison :* ${order.confCode}\n`;
+    }
+    msg += `━━━━━━━━━━━━━━━━━━━━━\n`;
+    msg += `🛒 *DÉTAIL DU PANIER :*\n${itemsLines || '  • ' + (order.itemsSummary || 'Produits variés')}\n`;
+    msg += `━━━━━━━━━━━━━━━━━━━━━\n`;
+    msg += `💰 *Sous-total :* ${(order.subtotal || 0).toLocaleString()} FCFA\n`;
+    if (order.delivery_cost) {
+        msg += `🛵 *Frais de Livraison :* ${order.delivery_cost.toLocaleString()} FCFA\n`;
+    }
+    if (order.promo_discount) {
+        msg += `🎁 *Remise Promo (${order.promo_code}) :* -${order.promo_discount.toLocaleString()} FCFA\n`;
+    }
+    msg += `💎 *TOTAL GÉNÉRAL :* *${(order.total_price || 0).toLocaleString()} FCFA*\n`;
+    if (order.notes) {
+        msg += `📝 *Remarques :* ${order.notes}\n`;
+    }
+    msg += `━━━━━━━━━━━━━━━━━━━━━\n`;
+    msg += `📍 *SUIVRE MA COMMANDE EN TEMPS RÉEL (GPS) :*\n${trackingUrl}\n\n`;
+    msg += `_Boulangerie de BABI — Cocody Riviera 2, Abidjan_ 🥖✨`;
+
+    return `https://api.whatsapp.com/send?phone=${bakeryWhatsApp}&text=${encodeURIComponent(msg)}`;
+};
 
 function computeHaversineDistance(lat1, lon1, lat2, lon2) {
     const R = 6371; // Rayon de la Terre en km
