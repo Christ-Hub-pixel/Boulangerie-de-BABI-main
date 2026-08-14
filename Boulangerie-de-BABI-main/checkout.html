@@ -214,13 +214,13 @@
                                      </div>
                                  </div>
 
-                                <!-- Cash on Delivery -->
+                                <!-- Cash on Counter / Pickup -->
                                 <div class="border rounded p-3 mb-3 w-100" id="card_cash_box" style="cursor: pointer; background-color: #fff;">
                                     <label class="form-check m-0 d-flex align-items-center cursor-pointer" for="p_cash">
                                         <input class="form-check-input mt-0" type="radio" name="payment" id="p_cash" onclick="togglePaymentMode('cash')">
                                         <div class="ms-3">
-                                            <span class="fw-bold d-block text-dark">Paiement à la livraison (Espèces & Appoint)</span>
-                                            <small class="text-muted">Payez en cash au livreur lors de la remise de votre commande.</small>
+                                            <span class="fw-bold d-block text-dark">Paiement au comptoir (Espèces & Appoint)</span>
+                                            <small class="text-muted">Réglez en cash au guichet lors de la récupération de votre commande.</small>
                                         </div>
                                         <div class="ms-auto text-success">
                                             <i class="fa-solid fa-money-bill-wave fs-3"></i>
@@ -229,7 +229,7 @@
 
                                     <!-- Cash Change Selector -->
                                     <div class="mt-3 p-3 rounded border d-none" id="cashSection" style="background:#f8fafc; border-color:#cbd5e1 !important;">
-                                        <p class="fs-xs fw-bold text-dark mb-2"><i class="fa-solid fa-coins text-warning me-1"></i> Monnaie à prévoir par le livreur (pour votre confort) :</p>
+                                        <p class="fs-xs fw-bold text-dark mb-2"><i class="fa-solid fa-coins text-warning me-1"></i> Monnaie à prévoir au comptoir (pour votre confort) :</p>
                                         <div class="d-flex flex-wrap gap-2">
                                             <button type="button" class="btn btn-sm btn-outline-dark fw-bold active-change" onclick="selectCashChange(this, 'exact')">Monnaie exacte</button>
                                             <button type="button" class="btn btn-sm btn-outline-dark fw-bold" onclick="selectCashChange(this, '2000')">Billet de 2 000 F</button>
@@ -237,7 +237,7 @@
                                             <button type="button" class="btn btn-sm btn-outline-dark fw-bold" onclick="selectCashChange(this, '10000')">Billet de 10 000 F</button>
                                         </div>
                                         <div class="mt-2 small text-muted" style="font-size:11px;">
-                                            <i class="fa-solid fa-circle-info text-primary me-1"></i> Notre livreur aura la monnaie prête lors de l'arrivée.
+                                            <i class="fa-solid fa-circle-info text-primary me-1"></i> Le caissier aura votre monnaie prête lors de votre passage.
                                         </div>
                                     </div>
                                 </div>
@@ -246,14 +246,14 @@
                                 <div class="alert alert-light border d-flex align-items-center gap-3 py-2 px-3 mb-4 small rounded-3" style="background:#fdfbf7; border-color:#fed7aa !important;">
                                     <i class="fa-solid fa-shield-halved text-success fs-3"></i>
                                     <div>
-                                        <div class="fw-bold text-dark">Paiement 100% Sécurisé (Wave CI, Orange, MTN, Moov & Cash)</div>
-                                        <div class="text-muted" style="font-size:11px;">Vos transactions Mobile Money sont directes et sans frais additionnels. Payez aussi en espèces à la livraison.</div>
+                                        <div class="fw-bold text-dark">Paiement 100% Sécurisé (Wave CI, Orange, MTN, Moov & Espèces)</div>
+                                        <div class="text-muted" style="font-size:11px;">Vos transactions Mobile Money sont directes et sans frais additionnels. Payez aussi en espèces au comptoir.</div>
                                     </div>
                                 </div>
 
                                 <div class="col-12 text-center">
                                     <button type="button" id="accordionPlaceOrderBtn" class="btn btn-warning fw-bold text-dark w-100 py-3 fs-5 shadow-sm rounded-3" style="background:#fb923c; border:none;" onclick="submitBabiOrder()">
-                                        <i class="fa-solid fa-check-circle me-2"></i>CONFIRMER ET PAYER
+                                        <i class="fa-solid fa-check-circle me-2"></i>CONFIRMER ET RÉSERVER
                                     </button>
                                 </div>
                             </div>
@@ -273,8 +273,8 @@
                         <span class="fw-bold">1650 FCFA</span>
                     </div>
                     <div class="d-flex justify-content-between mb-3 fs-sm border-bottom pb-3">
-                        <span>Frais de livraison</span>
-                        <span class="fw-bold text-success">Gratuit</span>
+                        <span>Frais de retrait</span>
+                        <span class="fw-bold text-success">Gratuit (0 FCFA)</span>
                     </div>
                     
                     <div class="d-flex justify-content-between mb-4">

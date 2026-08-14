@@ -126,8 +126,8 @@ function renderCheckoutSummary() {
             <span class="fw-bold text-dark">${subtotal.toLocaleString()} FCFA</span>
         </div>
         <div class="d-flex justify-content-between mb-2 fs-sm text-muted">
-            <span>Frais de livraison ${window.currentDeliveryKm ? '(' + window.currentDeliveryKm + ' km)' : '(0-3 km)'}</span>
-            <span class="fw-bold ${deliveryCost === 0 ? 'text-success' : 'text-dark'}">${deliveryCost === 0 ? 'Gratuit' : deliveryCost.toLocaleString() + ' FCFA'}</span>
+            <span>Frais de retrait au fournil</span>
+            <span class="fw-bold text-success">Gratuit (0 FCFA)</span>
         </div>
         ${promoDiscount > 0 ? `
         <div class="d-flex justify-content-between mb-3 fs-sm text-success fw-bold border-bottom pb-2">
@@ -142,14 +142,14 @@ function renderCheckoutSummary() {
         
         <button type="button" class="btn btn-warning w-100 fw-bold text-dark shadow-sm py-3 fs-6 rounded-3" 
             style="background:#fb923c; border:none;" id="placeOrderBtn" onclick="submitBabiOrder()">
-            <i class="fa-solid fa-check-circle me-2"></i>CONFIRMER LA COMMANDE (${grandTotal.toLocaleString()} FCFA)
+            <i class="fa-solid fa-check-circle me-2"></i>CONFIRMER ET RÉSERVER (${grandTotal.toLocaleString()} FCFA)
         </button>
     `;
 
     // Also update main payment submit button inside accordion if present
     const accordionSubmitBtn = document.getElementById('accordionPlaceOrderBtn');
     if (accordionSubmitBtn) {
-        accordionSubmitBtn.innerHTML = `<i class="fa-solid fa-check-circle me-2"></i>CONFIRMER ET PAYER (${grandTotal.toLocaleString()} FCFA)`;
+        accordionSubmitBtn.innerHTML = `<i class="fa-solid fa-check-circle me-2"></i>CONFIRMER ET RÉSERVER (${grandTotal.toLocaleString()} FCFA)`;
         accordionSubmitBtn.onclick = submitBabiOrder;
     }
 }
@@ -175,7 +175,7 @@ function applyPromoCode() {
         discount = Math.round(subtotal * 0.10); // 10% off
     } else if (code === 'CROISSANT' || code === 'BABI500') {
         discount = 500;
-    } else if (code === 'WELCOME' || code === 'LIVRAISON') {
+    } else if (code === 'WELCOME' || code === 'RETRAIT' || code === 'BABI1000') {
         discount = 1000;
     } else {
         if (feedbackEl) {

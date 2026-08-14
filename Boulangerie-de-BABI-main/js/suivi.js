@@ -274,18 +274,18 @@ function populateThermalReceiptData(order) {
     if (recClient) recClient.innerText = order.clientName || 'Client';
     if (recPhone) recPhone.innerText = order.phone || '--';
     if (recDest) recDest.innerText = `${order.commune || 'Abidjan'}, ${order.address || ''}`;
-    if (recDeliveryMode) recDeliveryMode.innerText = order.delivery_method === 'express' ? 'Livraison Express Moto' : (order.delivery_method === 'retrait' ? 'Retrait en Boutique' : 'Livraison Standard');
+    if (recDeliveryMode) recDeliveryMode.innerText = 'Retrait en Boutique (Click & Collect)';
     
     if (recPayment) recPayment.innerText = (order.payment_method || 'Mobile Money') + (order.payment_status === 'paye' ? ' (VALIDÉ)' : '');
 
     const sub = order.subtotal || (order.total_price ? order.total_price - (order.delivery_cost || 0) : 0);
     if (recSubtotal) recSubtotal.innerText = (sub || 0).toLocaleString() + ' FCFA';
     
-    if (order.delivery_cost && recDeliveryFee) {
-        recDeliveryFee.innerText = order.delivery_cost.toLocaleString() + ' FCFA';
-        if (recDeliveryRow) recDeliveryRow.style.display = 'flex';
-    } else if (recDeliveryRow && order.delivery_method === 'retrait') {
-        recDeliveryRow.style.display = 'none';
+    if (recDeliveryFee) {
+        recDeliveryFee.innerText = (order.delivery_cost || 0) > 0 ? order.delivery_cost.toLocaleString() + ' FCFA' : 'Gratuit (0 FCFA)';
+    }
+    if (recDeliveryRow) {
+        recDeliveryRow.style.display = 'flex';
     }
 
     if (order.promo_discount && order.promo_discount > 0 && recDiscount) {

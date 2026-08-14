@@ -148,9 +148,9 @@ function renderOrdersTable(orders) {
                     <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">Action</button>
                     <ul class="dropdown-menu dropdown-menu-end shadow-sm">
                         <li><a class="dropdown-item" href="#" onclick="updateStatus(${o.id}, 'nouveau')">🔴 Nouveau</a></li>
-                        <li><a class="dropdown-item" href="#" onclick="updateStatus(${o.id}, 'en preparation')">🟠 En préparation</a></li>
-                        <li><a class="dropdown-item" href="#" onclick="updateStatus(${o.id}, 'en livraison')">🔵 En livraison</a></li>
-                        <li><a class="dropdown-item" href="#" onclick="updateStatus(${o.id}, 'livre')">🟢 Livré</a></li>
+                        <li><a class="dropdown-item" href="#" onclick="updateStatus(${o.id}, 'en preparation')">🟠 En préparation (Fournil)</a></li>
+                        <li><a class="dropdown-item" href="#" onclick="updateStatus(${o.id}, 'pret')">🔵 Prêt au comptoir</a></li>
+                        <li><a class="dropdown-item" href="#" onclick="updateStatus(${o.id}, 'recupere')">🟢 Colis Récupéré</a></li>
                         <li><hr class="dropdown-divider"></li>
                         <li><a class="dropdown-item text-warning fw-bold" href="#" onclick="triggerAdminSupport(${o.id})"><i class="fa-solid fa-headset me-2"></i> 💬 Prise en charge (Support)</a></li>
                         <li><a class="dropdown-item text-danger fw-bold" href="#" onclick="triggerAdminRefund(${o.id})"><i class="fa-solid fa-rotate-left me-2"></i> 💸 Annuler & Rembourser</a></li>
@@ -166,8 +166,8 @@ function renderOrdersTable(orders) {
 function getBadgeClass(status) {
     if (!status) return 'badge-nouveau';
     const s = status.toLowerCase();
-    if (s.includes('livre') || s.includes('livré')) return 'badge-livre';
-    if (s.includes('livraison')) return 'badge-livraison';
+    if (s.includes('recup') || s.includes('récup') || s.includes('livre') || s.includes('livré')) return 'badge-livre';
+    if (s.includes('pret') || s.includes('prêt') || s.includes('livraison')) return 'badge-livraison';
     if (s.includes('prep') || s.includes('préparation')) return 'badge-preparation';
     return 'badge-nouveau';
 }
@@ -327,7 +327,7 @@ function openReceiptModal(orderId) {
             <div class="mb-3 fs-sm">
                 <div><strong>Client :</strong> ${order.customer_name || 'Client'}</div>
                 <div><strong>Téléphone :</strong> ${order.phone || 'N/A'}</div>
-                <div><strong>Adresse :</strong> ${order.address || 'Livraison à domicile'}</div>
+                <div><strong>Mode de Retrait :</strong> ${order.address || 'Retrait en Boutique (Cocody Riviera 2)'}</div>
             </div>
             <table class="table table-sm text-start mb-3">
                 <thead><tr><th>Articles</th><th class="text-end">Montant</th></tr></thead>

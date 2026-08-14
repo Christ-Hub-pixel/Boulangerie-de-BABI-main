@@ -198,8 +198,8 @@ function updateCartSummary(totalQty, subtotal, deliveryCost, discount) {
             </div>
             
             <div class="d-flex justify-content-between mb-2 fs-6 text-muted">
-                <span>Livraison</span>
-                <span class="fw-bold ${deliveryCost === 0 ? 'text-success' : ''}">${deliveryCost === 0 ? 'Calculée à l\'étape suivante' : deliveryCost.toLocaleString() + ' FCFA'}</span>
+                <span>Retrait en Boutique</span>
+                <span class="fw-bold text-success">Gratuit (0 FCFA)</span>
             </div>
             
             ${discount > 0 ? `
