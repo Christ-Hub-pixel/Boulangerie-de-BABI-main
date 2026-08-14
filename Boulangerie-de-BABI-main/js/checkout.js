@@ -281,16 +281,8 @@ function submitBabiOrder(isAlreadyValidated = false) {
     const deliveryCost = 0;
 
     const paymentRadio = document.querySelector('input[name="payment"]:checked');
-    const isMobileMoney = paymentRadio ? paymentRadio.id !== 'p_cash' : true;
-    const selectedOperatorCode = document.getElementById('selectedOperatorInput') ? document.getElementById('selectedOperatorInput').value : 'wave';
-    
-    let paymentMethod = 'Paiement au comptoir (Espèces)';
-    if (isMobileMoney) {
-        if (selectedOperatorCode === 'orange') paymentMethod = 'Orange Money';
-        else if (selectedOperatorCode === 'mtn') paymentMethod = 'MTN Mobile Money';
-        else if (selectedOperatorCode === 'moov') paymentMethod = 'Moov Money';
-        else paymentMethod = 'Wave Mobile Money';
-    }
+    const isWave = paymentRadio ? paymentRadio.id !== 'p_cash' : true;
+    const paymentMethod = isWave ? 'Wave Mobile Money' : 'Paiement au comptoir (Espèces)';
 
     const subtotal = typeof getCartTotal === 'function' ? getCartTotal() : 0;
     const promoDiscount = window.appliedPromoDiscount || 0;
@@ -503,68 +495,44 @@ function fallbackGeoMock(geoBtn, geoStatus, geoCoordsText, addressInput) {
     applyKilometerDeliveryCalculation(distKm, "GPS Porte-à-Porte");
 }
 
+window.togglePaymentMode = function(mode) {
+    const cardMomo = document.getElementById('card_momo_box');
+    const cardCash = document.getElementById('card_cash_box');
+    const cashSection = document.getElementById('cashSection');
+    const operatorSection = document.getElementById('operatorSection');
+
+    if (mode === 'cash') {
+        if (cardMomo) {
+            cardMomo.style.backgroundColor = '#fff';
+            cardMomo.style.borderColor = '#e2e8f0';
+        }
+        if (cardCash) {
+            cardCash.style.backgroundColor = '#fdfbf7';
+            cardCash.style.borderColor = '#fb923c';
+        }
+        if (cashSection) cashSection.classList.remove('d-none');
+        if (operatorSection) operatorSection.classList.add('d-none');
+    } else {
+        if (cardMomo) {
+            cardMomo.style.backgroundColor = '#f0fbfd';
+            cardMomo.style.borderColor = '#1dc4e9';
+        }
+        if (cardCash) {
+            cardCash.style.backgroundColor = '#fff';
+            cardCash.style.borderColor = '#e2e8f0';
+        }
+        if (cashSection) cashSection.classList.add('d-none');
+        if (operatorSection) operatorSection.classList.remove('d-none');
+    }
+};
+
 function selectOperator(op) {
     const hidden = document.getElementById('selectedOperatorInput');
-    if (hidden) hidden.value = op;
-
-    document.querySelectorAll('.operator-card').forEach(card => {
-        card.style.borderColor = '#eee';
-        card.style.background = '#fff';
-        card.classList.remove('active-operator');
-    });
-
-    const activeCard = document.getElementById('op_' + op);
-    if (activeCard) {
-        activeCard.classList.add('active-operator');
-    }
-
-    updateInlineForm(op);
-    openOperatorPaymentModal(op);
-}
-
-function updateInlineForm(op) {
-    const formBox = document.getElementById('operatorFormContainer');
-    const logoEl = document.getElementById('opFormLogo');
-    const titleEl = document.getElementById('opFormTitle');
-    const badgeEl = document.getElementById('opFormBadge');
-    const noteEl = document.getElementById('opFormNote');
-    const activeCard = document.getElementById('op_' + op);
-
-    if (op === 'wave') {
-        if (activeCard) { activeCard.style.borderColor = '#1dc4e9'; activeCard.style.background = '#f0fbfd'; }
-        if (formBox) { formBox.style.background = '#f0fbfd'; formBox.style.borderColor = '#1dc4e9'; }
-        if (logoEl) { logoEl.src = 'assets/wave_money.png'; logoEl.style.width = '28px'; logoEl.style.height = '28px'; logoEl.style.objectFit = 'contain'; }
-        if (titleEl) titleEl.innerText = 'Formulaire de paiement Wave CI';
-        if (badgeEl) { badgeEl.innerText = '⚡ API Directe Wave QR / App'; badgeEl.style.background = '#1dc4e9'; badgeEl.className = 'badge w-100 py-2 text-white fw-bold text-center'; }
-        if (noteEl) noteEl.innerHTML = '<i class="fa-solid fa-shield-halved text-success me-1"></i> Cliquez sur le bouton Wave pour ouvrir le guichet direct.';
-    } else if (op === 'orange') {
-        if (activeCard) { activeCard.style.borderColor = '#FF7900'; activeCard.style.background = '#fff7f0'; }
-        if (formBox) { formBox.style.background = '#fff7f0'; formBox.style.borderColor = '#FF7900'; }
-        if (logoEl) { logoEl.src = 'assets/orange_money.svg'; logoEl.style.width = '28px'; logoEl.style.height = '28px'; logoEl.style.objectFit = 'contain'; }
-        if (titleEl) titleEl.innerText = 'Formulaire de paiement Orange Money CI';
-        if (badgeEl) { badgeEl.innerText = '📲 Code Push USSD #144*82#'; badgeEl.style.background = '#FF7900'; badgeEl.className = 'badge w-100 py-2 text-white fw-bold text-center'; }
-        if (noteEl) noteEl.innerHTML = '<i class="fa-solid fa-info-circle text-warning me-1"></i> Cliquez sur le bouton Orange pour saisir votre numéro et code OTP.';
-    } else if (op === 'mtn') {
-        if (activeCard) { activeCard.style.borderColor = '#ffcc00'; activeCard.style.background = '#fffdf0'; }
-        if (formBox) { formBox.style.background = '#fffdf0'; formBox.style.borderColor = '#eab308'; }
-        if (logoEl) { logoEl.src = 'assets/mtn_money.svg'; logoEl.style.width = '56px'; logoEl.style.height = '28px'; logoEl.style.objectFit = 'contain'; }
-        if (titleEl) titleEl.innerText = 'Formulaire de paiement MTN MoMo';
-        if (badgeEl) { badgeEl.innerText = '📲 Push Validation MoMo #133#'; badgeEl.style.background = '#eab308'; badgeEl.className = 'badge w-100 py-2 text-dark fw-bold text-center'; }
-        if (noteEl) noteEl.innerHTML = '<i class="fa-solid fa-bell text-warning me-1"></i> Cliquez sur le bouton MTN pour ouvrir le formulaire Push MoMo.';
-    } else if (op === 'moov') {
-        if (activeCard) { activeCard.style.borderColor = '#0066cc'; activeCard.style.background = '#f0f7ff'; }
-        if (formBox) { formBox.style.background = '#f0f7ff'; formBox.style.borderColor = '#0066cc'; }
-        if (logoEl) { logoEl.src = 'assets/moov_money.svg'; logoEl.style.width = '28px'; logoEl.style.height = '28px'; logoEl.style.objectFit = 'contain'; }
-        if (titleEl) titleEl.innerText = 'Formulaire de paiement Moov Money';
-        if (badgeEl) { badgeEl.innerText = '📲 Validation USSD #145#'; badgeEl.style.background = '#0066cc'; badgeEl.className = 'badge w-100 py-2 text-white fw-bold text-center'; }
-        if (noteEl) noteEl.innerHTML = '<i class="fa-solid fa-lock text-info me-1"></i> Cliquez sur le bouton Moov pour entrer votre code de confirmation.';
-    }
+    if (hidden) hidden.value = 'wave';
+    openOperatorPaymentModal('wave');
 }
 
 function openOperatorPaymentModal(op) {
-    const hidden = document.getElementById('selectedOperatorInput');
-    if (hidden) hidden.value = op;
-
     const subtotal = typeof getCartTotal === 'function' ? getCartTotal() : 0;
     const deliveryCost = getSelectedDeliveryCost();
     const grandTotal = subtotal + deliveryCost;
@@ -591,135 +559,39 @@ function openOperatorPaymentModal(op) {
     let phoneVal = document.getElementById('momoPhoneInput') ? document.getElementById('momoPhoneInput').value : '0704389201';
     if (!phoneVal) phoneVal = '0704389201';
 
-    if (op === 'wave') {
-        modalHeader.style.background = '#1dc4e9';
-        modalTitle.innerHTML = `<img src="assets/wave_money.png" style="width:28px; height:28px; object-fit:contain; display:inline-block;" class="me-2 rounded">Formulaire Spécialisé Wave CI`;
-        modalBody.innerHTML = `
-            <div class="py-2 text-start">
-                <div class="text-center mb-3">
-                    <img src="assets/wave_money.png" style="width:54px; height:54px; object-fit:contain; display:inline-block;" class="mb-2">
-                    <h4 class="fw-bold text-dark mb-0">${grandTotal.toLocaleString()} FCFA</h4>
-                    <small class="text-muted">Guichet Officiel Wave Mobile Money</small>
-                </div>
-
-                <div class="mb-3">
-                    <label class="form-label fw-bold small text-dark">Votre Numéro Wave</label>
-                    <div class="input-group">
-                        <span class="input-group-text bg-white fw-bold text-dark border-end-0"><span class="me-1">🇨🇮</span> +225</span>
-                        <input type="tel" class="form-control text-dark fw-bold border-start-0 ps-1" id="modalWavePhone" value="${phoneVal}" placeholder="07 04 38 92 01" style="color: #111827 !important; background-color: #ffffff !important;">
-                    </div>
-                </div>
-
-                <div class="p-3 bg-light rounded border mb-3 text-center">
-                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent('https://wave.com/pay/' + orderId)}" class="rounded shadow-sm border p-2 bg-white mb-2" style="width:140px;">
-                    <div class="small text-muted mb-2">Scannez ce QR Code Wave ou cliquez ci-dessous :</div>
-                    <a href="https://wave.com/pay/${orderId}" target="_blank" class="btn btn-info w-100 text-white fw-bold py-2 rounded-pill shadow-sm" style="background:#1dc4e9; border:none;">
-                        <i class="fa-solid fa-mobile-screen me-2"></i>OUVRIR DANS WAVE APP
-                    </a>
-                </div>
-
-                <button type="button" class="btn btn-primary w-100 fw-bold py-2 rounded-3 shadow-sm" style="background:#1dc4e9; border:none;" onclick="triggerModalPaymentSuccess('Wave')">
-                    <i class="fa-solid fa-check-circle me-1"></i> VALIDER LE PAIEMENT WAVE (${grandTotal.toLocaleString()} FCFA)
-                </button>
+    modalHeader.style.background = '#1dc4e9';
+    modalTitle.innerHTML = `<img src="assets/wave_money.png" style="width:28px; height:28px; object-fit:contain; display:inline-block;" class="me-2 rounded">Guichet Wave Mobile Money`;
+    modalBody.innerHTML = `
+        <div class="py-2 text-start">
+            <div class="text-center mb-3">
+                <img src="assets/wave_money.png" style="width:54px; height:54px; object-fit:contain; display:inline-block;" class="mb-2">
+                <h4 class="fw-bold text-dark mb-0">${grandTotal.toLocaleString()} FCFA</h4>
+                <small class="text-muted">Guichet Officiel Wave Mobile Money CI</small>
             </div>
-        `;
-    } else if (op === 'orange') {
-        modalHeader.style.background = '#FF7900';
-        modalTitle.innerHTML = `<img src="assets/orange_money.svg" style="width:28px; height:28px; object-fit:contain; display:inline-block;" class="me-2 rounded">Formulaire Spécialisé Orange Money`;
-        modalBody.innerHTML = `
-            <div class="py-2 text-start">
-                <div class="text-center mb-3">
-                    <img src="assets/orange_money.svg" style="width:54px; height:54px; object-fit:contain; display:inline-block;" class="mb-2">
-                    <h4 class="fw-bold text-dark mb-0">${grandTotal.toLocaleString()} FCFA</h4>
-                    <small class="text-muted">Guichet Officiel Orange Money CI</small>
-                </div>
 
-                <div class="mb-3">
-                    <label class="form-label fw-bold small text-dark">Numéro Orange Money</label>
-                    <div class="input-group">
-                        <span class="input-group-text bg-white fw-bold text-dark border-end-0"><span class="me-1">🇨🇮</span> +225</span>
-                        <input type="tel" class="form-control text-dark fw-bold border-start-0 ps-1" id="modalOmPhone" value="${phoneVal}" placeholder="07 07 12 34 56" style="color: #111827 !important; background-color: #ffffff !important;">
-                    </div>
+            <div class="mb-3">
+                <label class="form-label fw-bold small text-dark">Votre Numéro Wave</label>
+                <div class="input-group">
+                    <span class="input-group-text bg-white fw-bold text-dark border-end-0"><span class="me-1">🇨🇮</span> +225</span>
+                    <input type="tel" class="form-control text-dark fw-bold border-start-0 ps-1" id="modalWavePhone" value="${phoneVal}" placeholder="07 04 38 92 01" style="color: #111827 !important; background-color: #ffffff !important;">
                 </div>
-
-                <div class="mb-3">
-                    <label class="form-label fw-bold small text-dark">Code d'Autorisation temporaire / OTP (Optionnel)</label>
-                    <input type="text" class="form-control text-dark fw-bold" id="modalOmOtp" placeholder="Obtenir le code via #144*82#" style="color: #111827 !important; background-color: #ffffff !important;">
-                </div>
-
-                <div class="p-3 rounded-3 mb-3 text-center" style="background: #fff7ed; border: 2px solid #FF7900;">
-                    <div class="fw-bold small mb-1" style="color: #9a3412;"><i class="fa-solid fa-phone-volume me-1" style="color: #FF7900;"></i> Syntaxe / Code USSD Orange Money :</div>
-                    <div class="py-2 px-3 rounded-2 fw-black my-2" style="background: #FF7900; color: #ffffff; font-family: monospace; font-size: 1.4rem; letter-spacing: 2px; box-shadow: 0 2px 6px rgba(255, 121, 0, 0.3);">#144*82#</div>
-                    <div class="small" style="color: #431407;">Composez <strong>#144*82#</strong> sur votre mobile pour générer votre code d'autorisation.</div>
-                </div>
-
-                <button type="button" class="btn w-100 fw-bold py-3 text-white rounded-3 shadow-sm" style="background:#FF7900; border:none; font-size:1.05rem;" onclick="triggerModalPaymentSuccess('Orange Money')">
-                    <i class="fa-solid fa-paper-plane me-2"></i> VALIDER PAIEMENT ORANGE MONEY (${grandTotal.toLocaleString()} FCFA)
-                </button>
             </div>
-        `;
-    } else if (op === 'mtn') {
-        modalHeader.style.background = '#FFCC00';
-        modalTitle.innerHTML = `<img src="assets/mtn_money.svg" style="width:56px; height:28px; object-fit:contain; display:inline-block;" class="me-2">Formulaire Spécialisé MTN MoMo`;
-        modalBody.innerHTML = `
-            <div class="py-2 text-start">
-                <div class="text-center mb-3">
-                    <img src="assets/mtn_money.svg" style="width:108px; height:54px; object-fit:contain; display:inline-block;" class="mb-2">
-                    <h4 class="fw-bold text-dark mb-0">${grandTotal.toLocaleString()} FCFA</h4>
-                    <small class="text-muted">Guichet Officiel MTN Mobile Money CI</small>
-                </div>
 
-                <div class="mb-3">
-                    <label class="form-label fw-bold small text-dark">Numéro MTN MoMo</label>
-                    <div class="input-group">
-                        <span class="input-group-text bg-white fw-bold text-dark border-end-0"><span class="me-1">🇨🇮</span> +225</span>
-                        <input type="tel" class="form-control text-dark fw-bold border-start-0 ps-1" id="modalMtnPhone" value="${phoneVal}" placeholder="05 05 12 34 56" style="color: #111827 !important; background-color: #ffffff !important;">
-                    </div>
-                </div>
-
-                <div class="p-3 rounded-3 mb-3 text-center" style="background: #fefce8; border: 2px solid #eab308;">
-                    <div class="fw-bold small mb-1" style="color: #854d0e;"><i class="fa-solid fa-key me-1" style="color: #eab308;"></i> Syntaxe / Code USSD MTN MoMo :</div>
-                    <div class="py-2 px-3 rounded-2 fw-black my-2" style="background: #FFCC00; color: #0f172a; font-family: monospace; font-size: 1.4rem; letter-spacing: 2px; box-shadow: 0 2px 6px rgba(234, 179, 8, 0.3);">*133#</div>
-                    <div class="small" style="color: #713f12;">Composez <strong>*133#</strong> ou approuvez la demande dans votre menu MTN MoMo.</div>
-                </div>
-
-                <button type="button" class="btn w-100 fw-bold py-3 text-dark rounded-3 shadow-sm" style="background:#FFCC00; border:none; font-size:1.05rem;" onclick="triggerModalPaymentSuccess('MTN MoMo')">
-                    <i class="fa-solid fa-check-circle me-2"></i> VALIDER PAIEMENT MTN MOMO (${grandTotal.toLocaleString()} FCFA)
-                </button>
+            <div class="p-3 bg-light rounded border mb-3 text-center">
+                <img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent('https://wave.com/pay/' + orderId)}" class="rounded shadow-sm border p-2 bg-white mb-2" style="width:140px;">
+                <div class="small text-muted mb-2">Scannez ce QR Code Wave ou cliquez ci-dessous :</div>
+                <a href="https://wave.com/pay/${orderId}" target="_blank" class="btn btn-info w-100 text-white fw-bold py-2 rounded-pill shadow-sm" style="background:#1dc4e9; border:none;">
+                    <i class="fa-solid fa-mobile-screen me-2"></i>OUVRIR DANS WAVE APP
+                </a>
             </div>
-        `;
-    } else {
-        modalHeader.style.background = '#0066CC';
-        modalTitle.innerHTML = `<img src="assets/moov_money.svg" style="width:28px; height:28px; object-fit:contain; display:inline-block;" class="me-2">Formulaire Spécialisé Moov Money`;
-        modalBody.innerHTML = `
-            <div class="py-2 text-start">
-                <div class="text-center mb-3">
-                    <img src="assets/moov_money.svg" style="width:54px; height:54px; object-fit:contain; display:inline-block;" class="mb-2">
-                    <h4 class="fw-bold text-dark mb-0">${grandTotal.toLocaleString()} FCFA</h4>
-                    <small class="text-muted">Guichet Officiel Moov Money CI</small>
-                </div>
 
-                <div class="mb-3">
-                    <label class="form-label fw-bold small text-dark">Numéro Moov Money</label>
-                    <div class="input-group">
-                        <span class="input-group-text bg-white fw-bold text-dark border-end-0"><span class="me-1">🇨🇮</span> +225</span>
-                        <input type="tel" class="form-control text-dark fw-bold border-start-0 ps-1" id="modalMoovPhone" value="${phoneVal}" placeholder="01 01 12 34 56" style="color: #111827 !important; background-color: #ffffff !important;">
-                    </div>
-                </div>
-
-                <div class="p-3 rounded-3 mb-3 text-center" style="background: #f0f9ff; border: 2px solid #0066CC;">
-                    <div class="fw-bold small mb-1" style="color: #0369a1;"><i class="fa-solid fa-lock me-1" style="color: #0066CC;"></i> Syntaxe / Code USSD Moov Money :</div>
-                    <div class="py-2 px-3 rounded-2 fw-black my-2" style="background: #0066CC; color: #ffffff; font-family: monospace; font-size: 1.4rem; letter-spacing: 2px; box-shadow: 0 2px 6px rgba(0, 102, 204, 0.3);">#145#</div>
-                    <div class="small" style="color: #0c4a6e;">Composez <strong>#145#</strong> et entrez votre code secret pour valider le règlement.</div>
-                </div>
-
-                <button type="button" class="btn w-100 fw-bold py-3 text-white rounded-3 shadow-sm" style="background:#0066CC; border:none; font-size:1.05rem;" onclick="triggerModalPaymentSuccess('Moov Money')">
-                    <i class="fa-solid fa-check-circle me-2"></i> VALIDER PAIEMENT MOOV MONEY (${grandTotal.toLocaleString()} FCFA)
-                </button>
-            </div>
-        `;
-    }
-
+            <button type="button" class="btn btn-primary w-100 fw-bold py-2 rounded-3 shadow-sm" style="background:#1dc4e9; border:none;" onclick="triggerModalPaymentSuccess('Wave')">
+                <i class="fa-solid fa-check-circle me-1"></i> VALIDER LE PAIEMENT WAVE (${grandTotal.toLocaleString()} FCFA)
+            </button>
+        </div>
+    `;
+    bsModal.show();
+}
     bsModal.show();
 }
 

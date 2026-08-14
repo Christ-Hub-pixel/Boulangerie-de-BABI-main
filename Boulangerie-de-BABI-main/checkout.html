@@ -150,85 +150,58 @@
                         <div id="collapseThree" class="accordion-collapse collapse" data-bs-parent="#checkoutAccordion">
                             <div class="accordion-body border-top">
                                 
-                                <!-- Mobile Money -->
-                                 <div class="border rounded p-3 mb-3 w-100 border-primary" id="card_momo_box" style="background-color: rgba(244, 180, 0, 0.05);">
-                                     <label class="form-check m-0 d-flex align-items-center cursor-pointer" for="p_momo">
-                                         <input class="form-check-input mt-0" type="radio" name="payment" id="p_momo" checked onclick="togglePaymentMode('momo')">
-                                         <div class="ms-3">
-                                             <span class="fw-bold d-block text-dark">Mobile Money (Wave, Orange, MTN, Moov) <span class="badge bg-warning text-dark ms-2" style="font-size:10px;">Recommandé</span></span>
-                                             <small class="text-muted">Paiement instantané par votre compte mobile en Côte d'Ivoire.</small>
-                                         </div>
-                                     </label>
+                                <!-- Mode 1: Wave Mobile Money -->
+                                <div class="border rounded p-3 mb-3 w-100 border-primary" id="card_momo_box" style="background-color: #f0fbfd; border-color: #1dc4e9 !important;">
+                                    <label class="form-check m-0 d-flex align-items-center cursor-pointer" for="p_momo">
+                                        <input class="form-check-input mt-0" type="radio" name="payment" id="p_momo" checked onclick="togglePaymentMode('momo')">
+                                        <div class="ms-3 flex-grow-1">
+                                            <div class="d-flex align-items-center gap-2">
+                                                <span class="fw-bold d-block text-dark fs-6">Wave Mobile Money</span>
+                                                <span class="badge text-white fw-bold px-2 py-1" style="background:#1dc4e9; font-size:10px;">Recommandé • 0% Frais</span>
+                                            </div>
+                                            <small class="text-muted">Paiement instantané 1-clic par Wave App ou QR Code sécurisé.</small>
+                                        </div>
+                                        <div class="ms-auto">
+                                            <img src="assets/wave_money.png" alt="Wave CI" style="width:38px; height:38px; object-fit:contain;">
+                                        </div>
+                                    </label>
 
-                                     <!-- Operator Selection Grid -->
-                                     <div class="mt-3 p-3 bg-white rounded border" id="operatorSection">
-                                         <p class="fs-sm fw-bold text-dark mb-2"><i class="fa-solid fa-mobile-screen me-1 text-warning"></i> Sélectionnez votre réseau de paiement :</p>
-                                         <div class="row g-2">
-                                             <div class="col-6 col-md-3">
-                                                 <button type="button" class="btn operator-card w-100 border rounded p-2 text-center shadow-sm active-operator d-flex flex-column align-items-center justify-content-center" id="op_wave" onclick="selectOperator('wave')" style="border-color:#1dc4e9 !important; background:#f0fbfd; min-height:85px;">
-                                                     <img src="assets/wave_money.png" alt="Wave CI" style="width:36px; height:36px; object-fit:contain; pointer-events:none;" class="mb-1">
-                                                     <div class="fw-bold small text-dark" style="pointer-events:none;">Wave CI</div>
-                                                 </button>
-                                             </div>
-                                             <div class="col-6 col-md-3">
-                                                 <button type="button" class="btn operator-card w-100 border rounded p-2 text-center shadow-sm d-flex flex-column align-items-center justify-content-center" id="op_orange" onclick="selectOperator('orange')" style="border-color:#eee; background:#fff; min-height:85px;">
-                                                     <img src="assets/orange_money.svg" alt="Orange Money" style="width:36px; height:36px; object-fit:contain; pointer-events:none;" class="mb-1">
-                                                     <div class="fw-bold small text-dark" style="pointer-events:none;">Orange Money</div>
-                                                 </button>
-                                             </div>
-                                             <div class="col-6 col-md-3">
-                                                 <button type="button" class="btn operator-card w-100 border rounded p-2 text-center shadow-sm d-flex flex-column align-items-center justify-content-center" id="op_mtn" onclick="selectOperator('mtn')" style="border-color:#eee; background:#fff; min-height:85px;">
-                                                     <img src="assets/mtn_money.svg" alt="MTN MoMo" style="width:72px; height:36px; object-fit:contain; pointer-events:none;" class="mb-1">
-                                                     <div class="fw-bold small text-dark" style="pointer-events:none;">MTN MoMo</div>
-                                                 </button>
-                                             </div>
-                                             <div class="col-6 col-md-3">
-                                                 <button type="button" class="btn operator-card w-100 border rounded p-2 text-center shadow-sm d-flex flex-column align-items-center justify-content-center" id="op_moov" onclick="selectOperator('moov')" style="border-color:#eee; background:#fff; min-height:85px;">
-                                                     <img src="assets/moov_money.svg" alt="Moov Money" style="width:36px; height:36px; object-fit:contain; pointer-events:none;" class="mb-1">
-                                                     <div class="fw-bold small text-dark" style="pointer-events:none;">Moov Money</div>
-                                                 </button>
-                                             </div>
-                                         </div>
-                                         <input type="hidden" id="selectedOperatorInput" value="wave">
+                                    <!-- Wave Phone Input & QR Code -->
+                                    <div class="mt-3 p-3 bg-white rounded border" id="operatorSection" style="border-color:#bae6fd !important;">
+                                        <div class="row g-2 align-items-center">
+                                            <div class="col-md-7">
+                                                <label class="form-label fs-xs text-muted mb-1 fw-bold">Numéro Wave à débiter</label>
+                                                <div class="input-group">
+                                                    <span class="input-group-text bg-light fw-bold text-dark border-end-0">
+                                                        <span class="me-1">🇨🇮</span> +225
+                                                    </span>
+                                                    <input type="tel" class="form-control shadow-none border-start-0 ps-1 fw-bold" id="momoPhoneInput" placeholder="07 04 38 92 01">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-5">
+                                                <label class="form-label fs-xs text-muted mb-1 fw-bold">Paiement direct</label>
+                                                <button type="button" class="btn btn-info w-100 text-white fw-bold py-2 shadow-sm rounded-2" style="background:#1dc4e9; border:none; font-size: 13px;" onclick="openOperatorPaymentModal('wave')">
+                                                    <i class="fa-solid fa-qrcode me-1"></i> Ouvrir Wave App / QR
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div class="mt-2 small text-muted d-flex align-items-center gap-1" id="opFormNote">
+                                            <i class="fa-solid fa-shield-halved text-success me-1"></i> Notification de débit instantanée et sécurisée via Wave Côte d'Ivoire.
+                                        </div>
+                                        <input type="hidden" id="selectedOperatorInput" value="wave">
+                                    </div>
+                                </div>
 
-                                         <!-- Dynamic Specialized Inline Payment Form -->
-                                         <div class="mt-3 p-3 rounded border" id="operatorFormContainer" style="background: #f0fbfd; border-color: #1dc4e9 !important;">
-                                             <div class="d-flex align-items-center gap-2 mb-2">
-                                                 <img src="assets/wave_money.png" id="opFormLogo" style="width:28px; height:28px; object-fit:contain;">
-                                                 <h6 class="fw-bold mb-0 text-dark" id="opFormTitle">Formulaire de paiement Wave CI</h6>
-                                             </div>
-                                             <div class="row g-2 align-items-center">
-                                                 <div class="col-md-7">
-                                                     <label class="form-label fs-xs text-muted mb-1">Numéro de téléphone à débiter</label>
-                                                     <div class="input-group input-group-sm">
-                                                         <span class="input-group-text bg-white fw-bold"><span class="me-1">🇨🇮</span> +225</span>
-                                                         <input type="tel" class="form-control shadow-none" id="momoPhoneInput" placeholder="Ex: 07 04 38 92 01">
-                                                     </div>
-                                                 </div>
-                                                 <div class="col-md-5">
-                                                     <label class="form-label fs-xs text-muted mb-1">Mode d'exécution</label>
-                                                     <div class="badge w-100 py-2 text-white fw-bold text-center" id="opFormBadge" style="background:#1dc4e9; font-size:11px;">
-                                                         ⚡ API Directe Wave QR / App
-                                                     </div>
-                                                 </div>
-                                             </div>
-                                             <div class="mt-2 small text-muted d-flex align-items-center gap-1" id="opFormNote">
-                                                 <i class="fa-solid fa-shield-halved text-success me-1"></i> Une notification de débit sécurisé sera envoyée à ce numéro.
-                                             </div>
-                                         </div>
-                                     </div>
-                                 </div>
-
-                                <!-- Cash on Counter / Pickup -->
+                                <!-- Mode 2: Cash on Counter / Pickup -->
                                 <div class="border rounded p-3 mb-3 w-100" id="card_cash_box" style="cursor: pointer; background-color: #fff;">
                                     <label class="form-check m-0 d-flex align-items-center cursor-pointer" for="p_cash">
                                         <input class="form-check-input mt-0" type="radio" name="payment" id="p_cash" onclick="togglePaymentMode('cash')">
                                         <div class="ms-3">
-                                            <span class="fw-bold d-block text-dark">Paiement au comptoir (Espèces & Appoint)</span>
-                                            <small class="text-muted">Réglez en cash au guichet lors de la récupération de votre commande.</small>
+                                            <span class="fw-bold d-block text-dark fs-6">Paiement en Espèces (au comptoir)</span>
+                                            <small class="text-muted">Réglez directement en cash lors du retrait de votre commande à la boutique.</small>
                                         </div>
                                         <div class="ms-auto text-success">
-                                            <i class="fa-solid fa-money-bill-wave fs-3"></i>
+                                            <i class="fa-solid fa-money-bill-wave fs-2"></i>
                                         </div>
                                     </label>
 
@@ -251,8 +224,8 @@
                                 <div class="alert alert-light border d-flex align-items-center gap-3 py-2 px-3 mb-4 small rounded-3" style="background:#fdfbf7; border-color:#fed7aa !important;">
                                     <i class="fa-solid fa-shield-halved text-success fs-3"></i>
                                     <div>
-                                        <div class="fw-bold text-dark">Paiement 100% Sécurisé (Wave CI, Orange, MTN, Moov & Espèces)</div>
-                                        <div class="text-muted" style="font-size:11px;">Vos transactions Mobile Money sont directes et sans frais additionnels. Payez aussi en espèces au comptoir.</div>
+                                        <div class="fw-bold text-dark">Paiement 100% Sécurisé (Wave Mobile Money & Espèces au comptoir)</div>
+                                        <div class="text-muted" style="font-size:11px;">Vos transactions Wave sont instantanées et sans frais additionnels. Payez aussi en espèces lors du retrait.</div>
                                     </div>
                                 </div>
 

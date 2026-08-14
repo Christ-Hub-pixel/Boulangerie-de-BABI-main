@@ -15,15 +15,11 @@ flowchart TD
     A["1️⃣ CHOISIR LE PRODUIT\n(Pains, Viennoiseries, Pâtisseries, Jus Frais)"] --> B["2️⃣ COMMANDER\n(Mise au panier 1-clic & Validation de la commande)"]
     
     B --> C{"3️⃣ MODE DE PAIEMENT\n& RÉSERVATION"}
-    C -->|Wave Mobile Money| P1["🌊 Paiement Wave QR / App"]
-    C -->|Orange Money| P2["🍊 Code Push USSD #144*82#"]
-    C -->|MTN / Moov| P3["🟡 MTN MoMo / Moov Money"]
-    C -->|Espèces au Guichet| P4["💵 Paiement Cash au Comptoir"]
+    C -->|Wave Mobile Money (0% frais)| P1["🌊 Paiement Instantané Wave QR / App"]
+    C -->|Espèces au Guichet| P2["💵 Paiement Cash lors du Retrait"]
     
     P1 --> D["⏰ RÉSERVER LE CRÉNEAU\n(Dès que possible 15-20 min, 1h, Fournée du soir...)"]
     P2 --> D
-    P3 --> D
-    P4 --> D
     
     D --> E["🔥 PRÉPARATION & CUISSON AU FOURNIL\n(Notification en direct sur suivi.html)"]
     
@@ -57,7 +53,7 @@ flowchart TD
 | :--- | :--- | :--- | :--- |
 | **1. Choisir** | Explore le catalogue et les catégories | [index.html](file:///c:/Users/ezemi/Downloads/Boulangerie-de-BABI-main/Boulangerie-de-BABI-main/index.html) & [produits.html](file:///c:/Users/ezemi/Downloads/Boulangerie-de-BABI-main/Boulangerie-de-BABI-main/produits.html) | Produits ajoutés au panier |
 | **2. Commander** | Renseigne son nom & numéro de téléphone | [cart.html](file:///c:/Users/ezemi/Downloads/Boulangerie-de-BABI-main/Boulangerie-de-BABI-main/cart.html) & [checkout.html](file:///c:/Users/ezemi/Downloads/Boulangerie-de-BABI-main/Boulangerie-de-BABI-main/checkout.html) | Panier validé sans frais (0 FCFA) |
-| **3. Payer & Réserver** | Sélectionne Wave / OM / Espèces et choisit l'heure de retrait | [checkout.html](file:///c:/Users/ezemi/Downloads/Boulangerie-de-BABI-main/Boulangerie-de-BABI-main/checkout.html) | Créneau réservé au fournil |
+| **3. Payer & Réserver** | Sélectionne Wave ou Espèces au comptoir et choisit l'heure de retrait | [checkout.html](file:///c:/Users/ezemi/Downloads/Boulangerie-de-BABI-main/Boulangerie-de-BABI-main/checkout.html) | Créneau réservé au fournil |
 | **4. Préparation (Prêt)** | Suit l'état d'avancement de la cuisson | [suivi.html](file:///c:/Users/ezemi/Downloads/Boulangerie-de-BABI-main/Boulangerie-de-BABI-main/suivi.html) | Notification : *« Prête au comptoir ! »* |
 | **5. N° de Retrait** | Récupère son N° de commande & Code PIN | [suivi.html](file:///c:/Users/ezemi/Downloads/Boulangerie-de-BABI-main/Boulangerie-de-BABI-main/suivi.html) & WhatsApp | Ticket & QR Code de retrait généré |
 | **6. Colis Récupéré** | Vient à la boutique de Cocody Riviera 2 | Comptoir Boulangerie de BABI | Colis tout chaud remis en mains propres |
