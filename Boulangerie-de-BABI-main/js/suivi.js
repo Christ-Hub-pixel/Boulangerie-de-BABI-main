@@ -120,9 +120,13 @@ async function fetchOrderStatus() {
             document.getElementById('order-total').innerText = order.total_price.toLocaleString() + ' FCFA';
             document.getElementById('order-payment').innerText = order.payment_method;
             document.getElementById('order-items').innerText = order.items;
-            if(order.confirmation_code) {
-                document.getElementById('confirmation-code-box').style.display = 'block';
-                document.getElementById('order-conf-code').innerText = order.confirmation_code;
+            if(order.confirmation_code || order.confCode) {
+                const confBox = document.getElementById('confirmation-code-box');
+                const confCodeEl = document.getElementById('order-conf-code');
+                const pickupRefEl = document.getElementById('pickup-order-ref');
+                if (confBox) confBox.style.display = 'block';
+                if (confCodeEl) confCodeEl.innerText = order.confirmation_code || order.confCode;
+                if (pickupRefEl) pickupRefEl.innerText = '#' + (order.id || 'BABI-100');
             }
             
             if(currentStatus !== order.status) {
@@ -176,11 +180,13 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('order-payment').innerText = currentOrder.payment_method || 'Mobile Money';
             document.getElementById('order-items').innerText = currentOrder.itemsSummary || 'Produits Boulangerie BABI';
 
-            if (currentOrder.confCode) {
+            if (currentOrder.confCode || currentOrder.confirmation_code) {
                 const confBox = document.getElementById('confirmation-code-box');
                 const confCodeEl = document.getElementById('order-conf-code');
+                const pickupRefEl = document.getElementById('pickup-order-ref');
                 if (confBox) confBox.style.display = 'block';
-                if (confCodeEl) confCodeEl.innerText = currentOrder.confCode;
+                if (confCodeEl) confCodeEl.innerText = currentOrder.confCode || currentOrder.confirmation_code;
+                if (pickupRefEl) pickupRefEl.innerText = '#' + (currentOrder.id || 'BABI-100');
             }
 
             // Update WhatsApp receipt button

@@ -238,11 +238,29 @@
                 </div>
             </div>
 
-            <!-- Confirmation Code Box -->
-            <div id="confirmation-code-box" class="card shadow-sm border-0 rounded-4 p-4 mt-4 text-center bg-white" style="display: none;">
-                <h6 class="fw-bold text-muted mb-2"><i class="fa-solid fa-lock text-warning me-2"></i> CODE DE RETRAIT AU COMPTOIR</h6>
-                <div class="display-3 fw-bold text-warning tracking-widest" id="order-conf-code" style="letter-spacing: 10px;">----</div>
-                <p class="text-muted small mt-2 mb-0"><i class="fa-solid fa-shield-halved text-success me-1"></i> Présentez ce code au comptoir pour retirer votre sachet sans attente.</p>
+            <!-- Confirmation Code & Pickup Ticket Box -->
+            <div id="confirmation-code-box" class="card shadow-sm border-0 rounded-4 p-4 mt-4 text-center bg-white" style="display: none; border-top: 4px solid #f97316 !important;">
+                <div class="d-inline-flex align-items-center justify-content-center p-2 rounded-circle bg-warning bg-opacity-20 mb-2">
+                    <i class="fa-solid fa-ticket fs-3 text-warning"></i>
+                </div>
+                <h6 class="fw-bold text-muted mb-1"><i class="fa-solid fa-store text-warning me-2"></i> NUMÉRO DE RETRAIT & CODE COMPTOIR</h6>
+                <div class="small text-muted mb-3">Pour récupérer votre colis à la Boulangerie de BABI (Riviera 2)</div>
+
+                <div class="d-flex flex-wrap justify-content-center align-items-center gap-4 my-2 p-3 bg-light rounded-4 border">
+                    <div class="text-center">
+                        <small class="text-muted text-uppercase fw-bold d-block" style="font-size:0.75rem;">N° de Commande / Colis</small>
+                        <span class="fs-4 fw-bold text-dark" id="pickup-order-ref">#---</span>
+                    </div>
+                    <div class="vr d-none d-sm-block"></div>
+                    <div class="text-center">
+                        <small class="text-muted text-uppercase fw-bold d-block" style="font-size:0.75rem;">Code Secret Guichet</small>
+                        <span class="display-6 fw-bold text-warning tracking-widest" id="order-conf-code" style="letter-spacing: 6px;">----</span>
+                    </div>
+                </div>
+
+                <p class="text-muted small mt-3 mb-0">
+                    <i class="fa-solid fa-shield-halved text-success me-1"></i> <strong>Sans file d'attente :</strong> Présentez ce ticket au comptoir pour retirer votre sachet immédiatement.
+                </p>
             </div>
             
             <div class="card shadow-sm border-0 rounded-4 p-4 mt-4 bg-white">

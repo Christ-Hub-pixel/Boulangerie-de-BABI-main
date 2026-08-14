@@ -724,51 +724,71 @@
         </div>
     </section>
 
-    <!-- Process Timeline -->
+    <!-- Process Timeline (Parcours Client Click & Collect) -->
     <section class="process py-5"
         style="padding-bottom: 50px !important; margin-bottom: 60px !important; background: #ffffff;">
         <div class="container pb-3">
-            <h2 class="section-title text-center mb-2">Comment ça marche ?</h2>
-            <p class="text-center text-muted mb-5">Commandez vos produits en seulement 4 étapes simples, rapides et
-                sécurisées.</p>
+            <div class="text-center mb-5">
+                <span class="badge px-3 py-2 rounded-pill mb-2" style="background: rgba(251, 146, 60, 0.15); color: #ea580c; border: 1px solid #fed7aa; font-weight: 600;">
+                    <i class="fa-solid fa-store me-1"></i> SERVICE CLICK & COLLECT SIMPLE & RAPIDE
+                </span>
+                <h2 class="section-title text-center mb-2" style="font-family: 'Playfair Display', serif; color: #2b160c;">Comment ça marche ?</h2>
+                <p class="text-center text-muted mx-auto" style="max-width: 600px;">Réservez vos produits préférés en ligne et récupérez votre colis tout chaud à la boulangerie sans faire la queue.</p>
+            </div>
 
             <div class="timeline-container position-relative">
-                <!-- Ligne continue dorée -->
-                <div class="timeline-line d-none d-md-block"></div>
-
-                <div class="row text-center process-steps">
-                    <!-- Etape 1 -->
-                    <div class="col-md-3 step">
-                        <div class="step-icon-wrapper">
-                            <div class="step-icon"><i class="fa-solid fa-basket-shopping"></i></div>
+                <div class="row text-center process-steps row-cols-1 row-cols-sm-2 row-cols-lg-5 g-4">
+                    
+                    <!-- Etape 1: Choisir -->
+                    <div class="col step">
+                        <div class="step-icon-wrapper mx-auto mb-3">
+                            <div class="step-icon shadow-sm"><i class="fa-solid fa-bread-slice text-warning"></i></div>
                         </div>
                         <span class="step-badge">1</span>
-                        <h4>Choisir</h4>
+                        <h5 class="fw-bold mb-1" style="color: #2b160c; font-size: 1.05rem;">1. Choisir le Produit</h5>
+                        <p class="text-muted small px-2">Pains chauds, viennoiseries dorées, gâteaux et jus frais 100% naturels.</p>
                     </div>
-                    <!-- Etape 2 -->
-                    <div class="col-md-3 step">
-                        <div class="step-icon-wrapper">
-                            <div class="step-icon"><i class="fa-solid fa-mobile-screen"></i></div>
+
+                    <!-- Etape 2: Commander & Mode de Paiement -->
+                    <div class="col step">
+                        <div class="step-icon-wrapper mx-auto mb-3">
+                            <div class="step-icon shadow-sm"><i class="fa-solid fa-cart-shopping text-warning"></i></div>
                         </div>
                         <span class="step-badge">2</span>
-                        <h4>Paiement sécurisé</h4>
+                        <h5 class="fw-bold mb-1" style="color: #2b160c; font-size: 1.05rem;">2. Commander & Payer</h5>
+                        <p class="text-muted small px-2">Ajoutez au panier et choisissez : Wave, Orange Money ou Espèces au guichet.</p>
                     </div>
-                    <!-- Etape 3 -->
-                    <div class="col-md-3 step">
-                        <div class="step-icon-wrapper">
-                            <div class="step-icon"><i class="fa-solid fa-store"></i></div>
+
+                    <!-- Etape 3: Réserver & Préparation au Fournil -->
+                    <div class="col step">
+                        <div class="step-icon-wrapper mx-auto mb-3">
+                            <div class="step-icon shadow-sm"><i class="fa-solid fa-fire-burner text-warning"></i></div>
                         </div>
                         <span class="step-badge">3</span>
-                        <h4>Retrait express</h4>
+                        <h5 class="fw-bold mb-1" style="color: #2b160c; font-size: 1.05rem;">3. Réserver & Cuisson</h5>
+                        <p class="text-muted small px-2">Choisissez votre créneau. Nos boulangers préparent votre commande au fournil.</p>
                     </div>
-                    <!-- Etape 4 -->
-                    <div class="col-md-3 step">
-                        <div class="step-icon-wrapper">
-                            <div class="step-icon"><i class="fa-solid fa-gift"></i></div>
+
+                    <!-- Etape 4: Prêt en Boulangerie & N° de Retrait -->
+                    <div class="col step">
+                        <div class="step-icon-wrapper mx-auto mb-3">
+                            <div class="step-icon shadow-sm"><i class="fa-solid fa-ticket text-warning"></i></div>
                         </div>
                         <span class="step-badge">4</span>
-                        <h4>Récompenses</h4>
+                        <h5 class="fw-bold mb-1" style="color: #2b160c; font-size: 1.05rem;">4. N° de Retrait</h5>
+                        <p class="text-muted small px-2">Recevez votre ticket & N° de retrait dès que votre commande est prête.</p>
                     </div>
+
+                    <!-- Etape 5: Colis Récupéré à la Boulangerie -->
+                    <div class="col step">
+                        <div class="step-icon-wrapper mx-auto mb-3">
+                            <div class="step-icon shadow-sm"><i class="fa-solid fa-bag-shopping text-warning"></i></div>
+                        </div>
+                        <span class="step-badge">5</span>
+                        <h5 class="fw-bold mb-1" style="color: #2b160c; font-size: 1.05rem;">5. Colis Récupéré</h5>
+                        <p class="text-muted small px-2">Présentez votre numéro au comptoir de Riviera 2 et récupérez votre colis !</p>
+                    </div>
+
                 </div>
             </div>
         </div>

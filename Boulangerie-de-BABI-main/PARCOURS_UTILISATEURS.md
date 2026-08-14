@@ -1,150 +1,63 @@
-# 🚴‍♂️ Parcours Utilisateurs & Cartographie des Flux — Boulangerie de BABI
+# 🥖 Parcours Utilisateurs & Cartographie Click & Collect — Boulangerie de BABI
 
-> **Document de Référence des Schémas de Navigation : Client, Administrateur et Livreur GPS**  
-> **Intégration des Modes de Paiement (Mobile Money & Espèces)**  
-> **Localisation Officielle :** Cocody Riviera 2, Abidjan - Côte d'Ivoire  
+> **Document de Référence :** Parcours Client Click & Collect, Gestion Fournil & Comptoir  
+> **Modèle Économique :** Commande en ligne, Préparation artisanale au Fournil & Retrait Express en Boutique (0 FCFA)  
+> **Localisation Officielle :** Cocody Riviera 2, Boulevard Sainte Famille, Abidjan - Côte d'Ivoire  
 
 ---
 
-## 🛍️ 1. Parcours Complet du Client (Customer Journey)
+## 🛍️ 1. Parcours Officiel du Client (Customer Journey)
 
-Ce schéma détaille chaque étape franchie par un client abidjanais, depuis son arrivée sur la vitrine jusqu'à la réception de son pain chaud et de son reçu thermique 80mm.
+Ce schéma détaille chaque étape du parcours : **Choisir le produit ➔ Commander ➔ Mode de paiement ➔ Réserver le créneau ➔ Cuisson au fournil ➔ N° de Retrait ➔ Passage à la Boulangerie ➔ Colis Récupéré**.
 
 ```mermaid
 flowchart TD
-    A["🌐 Arrivée sur index.html\n(Vitrine, Slogans HD & Four en direct)"] --> B{"Boutique Ouverte ?\n(05h45 - 23h00 Abidjan)"}
+    A["1️⃣ CHOISIR LE PRODUIT\n(Pains, Viennoiseries, Pâtisseries, Jus Frais)"] --> B["2️⃣ COMMANDER\n(Mise au panier 1-clic & Validation de la commande)"]
     
-    B -->|Non (23h00 - 05h45)| C["🥐 Pop-up d'Alerte : Ouverture à 05h45\n(Commande bloquée temporairement)"]
-    B -->|Oui (05h45 - 23h00)| D["🔍 Navigation & Recherche Produit\n(A-Z, Filtrage Catégories, Tri par Prix)"]
+    B --> C{"3️⃣ MODE DE PAIEMENT\n& RÉSERVATION"}
+    C -->|Wave Mobile Money| P1["🌊 Paiement Wave QR / App"]
+    C -->|Orange Money| P2["🍊 Code Push USSD #144*82#"]
+    C -->|MTN / Moov| P3["🟡 MTN MoMo / Moov Money"]
+    C -->|Espèces au Guichet| P4["💵 Paiement Cash au Comptoir"]
     
-    D --> E["❤️ Ajout aux Favoris (favoris.html)"]
-    D --> F["🛒 Ajout au Panier Unifié (cart.html)"]
+    P1 --> D["⏰ RÉSERVER LE CRÉNEAU\n(Dès que possible 15-20 min, 1h, Fournée du soir...)"]
+    P2 --> D
+    P3 --> D
+    P4 --> D
     
-    F --> G["📋 Saisie Adresse & Commune à Abidjan\n(Calcul Algorithmique des Frais km dès 500 FCFA : 0-3km=500F, 3-5km=1000F...)"]
+    D --> E["🔥 PRÉPARATION & CUISSON AU FOURNIL\n(Notification en direct sur suivi.html)"]
     
-    G --> H{"Choix du Mode de Paiement"}
-    H -->|Wave Mobile Money| I1["🌊 Transaction Wave"]
-    H -->|Orange Money| I2["🍊 Transaction Orange Money"]
-    H -->|Espèces| I3["💵 Paiement Cash à la Livraison"]
+    E --> F["🎫 GÉNÉRATION DU N° DE RETRAIT & CODE SECRET\n(Ex: Commande #BABI-CMD-884920 | Code Guichet: 6005)"]
     
-    I1 --> J["🔒 Génération de la Commande & Code PIN à 4 chiffres\n(ex: #BABI-CMD-884920 | PIN: 6005)"]
-    I2 --> J
-    I3 --> J
+    F --> G["🏪 PASSAGE À LA BOULANGERIE\n(Cocody Riviera 2 - Église Sainte Famille)"]
     
-    J --> K["🛵 Redirection vers suivi.html\n(Suivi GPS en Direct + Reçu Thermique 80mm)"]
+    G --> H["🛍️ 6️⃣ COLIS RÉCUPÉRÉ AU COMPTOIR\n(Présentation du N° de retrait sans faire la queue !)"]
 ```
 
 ---
 
-## 👨‍💼 2. Parcours de l'Administrateur (Admin User Flow)
+## 👨‍💼 2. Parcours de l'Équipe Fournil & Comptoir (Merchant Flow)
 
-Ce schéma décrit le processus de gestion utilisé par l'équipe de la boulangerie pour piloter les stocks, les prix et traiter les commandes entrantes.
+Ce schéma décrit le processus de traitement des réservations par l'équipe en boutique :
 
 ```mermaid
 flowchart TD
-    A1["🔐 Connexion Admin (connexion.html)"] --> B1{"Vérification Identifiants Admin"}
-    B1 -->|Erreur| C1["🔴 Notification Identifiant / Mot de Passe Incorrect"]
-    B1 -->|Succès| D1["📊 Accès au Dashboard Admin (admin.html)"]
-    
-    D1 --> E1["📦 Gestion du Catalogue & Stocks"]
-    E1 --> E1_1["➕ Ajout d'un nouveau produit"]
-    E1 --> E1_2["✏️ Modification du Prix / Nom / Catégorie"]
-    E1 --> E1_3["🔄 Bascule du Stock (En stock / En rupture)"]
-    
-    D1 --> F1["📋 Gestion des Commandes Clients en Direct"]
-    F1 --> F1_1["👀 Consultation des nouvelles commandes (#BABI-CMD-XXX)"]
-    F1 --> F1_2["🔥 Modification du Statut : Nouveau ➔ En Préparation ➔ En Livraison"]
-    F1 --> F1_3["🛵 Attribution automatique au Livreur disponible"]
-    
-    D1 --> G1["📈 Reporting & Statistiques Ventes"]
-    G1 --> G1_1["💰 Chiffre d'Affaires du Jour (FCFA)"]
-    G1 --> G1_2["🥐 Top Produits Vendus (Baguettes, Viennoiseries, Jus)"]
+    A1["🔔 Réception de la Commande (#BABI-CMD-XXX)"] --> B1["🥖 Cuisson & Emballage au Fournil"]
+    B1 --> C1["📦 Mise en sachet & Étiquetage avec le N° de Retrait"]
+    C1 --> D1["📲 Passage au statut : 'Prêt au Comptoir' (Alerte WhatsApp/Web)"]
+    D1 --> E1["🤝 Accueil du client au Guichet Express"]
+    E1 --> F1["✅ Saisie du Code Secret ➔ Colis Remis & Validé"]
 ```
 
 ---
 
-## 🛵 3. Parcours du Livreur GPS (Rider User Flow)
+## 📋 Tableau Récapitulatif des Étapes du Client
 
-Ce schéma modélise le parcours du livreur en scooter depuis la prise en charge de la commande à la boulangerie jusqu'à la validation sécurisée par code PIN.
-
-```mermaid
-flowchart TD
-    A2["📱 Ouverture Cockpit Livreur (livreur.html)"] --> B2["🟢 Connexion GPS & Signal Satellite Actif"]
-    
-    B2 --> C2["🛵 Saisie ou Réception de l'ID Commande (#BABI-CMD-XXX)"]
-    
-    C2 --> D2["🗺️ Chargement de l'Itinéraire Leaflet GPS\n(Point de départ : Cocody Riviera 2 ➔ Adresse Client)"]
-    
-    D2 --> E2["📞 Bouton Appel Direct du Client (07 04 38 92 01)"]
-    
-    E2 --> F2["📍 Arrivée à la Destination du Client"]
-    
-    F2 --> G2["🔒 Demande & Saisie du Code PIN Confidentiel (ex: 6005)"]
-    
-    G2 --> H2{"Vérification du Code PIN"}
-    H2 -->|Incorrect| I2["🔴 Alerte Code Erroné - Demander le bon code au client"]
-    H2 -->|Valide| J2["🟢 Confirmation de la Remise du Paquet & Validation"]
-    
-    J2 --> K2["🧾 Impression du Reçu Thermique 80mm & Fin de Course"]
-```
-
----
-
-## 💳 4. Schéma de Traitement des Modes de Paiement (Payment Flow)
-
-```mermaid
-flowchart LR
-    subgraph PANIER["🛒 PANIER CLIENT"]
-        MONTANT["Montant Produits + Frais Livraison Express (1 000 FCFA)"]
-    end
-
-    subgraph OPTIONS["💳 OPTIONS DE PAIEMENT ACCEPTEES"]
-        WAVE["🌊 Wave Mobile Money"]
-        OM["🍊 Orange Money"]
-        CASH["💵 Espèces à la Livraison"]
-    end
-
-    subgraph SECURE["⚙️ PROCESSEUR DE SÉCURITÉ"]
-        SCHEDULE_CHECK["⏰ Vérification Horaires Store (06h-20h)"]
-        PIN_GEN["🔒 Génération Code PIN Confidentiel à 4 Chiffres"]
-        TICKET_GEN["🧾 Ticket Thermique 80mm Officiel"]
-    end
-
-    PANIER --> OPTIONS
-    OPTIONS --> SCHEDULE_CHECK
-    SCHEDULE_CHECK -->|Boutique Ouverte| PIN_GEN
-    PIN_GEN --> TICKET_GEN
-```
-
----
-
-## 🧾 5. Modèle Visuel du Ticket de Caisse Thermique Imprimable (80mm)
-
-```text
-+--------------------------------------------------+
-|              BOULANGERIE DE BABI                 |
-|   TEL: 2722564123 / 0704389201 / 0706817977      |
-|                     Recu                         |
-|--------------------------------------------------|
-| Receipt: 2512                                    |
-| Date: 22 juil. 2026 12:07:54                     |
-| Terminal: ONLINE-WEB                             |
-| Caissier(e): CAISSES 1                           |
-|--------------------------------------------------|
-| Article                  Prix     Qte    Valeur  |
-|--------------------------------------------------|
-| PAIN AU CHOCOLAT        F 500     x2     F 1 000 |
-| CROISSANT               F 500     x2     F 1 000 |
-| JUS DE BAOBAB (PETIT)   F 300     x1     F   300 |
-|--------------------------------------------------|
-| Items count: 5                                   |
-| Total TTC                                F 2 300 |
-| Paiement (Wave / OM / Cash)              F 2 300 |
-|--------------------------------------------------|
-|     Merci de votre visite a la Boulangerie       |
-|               de Babi ! A bientot !              |
-+--------------------------------------------------+
-```
-
----
-*Document des Parcours Utilisateurs généré pour la Boulangerie de BABI.*
+| Étape | Action Client | Interface / Page | Résultat / Notification |
+| :--- | :--- | :--- | :--- |
+| **1. Choisir** | Explore le catalogue et les catégories | [index.html](file:///c:/Users/ezemi/Downloads/Boulangerie-de-BABI-main/Boulangerie-de-BABI-main/index.html) & [produits.html](file:///c:/Users/ezemi/Downloads/Boulangerie-de-BABI-main/Boulangerie-de-BABI-main/produits.html) | Produits ajoutés au panier |
+| **2. Commander** | Renseigne son nom & numéro de téléphone | [cart.html](file:///c:/Users/ezemi/Downloads/Boulangerie-de-BABI-main/Boulangerie-de-BABI-main/cart.html) & [checkout.html](file:///c:/Users/ezemi/Downloads/Boulangerie-de-BABI-main/Boulangerie-de-BABI-main/checkout.html) | Panier validé sans frais (0 FCFA) |
+| **3. Payer & Réserver** | Sélectionne Wave / OM / Espèces et choisit l'heure de retrait | [checkout.html](file:///c:/Users/ezemi/Downloads/Boulangerie-de-BABI-main/Boulangerie-de-BABI-main/checkout.html) | Créneau réservé au fournil |
+| **4. Préparation (Prêt)** | Suit l'état d'avancement de la cuisson | [suivi.html](file:///c:/Users/ezemi/Downloads/Boulangerie-de-BABI-main/Boulangerie-de-BABI-main/suivi.html) | Notification : *« Prête au comptoir ! »* |
+| **5. N° de Retrait** | Récupère son N° de commande & Code PIN | [suivi.html](file:///c:/Users/ezemi/Downloads/Boulangerie-de-BABI-main/Boulangerie-de-BABI-main/suivi.html) & WhatsApp | Ticket & QR Code de retrait généré |
+| **6. Colis Récupéré** | Vient à la boutique de Cocody Riviera 2 | Comptoir Boulangerie de BABI | Colis tout chaud remis en mains propres |
