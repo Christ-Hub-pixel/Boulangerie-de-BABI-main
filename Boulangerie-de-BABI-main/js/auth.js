@@ -28,20 +28,42 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- 2. PAGE D'INSCRIPTION ---
     if (window.location.pathname.includes('inscription.html') || document.title.includes('Inscription')) {
         const registerForm = document.querySelector('.lr-form');
+        const termsCheckbox = document.getElementById('acceptTermsCheckbox') || document.querySelector('input[name="terms"]');
+        const termsError = document.getElementById('termsErrorMsg');
+        const termsContainer = document.getElementById('termsContainer');
+
+        if (termsCheckbox) {
+            termsCheckbox.addEventListener('change', () => {
+                if (termsCheckbox.checked) {
+                    if (termsError) termsError.classList.add('d-none');
+                    if (termsContainer) termsContainer.classList.remove('has-error');
+                }
+            });
+        }
+
         if (registerForm) {
             registerForm.addEventListener('submit', (e) => {
                 e.preventDefault();
                 
-                const inputs = registerForm.querySelectorAll('input');
-                const prenom = inputs[0].value;
-                const nom = inputs[1].value;
-                const email = inputs[2].value;
-                const phone = inputs[3] ? inputs[3].value : '';
+                // Vérification stricte et obligatoire de la case à cocher
+                if (termsCheckbox && !termsCheckbox.checked) {
+                    if (termsError) termsError.classList.remove('d-none');
+                    if (termsContainer) termsContainer.classList.add('has-error');
+                    termsCheckbox.focus();
+                    alert("⚠️ Vous devez obligatoirement accepter les Conditions Générales et la Politique de Confidentialité pour créer votre compte.");
+                    return false;
+                }
+
+                const inputs = registerForm.querySelectorAll('input:not([type="checkbox"])');
+                const prenom = inputs[0] ? inputs[0].value.trim() : '';
+                const nom = inputs[1] ? inputs[1].value.trim() : '';
+                const email = inputs[2] ? inputs[2].value.trim() : '';
+                const phone = inputs[3] ? inputs[3].value.trim() : '';
                 
                 const user = { prenom, nom, email, phone };
                 localStorage.setItem('babi_user', JSON.stringify(user));
                 
-                alert("Compte créé avec succès ! Bienvenue " + prenom + ".");
+                alert("Compte créé avec succès ! Bienvenue " + (prenom || 'chez nous') + ".");
                 window.location.href = 'index.html';
             });
         }

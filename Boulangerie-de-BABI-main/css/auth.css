@@ -223,19 +223,28 @@
     top: 50%;
     left: 0;
     transform: translateY(-50%);
-    height: 18px;
-    width: 18px;
-    background-color: #eee;
+    height: 19px;
+    width: 19px;
+    background-color: #f8fafc;
+    border: 1.5px solid #94a3b8;
     border-radius: 4px;
     transition: 0.2s;
 }
 
 .checkbox-container:hover input ~ .checkmark {
-    background-color: #ccc;
+    background-color: #f1f5f9;
+    border-color: #64748b;
 }
 
 .checkbox-container input:checked ~ .checkmark {
     background-color: var(--primary);
+    border-color: var(--primary);
+}
+
+.checkbox-container.has-error .checkmark {
+    border-color: #ef4444 !important;
+    background-color: #fef2f2 !important;
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2);
 }
 
 .checkmark:after {

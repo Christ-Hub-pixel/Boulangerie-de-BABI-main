@@ -237,11 +237,14 @@
 
 
                         <div class="form-actions-login" style="margin-top: 20px; margin-bottom: 20px;">
-                            <label class="checkbox-container">
-                                <input type="checkbox" required>
-                                <span class="checkmark"></span>
-                                <span style="font-size: 0.85rem;">J'accepte les <a href="#" style="color:var(--primary-dark); font-weight:600;">Conditions générales</a> et la <a href="#" style="color:var(--primary-dark); font-weight:600;">Politique de confidentialité</a> *</span>
+                            <label class="checkbox-container" id="termsContainer" style="padding-left: 28px; cursor: pointer;">
+                                <input type="checkbox" id="acceptTermsCheckbox" name="terms" required>
+                                <span class="checkmark" style="border: 1.5px solid #94a3b8;"></span>
+                                <span style="font-size: 0.85rem; color: #1e293b; line-height: 1.4;">J'accepte les <a href="#" style="color:var(--primary-dark); font-weight:700; text-decoration: underline;">Conditions générales</a> et la <a href="#" style="color:var(--primary-dark); font-weight:700; text-decoration: underline;">Politique de confidentialité</a> <span class="text-danger fw-bold">* (Obligatoire)</span></span>
                             </label>
+                            <div id="termsErrorMsg" class="text-danger small mt-2 d-none fw-bold" style="font-size: 0.8rem; background: #fef2f2; padding: 6px 10px; border-radius: 6px; border: 1px solid #fca5a5;">
+                                <i class="fa-solid fa-circle-exclamation me-1"></i> Vous devez obligatoirement cocher cette case pour valider la création de votre compte.
+                            </div>
                         </div>
 
                         <button type="submit" class="btn btn-primary btn-block btn-login">
