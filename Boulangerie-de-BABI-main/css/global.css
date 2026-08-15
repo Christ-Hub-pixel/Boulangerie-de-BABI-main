@@ -767,6 +767,16 @@ table {
     background: #fcf8f2;
     border: 1px solid #f3ece0;
     transition: all 0.2s ease;
+    padding: 8px 8px !important;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 8px;
+    border-radius: 10px;
+    overflow: hidden;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .babi-cat-card:hover {
@@ -774,6 +784,42 @@ table {
     border-color: #fde047;
     transform: translateY(-2px);
     box-shadow: 0 4px 10px rgba(245, 158, 11, 0.15);
+}
+
+.babi-cat-emoji {
+    font-size: 1.25rem !important;
+    line-height: 1;
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.babi-cat-label {
+    font-size: 0.74rem !important;
+    font-weight: 700;
+    line-height: 1.15;
+    color: #1e293b;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 0;
+    flex: 1;
+    letter-spacing: -0.2px;
+}
+
+@media (max-width: 576px) {
+    .babi-cat-card {
+        padding: 6px 6px !important;
+        gap: 5px;
+        min-height: 40px;
+    }
+    .babi-cat-emoji {
+        font-size: 1.15rem !important;
+    }
+    .babi-cat-label {
+        font-size: 0.68rem !important;
+    }
 }
 
 .babi-search-item {

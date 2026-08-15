@@ -267,42 +267,42 @@
             // Accès direct aux rayons
             html += `
             <div class="babi-search-section border-top pt-2 mt-2">
-                <div class="babi-search-section-title mb-2"><i class="fa-solid fa-layer-group text-primary me-1"></i> Rayons de la boulangerie</div>
+                <div class="babi-search-section-title mb-2"><i class="fa-solid fa-layer-group text-warning me-1"></i> Rayons de la boulangerie</div>
                 <div class="row g-2">
                     <div class="col-4">
-                        <a href="produits.html?cat=pain" class="babi-cat-card text-decoration-none d-flex align-items-center gap-2 p-2 rounded">
-                            <span class="fs-4">🥖</span>
-                            <span class="fw-semibold fs-sm text-dark">Pains</span>
+                        <a href="produits.html?cat=pain" class="babi-cat-card text-decoration-none" title="Pains">
+                            <span class="babi-cat-emoji">🥖</span>
+                            <span class="babi-cat-label">Pains</span>
                         </a>
                     </div>
                     <div class="col-4">
-                        <a href="produits.html?cat=viennoiserie" class="babi-cat-card text-decoration-none d-flex align-items-center gap-2 p-2 rounded">
-                            <span class="fs-4">🥐</span>
-                            <span class="fw-semibold fs-sm text-dark">Viennoiseries</span>
+                        <a href="produits.html?cat=viennoiserie" class="babi-cat-card text-decoration-none" title="Viennoiseries">
+                            <span class="babi-cat-emoji">🥐</span>
+                            <span class="babi-cat-label">Viennoiseries</span>
                         </a>
                     </div>
                     <div class="col-4">
-                        <a href="produits.html?cat=patisserie" class="babi-cat-card text-decoration-none d-flex align-items-center gap-2 p-2 rounded">
-                            <span class="fs-4">🍰</span>
-                            <span class="fw-semibold fs-sm text-dark">Pâtisseries</span>
+                        <a href="produits.html?cat=patisserie" class="babi-cat-card text-decoration-none" title="Pâtisseries">
+                            <span class="babi-cat-emoji">🍰</span>
+                            <span class="babi-cat-label">Pâtisseries</span>
                         </a>
                     </div>
                     <div class="col-4">
-                        <a href="produits.html?cat=jus" class="babi-cat-card text-decoration-none d-flex align-items-center gap-2 p-2 rounded">
-                            <span class="fs-4">🥤</span>
-                            <span class="fw-semibold fs-sm text-dark">Jus Frais</span>
+                        <a href="produits.html?cat=jus" class="babi-cat-card text-decoration-none" title="Jus Frais">
+                            <span class="babi-cat-emoji">🥤</span>
+                            <span class="babi-cat-label">Jus Frais</span>
                         </a>
                     </div>
                     <div class="col-4">
-                        <a href="produits.html?cat=glace" class="babi-cat-card text-decoration-none d-flex align-items-center gap-2 p-2 rounded">
-                            <span class="fs-4">🍨</span>
-                            <span class="fw-semibold fs-sm text-dark">Glaces</span>
+                        <a href="produits.html?cat=glace" class="babi-cat-card text-decoration-none" title="Glaces">
+                            <span class="babi-cat-emoji">🍨</span>
+                            <span class="babi-cat-label">Glaces</span>
                         </a>
                     </div>
                     <div class="col-4">
-                        <a href="produits.html?cat=boisson" class="babi-cat-card text-decoration-none d-flex align-items-center gap-2 p-2 rounded">
-                            <span class="fs-4">🧃</span>
-                            <span class="fw-semibold fs-sm text-dark">Boissons</span>
+                        <a href="produits.html?cat=boisson" class="babi-cat-card text-decoration-none" title="Boissons">
+                            <span class="babi-cat-emoji">🧃</span>
+                            <span class="babi-cat-label">Boissons</span>
                         </a>
                     </div>
                 </div>
