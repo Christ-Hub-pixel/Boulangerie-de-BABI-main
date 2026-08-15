@@ -288,13 +288,6 @@ function populateThermalReceiptData(order) {
         recDeliveryRow.style.display = 'flex';
     }
 
-    if (order.promo_discount && order.promo_discount > 0 && recDiscount) {
-        recDiscount.innerText = `-${order.promo_discount.toLocaleString()} FCFA`;
-        if (recDiscountRow) recDiscountRow.style.display = 'flex';
-    } else if (recDiscountRow) {
-        recDiscountRow.style.display = 'none';
-    }
-
     if (recTotal) recTotal.innerText = (order.total_price || sub || 0).toLocaleString() + ' FCFA';
 
     // Articles list

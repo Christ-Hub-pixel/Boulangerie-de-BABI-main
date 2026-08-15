@@ -73,8 +73,7 @@ function renderCheckoutSummary() {
     const items = typeof getCartItems === 'function' ? getCartItems() : [];
     const subtotal = typeof getCartTotal === 'function' ? getCartTotal() : 0;
     const deliveryCost = getSelectedDeliveryCost();
-    const promoDiscount = window.appliedPromoDiscount || 0;
-    const grandTotal = Math.max(0, subtotal + deliveryCost - promoDiscount);
+    const grandTotal = Math.max(0, subtotal + deliveryCost);
 
     const summaryBox = document.getElementById('checkoutSummaryBox') || document.querySelector('.col-lg-4 .bg-white');
     if (!summaryBox) return;
@@ -105,37 +104,20 @@ function renderCheckoutSummary() {
 
         ${clickAndCollectBanner}
         
-        <div class="items-list mb-3" style="max-height: 220px; overflow-y: auto;">
+        <div class="items-list mb-3" style="max-height: 240px; overflow-y: auto;">
             ${itemsHtml}
-        </div>
-
-        <!-- Code Promo / Avantage Fidélité -->
-        <div class="mb-3 pt-2 border-bottom pb-3">
-            <label class="form-label fs-xs fw-bold text-dark mb-1"><i class="fa-solid fa-ticket text-warning me-1"></i> Code Promo / Fidélité</label>
-            <div class="input-group input-group-sm">
-                <input type="text" class="form-control text-uppercase fw-bold shadow-none" id="promoCodeInput" placeholder="Ex: BABI10" value="${window.appliedPromoCode || ''}" style="color: #111827 !important; background-color: #ffffff !important;">
-                <button class="btn btn-dark fw-bold px-3" type="button" onclick="applyPromoCode()">APPLIQUER</button>
-            </div>
-            <div id="promoFeedback" class="small mt-1 ${window.appliedPromoCode ? 'text-success fw-bold' : 'd-none'}">
-                ${window.appliedPromoCode ? '🎉 Code "' + window.appliedPromoCode + '" appliqué (-' + promoDiscount.toLocaleString() + ' FCFA)' : ''}
-            </div>
         </div>
         
         <div class="d-flex justify-content-between mb-2 fs-sm text-muted">
             <span>Sous-total (${items.reduce((s,i) => s+(i.qty||1), 0)} articles)</span>
             <span class="fw-bold text-dark">${subtotal.toLocaleString()} FCFA</span>
         </div>
-        <div class="d-flex justify-content-between mb-2 fs-sm text-muted">
+        <div class="d-flex justify-content-between mb-3 fs-sm text-muted">
             <span>Frais de retrait au fournil</span>
             <span class="fw-bold text-success">Gratuit (0 FCFA)</span>
         </div>
-        ${promoDiscount > 0 ? `
-        <div class="d-flex justify-content-between mb-3 fs-sm text-success fw-bold border-bottom pb-2">
-            <span><i class="fa-solid fa-tag me-1"></i> Réduction (${window.appliedPromoCode})</span>
-            <span>-${promoDiscount.toLocaleString()} FCFA</span>
-        </div>` : '<div class="border-bottom mb-3"></div>'}
         
-        <div class="d-flex justify-content-between mb-4">
+        <div class="d-flex justify-content-between mb-4 border-top pt-3">
             <span class="fw-bold fs-5" style="color:#2b160c;">Total</span>
             <span class="fw-bold fs-5 text-primary" style="color:#fb923c !important;">${grandTotal.toLocaleString()} FCFA</span>
         </div>
@@ -152,42 +134,6 @@ function renderCheckoutSummary() {
         accordionSubmitBtn.innerHTML = `<i class="fa-solid fa-check-circle me-2"></i>CONFIRMER ET RÉSERVER (${grandTotal.toLocaleString()} FCFA)`;
         accordionSubmitBtn.onclick = submitBabiOrder;
     }
-}
-
-function applyPromoCode() {
-    const inputEl = document.getElementById('promoCodeInput');
-    const feedbackEl = document.getElementById('promoFeedback');
-    if (!inputEl) return;
-
-    const code = inputEl.value.trim().toUpperCase();
-    const subtotal = typeof getCartTotal === 'function' ? getCartTotal() : 0;
-
-    if (!code) {
-        if (feedbackEl) {
-            feedbackEl.className = "small mt-1 text-danger fw-bold";
-            feedbackEl.innerText = "Veuillez entrer un code promo.";
-        }
-        return;
-    }
-
-    let discount = 0;
-    if (code === 'BABI10') {
-        discount = Math.round(subtotal * 0.10); // 10% off
-    } else if (code === 'CROISSANT' || code === 'BABI500') {
-        discount = 500;
-    } else if (code === 'WELCOME' || code === 'RETRAIT' || code === 'BABI1000') {
-        discount = 1000;
-    } else {
-        if (feedbackEl) {
-            feedbackEl.className = "small mt-1 text-danger fw-bold";
-            feedbackEl.innerText = "Code promo invalide.";
-        }
-        return;
-    }
-
-    window.appliedPromoCode = code;
-    window.appliedPromoDiscount = discount;
-    renderCheckoutSummary();
 }
 
 function updateDeliveryHighlight() {
@@ -285,8 +231,7 @@ function submitBabiOrder(isAlreadyValidated = false) {
     const paymentMethod = isWave ? 'Wave Mobile Money' : 'Paiement au comptoir (Espèces)';
 
     const subtotal = typeof getCartTotal === 'function' ? getCartTotal() : 0;
-    const promoDiscount = window.appliedPromoDiscount || 0;
-    const grandTotal = Math.max(0, subtotal + deliveryCost - promoDiscount);
+    const grandTotal = Math.max(0, subtotal + deliveryCost);
 
     const orderId = 'BABI-CMD-' + Math.floor(100000 + Math.random() * 900000);
     const confCode = Math.floor(1000 + Math.random() * 9000);
@@ -303,13 +248,11 @@ function submitBabiOrder(isAlreadyValidated = false) {
         pickupSlot: pickupSlot,
         delivery_method: deliveryMethod,
         payment_method: paymentMethod,
-        payment_status: isMobileMoney ? 'paye' : 'en_attente',
+        payment_status: isWave ? 'paye' : 'en_attente',
         items: items,
         itemsSummary: items.map(i => `${i.name || i.title} (x${i.qty || i.quantity || 1})`).join(', '),
         subtotal: subtotal,
         delivery_cost: 0,
-        promo_code: window.appliedPromoCode || '',
-        promo_discount: promoDiscount,
         total_price: grandTotal,
         notes: orderNotes,
         status: 'Nouveau',
@@ -392,9 +335,6 @@ window.generateWhatsAppOrderUrl = function(order) {
     msg += `━━━━━━━━━━━━━━━━━━━━━\n`;
     msg += `💰 *Sous-total :* ${(order.subtotal || 0).toLocaleString()} FCFA\n`;
     msg += `✨ *Frais de Retrait :* 0 FCFA (GRATUIT)\n`;
-    if (order.promo_discount) {
-        msg += `🎁 *Remise Promo (${order.promo_code}) :* -${order.promo_discount.toLocaleString()} FCFA\n`;
-    }
     msg += `💎 *TOTAL À RÉGLER :* *${(order.total_price || 0).toLocaleString()} FCFA*\n`;
     if (order.notes) {
         msg += `📝 *Remarques :* ${order.notes}\n`;
@@ -683,5 +623,4 @@ window.togglePaymentMode = togglePaymentMode;
 window.selectCashChange = selectCashChange;
 window.openOperatorPaymentModal = openOperatorPaymentModal;
 window.triggerModalPaymentSuccess = triggerModalPaymentSuccess;
-window.applyPromoCode = applyPromoCode;
 window.updateDeliveryHighlight = updateDeliveryHighlight;

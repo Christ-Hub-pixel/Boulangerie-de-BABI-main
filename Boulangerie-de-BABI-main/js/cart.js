@@ -5,7 +5,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     renderCartPage();
     setupDeliveryListeners();
-    setupPromoCodeListener();
 });
 
 function renderCartPage() {
@@ -102,14 +101,7 @@ function renderCartPage() {
     // Delivery calculation
     let deliveryCost = 1000;
     const deliveryRadio = document.querySelector('input[name="delivery_method"]:checked');
-    if (deliveryRadio && deliveryRadio.value === 'pickup') {
-        deliveryCost = 0;
-    }
-
-    // Promo discount calculation
-    let discount = window.appliedDiscount || 0;
-
-    updateCartSummary(totalQty, subtotal, deliveryCost, discount);
+    updateCartSummary(totalQty, subtotal, deliveryCost);
 }
 
 function handleQtyChange(index, newQty) {
@@ -143,31 +135,13 @@ function setupDeliveryListeners() {
     });
 }
 
-function setupPromoCodeListener() {
-    const applyBtn = document.getElementById('applyPromoBtn');
-    const promoInput = document.getElementById('promoInput');
-    if (!applyBtn || !promoInput) return;
-
-    applyBtn.addEventListener('click', () => {
-        const code = promoInput.value.trim().toUpperCase();
-        if (code === 'BABI10' || code === 'BABI') {
-            const subtotal = typeof getCartTotal === 'function' ? getCartTotal() : 0;
-            window.appliedDiscount = Math.round(subtotal * 0.10);
-            alert(`🎉 Code promo "${code}" appliqué ! Vous bénéficiez de 10% de réduction (-${window.appliedDiscount} FCFA).`);
-            renderCartPage();
-        } else if (code.length > 0) {
-            alert('❌ Code promo invalide ou expiré. Essayez avec le code : BABI10');
-        }
-    });
-}
-
-function updateCartSummary(totalQty, subtotal, deliveryCost, discount) {
+function updateCartSummary(totalQty, subtotal, deliveryCost) {
     const totalValEl = document.querySelector('.total-val');
     const grandTotalEl = document.querySelector('.grand-total-val');
     const subtotalLbl = document.querySelector('.subtotal-label');
     const checkoutBtn = document.getElementById('checkoutBtn');
 
-    const grandTotal = Math.max(0, subtotal + deliveryCost - discount);
+    const grandTotal = Math.max(0, subtotal + (deliveryCost || 0));
 
     if (totalValEl) totalValEl.innerText = subtotal.toLocaleString() + ' FCFA';
     if (grandTotalEl) grandTotalEl.innerText = grandTotal.toLocaleString() + ' FCFA';
@@ -201,13 +175,6 @@ function updateCartSummary(totalQty, subtotal, deliveryCost, discount) {
                 <span>Retrait en Boutique</span>
                 <span class="fw-bold text-success">Gratuit (0 FCFA)</span>
             </div>
-            
-            ${discount > 0 ? `
-            <div class="d-flex justify-content-between mb-2 fs-6 text-success fw-bold">
-                <span>Réduction Code Promo</span>
-                <span>- ${discount.toLocaleString()} FCFA</span>
-            </div>
-            ` : ''}
             
             <hr class="my-3">
             
