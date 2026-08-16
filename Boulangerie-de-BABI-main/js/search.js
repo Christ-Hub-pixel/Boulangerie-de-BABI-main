@@ -77,6 +77,7 @@
         "Crêpe Suzette": "assets/Crêpe Suzette.png",
         "Fondant au Chocolat": "assets/Fondant au Chocolat.png",
         "Glace": "assets/glace.png",
+        "Pain au Lait Sucré": "assets/cabre.png",
         "Pain Cabré": "assets/cabre.png",
         "Pain Marbré": "assets/marbre.png",
         "Pain de Mie": "assets/pain de mie.png"

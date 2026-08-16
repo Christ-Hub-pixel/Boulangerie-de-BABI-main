@@ -65,6 +65,7 @@ const realProductImages = {
     "Crêpe Suzette": "assets/Crêpe Suzette.png",
     "Fondant au Chocolat": "assets/Fondant au Chocolat.png",
     "Glace": "assets/glace.png",
+    "Pain au Lait Sucré": "assets/cabre.png",
     "Pain Cabré": "assets/cabre.png",
     "Pain Marbré": "assets/marbre.png",
     "Pain de Mie": "assets/pain de mie.png"
@@ -159,8 +160,8 @@ const FALLBACK_PRODUCTS = [
     { id: 73, nom: "Fondant au Chocolat", prix: 1000, categorie: "patisserie" },
     { id: 74, nom: "Glace", prix: 1000, categorie: "glace" },
 
-    // === PAINS SPECIAUX ===
-    { id: 75, nom: "Pain Cabré", prix: 700, categorie: "pain" },
+    // === PAINS SPECIAUX & VIENNOISERIES ===
+    { id: 75, nom: "Pain au Lait Sucré", prix: 700, categorie: "pain" },
     { id: 76, nom: "Pain Breton", prix: 700, categorie: "pain" },
     { id: 77, nom: "Pain Délice", prix: 700, categorie: "pain" },
     { id: 78, nom: "Pain Marbré", prix: 500, categorie: "pain" },

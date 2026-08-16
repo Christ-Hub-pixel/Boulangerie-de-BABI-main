@@ -752,10 +752,10 @@
     },
     {
         "id": "ps1",
-        "name": "Pain Cabre",
+        "name": "Pain au Lait Sucré",
         "price": 700,
         "category": "Pains",
-        "description": "Pain spécial de tradition régionale.",
+        "description": "Délicieux pain au lait moelleux et doré, délicatement sucré.",
         "image": "assets/cabre.png",
         "rating": 4.7,
         "reviews": 55

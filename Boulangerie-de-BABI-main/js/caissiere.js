@@ -116,6 +116,7 @@ const posRealImages = {
     "Fondant au Chocolat": "assets/Fondant au Chocolat.png",
     "Glace Artisanale (Pot)": "assets/glace.png",
     "Glace": "assets/glace.png",
+    "Pain au Lait Sucré": "assets/cabre.png",
     "Pain Cabre": "assets/cabre.png",
     "Pain Cabré": "assets/cabre.png",
     "Pain Breton": "assets/pain complet.png",

@@ -3,7 +3,7 @@
    ========================================= */
 
 body {
-    background-color: #f5f5f5; /* Jumia uses a light gray background for the body */
+    background: transparent;
 }
 
 /* Jumia Hero */

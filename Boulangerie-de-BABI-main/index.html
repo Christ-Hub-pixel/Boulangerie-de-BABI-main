@@ -863,8 +863,8 @@
     </section>
 
     <!-- Mobile App Download Banner Section -->
-    <section class="py-5 text-white"
-        style="background: linear-gradient(135deg, #2b160c 0%, #4a2717 100%); position: relative; overflow: hidden; margin-top: 60px !important; margin-bottom: 0px !important;">
+    <section class="py-5 text-white my-5"
+        style="background: linear-gradient(135deg, rgba(27, 13, 7, 0.88) 0%, rgba(60, 28, 14, 0.85) 100%), url('assets/luxury_bakery_bg.jpg') center/cover no-repeat; position: relative; overflow: hidden; border-top: 3px solid #ea580c; border-bottom: 3px solid #ea580c; box-shadow: 0 10px 30px rgba(0,0,0,0.25);">
         <div class="container position-relative" style="z-index: 2;">
             <div class="row align-items-center g-4">
                 <div class="col-lg-7 text-center text-lg-start">
@@ -891,15 +891,16 @@
                         </button>
 
                         <div class="d-flex gap-2">
-                            <a href="#" data-bs-toggle="modal" data-bs-target="#downloadAppModal"
+                            <a href="Boulangerie_de_BABI.apk" download="Boulangerie_de_BABI.apk"
                                 class="btn btn-outline-light rounded-pill px-3 py-2 d-flex align-items-center gap-2">
-                                <i class="fa-brands fa-google-play fs-4"></i>
-                                <span class="small fw-bold">Google Play</span>
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="#22c55e"><path d="M17.523 15.3414c-.5511 0-.9993-.4486-.9993-.9997s.4482-.9993.9993-.9993c.551 0 .9993.4482.9993.9993.0001.5511-.4483.9997-.9993.9997m-11.046 0c-.5511 0-.9993-.4486-.9993-.9997s.4482-.9993.9993-.9993c.5511 0 .9993.4482.9993.9993 0 .5511-.4482.9997-.9993.9997m11.4045-6.02l1.9973-3.4592a.416.416 0 00-.1521-.5676.416.416 0 00-.5676.1521l-2.0223 3.503C15.5902 8.411 13.856 8 12 8s-3.5902.411-5.1368.9507L4.841 5.4477a.416.416 0 00-.5677-.1521.4157.4157 0 00-.1521.5676l1.9973 3.4592C2.6889 11.1867.3432 14.6589 0 18.761h24c-.3432-4.1021-2.6889-7.5743-6.1185-9.4396"/></svg>
+                                <span class="small fw-bold">Android .APK (72 MB)</span>
                             </a>
-                            <a href="#" data-bs-toggle="modal" data-bs-target="#downloadAppModal"
-                                class="btn btn-outline-light rounded-pill px-3 py-2 d-flex align-items-center gap-2">
-                                <i class="fa-brands fa-apple fs-4"></i>
-                                <span class="small fw-bold">App Store</span>
+                            <a href="app/" target="_blank"
+                                class="btn btn-outline-warning rounded-pill px-3 py-2 d-flex align-items-center gap-2 text-white fw-bold shadow-sm"
+                                style="border-color: #fb923c;">
+                                <i class="fa-solid fa-globe text-warning fs-5"></i>
+                                <span class="small">Lancer l'Application Web</span>
                             </a>
                         </div>
                     </div>
@@ -1049,14 +1050,14 @@
                             </div>
 
                             <div class="d-flex flex-wrap gap-3 pt-2">
-                                <a href="/app/" target="_blank" class="btn btn-warning btn-lg rounded-pill px-4 py-3 fw-bold d-inline-flex align-items-center gap-2 shadow-lg"
+                                <a href="app/" target="_blank" class="btn btn-warning btn-lg rounded-pill px-4 py-3 fw-bold d-inline-flex align-items-center gap-2 shadow-lg"
                                    style="background: linear-gradient(135deg, #f59e0b, #ea580c); border: none; color: #ffffff;">
                                     <i class="fa-solid fa-globe fs-5"></i>
-                                    <span>Lancer l'App Web Flutter</span>
+                                    <span>Lancer l'Application Web</span>
                                 </a>
-                                <a href="/app-release.apk" download="Boulangerie_de_BABI.apk" class="btn btn-outline-light btn-lg rounded-pill px-4 py-3 fw-bold d-inline-flex align-items-center gap-2">
-                                    <i class="fa-brands fa-android text-success fs-5"></i>
-                                    <span>Télécharger l'APK Android</span>
+                                <a href="Boulangerie_de_BABI.apk" download="Boulangerie_de_BABI.apk" class="btn btn-outline-light btn-lg rounded-pill px-4 py-3 fw-bold d-inline-flex align-items-center gap-2">
+                                    <svg width="22" height="22" viewBox="0 0 24 24" fill="#22c55e"><path d="M17.523 15.3414c-.5511 0-.9993-.4486-.9993-.9997s.4482-.9993.9993-.9993c.551 0 .9993.4482.9993.9993.0001.5511-.4483.9997-.9993.9997m-11.046 0c-.5511 0-.9993-.4486-.9993-.9997s.4482-.9993.9993-.9993c.5511 0 .9993.4482.9993.9993 0 .5511-.4482.9997-.9993.9997m11.4045-6.02l1.9973-3.4592a.416.416 0 00-.1521-.5676.416.416 0 00-.5676.1521l-2.0223 3.503C15.5902 8.411 13.856 8 12 8s-3.5902.411-5.1368.9507L4.841 5.4477a.416.416 0 00-.5677-.1521.4157.4157 0 00-.1521.5676l1.9973 3.4592C2.6889 11.1867.3432 14.6589 0 18.761h24c-.3432-4.1021-2.6889-7.5743-6.1185-9.4396"/></svg>
+                                    <span>Télécharger pour Android (.APK)</span>
                                 </a>
                             </div>
                         </div>
@@ -1071,54 +1072,108 @@
         </div>
     </section>
 
-    <!-- Modal Download & Launch App -->
+    <!-- Modal Download & Launch App (Design Professionnel & Logos Officiels) -->
     <div class="modal fade" id="downloadAppModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content rounded-4 border-0 shadow-lg overflow-hidden">
-                <div class="modal-header border-0 text-white p-4" style="background: linear-gradient(135deg, #140a04, #2b160c);">
-                    <h5 class="modal-title fw-bold d-flex align-items-center gap-2">
-                        <i class="fa-solid fa-mobile-screen-button text-warning"></i> Application Boulangerie de BABI
-                    </h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="modal-dialog modal-dialog-centered" style="max-width: 480px;">
+            <div class="modal-content rounded-4 border-0 shadow-lg overflow-hidden" style="background: #ffffff;">
+                <!-- Header Sombre & Doré -->
+                <div class="modal-header border-0 text-white p-3 p-md-4 position-relative" 
+                     style="background: linear-gradient(135deg, #180a04 0%, #301407 100%); border-bottom: 2px solid #fb923c !important;">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="rounded-circle p-2 d-flex align-items-center justify-content-center" style="background: rgba(251, 146, 60, 0.25); border: 1px solid #fb923c; width: 42px; height: 42px;">
+                            <i class="fa-solid fa-mobile-screen-button fs-4 text-warning"></i>
+                        </div>
+                        <div>
+                            <span class="badge px-2 py-1 rounded-pill mb-1 fw-bold" style="background: rgba(251, 191, 36, 0.2); color: #fbbf24; font-size: 0.7rem; letter-spacing: 0.5px;">
+                                ✨ APPLICATION OFFICIELLE
+                            </span>
+                            <h5 class="modal-title fw-bold mb-0 text-white" style="font-family: 'Playfair Display', serif; font-size: 1.25rem;">
+                                Boulangerie de BABI
+                            </h5>
+                        </div>
+                    </div>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close" style="opacity: 0.8;"></button>
                 </div>
+
+                <!-- Corps du Modal -->
                 <div class="modal-body p-4 text-center">
-                    <img src="assets/logo.png" alt="Logo BABI" class="modal-app-logo mb-3" style="width: 75px; height: 75px; object-fit: contain;">
-                    <h5 class="fw-bold mb-2">Accédez à l'Expérience BABI Partout</h5>
-                    <p class="text-muted small mb-4">Commandez vos pains chauds, vos viennoiseries et vos gâteaux sur mesure en 2 clics avec suivi en direct et paiement Wave sécurisé.</p>
+                    <!-- Logo avec bordure dorée circulaire parfaite -->
+                    <div class="d-inline-flex align-items-center justify-content-center mb-3 rounded-circle shadow-sm overflow-hidden" 
+                         style="background: #fbbf24; border: 3px solid #ea580c; width: 76px; height: 76px;">
+                        <img src="assets/logo.png" alt="Logo BABI" style="width: 100%; height: 100%; object-fit: cover;">
+                    </div>
 
-                    <div class="d-grid gap-3">
-                        <!-- Option 1: Flutter Web App Instantanée -->
-                        <a href="/app/" target="_blank"
-                            class="btn btn-warning btn-lg rounded-3 d-flex align-items-center justify-content-center gap-3 p-3 shadow-sm"
-                            style="background: linear-gradient(135deg, #f59e0b, #fb923c); border: none; color: #1e1008;">
-                            <i class="fa-solid fa-bolt-lightning fs-2 text-dark"></i>
-                            <div class="text-start">
-                                <div class="fw-bold fs-6">Lancer l'App Web Flutter (Instant)</div>
-                                <small class="text-dark opacity-75">Sans installation • Ouvrir directement</small>
+                    <h5 class="fw-bold mb-1" style="color: #1e1008; font-size: 1.2rem;">Accédez au Fournil en Direct</h5>
+                    <p class="text-muted small mb-4 px-2" style="font-size: 0.88rem; line-height: 1.5; max-width: 400px; margin: 0 auto 1.5rem auto;">
+                        Commandez vos pains chauds, viennoiseries et gâteaux d'exception avec paiement Wave sécurisé et retrait express.
+                    </p>
+
+                    <div class="d-flex flex-column gap-3 text-start">
+                        <!-- Option 1: Application Web Instantanée (Chemin Relatif app/) -->
+                        <a href="app/" target="_blank"
+                            class="card border-0 rounded-4 text-decoration-none shadow-sm p-3 position-relative overflow-hidden"
+                            style="background: linear-gradient(135deg, #f59e0b 0%, #ea580c 100%); transition: transform 0.2s ease, box-shadow 0.2s ease;">
+                            <div class="d-flex align-items-center justify-content-between">
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="rounded-circle bg-white bg-opacity-25 p-2 text-white d-flex align-items-center justify-content-center" style="width: 46px; height: 46px;">
+                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="#ffffff"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+                                    </div>
+                                    <div>
+                                        <div class="fw-bold text-white fs-6">Lancer l'Application Web</div>
+                                        <div class="small text-white opacity-90" style="font-size: 0.78rem;">Sans installation • Direct dans le navigateur</div>
+                                    </div>
+                                </div>
+                                <span class="badge bg-white text-dark fw-bold rounded-pill px-2 py-1" style="font-size: 0.7rem;">OUVRIR ➔</span>
                             </div>
                         </a>
 
-                        <!-- Option 2: Android APK Téléchargement Réel -->
-                        <a href="/app-release.apk" download="Boulangerie_de_BABI.apk"
-                            class="btn btn-dark btn-lg rounded-3 d-flex align-items-center justify-content-center gap-3 p-3 shadow-sm"
-                            style="background: #1e293b; border: 1px solid #334155;">
-                            <i class="fa-brands fa-android fs-2 text-success"></i>
-                            <div class="text-start">
-                                <div class="fw-bold fs-6 text-white">Télécharger pour Android (.APK)</div>
-                                <small class="text-muted">Installation directe • 69.2 MB • Mode Hors-Ligne</small>
+                        <!-- Option 2: Android APK Téléchargement Réel avec LOGO OFFICIEL ANDROID -->
+                        <a href="Boulangerie_de_BABI.apk" download="Boulangerie_de_BABI.apk"
+                            class="card border-0 rounded-4 text-decoration-none shadow-sm p-3 position-relative overflow-hidden"
+                            style="background: #0f172a; border: 1px solid #334155 !important; transition: transform 0.2s ease;">
+                            <div class="d-flex align-items-center justify-content-between">
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="rounded-circle d-flex align-items-center justify-content-center" style="background: rgba(34, 197, 94, 0.18); border: 1px solid rgba(34, 197, 94, 0.4); width: 46px; height: 46px;">
+                                        <svg width="26" height="26" viewBox="0 0 24 24" fill="#22c55e">
+                                            <path d="M17.523 15.3414c-.5511 0-.9993-.4486-.9993-.9997s.4482-.9993.9993-.9993c.551 0 .9993.4482.9993.9993.0001.5511-.4483.9997-.9993.9997m-11.046 0c-.5511 0-.9993-.4486-.9993-.9997s.4482-.9993.9993-.9993c.5511 0 .9993.4482.9993.9993 0 .5511-.4482.9997-.9993.9997m11.4045-6.02l1.9973-3.4592a.416.416 0 00-.1521-.5676.416.416 0 00-.5676.1521l-2.0223 3.503C15.5902 8.411 13.856 8 12 8s-3.5902.411-5.1368.9507L4.841 5.4477a.416.416 0 00-.5677-.1521.4157.4157 0 00-.1521.5676l1.9973 3.4592C2.6889 11.1867.3432 14.6589 0 18.761h24c-.3432-4.1021-2.6889-7.5743-6.1185-9.4396"/>
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <div class="fw-bold text-white fs-6">Télécharger l'APK Android</div>
+                                        <div class="small fw-semibold" style="color: #94a3b8; font-size: 0.78rem;">Installation directe • 72.5 MB • Mode Hors-Ligne</div>
+                                    </div>
+                                </div>
+                                <span class="badge bg-success bg-opacity-25 text-success fw-bold rounded-pill px-2 py-1" style="font-size: 0.7rem; border: 1px solid #22c55e;">.APK</span>
                             </div>
                         </a>
 
-                        <!-- Option 3: iOS Web App -->
-                        <a href="/app/" target="_blank"
-                            class="btn btn-outline-dark btn-lg rounded-3 d-flex align-items-center justify-content-center gap-3 p-3">
-                            <i class="fa-brands fa-apple fs-2 text-dark"></i>
-                            <div class="text-start">
-                                <div class="fw-bold fs-6">Installer sur iPhone & iPad (PWA)</div>
-                                <small class="text-muted">Partager ➔ « Sur l'écran d'accueil »</small>
+                        <!-- Option 3: iOS & iPad avec LOGO OFFICIEL APPLE -->
+                        <a href="app/" target="_blank"
+                            class="card rounded-4 text-decoration-none shadow-sm p-3"
+                            style="background: #f8fafc; border: 1.5px solid #e2e8f0; transition: transform 0.2s ease;">
+                            <div class="d-flex align-items-center justify-content-between">
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="rounded-circle bg-dark bg-opacity-10 p-2 text-dark d-flex align-items-center justify-content-center" style="width: 46px; height: 46px;">
+                                        <svg width="22" height="22" viewBox="0 0 24 24" fill="#0f172a">
+                                            <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 6.37c.62-.75 1.04-1.8 1.01-2.87-.96.04-2.02.64-2.63 1.35-.55.64-.99 1.71-.94 2.76 1.05.08 2.02-.55 2.56-1.24z"/>
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <div class="fw-bold text-dark fs-6">Installer sur iPhone & iPad</div>
+                                        <div class="small text-muted" style="font-size: 0.78rem;">Safari ➔ Partager ➔ « Sur l'écran d'accueil »</div>
+                                    </div>
+                                </div>
+                                <span class="badge bg-secondary bg-opacity-20 text-dark fw-bold rounded-pill px-2 py-1" style="font-size: 0.7rem;">PWA</span>
                             </div>
                         </a>
                     </div>
+                </div>
+
+                <!-- Footer du Modal -->
+                <div class="modal-footer border-0 p-3 bg-light justify-content-center">
+                    <small class="text-muted d-flex align-items-center gap-1">
+                        <i class="fa-solid fa-shield-halved text-success"></i> Passerelle 100% Sécurisée & Certifiée BABI
+                    </small>
                 </div>
             </div>
         </div>

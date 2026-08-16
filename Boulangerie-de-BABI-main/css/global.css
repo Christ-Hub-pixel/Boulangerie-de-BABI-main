@@ -40,7 +40,9 @@ body {
     font-family: 'Inter', sans-serif;
     color: var(--dark);
     line-height: 1.6;
-    background-color: var(--light);
+    background: linear-gradient(180deg, rgba(253, 248, 243, 0.94) 0%, rgba(245, 237, 228, 0.96) 100%), 
+                url('../assets/luxury_bakery_bg.jpg') no-repeat center center fixed;
+    background-size: cover;
 }
 
 h1, h2, h3, .logo-title {
