@@ -632,11 +632,11 @@
             document.getElementById('modalPrice').innerText = data.price.toLocaleString() + ' FCFA';
 
             const depositAmount = Math.round(data.price * 0.5);
-            const maskedWaveUrl = `/api/pay/launch/PAY_SECURE_${btoa(data.ref + ':' + depositAmount).replace(/=/g, '')}`;
+            const waveUrl = `https://pay.wave.com/m/M_ci_7X1JfUg2eEsX/c/ci/?amount=${depositAmount}&client_reference=${encodeURIComponent(data.ref)}`;
             const waveBtn = document.getElementById('modalWaveBtn');
             if (waveBtn) {
-                waveBtn.href = maskedWaveUrl;
-                waveBtn.innerHTML = `<i class="fa-solid fa-shield-halved fs-5 me-1"></i> Régler l'acompte 50% Wave Sécurisé (${depositAmount.toLocaleString()} FCFA)`;
+                waveBtn.href = waveUrl;
+                waveBtn.innerHTML = `<i class="fa-solid fa-mobile-screen fs-5 me-1"></i> Régler l'acompte 50% Wave (${depositAmount.toLocaleString()} FCFA)`;
             }
 
             const whatsappUrl = generateWhatsAppEventUrl(data);

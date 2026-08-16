@@ -98,9 +98,12 @@ function renderCartPage() {
 
     cartContainer.innerHTML = html;
 
-    // Delivery calculation
-    let deliveryCost = 1000;
+    // Delivery calculation (0 FCFA pour Retrait en Boutique / Click & Collect)
+    let deliveryCost = 0;
     const deliveryRadio = document.querySelector('input[name="delivery_method"]:checked');
+    if (deliveryRadio && (deliveryRadio.value === 'delivery' || deliveryRadio.value === 'livraison')) {
+        deliveryCost = 1000;
+    }
     updateCartSummary(totalQty, subtotal, deliveryCost);
 }
 
