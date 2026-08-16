@@ -11,6 +11,53 @@ body {
     background-color: transparent;
 }
 
+/* Hero Carousel Styling */
+.main-hero-carousel {
+    height: 380px;
+    position: relative;
+}
+.main-hero-carousel .carousel-inner,
+.main-hero-carousel .carousel-item {
+    height: 100%;
+    min-height: 380px;
+}
+.main-hero-carousel .carousel-indicators {
+    bottom: 12px;
+    margin-bottom: 0;
+    z-index: 5;
+}
+.main-hero-carousel .carousel-indicators [data-bs-target] {
+    width: 24px;
+    height: 4px;
+    border-radius: 4px;
+    border: none;
+    background-color: rgba(255, 255, 255, 0.5);
+    transition: all 0.3s ease;
+}
+.main-hero-carousel .carousel-indicators .active {
+    width: 38px;
+    background-color: #f59e0b;
+}
+.main-hero-carousel .carousel-control-prev,
+.main-hero-carousel .carousel-control-next {
+    width: 36px;
+    height: 36px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(0, 0, 0, 0.45);
+    backdrop-filter: blur(4px);
+    border-radius: 50%;
+    margin: 0 10px;
+    opacity: 0.8;
+    transition: all 0.2s ease;
+}
+.main-hero-carousel .carousel-control-prev:hover,
+.main-hero-carousel .carousel-control-next:hover {
+    background: rgba(0, 0, 0, 0.75);
+    opacity: 1;
+    transform: translateY(-50%) scale(1.08);
+}
+
 /* Hero Categories Sidebar */
 .hover-primary:hover {
     background-color: rgba(244, 180, 0, 0.1);

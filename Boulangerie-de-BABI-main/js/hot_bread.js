@@ -2,43 +2,43 @@
  * 🥖 Boulangerie de BABI — Module "Fournées de Pain Chaud en Direct"
  * Créneaux officiels : 06h00 • 09h00 • 14h00 • 17h00 • 18h00
  * - Calcul en temps réel de la prochaine sortie de pain
- * - Compte à rebours animé (heures, minutes, secondes)
- * - Détection de fournée en cours (±15 min du créneau) avec animation vapeur/feu
- * - Notification d'alerte sonore et visuelle
+ * - Compte à rebours animé ultra-précis (heures, minutes, secondes)
+ * - Design Responsive Luxury sans césure ni troncature
+ * - Détection de fournée en direct (sortie du four)
+ * - Alerte sonore & visuelle
  */
 
 (function () {
     'use strict';
 
     const BREAD_SCHEDULES = [
-        { hour: 6, minute: 0, label: "06h00 (Matinée Aube)" },
-        { hour: 9, minute: 0, label: "09h00 (Petit Déjeuner)" },
-        { hour: 14, minute: 0, label: "14h00 (Déjeuner & Goûter)" },
-        { hour: 17, minute: 0, label: "17h00 (Sortie des Classes)" },
-        { hour: 18, minute: 0, label: "18h00 (Fournée du Soir)" }
+        { hour: 6, minute: 0, timeStr: "06h00", name: "Matinée Aube" },
+        { hour: 9, minute: 0, timeStr: "09h00", name: "Petit Déjeuner" },
+        { hour: 14, minute: 0, timeStr: "14h00", name: "Déjeuner & Goûter" },
+        { hour: 17, minute: 0, timeStr: "17h00", name: "Sortie des Classes" },
+        { hour: 18, minute: 0, timeStr: "18h00", name: "Fournée du Soir" }
     ];
 
     function getNextBreadBatch() {
         const now = new Date();
         const currentTotalMinutes = now.getHours() * 60 + now.getMinutes() + (now.getSeconds() / 60);
 
-        // Trouver le créneau actif ou le prochain
         for (let i = 0; i < BREAD_SCHEDULES.length; i++) {
             const batch = BREAD_SCHEDULES[i];
             const batchMinutes = batch.hour * 60 + batch.minute;
             const diff = batchMinutes - currentTotalMinutes;
 
-            // Si on est dans la fenêtre de fournée fraîche (10 min avant jusqu'à 20 min après)
-            if (diff >= -20 && diff <= 10) {
+            // En plein dans la fournée fraîche (-15 min à +10 min)
+            if (diff >= -15 && diff <= 10) {
                 return {
                     status: 'active',
                     batch: batch,
-                    diffMinutes: diff,
-                    label: batch.label
+                    timeStr: batch.timeStr,
+                    name: batch.name
                 };
             }
 
-            // Si c'est la prochaine fournée de la journée
+            // Prochaine fournée à venir aujourd'hui
             if (diff > 10) {
                 const targetTime = new Date();
                 targetTime.setHours(batch.hour, batch.minute, 0, 0);
@@ -48,12 +48,13 @@
                     batch: batch,
                     targetTime: targetTime,
                     remainingSeconds: remainingSeconds,
-                    label: batch.label
+                    timeStr: batch.timeStr,
+                    name: batch.name
                 };
             }
         }
 
-        // Si toutes les fournées du jour sont passées, la prochaine est demain à 06h00
+        // Toutes les fournées du jour sont terminées ➔ Prochaine demain à 06h00
         const tomorrow = new Date();
         tomorrow.setDate(tomorrow.getDate() + 1);
         tomorrow.setHours(6, 0, 0, 0);
@@ -64,7 +65,8 @@
             batch: BREAD_SCHEDULES[0],
             targetTime: tomorrow,
             remainingSeconds: remainingSeconds,
-            label: "06h00 (Demain matin)"
+            timeStr: "06h00",
+            name: "Demain matin"
         };
     }
 
@@ -89,72 +91,103 @@
         containers.forEach(container => {
             if (info.status === 'active') {
                 container.innerHTML = `
-                <div class="babi-hot-bread-active p-3 p-md-4 rounded-4 shadow-sm border border-warning d-flex flex-wrap align-items-center justify-content-between gap-3" 
-                    style="background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);">
-                    <div class="d-flex align-items-center gap-3">
-                        <div class="babi-hot-bread-flame text-danger display-5" style="animation: pulse 1.2s infinite;">
-                            🔥
+                <div class="babi-hot-bread-card babi-hot-bread-active-card p-3 p-md-4 rounded-4 shadow-lg border border-warning"
+                    style="background: linear-gradient(135deg, #2b1408 0%, #4a210d 100%); color: #ffffff;">
+                    <div class="d-flex flex-column flex-md-row align-items-center justify-content-between gap-3 text-center text-md-start">
+                        <div class="d-flex align-items-center gap-3 justify-content-center justify-content-md-start">
+                            <div class="babi-flame-pulse text-warning fs-1 flex-shrink-0">
+                                🔥
+                            </div>
+                            <div>
+                                <div class="d-flex align-items-center gap-2 mb-1 flex-wrap justify-content-center justify-content-md-start">
+                                    <span class="badge bg-danger text-white rounded-pill px-3 py-1 fw-bold text-uppercase" style="font-size:0.75rem;">
+                                        <i class="fa-solid fa-fire me-1"></i> FOURNÉE EN DIRECT : SORTIE DU FOUR !
+                                    </span>
+                                    <span class="badge bg-warning text-dark rounded-pill px-2 py-1 fw-bold" style="font-size:0.75rem;">
+                                        ${info.timeStr} (${info.name})
+                                    </span>
+                                </div>
+                                <h4 class="fw-bold mb-1 text-white" style="font-family:'Playfair Display', serif; font-size:1.3rem;">
+                                    Baguettes Chaudes & Croustillantes en Rayon !
+                                </h4>
+                                <p class="text-warning-emphasis small mb-0 opacity-90">
+                                    Le pain sort du fournil à Cocody Riviera 2. Fumant, doré et prêt à déguster.
+                                </p>
+                            </div>
                         </div>
-                        <div>
-                            <span class="badge bg-danger text-white rounded-pill px-3 py-1 mb-1 fw-bold" style="font-size:0.75rem;">
-                                <i class="fa-solid fa-fire me-1"></i> FOURNÉE ACTUELLE : SORTIE DU FOUR !
-                            </span>
-                            <h4 class="fw-bold mb-0" style="color: #2b160c; font-family:'Playfair Display', serif;">
-                                Baguettes Chaudes & Croustillantes (${info.batch.hour}h00)
-                            </h4>
-                            <p class="text-muted small mb-0 mt-1">Le pain est fumant et croustillant en boutique et prêt pour expédition immédiate.</p>
+
+                        <div class="d-flex gap-2 flex-shrink-0 w-100 w-md-auto justify-content-center">
+                            <a href="produits.html?cat=pain" class="btn btn-warning btn-lg fw-bold text-dark rounded-pill px-4 py-2 shadow-sm d-flex align-items-center gap-2"
+                                style="background: linear-gradient(135deg, #fbbf24, #f59e0b); border:none;">
+                                <i class="fa-solid fa-basket-shopping"></i> Commander du Pain Chaud
+                            </a>
                         </div>
-                    </div>
-                    <div class="d-flex align-items-center gap-2">
-                        <a href="produits.html?cat=pain" class="btn btn-warning fw-bold text-dark rounded-pill px-4 py-2 shadow-sm d-flex align-items-center gap-2" 
-                            style="background: linear-gradient(135deg, #fbbf24, #f59e0b); border:none;">
-                            <i class="fa-solid fa-basket-shopping"></i> Commander du Pain Chaud
-                        </a>
                     </div>
                 </div>
                 `;
             } else {
                 const t = formatTime(info.remainingSeconds);
                 container.innerHTML = `
-                <div class="babi-hot-bread-upcoming p-3 p-md-4 rounded-4 shadow-sm border d-flex flex-wrap align-items-center justify-content-between gap-3"
-                    style="background: linear-gradient(135deg, #2b160c 0%, #43200f 100%); color: #ffffff;">
-                    <div class="d-flex align-items-center gap-3">
-                        <div class="babi-hot-bread-icon bg-warning bg-opacity-20 text-warning rounded-circle p-3 d-flex align-items-center justify-content-center" style="width:58px;height:58px;flex-shrink:0;">
-                            <i class="fa-solid fa-fire-burner fs-2"></i>
-                        </div>
-                        <div>
-                            <div class="d-flex align-items-center gap-2 mb-1">
-                                <span class="badge bg-warning text-dark rounded-pill px-3 py-1 fw-bold" style="font-size:0.72rem;">
-                                    <i class="fa-solid fa-clock me-1"></i> PROCHAINE SORTIE DE PAIN
-                                </span>
-                                <span class="text-warning small fw-bold">${info.label}</span>
-                            </div>
-                            <h5 class="fw-bold mb-0 text-white" style="font-family:'Playfair Display', serif;">
-                                Fournée au feu de bois en préparation
-                            </h5>
-                            <small class="text-light opacity-75">Sorties du jour : 06h00 • 09h00 • 14h00 • 17h00 • 18h00</small>
-                        </div>
-                    </div>
+                <div class="babi-hot-bread-card p-3 p-md-4 rounded-4 shadow-lg border border-warning border-opacity-25"
+                    style="background: linear-gradient(145deg, #241208 0%, #3a1c0d 100%); color: #ffffff; position:relative; overflow:hidden;">
                     
-                    <div class="d-flex align-items-center gap-2 flex-shrink-0">
-                        <div class="d-flex gap-2 text-center">
-                            <div class="bg-dark bg-opacity-50 px-3 py-2 rounded-3 border border-secondary border-opacity-50">
-                                <div class="fw-bold fs-4 text-warning font-monospace">${t.hours}</div>
-                                <div class="text-light opacity-50" style="font-size:0.65rem;">HEURES</div>
-                            </div>
-                            <div class="bg-dark bg-opacity-50 px-3 py-2 rounded-3 border border-secondary border-opacity-50">
-                                <div class="fw-bold fs-4 text-warning font-monospace">${t.minutes}</div>
-                                <div class="text-light opacity-50" style="font-size:0.65rem;">MINUTES</div>
-                            </div>
-                            <div class="bg-dark bg-opacity-50 px-3 py-2 rounded-3 border border-secondary border-opacity-50">
-                                <div class="fw-bold fs-4 text-warning font-monospace">${t.seconds}</div>
-                                <div class="text-light opacity-50" style="font-size:0.65rem;">SECONDES</div>
+                    <!-- Top Header Badges -->
+                    <div class="d-flex align-items-center justify-content-between gap-2 mb-2 flex-wrap">
+                        <span class="badge bg-warning text-dark rounded-pill px-3 py-1 fw-bold text-uppercase" style="font-size:0.75rem; letter-spacing:0.3px;">
+                            <i class="fa-solid fa-fire me-1 text-danger"></i> FOURNÉE DE ${info.timeStr} — ${info.name.toUpperCase()}
+                        </span>
+                        <span class="badge bg-dark bg-opacity-75 text-warning border border-warning border-opacity-30 rounded-pill px-2 py-1 small">
+                            <i class="fa-solid fa-location-dot me-1 text-warning"></i> Fournil Riviera 2
+                        </span>
+                    </div>
+
+                    <!-- Middle Title & Countdown Layout -->
+                    <div class="row align-items-center g-2 mt-1">
+                        
+                        <!-- Left text info -->
+                        <div class="col-12 col-lg-7 text-center text-lg-start">
+                            <h5 class="fw-bold mb-1 text-white" style="font-family:'Playfair Display', serif; font-size:1.2rem; line-height:1.25;">
+                                Pain Chaud au Feu de Bois en Préparation
+                            </h5>
+                            <p class="text-light opacity-75 small mb-0">
+                                Fournées du jour : <strong>06h</strong> • <strong>09h</strong> • <strong>14h</strong> • <strong>17h</strong> • <strong>18h</strong>
+                            </p>
+                        </div>
+
+                        <!-- Right Countdown Tiles & Alert Button -->
+                        <div class="col-12 col-lg-5">
+                            <div class="d-flex align-items-center justify-content-center justify-content-lg-end gap-1 gap-sm-2 mt-2 mt-lg-0">
+                                
+                                <!-- Heures -->
+                                <div class="babi-countdown-tile text-center px-2 py-1 px-sm-3 py-sm-2 rounded-3 bg-dark bg-opacity-60 border border-warning border-opacity-30">
+                                    <div class="fw-bold text-warning font-monospace fs-4 fs-sm-3 lh-1">${t.hours}</div>
+                                    <div class="text-light opacity-60 text-uppercase mt-1" style="font-size:0.58rem; letter-spacing:0.3px;">Heures</div>
+                                </div>
+
+                                <span class="text-warning fw-bold fs-5 opacity-50">:</span>
+
+                                <!-- Minutes -->
+                                <div class="babi-countdown-tile text-center px-2 py-1 px-sm-3 py-sm-2 rounded-3 bg-dark bg-opacity-60 border border-warning border-opacity-30">
+                                    <div class="fw-bold text-warning font-monospace fs-4 fs-sm-3 lh-1">${t.minutes}</div>
+                                    <div class="text-light opacity-60 text-uppercase mt-1" style="font-size:0.58rem; letter-spacing:0.3px;">Minutes</div>
+                                </div>
+
+                                <span class="text-warning fw-bold fs-5 opacity-50">:</span>
+
+                                <!-- Secondes -->
+                                <div class="babi-countdown-tile text-center px-2 py-1 px-sm-3 py-sm-2 rounded-3 bg-dark bg-opacity-60 border border-warning border-opacity-30">
+                                    <div class="fw-bold text-warning font-monospace fs-4 fs-sm-3 lh-1">${t.seconds}</div>
+                                    <div class="text-light opacity-60 text-uppercase mt-1" style="font-size:0.58rem; letter-spacing:0.3px;">Secondes</div>
+                                </div>
+
+                                <!-- Alert Button -->
+                                <button type="button" class="btn btn-warning text-dark rounded-pill px-3 py-2 ms-1 ms-sm-2 fw-bold d-flex align-items-center gap-1 shadow-sm flex-shrink-0" 
+                                    title="M'alerter dès la sortie" onclick="window.triggerHotBreadChime()" style="font-size:0.75rem;">
+                                    <i class="fa-solid fa-bell"></i> <span>Alerte</span>
+                                </button>
                             </div>
                         </div>
-                        <button type="button" class="btn btn-outline-warning rounded-circle d-flex align-items-center justify-content-center ms-2" 
-                            style="width:44px;height:44px;" title="Alerte fournil" onclick="window.triggerHotBreadChime()">
-                            <i class="fa-regular fa-bell"></i>
-                        </button>
+
                     </div>
                 </div>
                 `;
@@ -163,7 +196,6 @@
     }
 
     window.triggerHotBreadChime = function () {
-        // Alerte visuelle / sonore
         try {
             const ctx = new (window.AudioContext || window.webkitAudioContext)();
             const osc = ctx.createOscillator();
@@ -179,7 +211,7 @@
             osc.stop(ctx.currentTime + 0.5);
         } catch (e) { }
 
-        alert("🔔 Alerte Fournée Activée !\nVous recevrez un signal dès la prochaine sortie de pain chaud à la Boulangerie de BABI.");
+        alert("🔔 Alerte Fournée Activée !\nVous serez notifié dès la prochaine sortie de pain chaud à la Boulangerie de BABI (Cocody Riviera 2).");
     };
 
     document.addEventListener('DOMContentLoaded', () => {

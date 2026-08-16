@@ -1,0 +1,230 @@
+/* -------------------------------------------------------------
+   DASHBOARD GÉRANTE — BOULANGERIE DE BABI (HAUTE LISIBILITÉ & CONTRASTE)
+------------------------------------------------------------- */
+
+:root {
+    --gerante-bg: #0b0f19;
+    --gerante-sidebar: #111827;
+    --gerante-card: #1e293b;
+    --gerante-card-hover: #2d3c52;
+    --gerante-primary: #f59e0b;
+    --gerante-primary-light: #fbbf24;
+    --gerante-accent: #10b981;
+    --gerante-danger: #ef4444;
+    --gerante-info: #38bdf8;
+    --gerante-text: #f8fafc;
+    --gerante-text-muted: #cbd5e1;
+    --gerante-border: #334155;
+}
+
+body.gerante-body {
+    background-color: var(--gerante-bg);
+    color: var(--gerante-text);
+    font-family: 'Outfit', sans-serif;
+    min-height: 100vh;
+    margin: 0;
+}
+
+.gerante-navbar {
+    background-color: var(--gerante-sidebar);
+    border-bottom: 1px solid var(--gerante-border);
+    padding: 0.75rem 1.5rem;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.gerante-badge-role {
+    background: rgba(16, 185, 129, 0.2);
+    color: #34d399;
+    border: 1px solid #10b981;
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 0.25rem 0.65rem;
+    border-radius: 20px;
+}
+
+.gerante-container {
+    padding: 1.5rem;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+/* Nav Tabs */
+.gerante-nav-pills {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.gerante-nav-pills .nav-link {
+    color: #e2e8f0 !important;
+    font-weight: 600;
+    border-radius: 10px;
+    padding: 0.65rem 1.2rem;
+    transition: all 0.2s ease;
+    background: #1e293b;
+    border: 1px solid #334155;
+}
+
+.gerante-nav-pills .nav-link:hover {
+    color: #ffffff !important;
+    background: #334155;
+    border-color: #475569;
+}
+
+.gerante-nav-pills .nav-link.active {
+    background: var(--gerante-primary) !important;
+    color: #0f172a !important;
+    font-weight: 700;
+    border-color: var(--gerante-primary);
+    box-shadow: 0 4px 12px rgba(245, 158, 11, 0.35);
+}
+
+/* KPI Cards */
+.kpi-card {
+    background: var(--gerante-card);
+    border: 1px solid var(--gerante-border);
+    border-radius: 14px;
+    padding: 1.25rem;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.kpi-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+    border-color: #475569;
+}
+
+.kpi-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 5px;
+    height: 100%;
+    background: var(--gerante-primary);
+}
+
+.kpi-card.kpi-success::before { background: var(--gerante-accent); }
+.kpi-card.kpi-danger::before { background: var(--gerante-danger); }
+.kpi-card.kpi-info::before { background: var(--gerante-info); }
+
+.kpi-label {
+    color: #e2e8f0 !important;
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 0.25rem;
+}
+
+.kpi-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.35rem;
+}
+
+.kpi-val {
+    font-size: 1.85rem;
+    font-weight: 800;
+    color: #ffffff;
+    margin-top: 0.2rem;
+    letter-spacing: 0.5px;
+}
+
+/* Stock Items Cards */
+.stock-item-card {
+    background: var(--gerante-card);
+    border: 1px solid var(--gerante-border);
+    border-radius: 12px;
+    padding: 1rem 1.25rem;
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: all 0.2s;
+    color: #ffffff;
+}
+
+.stock-item-card:hover {
+    background: var(--gerante-card-hover);
+    border-color: #475569;
+}
+
+.stock-item-card.low-stock {
+    border-left: 4px solid var(--gerante-danger);
+    background: rgba(239, 68, 68, 0.08);
+}
+
+.stock-progress {
+    height: 8px;
+    background: #334155;
+    border-radius: 4px;
+    overflow: hidden;
+    margin-top: 0.5rem;
+}
+
+.stock-progress-bar {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.4s ease;
+}
+
+/* Custom Table for Gerante */
+.gerante-table {
+    width: 100%;
+    border-collapse: collapse;
+    color: #f1f5f9;
+}
+
+.gerante-table th {
+    background: #0f172a;
+    color: var(--gerante-primary);
+    font-weight: 700;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 0.85rem 1rem;
+    border-bottom: 2px solid #334155;
+}
+
+.gerante-table td {
+    padding: 0.85rem 1rem;
+    border-bottom: 1px solid #1e293b;
+    vertical-align: middle;
+    font-size: 0.9rem;
+    color: #f8fafc;
+}
+
+.gerante-table tr:hover {
+    background: rgba(255, 255, 255, 0.03);
+}
+
+/* Search and Controls */
+.gerante-input {
+    background: #1e293b !important;
+    border: 1px solid #475569 !important;
+    color: #ffffff !important;
+    border-radius: 8px !important;
+}
+
+.gerante-input::placeholder {
+    color: #94a3b8 !important;
+}
+
+.gerante-input:focus {
+    border-color: var(--gerante-primary) !important;
+    box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.25) !important;
+}
+
+/* Sub-text contrast helper */
+.text-muted {
+    color: #cbd5e1 !important;
+}

@@ -106,7 +106,7 @@
             </div>
         </div>
 
-        <div id="wishlistGrid" class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-4">
+        <div id="wishlistGrid" class="row row-cols-3 row-cols-md-4 row-cols-lg-4 g-2 g-md-3">
             <!-- Dynamically populated -->
         </div>
 
@@ -216,8 +216,8 @@
             html += `
             <div class="col">
                 <div class="card fav-card h-100 border-0 shadow-sm overflow-hidden position-relative bg-white">
-                    <div class="position-relative overflow-hidden" style="height:180px;">
-                        <img src="${imgSrc}" class="card-img-top fav-img w-100 h-100" alt="${name}" style="object-fit:cover;" onerror="this.src='assets/baguette 200.png'">
+                    <div class="position-relative overflow-hidden" style="height:180px; background:#ffffff;">
+                        <img src="${imgSrc}" class="card-img-top fav-img w-100 h-100" alt="${name}" style="object-fit:contain; background:#ffffff; padding:6px;" onerror="this.src='assets/baguette 200.png'">
                         <button class="btn btn-danger btn-sm rounded-circle position-absolute top-0 end-0 m-2 shadow"
                             onclick="toggleWishlist('${name}')" title="Retirer des favoris" style="width:34px;height:34px;padding:0;">
                             <i class="fa-solid fa-xmark"></i>

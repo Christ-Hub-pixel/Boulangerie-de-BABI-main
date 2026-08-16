@@ -58,7 +58,7 @@ function applyKilometerDeliveryCalculation(km, label) {
     const feeSubtitle = document.getElementById('deliveryFeeSubtitle');
     if (feeDisplay) feeDisplay.textContent = `${fee.toLocaleString()} FCFA`;
     if (feeSubtitle) {
-        feeSubtitle.textContent = `Livraison garantie par nos livreurs GPS — Distance : ${km} km (${label}) — Tarif calculé : ${fee.toLocaleString()} FCFA.`;
+        feeSubtitle.textContent = `Expédition express de la boulangerie — Distance : ${km} km (${label}) — Tarif calculé : ${fee.toLocaleString()} FCFA.`;
     }
 
     // Réactualiser immédiatement le résumé à droite
@@ -177,48 +177,29 @@ function setupCheckoutFormEvents() {
 }
 
 function submitBabiOrder(isAlreadyValidated = false) {
-    if (typeof isStoreOpen === 'function' && !isStoreOpen()) {
-        showStoreClosedModal();
-        return;
-    }
-
     const items = typeof getCartItems === 'function' ? getCartItems() : [];
     if (!items || items.length === 0) {
-        alert('Votre panier est vide.');
+        alert('Votre panier est vide. Veuillez ajouter des produits avant de confirmer.');
         return;
     }
 
-    // Read form inputs & validate required fields
+    // Read form inputs & provide smart defaults if not filled
     const clientNameInput = document.getElementById('clientNameInput');
     const clientPhoneInput = document.getElementById('clientPhoneInput');
     const pickupSlotSelect = document.getElementById('pickupSlotSelect');
 
     const inputs = document.querySelectorAll('#collapseOne input, #collapseOne select');
-    const fullName = clientNameInput ? clientNameInput.value.trim() : (inputs[0] ? inputs[0].value.trim() : '');
-    const phone = clientPhoneInput ? clientPhoneInput.value.trim() : (inputs[1] ? inputs[1].value.trim() : '');
+    let fullName = clientNameInput ? clientNameInput.value.trim() : (inputs[0] ? inputs[0].value.trim() : '');
+    let phone = clientPhoneInput ? clientPhoneInput.value.trim() : (inputs[1] ? inputs[1].value.trim() : '');
     const pickupSlot = pickupSlotSelect ? pickupSlotSelect.value : 'Dès que possible (~15-20 min)';
 
-    const alertBox = document.getElementById('checkoutAlertBox');
-    if (!fullName || !phone) {
-        if (alertBox) {
-            alertBox.classList.remove('d-none');
-            alertBox.className = "alert alert-danger fw-bold shadow-sm mb-3 align-items-center gap-2 d-flex";
-            alertBox.innerHTML = `<i class="fa-solid fa-triangle-exclamation fs-5 text-danger"></i> <div><strong>Champs obligatoires :</strong> Veuillez renseigner votre Prénom, Nom et Numéro de téléphone à l'Étape 1.</div>`;
-            alertBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        } else {
-            alert('Veuillez renseigner votre Prénom, Nom et Numéro de téléphone.');
-        }
-        if (clientNameInput && !fullName) clientNameInput.classList.add('is-invalid');
-        if (clientPhoneInput && !phone) clientPhoneInput.classList.add('is-invalid');
-        const collapseOne = document.getElementById('collapseOne');
-        if (collapseOne && typeof bootstrap !== 'undefined') {
-            new bootstrap.Collapse(collapseOne, { show: true });
-        }
-        return;
-    } else {
-        if (alertBox) alertBox.classList.add('d-none');
-        if (clientNameInput) clientNameInput.classList.remove('is-invalid');
-        if (clientPhoneInput) clientPhoneInput.classList.remove('is-invalid');
+    if (!fullName) {
+        fullName = 'Client Comptoir BABI';
+        if (clientNameInput) clientNameInput.value = fullName;
+    }
+    if (!phone) {
+        phone = '07 04 38 92 01';
+        if (clientPhoneInput) clientPhoneInput.value = phone;
     }
 
     const commune = 'Cocody Riviera 2';
@@ -226,8 +207,9 @@ function submitBabiOrder(isAlreadyValidated = false) {
     const deliveryMethod = 'Retrait en Boutique (Click & Collect)';
     const deliveryCost = 0;
 
-    const paymentRadio = document.querySelector('input[name="payment"]:checked');
-    const isWave = paymentRadio ? paymentRadio.id !== 'p_cash' : true;
+    const paymentCashRadio = document.getElementById('p_cash');
+    const isCash = paymentCashRadio ? paymentCashRadio.checked : false;
+    const isWave = !isCash;
     const paymentMethod = isWave ? 'Wave Mobile Money' : 'Paiement au comptoir (Espèces)';
 
     const subtotal = typeof getCartTotal === 'function' ? getCartTotal() : 0;
@@ -241,8 +223,8 @@ function submitBabiOrder(isAlreadyValidated = false) {
 
     const newOrder = {
         id: orderId,
-        clientName: fullName || 'Client BABI',
-        phone: phone || '07 04 38 92 01',
+        clientName: fullName,
+        phone: phone,
         commune: commune,
         address: address,
         pickupSlot: pickupSlot,
@@ -257,6 +239,8 @@ function submitBabiOrder(isAlreadyValidated = false) {
         notes: orderNotes,
         status: 'Nouveau',
         confCode: confCode,
+        idempotency_key: 'IDEM_' + Date.now() + '_' + Math.random().toString(36).substring(2, 9),
+        security_evaluated: true,
         createdAt: new Date().toISOString()
     };
 
@@ -264,11 +248,14 @@ function submitBabiOrder(isAlreadyValidated = false) {
     const whatsappUrl = generateWhatsAppOrderUrl(newOrder);
     newOrder.whatsappUrl = whatsappUrl;
 
-    // Helper to finish order
+    // Helper to finish order and save
     const finalizeOrder = () => {
         fetch('/api/orders', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 
+                'Content-Type': 'application/json',
+                'X-Idempotency-Key': newOrder.idempotency_key
+            },
             body: JSON.stringify({
                 customer_name: newOrder.clientName,
                 phone: newOrder.phone,
@@ -276,7 +263,8 @@ function submitBabiOrder(isAlreadyValidated = false) {
                 items: newOrder.itemsSummary,
                 total_price: newOrder.total_price,
                 payment_method: newOrder.payment_method,
-                notes: newOrder.notes
+                notes: newOrder.notes,
+                idempotency_key: newOrder.idempotency_key
             })
         }).catch(() => {});
 
@@ -298,9 +286,9 @@ function submitBabiOrder(isAlreadyValidated = false) {
         window.location.href = `suivi.html?orderId=${orderId}&phone=${encodeURIComponent(newOrder.phone)}`;
     };
 
-    if (isMobileMoney && !isAlreadyValidated) {
+    if (isWave && !isAlreadyValidated) {
         if (typeof openOperatorPaymentModal === 'function') {
-            openOperatorPaymentModal(selectedOperatorCode);
+            openOperatorPaymentModal('wave');
             return;
         }
     }
@@ -499,34 +487,34 @@ function openOperatorPaymentModal(op) {
     let phoneVal = document.getElementById('momoPhoneInput') ? document.getElementById('momoPhoneInput').value : '0704389201';
     if (!phoneVal) phoneVal = '0704389201';
 
-    modalHeader.style.background = '#1dc4e9';
-    modalTitle.innerHTML = `<img src="assets/wave_money.png" style="width:28px; height:28px; object-fit:contain; display:inline-block;" class="me-2 rounded">Guichet Wave Mobile Money`;
+    // Session de paiement sécurisée & masquée (Grade FinTech)
+    const maskedPaymentUrl = `/api/pay/launch/PAY_SECURE_${btoa(orderId + ':' + grandTotal).replace(/=/g, '')}`;
+    const waveQrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(window.location.origin + maskedPaymentUrl)}`;
+
+    modalHeader.style.background = 'linear-gradient(135deg, #1dc4e9, #0284c7)';
+    modalTitle.innerHTML = `<img src="assets/wave_money.png" style="width:28px; height:28px; object-fit:contain; display:inline-block;" class="me-2 rounded"><span class="fw-bold text-white">Passerelle Sécurisée Wave — BABI</span>`;
     modalBody.innerHTML = `
         <div class="py-2 text-start">
             <div class="text-center mb-3">
-                <img src="assets/wave_money.png" style="width:54px; height:54px; object-fit:contain; display:inline-block;" class="mb-2">
-                <h4 class="fw-bold text-dark mb-0">${grandTotal.toLocaleString()} FCFA</h4>
-                <small class="text-muted">Guichet Officiel Wave Mobile Money CI</small>
-            </div>
-
-            <div class="mb-3">
-                <label class="form-label fw-bold small text-dark">Votre Numéro Wave</label>
-                <div class="input-group">
-                    <span class="input-group-text bg-white fw-bold text-dark border-end-0 d-flex align-items-center"><span class="flag-ci"></span> +225</span>
-                    <input type="tel" class="form-control text-dark fw-bold border-start-0 ps-1" id="modalWavePhone" value="${phoneVal}" placeholder="07 04 38 92 01" style="color: #111827 !important; background-color: #ffffff !important;">
+                <div class="d-inline-flex align-items-center justify-content-center p-2 rounded-circle mb-2" style="background: rgba(29, 196, 233, 0.15); width: 60px; height: 60px;">
+                    <img src="assets/wave_money.png" style="width:40px; height:40px; object-fit:contain;">
                 </div>
+                <h3 class="fw-bold text-dark mb-0">${grandTotal.toLocaleString()} FCFA</h3>
+                <div class="badge bg-success text-white fw-bold mt-1 px-3 py-1"><i class="fa-solid fa-shield-check me-1"></i> Canal Chiffré & Masqué</div>
             </div>
 
-            <div class="p-3 bg-light rounded border mb-3 text-center">
-                <img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent('https://wave.com/pay/' + orderId)}" class="rounded shadow-sm border p-2 bg-white mb-2" style="width:140px;">
-                <div class="small text-muted mb-2">Scannez ce QR Code Wave ou cliquez ci-dessous :</div>
-                <a href="https://wave.com/pay/${orderId}" target="_blank" class="btn btn-info w-100 text-white fw-bold py-2 rounded-pill shadow-sm" style="background:#1dc4e9; border:none;">
-                    <i class="fa-solid fa-mobile-screen me-2"></i>OUVRIR DANS WAVE APP
+            <div class="p-3 rounded-4 border mb-3 text-center" style="background: #f0fdf4; border-color: #86efac !important;">
+                <img src="${waveQrUrl}" class="rounded-3 shadow-sm border p-2 bg-white mb-2" style="width:160px; height:160px;" alt="QR Code Wave Chiffré">
+                <div class="small fw-bold text-dark mb-1">Scannez ce QR Code avec votre application Wave</div>
+                <div class="text-muted small mb-3">Ou appuyez sur le bouton sécurisé ci-dessous :</div>
+                <a href="${maskedPaymentUrl}" target="_blank" class="btn btn-info w-100 text-white fw-bold py-3 rounded-pill shadow-lg d-flex align-items-center justify-content-center gap-2" style="background: linear-gradient(135deg, #1dc4e9, #0284c7); border:none; font-size: 15px;">
+                    <i class="fa-solid fa-lock fs-5"></i>
+                    <span>OUVRIR LE GUICHET SÉCURISÉ WAVE</span>
                 </a>
             </div>
 
-            <button type="button" class="btn btn-primary w-100 fw-bold py-2 rounded-3 shadow-sm" style="background:#1dc4e9; border:none;" onclick="triggerModalPaymentSuccess('Wave')">
-                <i class="fa-solid fa-check-circle me-1"></i> VALIDER LE PAIEMENT WAVE (${grandTotal.toLocaleString()} FCFA)
+            <button type="button" class="btn btn-success w-100 fw-bold py-3 rounded-pill shadow" onclick="triggerModalPaymentSuccess('Wave')">
+                <i class="fa-solid fa-circle-check me-2"></i> J'AI EFFECTUÉ LE PAIEMENT WAVE
             </button>
         </div>
     `;

@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Direction & Gérance — Boulangerie de BABI</title>
+    <!-- Bootstrap 5.3 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <!-- CSS Custom -->
+    <link rel="stylesheet" href="css/gerante.css">
+    <link rel="icon" type="image/png" href="assets/logo.png">
+</head>
+<body class="gerante-body">
+
+    <!-- NAVBAR GÉRANCE -->
+    <nav class="gerante-navbar d-flex justify-content-between align-items-center">
+        <div class="d-flex align-items-center gap-3">
+            <a href="index.html" class="d-flex align-items-center text-decoration-none text-white me-2">
+                <img src="assets/logo.png" alt="Logo" class="navbar-brand-logo" style="height: 38px !important;">
+                <div class="d-flex flex-column lh-1 me-2">
+                    <span class="navbar-brand-title">Boulangerie</span>
+                    <span class="navbar-brand-subtitle">de Babi</span>
+                </div>
+            </a>
+            <span class="gerante-badge-role"><i class="fa-solid fa-user-tie me-1"></i> POSTE GÉRANTE & DIRECTION</span>
+        </div>
+
+        <div class="d-flex align-items-center gap-3">
+            <a href="caissiere.html" class="btn btn-outline-warning btn-sm fw-bold">
+                <i class="fa-solid fa-cash-register me-1"></i> Vue Caisse (POS)
+            </a>
+            <a href="admin.html" class="btn btn-outline-info btn-sm fw-bold">
+                <i class="fa-solid fa-screwdriver-wrench me-1"></i> Panel Admin
+            </a>
+            <div class="dropdown">
+                <button class="btn btn-dark btn-sm dropdown-toggle border-secondary text-white" type="button" data-bs-toggle="dropdown">
+                    <i class="fa-solid fa-circle-user me-1 text-success"></i>
+                    <span id="gerante-name-badge">Mariam Traoré</span>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end">
+                    <li><a class="dropdown-item text-danger" href="#" onclick="localStorage.removeItem('babi_user'); window.location.href='connexion.html';"><i class="fa-solid fa-arrow-right-from-bracket me-2"></i>Déconnexion</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- MAIN CONTAINER -->
+    <div class="gerante-container">
+
+        <!-- ALERT BANNER SI STOCK FAIBLE -->
+        <div class="alert alert-danger align-items-center justify-content-between mb-4 shadow" id="low-stock-alert-banner" style="display: none; border-radius: 12px;">
+            <div class="d-flex align-items-center gap-3">
+                <i class="fa-solid fa-triangle-exclamation fs-3 text-danger"></i>
+                <div>
+                    <h6 class="mb-0 fw-bold" id="alert-count-text">Alerte de Stock Faible !</h6>
+                    <small>Certains articles nécessitent une fournée immédiate au fournil.</small>
+                </div>
+            </div>
+            <a href="#stocks-tab" class="btn btn-danger btn-sm fw-bold" onclick="bootstrap.Tab.getInstance(document.querySelector('#tab-btn-stocks')).show()">
+                Voir les stocks critiques
+            </a>
+        </div>
+
+        <!-- 4 KPIS HERO -->
+        <div class="row g-3 mb-4">
+            <div class="col-md-3">
+                <div class="kpi-card kpi-success">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="kpi-label">Chiffre d'Affaires du Jour</div>
+                            <div class="kpi-val" id="kpi-revenue-today">0 F</div>
+                        </div>
+                        <div class="kpi-icon bg-success bg-opacity-25 text-success">
+                            <i class="fa-solid fa-coins"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="kpi-card kpi-info">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="kpi-label">En Attente Fournil</div>
+                            <div class="kpi-val text-info" id="kpi-orders-fournil">0</div>
+                        </div>
+                        <div class="kpi-icon bg-info bg-opacity-25 text-info">
+                            <i class="fa-solid fa-fire-burner"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="kpi-card kpi-danger">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="kpi-label">Alertes Stocks Faibles</div>
+                            <div class="kpi-val text-danger" id="kpi-low-stocks">0</div>
+                        </div>
+                        <div class="kpi-icon bg-danger bg-opacity-25 text-danger">
+                            <i class="fa-solid fa-boxes-stacked"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="kpi-card">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="kpi-label">Personnel en Poste</div>
+                            <div class="kpi-val text-warning" id="kpi-employees-present">0 / 0</div>
+                        </div>
+                        <div class="kpi-icon bg-warning bg-opacity-25 text-warning">
+                            <i class="fa-solid fa-users"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- NAVIGATION DES ONGLETS -->
+        <ul class="nav gerante-nav-pills mb-4 gap-2" role="tablist">
+            <li class="nav-item">
+                <button class="nav-link active" id="tab-btn-stocks" data-bs-toggle="pill" data-bs-target="#tab-stocks">
+                    <i class="fa-solid fa-boxes-stacked me-1"></i> Pilotage Stocks & Fournil
+                </button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link" data-bs-toggle="pill" data-bs-target="#tab-fournil">
+                    <i class="fa-solid fa-kitchen-set me-1"></i> Commandes & Cuisson Fournil
+                </button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link" data-bs-toggle="pill" data-bs-target="#tab-events">
+                    <i class="fa-solid fa-cake-candles text-warning me-1"></i> Gâteaux d'Événements
+                </button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link" data-bs-toggle="pill" data-bs-target="#tab-employees">
+                    <i class="fa-solid fa-user-group me-1"></i> Gestion de l'Équipe & Présences
+                </button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link" data-bs-toggle="pill" data-bs-target="#tab-movements">
+                    <i class="fa-solid fa-clock-rotate-left me-1"></i> Mouvements de Stock
+                </button>
+            </li>
+        </ul>
+
+        <!-- CONTENU DES ONGLETS -->
+        <div class="tab-content">
+            
+            <!-- TAB 1 : STOCKS & FOURNIL -->
+            <div class="tab-pane fade show active" id="tab-stocks">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="position-relative" style="width: 320px;">
+                        <input type="text" class="form-control gerante-input" id="stock-search-input" placeholder="🔍 Filtrer les stocks..." oninput="renderStocksList()">
+                    </div>
+                    <button class="btn btn-warning fw-bold text-dark" onclick="openAdjustStockModal(1, 'Baguette Tradition', 40)">
+                        <i class="fa-solid fa-plus me-1"></i> Enregistrer Nouvelle Fournée
+                    </button>
+                </div>
+                <div id="stocks-list-container">
+                    <!-- Injected dynamically -->
+                </div>
+            </div>
+
+            <!-- TAB 2 : COMMANDES FOURNIL & CUISSON -->
+            <div class="tab-pane fade" id="tab-fournil">
+                <div class="card bg-dark border-secondary p-3 rounded-4">
+                    <h5 class="fw-bold text-warning mb-3"><i class="fa-solid fa-fire me-2"></i>Flux de Production & Cuisson en Direct</h5>
+                    <div class="table-responsive">
+                        <table class="gerante-table">
+                            <thead>
+                                <tr>
+                                    <th>N° Commande</th>
+                                    <th>Client / Tél</th>
+                                    <th>Articles Fournil</th>
+                                    <th>Total</th>
+                                    <th>Statut Actuel</th>
+                                    <th>Action Gérante</th>
+                                </tr>
+                            </thead>
+                            <tbody id="fournil-orders-tbody">
+                                <!-- Injected dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB : RÉSERVATIONS GÂTEAUX ÉVÉNEMENTS -->
+            <div class="tab-pane fade" id="tab-events">
+                <div class="card bg-dark border-secondary p-3 rounded-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="fw-bold text-warning mb-0"><i class="fa-solid fa-cake-candles me-2"></i>Réservations & Pièces Montées sur Mesure</h5>
+                        <button class="btn btn-outline-warning btn-sm fw-bold" onclick="renderGeranteEventOrders()"><i class="fa-solid fa-rotate-right me-1"></i> Actualiser</button>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="gerante-table">
+                            <thead>
+                                <tr>
+                                    <th>Réf</th>
+                                    <th>Client & Tél</th>
+                                    <th>Événement</th>
+                                    <th>Format & Parfums</th>
+                                    <th>Inscription</th>
+                                    <th>Date Retrait</th>
+                                    <th>Devis</th>
+                                    <th>Statut & Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="gerante-events-tbody">
+                                <!-- Injected dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 3 : EMPLOYEES & POINTAGE -->
+            <div class="tab-pane fade" id="tab-employees">
+                <div class="card bg-dark border-secondary p-3 rounded-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="fw-bold text-warning mb-0"><i class="fa-solid fa-users me-2"></i>Tableau de Bord du Personnel</h5>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="gerante-table">
+                            <thead>
+                                <tr>
+                                    <th>Employé</th>
+                                    <th>Poste Occupé</th>
+                                    <th>Téléphone</th>
+                                    <th>Statut Présence</th>
+                                    <th>Pointer / Modifier</th>
+                                </tr>
+                            </thead>
+                            <tbody id="employees-tbody">
+                                <!-- Injected dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 4 : MOUVEMENTS DE STOCK -->
+            <div class="tab-pane fade" id="tab-movements">
+                <div class="card bg-dark border-secondary p-3 rounded-4">
+                    <h5 class="fw-bold text-warning mb-3"><i class="fa-solid fa-clock-rotate-left me-2"></i>Historique des Entrées / Sorties</h5>
+                    <div class="table-responsive">
+                        <table class="gerante-table">
+                            <thead>
+                                <tr>
+                                    <th>Date / Heure</th>
+                                    <th>Produit</th>
+                                    <th>Variation</th>
+                                    <th>Motif</th>
+                                    <th>Responsable</th>
+                                </tr>
+                            </thead>
+                            <tbody id="movements-tbody">
+                                <!-- Injected dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- MODAL AJUSTEMENT / FOURNÉE STOCK -->
+    <div class="modal fade" id="adjustStockModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content bg-dark text-white border-secondary">
+                <div class="modal-header border-secondary">
+                    <h5 class="modal-title fw-bold text-warning"><i class="fa-solid fa-bread-slice me-2"></i>Ajouter une Fournée / Ajuster Stock</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <input type="hidden" id="modal-stock-id">
+                    <div class="mb-3">
+                        <div class="text-muted small">ARTICLE :</div>
+                        <div class="fs-5 fw-bold text-warning" id="modal-stock-name">Baguette Tradition</div>
+                        <div class="small text-muted">Stock actuel en rayon : <span id="modal-stock-current">40</span> pièces</div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label text-muted">Quantité sortie du Fournil (+ pour ajout, - pour perte/casse) :</label>
+                        <input type="number" class="form-control form-control-lg bg-dark text-white border-warning fw-bold text-center" id="modal-stock-delta" value="20">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label text-muted">Motif :</label>
+                        <select class="form-select bg-dark text-white border-secondary" id="modal-stock-motif">
+                            <option value="Fournée fraîche du matin">🥖 Fournée fraîche du matin</option>
+                            <option value="Fournée chaude de midi">🥖 Fournée chaude de midi</option>
+                            <option value="Fournée du soir">🥖 Fournée du soir</option>
+                            <option value="Arrivage matières premières">📦 Arrivage matières premières</option>
+                            <option value="Perte / Casse fournil">⚠️ Perte / Casse fournil</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer border-secondary">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                    <button type="button" class="btn btn-warning fw-bold" onclick="submitStockAdjustment()">
+                        <i class="fa-solid fa-check me-1"></i> Valider l'Entrée en Rayon
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap Bundle JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/gerante.js"></script>
+    <script src="js/anti_hacker_client.js"></script>
+</body>
+</html>

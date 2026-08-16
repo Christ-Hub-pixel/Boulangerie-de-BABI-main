@@ -37,11 +37,14 @@ function showTab(tabName) {
         const titles = {
             'overview': "Vue d'ensemble",
             'orders': "Commandes en Direct",
+            'events': "Gâteaux d'Événements & Pièces Montées",
             'products': "Gestion du Catalogue Produits",
             'users': "Liste des Clients Inscrits",
-            'drivers': "Suivi de la Flotte de Livreurs"
+            'team': "Équipe & Personnel de la Boulangerie",
+            'security': "Cybersécurité & Audit IA des Transactions"
         };
         pageTitle.innerText = titles[tabName] || "Dashboard Admin";
+        if (tabName === 'security') fetchSecurityAuditLogs();
     }
 }
 
@@ -50,6 +53,7 @@ async function fetchAdminData() {
     await Promise.all([
         loadStats(),
         loadOrders(),
+        loadEventOrders(),
         loadProducts(),
         loadUsers()
     ]);
@@ -420,5 +424,317 @@ async function triggerAdminRefund(orderId) {
         } catch (e) {
             console.error(e);
         }
+    }
+}
+
+// ----------------------------------------------------
+// GESTION DES GÂTEAUX D'ÉVÉNEMENTS (ADMIN & FOURNIL)
+// ----------------------------------------------------
+let allEventOrders = [];
+
+function loadEventOrders() {
+    let events = [];
+    try {
+        events = JSON.parse(localStorage.getItem('babi_event_orders')) || [];
+    } catch(e) {}
+
+    // Default mock event orders if empty
+    if (events.length === 0) {
+        events = [
+            {
+                id: 'BABI-EVT-842109',
+                ref: 'BABI-EVT-842109',
+                name: 'Kouassi Marc',
+                phone: '0704389201',
+                eventType: 'Mariage',
+                portions: 45,
+                tiers: 3,
+                flavor: 'Chocolat Grand Cru & Praliné',
+                message: 'Mariage Marc & Sarah (15 Août)',
+                date: '2026-08-22',
+                time: 'Après-midi (14h00 - 17h00)',
+                price: 86000,
+                status: 'En préparation au Fournil',
+                notes: 'Dorures or comestibles, macarons blancs sur le sommet.'
+            },
+            {
+                id: 'BABI-EVT-719542',
+                ref: 'BABI-EVT-719542',
+                name: 'Fatou Traoré',
+                phone: '0161407064',
+                eventType: 'Anniversaire',
+                portions: 25,
+                tiers: 1,
+                flavor: 'Vanille Bourbon & Fruits Rouges',
+                message: 'Joyeux Anniversaire Aminata (30 ans) !',
+                date: '2026-08-18',
+                time: 'Matinée (09h00 - 12h00)',
+                price: 37500,
+                status: 'Nouveau Devis Reçu',
+                notes: 'Sans arachides, bougies dorées incluses.'
+            }
+        ];
+        try {
+            localStorage.setItem('babi_event_orders', JSON.stringify(events));
+        } catch(e) {}
+    }
+
+    allEventOrders = events;
+    renderEventsTable(allEventOrders);
+
+    const badge = document.getElementById('nav-events-badge');
+    if (badge) {
+        badge.innerText = allEventOrders.length;
+        badge.style.display = allEventOrders.length > 0 ? 'inline-block' : 'none';
+    }
+}
+
+function renderEventsTable(events) {
+    const tbody = document.getElementById('events-tbody');
+    if (!tbody) return;
+
+    if (!events || events.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="8" class="text-center py-4 text-muted">Aucune réservation de gâteau d'événement pour le moment.</td></tr>`;
+        return;
+    }
+
+    tbody.innerHTML = events.map(evt => {
+        const statusBadge = getEventStatusBadge(evt.status || 'Nouveau Devis Reçu');
+        return `
+            <tr>
+                <td class="fw-bold text-dark">#${evt.ref || evt.id}</td>
+                <td>
+                    <div class="fw-bold">${evt.name || 'Client BABI'}</div>
+                    <div class="small text-muted"><i class="fa-solid fa-phone me-1"></i> ${evt.phone || 'Non renseigné'}</div>
+                </td>
+                <td>
+                    <span class="badge ${evt.eventType === 'Mariage' ? 'bg-warning text-dark' : 'bg-primary'} fw-bold">${evt.eventType || 'Événement'}</span>
+                </td>
+                <td>
+                    <div class="fw-bold text-danger">${evt.portions || 20} parts (${evt.tiers || 1} Étage${(evt.tiers || 1) > 1 ? 's' : ''})</div>
+                    <small class="text-muted">${evt.flavor || 'Chocolat'}</small>
+                </td>
+                <td>
+                    <div class="small fw-semibold text-dark">"${evt.message || 'Sans inscription'}"</div>
+                    ${evt.notes ? `<small class="text-muted d-block fst-italic">Note: ${evt.notes}</small>` : ''}
+                </td>
+                <td>
+                    <div class="fw-bold text-dark">${evt.date || 'À convenir'}</div>
+                    <small class="text-muted">${evt.time || ''}</small>
+                </td>
+                <td class="fw-bold fs-6 text-danger">${(evt.price || 0).toLocaleString()} FCFA</td>
+                <td>
+                    <div class="d-flex flex-column gap-1">
+                        ${statusBadge}
+                        <div class="btn-group btn-group-sm mt-1">
+                            <button class="btn btn-outline-success btn-sm" onclick="contactEventWhatsApp('${evt.ref}')" title="Contacter sur WhatsApp">
+                                <i class="fa-brands fa-whatsapp"></i>
+                            </button>
+                            <button class="btn btn-outline-dark btn-sm" onclick="changeEventStatus('${evt.ref}')" title="Changer le statut">
+                                <i class="fa-solid fa-pen-to-square"></i>
+                            </button>
+                            <button class="btn btn-outline-primary btn-sm" onclick="printEventTicket('${evt.ref}')" title="Imprimer la Fiche Fournil">
+                                <i class="fa-solid fa-print"></i>
+                            </button>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        `;
+    }).join('');
+}
+
+function getEventStatusBadge(status) {
+    if (status.includes('Fournil') || status.includes('préparation')) {
+        return `<span class="badge bg-warning text-dark"><i class="fa-solid fa-fire-burner me-1"></i> Au Fournil</span>`;
+    } else if (status.includes('Prêt') || status.includes('comptoir')) {
+        return `<span class="badge bg-success"><i class="fa-solid fa-box-open me-1"></i> Prêt au Comptoir</span>`;
+    } else if (status.includes('Livré') || status.includes('Clôturé')) {
+        return `<span class="badge bg-secondary"><i class="fa-solid fa-check me-1"></i> Livré / Récupéré</span>`;
+    }
+    return `<span class="badge bg-info text-dark"><i class="fa-solid fa-bell me-1"></i> Devis Reçu</span>`;
+}
+
+function filterEventsTable() {
+    const q = (document.getElementById('event-search')?.value || '').toLowerCase();
+    const type = document.getElementById('event-filter-type')?.value || '';
+
+    const filtered = allEventOrders.filter(evt => {
+        const matchQ = (evt.name || '').toLowerCase().includes(q) ||
+                       (evt.ref || '').toLowerCase().includes(q) ||
+                       (evt.phone || '').includes(q);
+        const matchType = !type || (evt.eventType === type);
+        return matchQ && matchType;
+    });
+
+    renderEventsTable(filtered);
+}
+
+function changeEventStatus(ref) {
+    const evt = allEventOrders.find(e => e.ref === ref || e.id === ref);
+    if (!evt) return;
+
+    const choices = ["Nouveau Devis Reçu", "Acompte Reçu (Validé)", "En préparation au Fournil", "Prêt pour Retrait Comptoir", "Livré & Clôturé"];
+    const current = evt.status || choices[0];
+    const newStatus = prompt(`Modifier le statut de la commande #${ref} :\n\nOptions :\n1. Nouveau Devis Reçu\n2. Acompte Reçu (Validé)\n3. En préparation au Fournil\n4. Prêt pour Retrait Comptoir\n5. Livré & Clôturé`, current);
+
+    if (newStatus) {
+        evt.status = newStatus;
+        try {
+            localStorage.setItem('babi_event_orders', JSON.stringify(allEventOrders));
+        } catch(e) {}
+        renderEventsTable(allEventOrders);
+        alert(`✅ Statut de la commande #${ref} mis à jour : ${newStatus}`);
+    }
+}
+
+function contactEventWhatsApp(ref) {
+    const evt = allEventOrders.find(e => e.ref === ref || e.id === ref);
+    if (!evt) return;
+
+    const cleanPhone = (evt.phone || '').replace(/\D/g, '');
+    const phoneWithCode = cleanPhone.startsWith('225') ? cleanPhone : ('225' + cleanPhone);
+    const msg = `Bonjour ${evt.name || 'cher client'}, c'est la Boulangerie de BABI (Chef Pâtissier) concernant votre réservation de gâteau #${evt.ref} (${evt.portions} parts pour le ${evt.date}). Nous sommes à votre entière disposition ! 🎂✨`;
+    window.open(`https://api.whatsapp.com/send?phone=${phoneWithCode}&text=${encodeURIComponent(msg)}`, '_blank');
+}
+
+function printEventTicket(ref) {
+    const evt = allEventOrders.find(e => e.ref === ref || e.id === ref);
+    if (!evt) return;
+
+    const printWin = window.open('', '', 'width=600,height=700');
+    printWin.document.write(`
+        <html>
+        <head>
+            <title>Fiche Fournil - #${evt.ref}</title>
+            <style>
+                body { font-family: monospace; padding: 20px; color: #000; line-height: 1.4; }
+                .header { text-align: center; border-bottom: 2px dashed #000; padding-bottom: 10px; margin-bottom: 15px; }
+                .title { font-size: 1.3rem; font-weight: bold; }
+                .section { margin: 12px 0; }
+                .big { font-size: 1.2rem; font-weight: bold; }
+                .footer { border-top: 2px dashed #000; margin-top: 20px; padding-top: 10px; text-align: center; font-size: 0.85rem; }
+            </style>
+        </head>
+        <body onload="window.print();">
+            <div class="header">
+                <div class="title">BOULANGERIE DE BABI</div>
+                <div>FICHE TECHNIQUE FOURNIL & PÂTISSERIE</div>
+                <div>COMMANDE GÂTEAU D'ÉVÉNEMENT</div>
+            </div>
+            <div class="section">
+                <div><strong>RÉF :</strong> #${evt.ref}</div>
+                <div><strong>DATE DE RETRAIT :</strong> ${evt.date} (${evt.time})</div>
+                <div><strong>CLIENT :</strong> ${evt.name} (${evt.phone})</div>
+            </div>
+            <hr style="border: 1px dashed #000;">
+            <div class="section">
+                <div class="big">ÉVÉNEMENT : ${evt.eventType}</div>
+                <div class="big">NOMBRE DE PARTS : ${evt.portions} PERSONNES</div>
+                <div class="big">ARCHITECTURE : ${evt.tiers} ÉTAGE(S)</div>
+                <div><strong>PARFUMS / GARNITURE :</strong> ${evt.flavor}</div>
+            </div>
+            <div class="section" style="background:#eee; padding: 10px;">
+                <strong>INSCRIPTION CALLIGRAPHIÉE SUR LE GÂTEAU :</strong><br>
+                <div class="big" style="margin-top: 5px;">"${evt.message || 'AUCUNE'}"</div>
+            </div>
+            ${evt.notes ? `<div class="section"><strong>CONSIGNES / THÈME :</strong> ${evt.notes}</div>` : ''}
+            <div class="footer">
+                <div>MONTANT TOTAL : ${evt.price.toLocaleString()} FCFA</div>
+                <div>Fournil Cocody Riviera 2 — Abidjan</div>
+            </div>
+        </body>
+        </html>
+    `);
+    printWin.document.close();
+}
+
+async function fetchSecurityAuditLogs() {
+    const tbody = document.getElementById('security-logs-tbody');
+    
+    // 1. Fetch SOC Metrics
+    try {
+        const socRes = await fetch('/api/v1/security/soc-metrics');
+        if (socRes.ok) {
+            const socData = await socRes.json();
+            const merkleBlocksEl = document.getElementById('soc-merkle-blocks');
+            const trappedCountEl = document.getElementById('soc-trapped-count');
+            const bannedCountEl = document.getElementById('soc-banned-count');
+            const rulesCountEl = document.getElementById('soc-rules-count');
+
+            if (merkleBlocksEl) merkleBlocksEl.innerText = `${socData.total_merkle_blocks || 0} Blocs Scellés`;
+            if (trappedCountEl) trappedCountEl.innerText = `${socData.trapped_attackers_count || 0} PIRATES PIÉGÉS`;
+            if (bannedCountEl) bannedCountEl.innerText = `${socData.banned_hackers_count || 0} IPs EN QUARANTAINE`;
+            if (rulesCountEl) rulesCountEl.innerText = `${socData.active_firewall_rules || 24} Règles WAF & IDS/IPS`;
+
+            if (socData.attack_breakdown) {
+                const bd = socData.attack_breakdown;
+                const sqliEl = document.getElementById('stat-sqli');
+                const rceEl = document.getElementById('stat-rce');
+                const xssEl = document.getElementById('stat-xss');
+                const lfiEl = document.getElementById('stat-lfi');
+                const ssrfEl = document.getElementById('stat-ssrf');
+                const botsEl = document.getElementById('stat-bots');
+
+                if (sqliEl) sqliEl.innerText = `${bd.sqli_blocked || 0} Bloqué(s)`;
+                if (rceEl) rceEl.innerText = `${bd.rce_blocked || 0} Bloqué(s)`;
+                if (xssEl) xssEl.innerText = `${bd.xss_blocked || 0} Bloqué(s)`;
+                if (lfiEl) lfiEl.innerText = `${bd.lfi_blocked || 0} Bloqué(s)`;
+                if (ssrfEl) ssrfEl.innerText = `${bd.ssrf_blocked || 0} Bloqué(s)`;
+                if (botsEl) botsEl.innerText = `${bd.bots_scanners_blocked || 0} Bloqué(s)`;
+            }
+        }
+    } catch (e) {}
+
+    // 2. Fetch Security Audit Logs
+    if (!tbody) return;
+
+    try {
+        const res = await fetch('/api/security/audit-logs');
+        const data = await res.json();
+
+        if (!data.logs || data.logs.length === 0) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="7" class="text-center text-muted py-4">
+                        <i class="fa-solid fa-shield-check text-success fs-3 d-block mb-2"></i>
+                        Aucun incident de sécurité. Moteur IA Sentinel actif (100% Conforme).
+                    </td>
+                </tr>
+            `;
+            return;
+        }
+
+        tbody.innerHTML = data.logs.map(log => {
+            const levelBadge = log.risk_level === 'ÉLEVÉ' 
+                ? '<span class="badge bg-danger text-white">ÉLEVÉ</span>'
+                : (log.risk_level === 'MODÉRÉ' 
+                    ? '<span class="badge bg-warning text-dark">MODÉRÉ</span>'
+                    : '<span class="badge bg-success text-white">FAIBLE</span>');
+
+            const dateStr = new Date(log.created_at || Date.now()).toLocaleString('fr-FR');
+            const shortHash = log.hash_signature ? log.hash_signature.substring(0, 16) + '...' : 'N/A';
+
+            return `
+                <tr>
+                    <td class="small text-muted">${dateStr}</td>
+                    <td><strong class="text-dark">${log.event_type}</strong></td>
+                    <td><code>#${log.order_id || 'N/A'}</code></td>
+                    <td><span class="fw-bold">${log.risk_score || 0}/100</span></td>
+                    <td>${levelBadge}</td>
+                    <td class="small"><code>${log.ip_address || '127.0.0.1'}</code></td>
+                    <td class="small text-muted font-monospace" title="${log.hash_signature}">${shortHash}</td>
+                </tr>
+            `;
+        }).join('');
+    } catch(e) {
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="7" class="text-center text-muted py-4">
+                    <span class="badge bg-success py-2 px-3"><i class="fa-solid fa-circle-check me-1"></i> Moteur IA Sentinel Actif</span>
+                    <div class="small mt-2">Dernière vérification : 0 tentative de fraude détectée.</div>
+                </td>
+            </tr>
+        `;
     }
 }

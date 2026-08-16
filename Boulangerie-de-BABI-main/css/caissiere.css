@@ -1,0 +1,399 @@
+/* -------------------------------------------------------------
+   POS CAISSIÈRE — BOULANGERIE DE BABI DESIGN SYSTEM
+------------------------------------------------------------- */
+
+:root {
+    --pos-bg: #0f172a;
+    --pos-panel: #1e293b;
+    --pos-card: #334155;
+    --pos-primary: #f59e0b;
+    --pos-primary-hover: #d97706;
+    --pos-accent: #10b981;
+    --pos-danger: #ef4444;
+    --pos-text: #f8fafc;
+    --pos-text-muted: #94a3b8;
+    --pos-border: #475569;
+}
+
+body.pos-body {
+    background-color: var(--pos-bg);
+    color: var(--pos-text);
+    font-family: 'Outfit', sans-serif;
+    height: 100vh;
+    overflow: hidden;
+    margin: 0;
+    padding: 0;
+}
+
+.pos-header {
+    background: #111827;
+    border-bottom: 1px solid var(--pos-border);
+    padding: 0.6rem 1.2rem;
+}
+
+.pos-logo {
+    height: 38px;
+}
+
+.pos-badge-role {
+    background: rgba(245, 158, 11, 0.15);
+    color: var(--pos-primary);
+    border: 1px solid var(--pos-primary);
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 0.25rem 0.6rem;
+    border-radius: 20px;
+}
+
+.pos-layout {
+    height: calc(100vh - 60px);
+    display: flex;
+    overflow: hidden;
+}
+
+/* Left & Center Products Area */
+.pos-catalog-area {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 1rem;
+    overflow-y: auto;
+}
+
+.pos-categories-nav {
+    display: flex;
+    gap: 0.5rem;
+    overflow-x: auto;
+    padding-bottom: 0.5rem;
+}
+
+.pos-cat-btn {
+    background: var(--pos-panel);
+    color: var(--pos-text-muted);
+    border: 1px solid var(--pos-border);
+    border-radius: 10px;
+    padding: 0.5rem 1rem;
+    font-weight: 600;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.pos-cat-btn:hover, .pos-cat-btn.active {
+    background: var(--pos-primary);
+    color: #1e1b4b;
+    border-color: var(--pos-primary);
+}
+
+.pos-search-bar {
+    position: relative;
+    margin-bottom: 0.8rem;
+}
+
+.pos-search-bar input {
+    background: var(--pos-panel);
+    border: 1px solid var(--pos-border);
+    color: #fff;
+    border-radius: 10px;
+    padding: 0.7rem 1rem 0.7rem 2.8rem;
+    width: 100%;
+}
+
+.pos-search-bar input:focus {
+    outline: none;
+    border-color: var(--pos-primary);
+    box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.2);
+}
+
+.pos-search-icon {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--pos-text-muted);
+}
+
+.pos-products-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(135px, 1fr));
+    gap: 0.75rem;
+    overflow-y: auto;
+    padding-right: 0.3rem;
+}
+
+.pos-product-item {
+    background: var(--pos-panel);
+    border: 1px solid var(--pos-border);
+    border-radius: 12px;
+    padding: 0.6rem;
+    text-align: center;
+    cursor: pointer;
+    transition: transform 0.15s ease, border-color 0.15s ease;
+    user-select: none;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.pos-product-item:hover {
+    transform: translateY(-2px);
+    border-color: var(--pos-primary);
+}
+
+.pos-product-item:active {
+    transform: scale(0.97);
+}
+
+.pos-prod-img {
+    width: 100%;
+    height: 95px;
+    object-fit: contain !important;
+    background-color: #ffffff;
+    border-radius: 8px;
+    padding: 4px;
+    margin-bottom: 0.4rem;
+}
+
+.pos-prod-title {
+    font-size: 0.8rem;
+    font-weight: 600;
+    line-height: 1.2;
+    margin-bottom: 0.3rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    min-height: 1.9rem;
+}
+
+.pos-prod-price {
+    color: var(--pos-primary);
+    font-weight: 800;
+    font-size: 0.9rem;
+}
+
+/* Right Cart & Register Panel */
+.pos-cart-panel {
+    width: 380px;
+    background: var(--pos-panel);
+    border-left: 1px solid var(--pos-border);
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.pos-cart-header {
+    padding: 0.8rem 1rem;
+    border-bottom: 1px solid var(--pos-border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.pos-cart-items {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0.8rem;
+}
+
+.pos-cart-row {
+    background: var(--pos-card);
+    border-radius: 8px;
+    padding: 0.5rem 0.7rem;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.pos-cart-row-info {
+    flex: 1;
+    padding-right: 0.5rem;
+}
+
+.pos-cart-row-title {
+    font-size: 0.82rem;
+    font-weight: 600;
+}
+
+.pos-cart-row-unit {
+    font-size: 0.72rem;
+    color: var(--pos-text-muted);
+}
+
+.pos-qty-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.pos-qty-btn {
+    width: 26px;
+    height: 26px;
+    border-radius: 6px;
+    background: #475569;
+    border: none;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.pos-qty-btn:hover {
+    background: var(--pos-primary);
+    color: #000;
+}
+
+.pos-qty-num {
+    font-weight: 700;
+    min-width: 20px;
+    text-align: center;
+    font-size: 0.85rem;
+}
+
+.pos-cart-row-total {
+    font-weight: 700;
+    color: var(--pos-primary);
+    min-width: 65px;
+    text-align: right;
+    font-size: 0.85rem;
+}
+
+.pos-cart-summary {
+    background: #111827;
+    padding: 1rem;
+    border-top: 1px solid var(--pos-border);
+}
+
+.pos-sum-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.4rem;
+    font-size: 0.85rem;
+    color: var(--pos-text-muted);
+}
+
+.pos-sum-total {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 0.6rem;
+    padding-top: 0.6rem;
+    border-top: 1px dashed var(--pos-border);
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: #fff;
+}
+
+.pos-pay-btn {
+    background: var(--pos-primary);
+    color: #0f172a;
+    font-weight: 800;
+    font-size: 1.05rem;
+    border: none;
+    border-radius: 10px;
+    width: 100%;
+    padding: 0.85rem;
+    margin-top: 0.8rem;
+    cursor: pointer;
+    transition: background 0.15s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.pos-pay-btn:hover {
+    background: var(--pos-primary-hover);
+}
+
+.pos-pay-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Modals High Contrast */
+.pos-modal {
+    background: rgba(15, 23, 42, 0.85);
+    backdrop-filter: blur(8px);
+}
+
+.pos-modal-content {
+    background: #1e293b !important;
+    border: 1px solid #475569 !important;
+    color: #ffffff !important;
+    border-radius: 16px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+}
+
+.pos-modal label,
+.pos-modal .form-label {
+    color: #f8fafc !important;
+    font-weight: 600 !important;
+    font-size: 0.9rem !important;
+    margin-bottom: 0.4rem !important;
+}
+
+.pos-modal input.form-control,
+.pos-modal select.form-select,
+.pos-modal textarea.form-control {
+    background-color: #0f172a !important;
+    color: #ffffff !important;
+    border: 1px solid #475569 !important;
+    border-radius: 8px;
+    font-size: 0.95rem;
+}
+
+.pos-modal input.form-control:focus {
+    border-color: #f59e0b !important;
+    box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.3) !important;
+}
+
+.pos-modal input::placeholder {
+    color: #94a3b8 !important;
+    opacity: 1 !important;
+}
+
+.pos-modal .text-muted {
+    color: #cbd5e1 !important;
+}
+
+/* Thermal Receipt Styling */
+.thermal-receipt-preview {
+    background: #ffffff;
+    color: #111827;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 12px;
+    padding: 15px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    max-width: 320px;
+    margin: 0 auto;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.thermal-receipt-preview table {
+    width: 100%;
+    font-size: 11px;
+}
+
+.thermal-receipt-preview th, .thermal-receipt-preview td {
+    padding: 3px 0;
+}
+
+@media print {
+    body * {
+        visibility: hidden;
+    }
+    #thermal-print-target, #thermal-print-target * {
+        visibility: visible;
+    }
+    #thermal-print-target {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 80mm;
+    }
+}

@@ -108,6 +108,7 @@
         <div class="offcanvas-body p-0">
             <div class="list-group list-group-flush">
                 <a href="index.html" class="list-group-item list-group-item-action fw-bold"><i class="fa-solid fa-house me-2"></i> Accueil</a>
+                <a href="evenements.html" class="list-group-item list-group-item-action fw-bold text-warning" style="background:#2b160c;"><i class="fa-solid fa-cake-candles me-2 text-warning"></i> Gâteaux d'Événements</a>
                 <a href="produits.html" class="list-group-item list-group-item-action"><i class="fa-solid fa-bread-slice me-2"></i> Pains</a>
                 <a href="produits.html" class="list-group-item list-group-item-action"><i class="fa-solid fa-cookie me-2"></i> Viennoiseries</a>
                 <a href="produits.html" class="list-group-item list-group-item-action"><i class="fa-solid fa-cake-candles me-2"></i> Pâtisseries</a>
@@ -131,6 +132,18 @@
             <!-- Sidebar Filters -->
             <div class="col-lg-3 d-none d-lg-block">
                 <div class="bg-white rounded shadow-sm p-3 mb-3">
+                    
+                    <!-- Event Cake Banner in Sidebar -->
+                    <div class="p-2 mb-3 rounded-3" style="background:#fffaf0; border: 1px dashed #fb923c;">
+                        <a href="evenements.html" class="text-decoration-none d-flex align-items-center gap-2">
+                            <i class="fa-solid fa-cake-candles text-warning fs-5"></i>
+                            <div>
+                                <strong class="text-danger small d-block">Gâteaux d'Événements</strong>
+                                <span class="text-muted" style="font-size:0.75rem;">Mariages, Anniversaires</span>
+                            </div>
+                        </a>
+                    </div>
+
                     <h6 class="fw-bold border-bottom pb-2 mb-3">Catégories</h6>
                     <div class="form-check mb-2">
                         <input class="form-check-input" type="radio" name="catFilter" value="" id="c1" onchange="filterCat('')" checked>
@@ -213,7 +226,7 @@
 
                 <!-- Product Grid -->
                 <div class="bg-white rounded shadow-sm p-3">
-                    <div id="product-grid" class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-3">
+                    <div id="product-grid" class="row row-cols-3 row-cols-md-4 row-cols-lg-4 g-2 g-md-3">
                         <!-- Products will be dynamically generated here by JS -->
                     </div>
                 </div>

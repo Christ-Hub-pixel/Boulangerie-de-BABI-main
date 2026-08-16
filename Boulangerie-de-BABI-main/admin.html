@@ -52,17 +52,24 @@
     <div class="admin-wrapper">
         <!-- Sidebar -->
         <aside class="admin-sidebar">
-            <div class="brand">
-                <img src="assets/logo.png" alt="Logo" style="height: 35px;">
-                <span>Babi Admin</span>
+            <div class="brand d-flex align-items-center mb-4">
+                <img src="assets/logo.png" alt="Logo" class="navbar-brand-logo me-2" style="height: 38px !important;">
+                <div class="d-flex flex-column lh-1 text-start">
+                    <span class="navbar-brand-title text-white">Boulangerie</span>
+                    <span class="navbar-brand-subtitle">de Babi</span>
+                </div>
             </div>
             <ul class="admin-menu">
                 <li><a href="#" class="active" onclick="showTab('overview')"><i class="fa-solid fa-chart-pie"></i> Vue d'ensemble</a></li>
                 <li><a href="#" onclick="showTab('orders')"><i class="fa-solid fa-bag-shopping"></i> Commandes <span id="nav-orders-badge" class="badge bg-danger ms-auto" style="display:none;">0</span></a></li>
-                <li><a href="#" onclick="showTab('products')"><i class="fa-solid fa-bread-slice"></i> Produits</a></li>
+                <li><a href="#" onclick="showTab('events')"><i class="fa-solid fa-cake-candles text-warning"></i> Gâteaux d'Événements <span id="nav-events-badge" class="badge bg-warning text-dark ms-auto" style="display:none;">0</span></a></li>
+                <li><a href="#" onclick="showTab('products')"><i class="fa-solid fa-bread-slice"></i> Produits & Stocks</a></li>
                 <li><a href="#" onclick="showTab('users')"><i class="fa-solid fa-users"></i> Clients</a></li>
-                <li><a href="#" onclick="showTab('drivers')"><i class="fa-solid fa-motorcycle"></i> Livreurs</a></li>
-                <li style="margin-top: 50px;"><a href="index.html" class="text-danger"><i class="fa-solid fa-arrow-right-from-bracket"></i> Quitter (Retour au site)</a></li>
+                <li><a href="#" onclick="showTab('team')"><i class="fa-solid fa-user-group"></i> Équipe Boulangerie</a></li>
+                <li><a href="#" onclick="showTab('security')"><i class="fa-solid fa-shield-halved text-info"></i> Sécurité IA & Audit</a></li>
+                <li class="border-top border-secondary my-2 pt-2"><a href="gerante.html" class="text-success"><i class="fa-solid fa-user-tie"></i> Portail Gérante</a></li>
+                <li><a href="caissiere.html" class="text-warning"><i class="fa-solid fa-cash-register"></i> Caisse Tactile (POS)</a></li>
+                <li style="margin-top: 30px;"><a href="index.html" class="text-danger"><i class="fa-solid fa-arrow-right-from-bracket"></i> Quitter (Retour au site)</a></li>
             </ul>
         </aside>
 
@@ -108,9 +115,9 @@
                     </div>
                     <div class="col-md-3">
                         <div class="stat-card">
-                            <div class="stat-icon warning"><i class="fa-solid fa-store"></i></div>
+                            <div class="stat-icon warning"><i class="fa-solid fa-kitchen-set"></i></div>
                             <div class="stat-details">
-                                <span>Prêtes au comptoir</span>
+                                <span>En Préparation Fournil</span>
                                 <h3 id="stat-pending-orders">0</h3>
                             </div>
                         </div>
@@ -119,7 +126,7 @@
                         <div class="stat-card">
                             <div class="stat-icon success"><i class="fa-solid fa-circle-check"></i></div>
                             <div class="stat-details">
-                                <span>Colis Récupérés</span>
+                                <span>Commandes Récupérées</span>
                                 <h3 id="stat-delivered-orders">0</h3>
                             </div>
                         </div>
@@ -128,15 +135,19 @@
 
                 <div class="row g-3 mb-4">
                     <div class="col-lg-8">
-                        <div class="bg-white rounded-4 p-4 shadow-sm h-100">
-                            <h6 class="fw-bold mb-3"><i class="fa-solid fa-chart-line text-primary me-2"></i> Évolution des Revenus</h6>
-                            <canvas id="revenueChart" height="120"></canvas>
+                        <div class="chart-container">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h6 class="fw-bold m-0"><i class="fa-solid fa-chart-line text-primary me-2"></i> Évolution des Ventes (7 Derniers Jours)</h6>
+                            </div>
+                            <canvas id="revenueChart" height="220"></canvas>
                         </div>
                     </div>
                     <div class="col-lg-4">
-                        <div class="bg-white rounded-4 p-4 shadow-sm h-100">
-                            <h6 class="fw-bold mb-3"><i class="fa-solid fa-chart-pie text-warning me-2"></i> Ventes par Catégorie</h6>
-                            <canvas id="categoryChart" height="200"></canvas>
+                        <div class="chart-container">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h6 class="fw-bold m-0"><i class="fa-solid fa-chart-pie text-warning me-2"></i> Répartition des Ventes</h6>
+                            </div>
+                            <canvas id="categoryChart" height="220"></canvas>
                         </div>
                     </div>
                 </div>
@@ -172,6 +183,44 @@
                             </tr>
                         </thead>
                         <tbody id="orders-tbody">
+                            <!-- Injected dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- TAB: GÂTEAUX D'ÉVÉNEMENTS -->
+            <div id="tab-events" class="tab-section">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <div class="d-flex align-items-center gap-2">
+                        <input type="text" id="event-search" class="form-control form-control-sm" placeholder="Chercher client, réf ou tél..." style="width: 260px;" onkeyup="filterEventsTable()">
+                        <select id="event-filter-type" class="form-select form-select-sm" style="width: 190px;" onchange="filterEventsTable()">
+                            <option value="">Tous les événements</option>
+                            <option value="Mariage">Mariages & Fiançailles</option>
+                            <option value="Anniversaire">Anniversaires</option>
+                            <option value="Baptême">Baptêmes & Baby Showers</option>
+                            <option value="Entreprise">Entreprises & Galas</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-outline-warning btn-sm text-dark fw-bold rounded-pill px-3" onclick="loadEventOrders()"><i class="fa-solid fa-rotate-right me-1"></i> Actualiser</button>
+                </div>
+
+                <div class="table-custom">
+                    <table class="table table-hover align-middle m-0">
+                        <thead>
+                            <tr>
+                                <th>Réf</th>
+                                <th>Client & Contact</th>
+                                <th>Événement</th>
+                                <th>Format & Parfums</th>
+                                <th>Inscription & Thème</th>
+                                <th>Date Retrait</th>
+                                <th>Devis</th>
+                                <th>Statut</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="events-tbody">
                             <!-- Injected dynamically -->
                         </tbody>
                     </table>
@@ -224,32 +273,151 @@
                 </div>
             </div>
 
-            <!-- TAB 5: LIVREURS -->
-            <div id="tab-drivers" class="tab-section">
+            <!-- TAB 5: ÉQUIPE BOULANGERIE -->
+            <div id="tab-team" class="tab-section">
                 <div class="row g-3">
                     <div class="col-md-4">
                         <div class="bg-white rounded-4 p-4 shadow-sm text-center">
                             <img src="assets/baker_profile.png" class="rounded-circle mb-3" width="80" height="80" style="object-fit:cover;">
-                            <h5 class="fw-bold mb-1">Koffi - Livreur Zone 1</h5>
-                            <span class="badge bg-success mb-3">Disponible (En Service)</span>
-                            <div class="fs-sm text-muted">Livraisons effectuées aujourd'hui : <strong>8</strong></div>
+                            <h5 class="fw-bold mb-1">Michel Yao</h5>
+                            <span class="badge bg-warning text-dark mb-2">Maître Boulanger Chef</span>
+                            <div class="fs-sm text-muted">Poste : Fournil & Cuisson du Jour</div>
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="bg-white rounded-4 p-4 shadow-sm text-center">
                             <img src="assets/aicha.png" class="rounded-circle mb-3" width="80" height="80" style="object-fit:cover;">
-                            <h5 class="fw-bold mb-1">Aïcha - Livreur Zone 2</h5>
-                            <span class="badge bg-warning text-dark mb-3">En livraison</span>
-                            <div class="fs-sm text-muted">Livraisons effectuées aujourd'hui : <strong>5</strong></div>
+                            <h5 class="fw-bold mb-1">Fatou Soro</h5>
+                            <span class="badge bg-info text-dark mb-2">Chef Pâtissière</span>
+                            <div class="fs-sm text-muted">Poste : Pâtisseries & Entremets</div>
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="bg-white rounded-4 p-4 shadow-sm text-center">
                             <img src="assets/kouassi.png" class="rounded-circle mb-3" width="80" height="80" style="object-fit:cover;">
-                            <h5 class="fw-bold mb-1">Kouassi - Livreur Express</h5>
-                            <span class="badge bg-success mb-3">Disponible (En Service)</span>
-                            <div class="fs-sm text-muted">Livraisons effectuées aujourd'hui : <strong>12</strong></div>
+                                <h5 class="fw-bold mb-1">Awa Kouassi</h5>
+                            <span class="badge bg-success mb-2">Caissière Principale</span>
+                            <div class="fs-sm text-muted">Poste : Caisse POS & Comptoir</div>
                         </div>
+                    </div>
+                </div>
+            <!-- TAB 6: SÉCURITÉ IA & AUDIT -->
+            <div id="tab-security" class="tab-section">
+                <!-- Row 1: High Level Status Cards -->
+                <div class="row g-3 mb-4">
+                    <div class="col-md-3">
+                        <div class="stat-card" style="border-left: 4px solid #10b981;">
+                            <div class="stat-icon success"><i class="fa-solid fa-shield-virus"></i></div>
+                            <div class="stat-details">
+                                <span>Moteur IA Sentinel</span>
+                                <h3 class="text-success fs-6 mb-0">GRADE DÉFENSE ACTIF</h3>
+                                <small class="text-muted" id="soc-rules-count">24 Règles WAF & IDS/IPS</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-card" style="border-left: 4px solid #3b82f6;">
+                            <div class="stat-icon primary"><i class="fa-solid fa-link"></i></div>
+                            <div class="stat-details">
+                                <span>Arbre de Merkle DAG</span>
+                                <h3 class="text-primary fs-6 mb-0" id="soc-merkle-status">100% INTACT & SCELLÉ</h3>
+                                <small class="text-muted" id="soc-merkle-blocks">0 Blocs Cryptographiques</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-card" style="border-left: 4px solid #f59e0b;">
+                            <div class="stat-icon warning"><i class="fa-solid fa-jar"></i></div>
+                            <div class="stat-details">
+                                <span>Pièges Honeytokens</span>
+                                <h3 class="text-warning fs-6 mb-0" id="soc-trapped-count">0 PIRATES PIÉGÉS</h3>
+                                <small class="text-muted">Leurres /.env & /debug-keys</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-card" style="border-left: 4px solid #ef4444;">
+                            <div class="stat-icon danger" style="background:#fee2e2; color:#ef4444;"><i class="fa-solid fa-ban"></i></div>
+                            <div class="stat-details">
+                                <span>IPs Neutralisées & Bannies</span>
+                                <h3 class="text-danger fs-6 mb-0" id="soc-banned-count">0 IPs EN QUARANTAINE</h3>
+                                <small class="text-muted">Bannissement auto progressif</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Row 2: Universal Threat Neutralization Counters -->
+                <div class="bg-dark text-white rounded-4 p-4 shadow-sm mb-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h6 class="fw-bold mb-0 text-warning"><i class="fa-solid fa-shield-halved text-danger me-2"></i> MATRICE DE CYBER-DÉFENSE UNIVERSELLE (OWASP TOP 10 & MITRE ATT&CK)</h6>
+                        <span class="badge bg-success rounded-pill px-3 py-1"><i class="fa-solid fa-circle me-1 small"></i> En Temps Réel</span>
+                    </div>
+                    <div class="row g-2 text-center">
+                        <div class="col-6 col-md-2">
+                            <div class="p-2 bg-secondary bg-opacity-25 rounded-3 border border-secondary">
+                                <small class="text-light d-block" style="font-size:0.72rem;">SQLi & NoSQL</small>
+                                <span class="fw-bold text-success" id="stat-sqli">0 Bloqué(s)</span>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-2">
+                            <div class="p-2 bg-secondary bg-opacity-25 rounded-3 border border-secondary">
+                                <small class="text-light d-block" style="font-size:0.72rem;">RCE & WebShells</small>
+                                <span class="fw-bold text-success" id="stat-rce">0 Bloqué(s)</span>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-2">
+                            <div class="p-2 bg-secondary bg-opacity-25 rounded-3 border border-secondary">
+                                <small class="text-light d-block" style="font-size:0.72rem;">XSS & Polyglottes</small>
+                                <span class="fw-bold text-success" id="stat-xss">0 Bloqué(s)</span>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-2">
+                            <div class="p-2 bg-secondary bg-opacity-25 rounded-3 border border-secondary">
+                                <small class="text-light d-block" style="font-size:0.72rem;">LFI & Traversal</small>
+                                <span class="fw-bold text-success" id="stat-lfi">0 Bloqué(s)</span>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-2">
+                            <div class="p-2 bg-secondary bg-opacity-25 rounded-3 border border-secondary">
+                                <small class="text-light d-block" style="font-size:0.72rem;">SSRF & Cloud Steal</small>
+                                <span class="fw-bold text-success" id="stat-ssrf">0 Bloqué(s)</span>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-2">
+                            <div class="p-2 bg-secondary bg-opacity-25 rounded-3 border border-secondary">
+                                <small class="text-light d-block" style="font-size:0.72rem;">Scanners & Bots</small>
+                                <span class="fw-bold text-success" id="stat-bots">0 Bloqué(s)</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Security Audit Logs Table -->
+                <div class="bg-white rounded-4 p-4 shadow-sm">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="fw-bold mb-0"><i class="fa-solid fa-fingerprint text-primary me-2"></i> Journal d'Audit Cryptographique des Transactions</h5>
+                        <button class="btn btn-outline-primary btn-sm rounded-pill" onclick="fetchSecurityAuditLogs()"><i class="fa-solid fa-rotate-right me-1"></i> Actualiser les Logs</button>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Date & Heure</th>
+                                    <th>Type d'Événement</th>
+                                    <th>Réf Commande</th>
+                                    <th>Score IA</th>
+                                    <th>Niveau Risque</th>
+                                    <th>IP Client</th>
+                                    <th>Empreinte SHA-256</th>
+                                </tr>
+                            </thead>
+                            <tbody id="security-logs-tbody">
+                                <tr>
+                                    <td colspan="7" class="text-center text-muted py-4"><i class="fa-solid fa-spinner fa-spin me-2"></i> Chargement des événements de sécurité...</td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
@@ -379,5 +547,6 @@
     </footer>
 
     <script src="js/store_schedule.js"></script>
+    <script src="js/anti_hacker_client.js"></script>
 </body>
 </html>

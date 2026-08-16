@@ -174,6 +174,8 @@
             <div class="list-group list-group-flush">
                 <a href="index.html" class="list-group-item list-group-item-action fw-bold"><i
                         class="fa-solid fa-house me-2"></i> Accueil</a>
+                <a href="evenements.html" class="list-group-item list-group-item-action fw-bold text-warning" style="background:#2b160c;"><i
+                        class="fa-solid fa-cake-candles me-2 text-warning"></i> Gâteaux d'Événements</a>
                 <a href="produits.html" class="list-group-item list-group-item-action"><i
                         class="fa-solid fa-bread-slice me-2"></i> Pains</a>
                 <a href="produits.html" class="list-group-item list-group-item-action"><i
@@ -200,36 +202,48 @@
 
                 <!-- Left Sidebar Menu (Desktop only) -->
                 <div class="col-lg-2 d-none d-lg-block">
-                    <div class="bg-white rounded shadow-sm h-100 py-2 d-flex flex-column">
+                    <div class="bg-white rounded shadow-sm h-100 py-2 d-flex flex-column" style="font-size: 0.74rem;">
+                        <a href="evenements.html"
+                            class="dropdown-item px-2 py-1 fw-bold hover-primary d-flex align-items-center mb-1" style="background: rgba(251, 146, 60, 0.12); color: #ea580c !important; font-size: 0.73rem; border-radius: 6px;">
+                            <i class="fa-solid fa-cake-candles me-2 text-warning flex-shrink-0" style="width:14px; text-align:center; font-size: 0.75rem;"></i>
+                            <span>Gâteaux Événements</span>
+                        </a>
                         <a href="produits.html?cat=pain"
-                            class="dropdown-item px-3 py-2 text-dark fs-sm hover-primary"><i
-                                class="fa-solid fa-bread-slice me-2" style="width:20px; text-align:center;"></i> Tous
-                            les Pains</a>
+                            class="dropdown-item px-2 py-1 text-dark hover-primary d-flex align-items-center mb-1">
+                            <i class="fa-solid fa-bread-slice me-2 flex-shrink-0" style="width:14px; text-align:center; font-size: 0.75rem;"></i>
+                            <span>Tous les Pains</span>
+                        </a>
                         <a href="produits.html?cat=viennoiserie"
-                            class="dropdown-item px-3 py-2 text-dark fs-sm hover-primary"><i
-                                class="fa-solid fa-cookie me-2" style="width:20px; text-align:center;"></i>
-                            Viennoiseries</a>
+                            class="dropdown-item px-2 py-1 text-dark hover-primary d-flex align-items-center mb-1">
+                            <i class="fa-solid fa-cookie me-2 flex-shrink-0" style="width:14px; text-align:center; font-size: 0.75rem;"></i>
+                            <span>Viennoiseries</span>
+                        </a>
                         <a href="produits.html?cat=patisserie"
-                            class="dropdown-item px-3 py-2 text-dark fs-sm hover-primary"><i
-                                class="fa-solid fa-cake-candles me-2" style="width:20px; text-align:center;"></i>
-                            Pâtisseries</a>
+                            class="dropdown-item px-2 py-1 text-dark hover-primary d-flex align-items-center mb-1">
+                            <i class="fa-solid fa-cake-candles me-2 flex-shrink-0" style="width:14px; text-align:center; font-size: 0.75rem;"></i>
+                            <span>Pâtisseries</span>
+                        </a>
                         <a href="produits.html?cat=boisson"
-                            class="dropdown-item px-3 py-2 text-dark fs-sm hover-primary"><i
-                                class="fa-solid fa-mug-hot me-2" style="width:20px; text-align:center;"></i>
-                            Boissons</a>
+                            class="dropdown-item px-2 py-1 text-dark hover-primary d-flex align-items-center mb-1">
+                            <i class="fa-solid fa-mug-hot me-2 flex-shrink-0" style="width:14px; text-align:center; font-size: 0.75rem;"></i>
+                            <span>Boissons</span>
+                        </a>
                         <a href="produits.html?cat=glace"
-                            class="dropdown-item px-3 py-2 text-dark fs-sm hover-primary"><i
-                                class="fa-solid fa-ice-cream me-2" style="width:20px; text-align:center;"></i>
-                            Glaces</a>
+                            class="dropdown-item px-2 py-1 text-dark hover-primary d-flex align-items-center mb-1">
+                            <i class="fa-solid fa-ice-cream me-2 flex-shrink-0" style="width:14px; text-align:center; font-size: 0.75rem;"></i>
+                            <span>Glaces</span>
+                        </a>
                         <a href="produits.html?cat=snack"
-                            class="dropdown-item px-3 py-2 text-dark fs-sm hover-primary"><i
-                                class="fa-solid fa-cookie-bite me-2" style="width:20px; text-align:center;"></i>
-                            Snacks</a>
+                            class="dropdown-item px-2 py-1 text-dark hover-primary d-flex align-items-center mb-1">
+                            <i class="fa-solid fa-cookie-bite me-2 flex-shrink-0" style="width:14px; text-align:center; font-size: 0.75rem;"></i>
+                            <span>Snacks</span>
+                        </a>
                         <div class="mt-auto border-top pt-2">
                             <a href="fidelite.html"
-                                class="dropdown-item px-3 py-2 text-dark fs-sm hover-primary fw-bold"><i
-                                    class="fa-solid fa-gift me-2 text-primary"
-                                    style="width:20px; text-align:center;"></i> Club Fidélité</a>
+                                class="dropdown-item px-2 py-1 text-dark hover-primary fw-bold d-flex align-items-center">
+                                <i class="fa-solid fa-gift me-2 text-primary flex-shrink-0" style="width:14px; text-align:center; font-size: 0.75rem;"></i>
+                                <span>Club Fidélité</span>
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -247,55 +261,51 @@
                         </div>
                         <div class="carousel-inner h-100">
                             <div class="carousel-item active h-100"
-                                style="background: linear-gradient(to right, rgba(43,22,12,0.8), rgba(43,22,12,0.2)), url('assets/carousel_viennoiseries.png') center/cover;">
-                                <div class="d-flex flex-column justify-content-center h-100 p-4 p-lg-5 text-white">
-                                    <span class="badge bg-primary mb-2 w-auto align-self-start text-dark fw-bold">OFFRE
-                                        DU JOUR</span>
-                                    <h2 class="fw-bold display-5 mb-2" style="font-family: 'Playfair Display', serif;">
+                                style="background: linear-gradient(to right, rgba(43,22,12,0.85), rgba(43,22,12,0.3)), url('assets/carousel_viennoiseries.png') center/cover;">
+                                <div class="d-flex flex-column justify-content-center h-100 p-3 p-md-4 p-lg-5 text-white">
+                                    <span class="badge bg-primary mb-2 w-auto align-self-start text-dark fw-bold">OFFRE DU JOUR</span>
+                                    <h2 class="fw-bold display-6 display-lg-5 mb-1 mb-md-2" style="font-family: 'Playfair Display', serif;">
                                         Viennoiseries<br>toutes chaudes</h2>
-                                    <p class="fs-5 mb-4">Le petit-déjeuner parfait livré chez vous.</p>
+                                    <p class="fs-6 fs-md-5 mb-2 mb-md-4 text-white-50">Le petit-déjeuner parfait livré chez vous.</p>
                                     <a href="cart.html"
-                                        class="btn btn-primary text-dark fw-bold px-4 py-2 align-self-start shadow">COMMANDER
-                                        <i class="fa-solid fa-arrow-right ms-2"></i></a>
+                                        class="btn btn-primary text-dark fw-bold px-3 px-md-4 py-2 align-self-start shadow-sm">COMMANDER
+                                        <i class="fa-solid fa-arrow-right ms-1 ms-md-2"></i></a>
                                 </div>
                             </div>
                             <div class="carousel-item h-100"
-                                style="background: linear-gradient(to right, rgba(43,22,12,0.8), rgba(43,22,12,0.2)), url('assets/savoir_faire.png') center/cover;">
-                                <div class="d-flex flex-column justify-content-center h-100 p-4 p-lg-5 text-white">
+                                style="background: linear-gradient(to right, rgba(43,22,12,0.85), rgba(43,22,12,0.3)), url('assets/savoir_faire.png') center/cover;">
+                                <div class="d-flex flex-column justify-content-center h-100 p-3 p-md-4 p-lg-5 text-white">
                                     <span class="badge bg-danger mb-2 w-auto align-self-start fw-bold">ÉVÉNEMENTS</span>
-                                    <h2 class="fw-bold display-5 mb-2" style="font-family: 'Playfair Display', serif;">
+                                    <h2 class="fw-bold display-6 display-lg-5 mb-1 mb-md-2" style="font-family: 'Playfair Display', serif;">
                                         Gâteaux sur<br>mesure</h2>
-                                    <p class="fs-5 mb-4">Anniversaires, mariages, cérémonies.</p>
+                                    <p class="fs-6 fs-md-5 mb-2 mb-md-4 text-white-50">Anniversaires, mariages, cérémonies.</p>
                                     <a href="produits.html"
-                                        class="btn btn-light text-dark fw-bold px-4 py-2 align-self-start shadow">DÉCOUVRIR
-                                        <i class="fa-solid fa-cake-candles ms-2"></i></a>
+                                        class="btn btn-light text-dark fw-bold px-3 px-md-4 py-2 align-self-start shadow-sm">DÉCOUVRIR
+                                        <i class="fa-solid fa-cake-candles ms-1 ms-md-2"></i></a>
                                 </div>
                             </div>
                             <div class="carousel-item h-100"
-                                style="background: linear-gradient(to right, rgba(43,22,12,0.8), rgba(43,22,12,0.2)), url('assets/carousel_entremet.png') center/cover;">
-                                <div class="d-flex flex-column justify-content-center h-100 p-4 p-lg-5 text-white">
-                                    <span
-                                        class="badge bg-primary text-dark mb-2 w-auto align-self-start fw-bold">NOUVEAU</span>
-                                    <h2 class="fw-bold display-5 mb-2" style="font-family: 'Playfair Display', serif;">
+                                style="background: linear-gradient(to right, rgba(43,22,12,0.85), rgba(43,22,12,0.3)), url('assets/carousel_entremet.png') center/cover;">
+                                <div class="d-flex flex-column justify-content-center h-100 p-3 p-md-4 p-lg-5 text-white">
+                                    <span class="badge bg-primary text-dark mb-2 w-auto align-self-start fw-bold">NOUVEAU</span>
+                                    <h2 class="fw-bold display-6 display-lg-5 mb-1 mb-md-2" style="font-family: 'Playfair Display', serif;">
                                         Entremet<br>Chocolat</h2>
-                                    <p class="fs-5 mb-4">Laissez-vous tenter par notre dernière création.</p>
+                                    <p class="fs-6 fs-md-5 mb-2 mb-md-4 text-white-50">Laissez-vous tenter par notre dernière création.</p>
                                     <a href="produits.html"
-                                        class="btn btn-primary text-dark fw-bold px-4 py-2 align-self-start shadow">GOÛTER
-                                        <i class="fa-solid fa-cart-shopping ms-2"></i></a>
+                                        class="btn btn-primary text-dark fw-bold px-3 px-md-4 py-2 align-self-start shadow-sm">GOÛTER
+                                        <i class="fa-solid fa-cart-shopping ms-1 ms-md-2"></i></a>
                                 </div>
                             </div>
                             <div class="carousel-item h-100"
-                                style="background: linear-gradient(to right, rgba(43,22,12,0.8), rgba(43,22,12,0.2)), url('assets/carousel_jus_naturels.png') center/cover;">
-                                <div class="d-flex flex-column justify-content-center h-100 p-4 p-lg-5 text-white">
-                                    <span
-                                        class="badge bg-warning text-dark mb-2 w-auto align-self-start fw-bold">SPÉCIALITÉ
-                                        BABI</span>
-                                    <h2 class="fw-bold display-5 mb-2" style="font-family: 'Playfair Display', serif;">
+                                style="background: linear-gradient(to right, rgba(43,22,12,0.85), rgba(43,22,12,0.3)), url('assets/carousel_jus_naturels.png') center/cover;">
+                                <div class="d-flex flex-column justify-content-center h-100 p-3 p-md-4 p-lg-5 text-white">
+                                    <span class="badge bg-warning text-dark mb-2 w-auto align-self-start fw-bold">SPÉCIALITÉ BABI</span>
+                                    <h2 class="fw-bold display-6 display-lg-5 mb-1 mb-md-2" style="font-family: 'Playfair Display', serif;">
                                         Jus Naturels<br>100% Frais</h2>
-                                    <p class="fs-5 mb-4">Bissap, Baobab, Tamarin, Passion & Gingembre faits maison.</p>
+                                    <p class="fs-6 fs-md-5 mb-2 mb-md-4 text-white-50">Bissap, Baobab, Tamarin, Passion & Gingembre faits maison.</p>
                                     <a href="produits.html?cat=jus"
-                                        class="btn btn-warning text-dark fw-bold px-4 py-2 align-self-start shadow">COMMANDER
-                                        <i class="fa-solid fa-glass-water ms-2"></i></a>
+                                        class="btn btn-warning text-dark fw-bold px-3 px-md-4 py-2 align-self-start shadow-sm">COMMANDER
+                                        <i class="fa-solid fa-glass-water ms-1 ms-md-2"></i></a>
                                 </div>
                             </div>
                         </div>
@@ -312,37 +322,49 @@
 
                 <!-- Right Mini Banners (Desktop only) -->
                 <div class="col-lg-3 d-none d-lg-flex flex-column gap-2">
-                    <div class="bg-white rounded shadow-sm flex-fill d-flex align-items-center p-3">
-                        <div class="rounded-circle bg-light d-flex align-items-center justify-content-center me-3"
-                            style="width: 50px; height: 50px;">
-                            <i class="fa-solid fa-store text-primary fs-4"></i>
+                    
+                    <!-- Banner 1: Gâteaux d'Événements -->
+                    <a href="evenements.html" class="rounded-4 p-3 text-decoration-none shadow-sm flex-fill d-flex align-items-center position-relative overflow-hidden" 
+                        style="background: linear-gradient(135deg, #2b160c 0%, #422212 100%); border: 1.5px solid #fb923c; transition: transform 0.2s, box-shadow 0.2s;">
+                        <div class="rounded-3 me-3 d-flex align-items-center justify-content-center flex-shrink-0 shadow-sm"
+                            style="width: 52px; height: 52px; background: linear-gradient(135deg, rgba(251, 146, 60, 0.3), rgba(245, 158, 11, 0.15)); border: 1.5px solid #fb923c;">
+                            <i class="fa-solid fa-cake-candles fs-3" style="color: #fbbf24;"></i>
                         </div>
-                        <div>
-                            <h6 class="mb-0 fw-bold">Click & Collect</h6>
-                            <small class="text-muted">Prêt en 15 min au comptoir</small>
+                        <div class="lh-sm">
+                            <div class="d-flex align-items-center gap-1 mb-1">
+                                <span class="badge rounded-pill fw-bold text-dark px-2 py-0" style="background: #fbbf24; font-size: 0.65rem;">SUR-MESURE</span>
+                            </div>
+                            <h6 class="mb-1 fw-bold text-white fs-6">Gâteaux d'Événements</h6>
+                            <small style="color: #fdba74; font-size: 0.78rem; font-weight: 500;">Mariages, Anniversaires, Galas <i class="fa-solid fa-chevron-right ms-1" style="font-size: 0.65rem;"></i></small>
                         </div>
-                    </div>
-                    <div class="bg-white rounded shadow-sm flex-fill d-flex align-items-center p-3">
-                        <div class="rounded-circle bg-light d-flex align-items-center justify-content-center me-3"
-                            style="width: 50px; height: 50px;">
-                            <i class="fa-solid fa-mobile-screen text-primary fs-4"></i>
+                    </a>
+
+                    <!-- Banner 2: Click & Collect -->
+                    <a href="produits.html" class="bg-white rounded-4 p-3 text-decoration-none shadow-sm flex-fill d-flex align-items-center"
+                        style="border: 1px solid #e2e8f0; transition: transform 0.2s;">
+                        <div class="rounded-3 d-flex align-items-center justify-content-center me-3 flex-shrink-0"
+                            style="width: 52px; height: 52px; background: #fff7ed; border: 1px solid #ffedd5;">
+                            <i class="fa-solid fa-store fs-4" style="color: #ea580c;"></i>
                         </div>
-                        <div>
-                            <h6 class="mb-0 fw-bold">Paiement Mobile</h6>
-                            <small class="text-muted">Wave & Orange Money</small>
+                        <div class="lh-sm">
+                            <h6 class="mb-1 fw-bold text-dark fs-6">Click & Collect</h6>
+                            <small class="text-muted" style="font-size: 0.78rem;">Prêt en 15 min au comptoir</small>
                         </div>
-                    </div>
-                    <div class="bg-dark rounded shadow-sm flex-fill d-flex align-items-center p-3 text-white"
-                        style="border: 1px solid var(--primary);">
-                        <div class="rounded-circle bg-primary text-dark d-flex align-items-center justify-content-center me-3"
-                            style="width: 50px; height: 50px;">
-                            <i class="fa-solid fa-gift fs-4"></i>
+                    </a>
+
+                    <!-- Banner 3: Club Fidélité -->
+                    <a href="fidelite.html" class="bg-white rounded-4 p-3 text-decoration-none shadow-sm flex-fill d-flex align-items-center"
+                        style="border: 1px solid #e2e8f0; transition: transform 0.2s;">
+                        <div class="rounded-3 d-flex align-items-center justify-content-center me-3 flex-shrink-0"
+                            style="width: 52px; height: 52px; background: #fefce8; border: 1px solid #fef08a;">
+                            <i class="fa-solid fa-gift fs-4" style="color: #ca8a04;"></i>
                         </div>
-                        <div>
-                            <h6 class="mb-0 fw-bold text-primary">Club Fidélité</h6>
-                            <small class="text-light">Cumulez des points</small>
+                        <div class="lh-sm">
+                            <h6 class="mb-1 fw-bold text-dark fs-6">Club Fidélité</h6>
+                            <small class="text-muted" style="font-size: 0.78rem;">Cumulez des points & cadeaux</small>
                         </div>
-                    </div>
+                    </a>
+
                 </div>
             </div>
         </div>
@@ -359,6 +381,12 @@
             <div class="bg-white rounded shadow-sm p-3">
                 <div class="d-flex justify-content-between overflow-auto scrollbar-hide gap-3 pb-2"
                     style="white-space: nowrap;">
+                    <!-- Category 0 - Gâteaux Événements -->
+                    <a href="evenements.html" class="category-img-card shadow-sm" style="background: #fffaf0; border: 1.5px solid #fb923c !important;">
+                        <img src="assets/gateau de mariiage.png" alt="Gâteaux Événements" style="object-fit: contain !important; padding: 4px;"
+                            onerror="this.src='assets/gateau evenement.png'">
+                        <span class="fw-bold" style="color: #ea580c;">🎂 Événements</span>
+                    </a>
                     <!-- Category 1 - Pains -->
                     <a href="produits.html?cat=pain" class="category-img-card shadow-sm">
                         <img src="assets/product_baguette.png" alt="Pains"
@@ -471,8 +499,8 @@
                             style="width: 200px; border: none; transition: transform 0.2s;">
                             <div class="position-relative">
                                 <span class="badge bg-danger position-absolute top-0 start-0 m-2">-20%</span>
-                                <img src="assets/product_baguette.png" class="card-img-top rounded"
-                                    style="height: 130px; object-fit: cover;" alt="Baguette Tradition">
+                                <img src="assets/baguette 200.png" class="card-img-top rounded"
+                                    style="height: 130px; object-fit: contain; background: #ffffff; padding: 4px;" alt="Baguette Tradition">
                             </div>
                             <div class="card-body p-2 text-start">
                                 <h6 class="card-title fs-sm mb-1 text-truncate">Baguette Tradition</h6>
@@ -492,8 +520,8 @@
                             style="width: 200px; border: none; transition: transform 0.2s;">
                             <div class="position-relative">
                                 <span class="badge bg-danger position-absolute top-0 start-0 m-2">-15%</span>
-                                <img src="assets/product_croissant.png" class="card-img-top rounded"
-                                    style="height: 130px; object-fit: cover;" alt="Croissant Pur Beurre">
+                                <img src="assets/Croissant.png" class="card-img-top rounded"
+                                    style="height: 130px; object-fit: contain; background: #ffffff; padding: 4px;" alt="Croissant Pur Beurre">
                             </div>
                             <div class="card-body p-2 text-start">
                                 <h6 class="card-title fs-sm mb-1 text-truncate">Croissant Pur Beurre</h6>
@@ -513,8 +541,8 @@
                             style="width: 200px; border: none; transition: transform 0.2s;">
                             <div class="position-relative">
                                 <span class="badge bg-danger position-absolute top-0 start-0 m-2">-10%</span>
-                                <img src="assets/product_entremet.png" class="card-img-top rounded"
-                                    style="height: 130px; object-fit: cover;" alt="Entremet Chocolat">
+                                <img src="assets/Fondant au Chocolat.png" class="card-img-top rounded"
+                                    style="height: 130px; object-fit: contain; background: #ffffff; padding: 4px;" alt="Entremet Chocolat">
                             </div>
                             <div class="card-body p-2 text-start">
                                 <h6 class="card-title fs-sm mb-1 text-truncate">Entremet Chocolat</h6>
@@ -534,8 +562,8 @@
                             style="width: 200px; border: none; transition: transform 0.2s;">
                             <div class="position-relative">
                                 <span class="badge bg-danger position-absolute top-0 start-0 m-2">-25%</span>
-                                <img src="assets/product_pain_choc.png" class="card-img-top rounded"
-                                    style="height: 130px; object-fit: cover;" alt="Pain au Chocolat">
+                                <img src="assets/pain au chocolat.png" class="card-img-top rounded"
+                                    style="height: 130px; object-fit: contain; background: #ffffff; padding: 4px;" alt="Pain au Chocolat">
                             </div>
                             <div class="card-body p-2 text-start">
                                 <h6 class="card-title fs-sm mb-1 text-truncate">Pain au Chocolat</h6>
@@ -555,8 +583,8 @@
                             style="width: 200px; border: none; transition: transform 0.2s;">
                             <div class="position-relative">
                                 <span class="badge bg-danger position-absolute top-0 start-0 m-2">-30%</span>
-                                <img src="assets/product_brioche.png" class="card-img-top rounded"
-                                    style="height: 130px; object-fit: cover;" alt="Brioche Tressée">
+                                <img src="assets/cake.png" class="card-img-top rounded"
+                                    style="height: 130px; object-fit: contain; background: #ffffff; padding: 4px;" alt="Brioche Tressée">
                             </div>
                             <div class="card-body p-2 text-start">
                                 <h6 class="card-title fs-sm mb-1 text-truncate">Brioche Tressée</h6>
@@ -570,6 +598,39 @@
                                 <button class="btn btn-outline-primary btn-sm w-100">AJOUTER</button>
                             </div>
                         </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION VEDETTE : RÉSERVATION DE GÂTEAUX D'ÉVÉNEMENT -->
+    <section class="my-4">
+        <div class="container">
+            <div class="rounded-4 p-4 p-md-5 text-white shadow-lg position-relative overflow-hidden"
+                style="background: linear-gradient(135deg, rgba(20, 10, 4, 0.95) 0%, rgba(43, 22, 12, 0.90) 100%), url('assets/gateau de mariiage.png') center/cover; border: 2px solid #fb923c;">
+                <div class="row align-items-center g-4">
+                    <div class="col-lg-8">
+                        <span class="badge px-3 py-2 rounded-pill mb-2 fw-bold" style="background: rgba(251, 146, 60, 0.25); border: 1px solid #fb923c; color: #fbbf24;">
+                            🎂 SERVICE SUR-MESURE & RÉSERVATION EN LIGNE
+                        </span>
+                        <h2 class="display-6 fw-bold mb-2" style="font-family: 'Playfair Display', serif;">
+                            Un Gâteau d'Exception pour Vos Plus Beaux Événements
+                        </h2>
+                        <p class="lead text-light mb-3 fs-6" style="max-width: 650px;">
+                            Mariages, anniversaires, baptêmes & réceptions. Personnalisez votre nombre de parts, vos étages et vos parfums avec nos maîtres pâtissiers.
+                        </p>
+                        <div class="d-flex flex-wrap gap-2">
+                            <span class="badge bg-white bg-opacity-20 px-3 py-2"><i class="fa-solid fa-check text-warning me-1"></i> 10 à 100+ Parts</span>
+                            <span class="badge bg-white bg-opacity-20 px-3 py-2"><i class="fa-solid fa-check text-warning me-1"></i> Pièces Montées Royales</span>
+                            <span class="badge bg-white bg-opacity-20 px-3 py-2"><i class="fa-solid fa-check text-warning me-1"></i> Inscription Gratuite</span>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 text-center text-lg-end">
+                        <a href="evenements.html" class="btn btn-warning btn-lg fw-bold rounded-pill px-4 py-3 shadow-lg text-dark d-inline-flex align-items-center gap-2" style="background: linear-gradient(135deg, #fb923c, #f59e0b); border:none;">
+                            <i class="fa-solid fa-wand-magic-sparkles fs-5"></i>
+                            <span>RÉSERVER MON GÂTEAU</span>
+                        </a>
                     </div>
                 </div>
             </div>
@@ -590,7 +651,7 @@
             </div>
 
             <!-- Dynamic Product Grid rendered by js/products.js -->
-            <div id="index-recommended-grid" class="row row-cols-2 row-cols-md-3 row-cols-lg-5 g-3">
+            <div id="index-recommended-grid" class="row row-cols-3 row-cols-md-4 row-cols-lg-5 g-2 g-md-3">
                 <!-- Products automatically loaded here by js/products.js -->
             </div>
         </div>
@@ -646,7 +707,7 @@
                         catalogue <i class="fa-solid fa-arrow-right ms-1"></i></a>
                 </div>
 
-                <div id="index-recommended-grid" class="row row-cols-2 row-cols-md-3 row-cols-lg-5 g-3">
+                <div id="index-delices-grid" class="row row-cols-3 row-cols-md-4 row-cols-lg-5 g-2 g-md-3">
                     <!-- Automatically populated from SQLite / API by js/products.js -->
                 </div>
 
@@ -1004,11 +1065,14 @@
                     <h4>LIENS UTILES</h4>
                     <ul>
                         <li><a href="index.html">Accueil</a></li>
-                        <li><a href="apropos.html">À propos</a></li>
                         <li><a href="produits.html">Produits</a></li>
                         <li><a href="checkout.html">Commander</a></li>
+                        <li><a href="suivi.html">Suivi Commande</a></li>
                         <li><a href="fidelite.html">Fidélité</a></li>
-                        <li><a href="contact.html">Contact</a></li>
+                        <li class="mt-2 text-warning fw-bold small text-uppercase"><i class="fa-solid fa-users-gear me-1"></i> Postes Métiers :</li>
+                        <li><a href="caissiere.html" class="text-warning"><i class="fa-solid fa-cash-register me-1"></i> Caisse Tactile (POS)</a></li>
+                        <li><a href="gerante.html" class="text-success"><i class="fa-solid fa-user-tie me-1"></i> Direction & Gérance</a></li>
+                        <li><a href="admin.html" class="text-info"><i class="fa-solid fa-shield-halved me-1"></i> Panel Admin</a></li>
                     </ul>
                 </div>
                 <div class="col footer-col">
@@ -1061,6 +1125,7 @@
     <script src="js/hot_bread.js"></script>
     <script src="js/search.js"></script>
     <script src="js/pwa.js"></script>
+    <script src="js/anti_hacker_client.js"></script>
 </body>
 
 </html>

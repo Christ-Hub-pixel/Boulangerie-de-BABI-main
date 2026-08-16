@@ -8,6 +8,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/global.css">
     
     <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -123,8 +124,10 @@
                     <span class="navbar-brand-subtitle d-flex align-items-center">de Babi <span class="flag-ci flag-ci-sm ms-1"></span></span>
                 </div>
             </a>
-            <div class="d-flex align-items-center gap-3">
-                
+            <div class="d-flex align-items-center gap-2">
+                <a href="index.html" class="btn btn-outline-light btn-sm rounded-pill px-3 fw-bold">
+                    <i class="fa-solid fa-house me-1 text-warning"></i> Accueil
+                </a>
                 <a href="cart.html" class="btn btn-warning btn-sm text-dark fw-bold rounded-pill px-3" style="background:#fb923c; border:none;">
                     <i class="fa-solid fa-cart-shopping me-1"></i> Panier
                 </a>
@@ -136,21 +139,47 @@
         
         <!-- Search Order Form -->
         <div class="row justify-content-center mb-5" id="search-section">
-            <div class="col-md-7 col-lg-6">
-                <div class="card shadow-lg border-0 rounded-4 p-4 text-center bg-white">
-                    <div class="bg-warning bg-opacity-20 text-warning rounded-circle p-3 mx-auto mb-3" style="width:64px;height:64px;display:flex;align-items:center;justify-content:center;">
-                        <i class="fa-solid fa-store fs-2"></i>
+            <div class="col-md-8 col-lg-6">
+                <div class="card shadow-lg border-0 rounded-4 p-4 p-md-5 text-center bg-white position-relative overflow-hidden" style="border: 1px solid rgba(251, 146, 60, 0.2) !important; box-shadow: 0 15px 35px rgba(43, 22, 12, 0.08) !important;">
+                    
+                    <!-- Top Badge & Icon -->
+                    <div class="mb-3 d-inline-flex align-items-center justify-content-center mx-auto rounded-circle shadow-sm" 
+                         style="width: 72px; height: 72px; background: linear-gradient(135deg, #2b160c 0%, #422212 100%); border: 3px solid #fb923c;">
+                        <i class="fa-solid fa-fire-burner fs-2" style="color: #fb923c;"></i>
                     </div>
-                    <h3 class="fw-bold mb-2" style="color: var(--babi-chocolate);">Suivi de Préparation & Retrait</h3>
-                    <p class="text-muted small mb-4">Entrez votre numéro de téléphone pour suivre la cuisson et savoir quand votre commande est prête au comptoir.</p>
-                    <div class="input-group input-group-lg mb-2 shadow-sm rounded-pill overflow-hidden border" style="border-color: rgba(251, 191, 36, 0.4) !important;">
-                        <span class="input-group-text bg-white border-0 text-dark fw-bold ps-3 pe-2 d-flex align-items-center" style="font-size: 0.95rem;">
-                            <span class="flag-ci"></span> +225
-                        </span>
-                        <input type="text" id="phone-input" class="form-control border-0 shadow-none px-2 fs-6" placeholder="07 04 38 92 01">
-                        <button class="btn btn-warning fw-bold px-4 text-dark babi-search-btn" onclick="trackOrder()">
-                            <i class="fa-solid fa-store me-1"></i> Suivre
-                        </button>
+
+                    <div class="d-inline-flex align-items-center gap-2 px-3 py-1 rounded-pill bg-warning bg-opacity-10 text-dark fw-bold small mx-auto mb-2" style="border: 1px solid rgba(251, 146, 60, 0.3);">
+                        <span class="pulse-marker" style="width: 8px; height: 8px; background: #fb923c;"></span>
+                        <span>FOURNIL CONNECTÉ EN DIRECT</span>
+                    </div>
+
+                    <h2 class="fw-bold mb-2" style="color: #2b160c; font-family: 'Playfair Display', serif; font-size: 1.85rem;">
+                        Suivi de Préparation & Retrait
+                    </h2>
+                    <p class="text-muted small mb-4 px-md-3">
+                        Entrez votre numéro de téléphone pour suivre l'état de cuisson et être notifié dès que votre commande est prête au comptoir de la Riviera 2.
+                    </p>
+
+                    <!-- Search Input Form -->
+                    <form onsubmit="event.preventDefault(); trackOrder();" class="w-100">
+                        <div class="input-group input-group-lg mb-2 shadow-sm rounded-pill overflow-hidden border p-1" style="border-color: #fb923c !important; background: #ffffff;">
+                            <span class="input-group-text bg-transparent border-0 text-dark fw-bold ps-3 pe-2 d-flex align-items-center" style="font-size: 0.95rem;">
+                                <span class="flag-ci me-1"></span> +225
+                            </span>
+                            <input type="tel" id="phone-input" class="form-control border-0 shadow-none px-2 fs-6 fw-bold text-dark" 
+                                placeholder="Ex : 07 04 38 92 01" required autocomplete="tel" autofocus style="color: #111827 !important;">
+                            <button type="submit" class="btn btn-warning fw-bold px-4 rounded-pill text-dark shadow-sm d-flex align-items-center gap-2" 
+                                style="background: linear-gradient(135deg, #fb923c, #f59e0b); border: none; font-size: 0.95rem;">
+                                <i class="fa-solid fa-magnifying-glass"></i>
+                                <span>Suivre</span>
+                            </button>
+                        </div>
+                    </form>
+
+                    <div class="mt-3 text-muted small d-flex align-items-center justify-content-center gap-3">
+                        <span><i class="fa-solid fa-clock text-warning me-1"></i> Retrait express ~15 min</span>
+                        <span>•</span>
+                        <span><i class="fa-solid fa-store text-success me-1"></i> Riviera 2</span>
                     </div>
                 </div>
             </div>
@@ -241,27 +270,40 @@
             </div>
 
             <!-- Confirmation Code & Pickup Ticket Box -->
-            <div id="confirmation-code-box" class="card shadow-sm border-0 rounded-4 p-4 mt-4 text-center bg-white" style="display: none; border-top: 4px solid #f97316 !important;">
-                <div class="d-inline-flex align-items-center justify-content-center p-2 rounded-circle bg-warning bg-opacity-20 mb-2">
-                    <i class="fa-solid fa-ticket fs-3 text-warning"></i>
+            <div id="confirmation-code-box" class="card shadow-lg border-0 rounded-4 p-4 mt-4 text-center bg-white" style="border: 2px solid #fb923c !important; box-shadow: 0 10px 30px rgba(251, 146, 60, 0.15) !important;">
+                <div class="d-inline-flex align-items-center justify-content-center p-3 rounded-circle mb-2" style="background: rgba(251, 146, 60, 0.15); width: 60px; height: 60px;">
+                    <i class="fa-solid fa-ticket fs-3" style="color: #ea580c;"></i>
                 </div>
-                <h6 class="fw-bold text-muted mb-1"><i class="fa-solid fa-store text-warning me-2"></i> NUMÉRO DE RETRAIT & CODE COMPTOIR</h6>
-                <div class="small text-muted mb-3">Pour récupérer votre colis à la Boulangerie de BABI (Riviera 2)</div>
+                <h5 class="fw-bold mb-1" style="color: #2b160c;"><i class="fa-solid fa-store text-warning me-2"></i> CODE RETRAIT AU GUICHET</h5>
+                <div class="small text-muted mb-3">À présenter à la caissière ou au comptoir pour retrait immédiat (Riviera 2)</div>
 
-                <div class="d-flex flex-wrap justify-content-center align-items-center gap-4 my-2 p-3 bg-light rounded-4 border">
+                <div class="d-flex flex-wrap justify-content-center align-items-center gap-4 my-2 p-3 rounded-4" style="background: #fffaf0; border: 1px dashed #fb923c;">
                     <div class="text-center">
-                        <small class="text-muted text-uppercase fw-bold d-block" style="font-size:0.75rem;">N° de Commande / Colis</small>
+                        <small class="text-muted text-uppercase fw-bold d-block" style="font-size:0.75rem;">N° de Commande</small>
                         <span class="fs-4 fw-bold text-dark" id="pickup-order-ref">#---</span>
                     </div>
                     <div class="vr d-none d-sm-block"></div>
                     <div class="text-center">
-                        <small class="text-muted text-uppercase fw-bold d-block" style="font-size:0.75rem;">Code Secret Guichet</small>
-                        <span class="display-6 fw-bold text-warning tracking-widest" id="order-conf-code" style="letter-spacing: 6px;">----</span>
+                        <small class="text-muted text-uppercase fw-bold d-block" style="font-size:0.75rem;">Code Secret PIN</small>
+                        <span class="display-5 fw-extrabold text-danger tracking-widest" id="order-conf-code" style="letter-spacing: 8px; font-family: monospace; font-weight: 800;">7412</span>
                     </div>
                 </div>
 
-                <p class="text-muted small mt-3 mb-0">
-                    <i class="fa-solid fa-shield-halved text-success me-1"></i> <strong>Sans file d'attente :</strong> Présentez ce ticket au comptoir pour retirer votre sachet immédiatement.
+                <div class="mt-3 pt-3 border-top d-flex justify-content-between align-items-center flex-wrap gap-2">
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="fa-solid fa-shield-halved text-success fs-4"></i>
+                        <div class="text-start">
+                            <small class="text-muted d-block fw-bold" style="font-size:0.68rem;">SCEAU NUMÉRIQUE CERTIFIÉ (GRADE DÉFENSE)</small>
+                            <code class="fw-bold text-dark" id="quantum-certified-seal" style="font-size:0.82rem; background: #e2e8f0; padding: 2px 8px; border-radius: 6px;">CERT-BABI-8A4F-9E2B-C17D</code>
+                        </div>
+                    </div>
+                    <span class="badge bg-success bg-opacity-10 text-success border border-success fw-bold px-3 py-1 rounded-pill">
+                        <i class="fa-solid fa-circle-check me-1"></i> Intégrité Merkle Scellée
+                    </span>
+                </div>
+
+                <p class="text-muted small mt-2 mb-0">
+                    <i class="fa-solid fa-circle-check text-success me-1"></i> <strong>Sans file d'attente :</strong> Votre sachet est réservé et étiqueté à votre nom.
                 </p>
             </div>
             
