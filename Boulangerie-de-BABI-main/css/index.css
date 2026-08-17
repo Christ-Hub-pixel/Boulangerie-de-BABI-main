@@ -3,7 +3,9 @@
    ========================================= */
 
 body {
-    background: transparent;
+    background: linear-gradient(180deg, rgba(254, 243, 199, 0.86) 0%, rgba(253, 230, 138, 0.74) 40%, rgba(245, 158, 11, 0.58) 100%), 
+                url('../assets/luxury_bakery_bg.jpg') no-repeat center center fixed;
+    background-size: cover;
 }
 
 /* Jumia Hero */
