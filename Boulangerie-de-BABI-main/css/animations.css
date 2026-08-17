@@ -195,9 +195,10 @@ body {
     overflow: hidden;
     white-space: nowrap;
     position: relative;
-    padding: 16px 0;
-    border-top: 3px solid #ffc107;
-    border-bottom: 3px solid #ffc107;
+    padding: 14px 0;
+    margin: 1mm 0 !important;
+    border-top: 2px solid #ffc107;
+    border-bottom: 2px solid #ffc107;
     box-shadow: 0 4px 20px rgba(0,0,0,0.15);
 }
 
