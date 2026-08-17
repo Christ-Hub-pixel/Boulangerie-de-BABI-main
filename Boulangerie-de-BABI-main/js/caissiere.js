@@ -2,6 +2,255 @@
 // POS CAISSIÈRE — LOGIQUE POINT DE VENTE & ENCAISSEMENT
 // -------------------------------------------------------------
 
+let posCart = [
+    { id: 'baguette', name: 'Baguette Tradition', price: 200, qty: 2 },
+    { id: 'croissant', name: 'Croissant Pur Beurre', price: 350, qty: 1 }
+];
+
+document.addEventListener('DOMContentLoaded', () => {
+    renderPosCart();
+});
+
+function addToPosCart(id, name, price, img) {
+    const existing = posCart.find(item => item.id === id);
+    if (existing) {
+        existing.qty += 1;
+    } else {
+        posCart.push({ id, name, price: parseInt(price, 10), qty: 1 });
+    }
+    renderPosCart();
+}
+
+function updatePosItemQty(id, delta) {
+    const item = posCart.find(i => i.id === id);
+    if (!item) return;
+
+    item.qty += delta;
+    if (item.qty <= 0) {
+        posCart = posCart.filter(i => i.id !== id);
+    }
+    renderPosCart();
+}
+
+function clearPosCart() {
+    posCart = [];
+    renderPosCart();
+}
+
+function renderPosCart() {
+    const cartContainer = document.getElementById('pos-cart-items');
+    if (!cartContainer) return;
+
+    if (posCart.length === 0) {
+        cartContainer.innerHTML = `
+            <div class="flex-1 flex flex-col items-center justify-center text-center p-6 text-on-surface-variant/60">
+                <span class="material-symbols-outlined text-4xl mb-2 text-outline-variant">shopping_cart</span>
+                <p class="text-xs font-semibold">Le ticket est vide.</p>
+                <p class="text-[11px] text-muted">Touchez un produit à gauche pour l'ajouter.</p>
+            </div>
+        `;
+        document.getElementById('pos-subtotal').innerText = '0 FCFA';
+        document.getElementById('pos-tva').innerText = '0 FCFA';
+        document.getElementById('pos-total').innerText = '0 FCFA';
+        return;
+    }
+
+    let subtotal = 0;
+    cartContainer.innerHTML = posCart.map(item => {
+        const lineTotal = item.price * item.qty;
+        subtotal += lineTotal;
+        return `
+            <div class="flex items-center justify-between p-3 bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant/20">
+                <div class="flex flex-col flex-1 pr-2">
+                    <span class="font-body-md text-xs text-on-surface font-bold line-clamp-1">${item.name}</span>
+                    <span class="font-label-sm text-[11px] text-on-surface-variant">${item.price.toLocaleString()} F / u</span>
+                </div>
+                <div class="flex items-center gap-2.5">
+                    <div class="flex items-center bg-surface-container rounded-full p-0.5 border border-outline-variant/30">
+                        <button onclick="updatePosItemQty('${item.id}', -1)" class="w-6 h-6 flex items-center justify-center rounded-full hover:bg-surface text-on-surface transition-all">
+                            <span class="material-symbols-outlined text-xs">remove</span>
+                        </button>
+                        <span class="font-label-md text-xs font-bold w-6 text-center">${item.qty}</span>
+                        <button onclick="updatePosItemQty('${item.id}', 1)" class="w-6 h-6 flex items-center justify-center rounded-full hover:bg-surface text-on-surface transition-all">
+                            <span class="material-symbols-outlined text-xs">add</span>
+                        </button>
+                    </div>
+                    <span class="font-label-md text-xs font-bold text-on-surface text-right w-14">${lineTotal.toLocaleString()} F</span>
+                </div>
+            </div>
+        `;
+    }).join('');
+
+    const tva = Math.round(subtotal * 0.055);
+    const total = subtotal;
+
+    document.getElementById('pos-subtotal').innerText = (subtotal - tva).toLocaleString() + ' FCFA';
+    document.getElementById('pos-tva').innerText = tva.toLocaleString() + ' FCFA';
+    document.getElementById('pos-total').innerText = total.toLocaleString() + ' FCFA';
+}
+
+let currentCashDue = 0;
+
+function checkoutPos(method) {
+    if (posCart.length === 0) {
+        alert("Le ticket est vide. Veuillez sélectionner au moins un article.");
+        return;
+    }
+
+    const total = posCart.reduce((sum, i) => sum + (i.price * i.qty), 0);
+
+    if (method === 'especes') {
+        currentCashDue = total;
+        document.getElementById('cash-modal-due').innerText = total.toLocaleString() + ' FCFA';
+        document.getElementById('cash-given-input').value = total;
+        calculateChange();
+        document.getElementById('cashModal').classList.remove('hidden');
+        return;
+    }
+
+    // Process Wave / Mobile Money directly
+    finalizeSale('Wave / Mobile Money', total);
+}
+
+function closeCashModal() {
+    document.getElementById('cashModal').classList.add('hidden');
+}
+
+function setCashGiven(amount) {
+    document.getElementById('cash-given-input').value = amount;
+    calculateChange();
+}
+
+function calculateChange() {
+    const given = parseFloat(document.getElementById('cash-given-input').value) || 0;
+    const change = Math.max(0, given - currentCashDue);
+    const box = document.getElementById('cash-change-box');
+    const amountEl = document.getElementById('cash-change-amount');
+
+    amountEl.innerText = change.toLocaleString() + ' FCFA';
+
+    if (given < currentCashDue) {
+        box.style.background = '#fee2e2';
+        box.style.borderColor = '#fca5a5';
+        amountEl.innerText = `Reste ${(currentCashDue - given).toLocaleString()} F`;
+        amountEl.style.color = '#dc2626';
+    } else {
+        box.style.background = '#dcfce7';
+        box.style.borderColor = '#86efac';
+        amountEl.style.color = '#166534';
+    }
+}
+
+function confirmCashPayment() {
+    const given = parseFloat(document.getElementById('cash-given-input').value) || 0;
+    if (given < currentCashDue) {
+        alert(`⚠️ Montant insuffisant. Le total à régler est de ${currentCashDue.toLocaleString()} FCFA.`);
+        return;
+    }
+
+    const change = given - currentCashDue;
+    closeCashModal();
+    finalizeSale('Espèces (Cash)', currentCashDue, given, change);
+}
+
+function finalizeSale(methodLabel, total, given = null, change = 0) {
+    // Beep sound
+    try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.frequency.setValueAtTime(1046.5, ctx.currentTime); // C6 Note
+        gain.gain.setValueAtTime(0.3, ctx.currentTime);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start();
+        osc.stop(ctx.currentTime + 0.3);
+    } catch(e){}
+
+    let msg = `✅ Vente de ${total.toLocaleString()} FCFA encaissée avec succès (${methodLabel}) !`;
+    if (given !== null) {
+        msg += `\n\n💵 Reçu : ${given.toLocaleString()} FCFA\n💰 Monnaie Rendue : ${change.toLocaleString()} FCFA`;
+    }
+    msg += `\n\nTicket imprimé et scellé au journal de caisse.`;
+
+    alert(msg);
+
+    // Synchronize sale with babi_orders in localStorage
+    const savedOrders = JSON.parse(localStorage.getItem('babi_orders') || '[]');
+    const newOrder = {
+        id: 'POS-' + Math.floor(10000 + Math.random() * 90000),
+        customer_name: 'Client Comptoir',
+        customer_phone: 'En boutique',
+        items_summary: posCart.map(i => `${i.qty}x ${i.name}`).join(', '),
+        total_price: total,
+        payment_method: methodLabel.includes('Espèces') ? 'especes' : 'wave',
+        status: 'recupere',
+        created_at: new Date().toISOString()
+    };
+    savedOrders.unshift(newOrder);
+    localStorage.setItem('babi_orders', JSON.stringify(savedOrders));
+
+    // Increment ticket
+    const ticketEl = document.getElementById('ticket-number');
+    if (ticketEl) {
+        const num = parseInt(ticketEl.innerText.replace('#', ''), 10) + 1;
+        ticketEl.innerText = '#' + num;
+    }
+
+    clearPosCart();
+}
+
+function filterPosCategory(category, btn) {
+    document.querySelectorAll('.category-filter-btn').forEach(b => {
+        b.classList.remove('bg-primary', 'text-on-primary');
+        b.classList.add('bg-surface', 'text-on-surface');
+    });
+    if (btn) {
+        btn.classList.remove('bg-surface', 'text-on-surface');
+        btn.classList.add('bg-primary', 'text-on-primary');
+    }
+
+    document.querySelectorAll('.pos-product-item').forEach(card => {
+        if (category === 'all' || card.dataset.category === category) {
+            card.style.display = 'flex';
+        } else {
+            card.style.display = 'none';
+        }
+    });
+}
+
+function filterPosProducts(query) {
+    const q = query.toLowerCase().trim();
+    document.querySelectorAll('.pos-product-item').forEach(card => {
+        const name = card.querySelector('h3').innerText.toLowerCase();
+        if (name.includes(q)) {
+            card.style.display = 'flex';
+        } else {
+            card.style.display = 'none';
+        }
+    });
+}
+
+function openPinModal() {
+    const modal = document.getElementById('pinModal');
+    if (modal) modal.classList.remove('hidden');
+}
+
+function closePinModal() {
+    const modal = document.getElementById('pinModal');
+    if (modal) modal.classList.add('hidden');
+}
+
+function openClosureModal() {
+    const modal = document.getElementById('closureModal');
+    if (modal) modal.classList.remove('hidden');
+}
+
+function closeClosureModal() {
+    const modal = document.getElementById('closureModal');
+    if (modal) modal.classList.add('hidden');
+}
+
 const posRealImages = {
     "Chill": "assets/chill.png",
     "Youyou": "assets/youzou.png",

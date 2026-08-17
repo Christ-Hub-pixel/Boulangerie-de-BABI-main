@@ -1,551 +1,1097 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Admin - Boulangerie de BABI</title>
-
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <!-- FontAwesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Custom Admin CSS -->
-    <link rel="stylesheet" href="css/admin.css">
-    <link rel="stylesheet" href="css/wow.css">
-    <!-- Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Babi Admin - Finance 360 & Direction | Boulangerie de BABI</title>
+    
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; color: #1e293b; }
-        .admin-sidebar { background-color: #2b160c; color: white; width: 260px; min-height: 100vh; position: fixed; top: 0; left: 0; padding: 20px 0; z-index: 100; transition: all 0.3s; }
-        .admin-sidebar .brand { font-size: 1.25rem; font-weight: 700; padding: 0 20px 20px; border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; gap: 10px; }
-        .admin-menu { list-style: none; padding: 15px 0; margin: 0; }
-        .admin-menu li a { display: flex; align-items: center; gap: 12px; padding: 12px 20px; color: #cbd5e1; text-decoration: none; font-weight: 500; font-size: 0.95rem; transition: all 0.2s; border-left: 4px solid transparent; }
-        .admin-menu li a:hover, .admin-menu li a.active { color: white; background: rgba(255,255,255,0.08); border-left-color: #fb923c; }
-        .admin-main { margin-left: 260px; padding: 25px 30px; transition: all 0.3s; }
-        .admin-topbar { display: flex; align-items: center; justify-content: space-between; background: white; padding: 15px 25px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); margin-bottom: 25px; }
-        .stat-card { background: white; border-radius: 12px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); display: flex; align-items: center; gap: 15px; }
-        .stat-icon { width: 50px; height: 50px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; }
-        .stat-icon.primary { background: #eff6ff; color: #3b82f6; }
-        .stat-icon.success { background: #f0fdf4; color: #22c55e; }
-        .stat-icon.warning { background: #fff7ed; color: #f97316; }
-        .stat-icon.danger { background: #fef2f2; color: #ef4444; }
-        .stat-details span { font-size: 0.85rem; color: #64748b; font-weight: 500; }
-        .stat-details h3 { margin: 4px 0 0; font-size: 1.4rem; font-weight: 700; color: #0f172a; }
-        .tab-section { display: none; }
-        .tab-section.active { display: block; }
-        .table-custom { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
-        .table-custom th { background: #f8fafc; font-weight: 600; font-size: 0.85rem; text-transform: uppercase; color: #64748b; padding: 14px 18px; border-bottom: 1px solid #e2e8f0; }
-        .table-custom td { padding: 14px 18px; vertical-align: middle; font-size: 0.9rem; border-bottom: 1px solid #f1f5f9; }
-        .badge-status { padding: 6px 12px; border-radius: 20px; font-weight: 600; font-size: 0.75rem; text-transform: capitalize; }
-        .badge-nouveau { background: #fee2e2; color: #dc2626; }
-        .badge-preparation { background: #fef3c7; color: #d97706; }
-        .badge-livraison { background: #e0f2fe; color: #0284c7; }
-        .badge-livre { background: #dcfce7; color: #16a34a; }
-        .badge-annule { background: #f1f5f9; color: #64748b; }
+        @layer base {
+            html, body { margin: 0; padding: 0; }
+            body { overscroll-behavior: none; }
+            main > :first-child { margin-top: 0 !important; }
+            main > :last-child { margin-bottom: 0 !important; }
+        }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-thumb { background: #d2c5ac; border-radius: 4px; }
+        @font-face {
+            font-family: 'Libre Caslon Text';
+            src: url('https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:wght@400;700&display=swap');
+        }
+        @font-face {
+            font-family: 'Manrope';
+            src: url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&display=swap');
+        }
     </style>
+
+    <!-- Google Fonts & Material Symbols -->
+    <link href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:wght@400;700&family=Manrope:wght@400;500;600;700;800&family=Great+Vibes&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+    <!-- CSS Custom Stylesheets -->
+    <link rel="stylesheet" href="css/admin.css"/>
+
+    <!-- Tailwind Configuration & CDN -->
+    <script>
+        window.tailwind = {
+            config: {
+                theme: {
+                    extend: {
+                        colors: {
+                            "on-primary": "#ffffff",
+                            "surface-tint": "#765b00",
+                            "background": "#fcf9ef",
+                            "error-container": "#ffdad6",
+                            "outline": "#807661",
+                            "inverse-surface": "#31312a",
+                            "primary-fixed-dim": "#f3c020",
+                            "surface-bright": "#fcf9ef",
+                            "tertiary-fixed-dim": "#f1bf4c",
+                            "tertiary-fixed": "#ffdf9e",
+                            "inverse-on-surface": "#f4f1e7",
+                            "on-tertiary": "#ffffff",
+                            "on-error": "#ffffff",
+                            "error": "#ba1a1a",
+                            "tertiary": "#795900",
+                            "surface-container-lowest": "#ffffff",
+                            "on-background": "#1c1c16",
+                            "on-primary-container": "#6a5100",
+                            "surface-container-highest": "#e5e2d9",
+                            "surface-variant": "#e5e2d9",
+                            "surface-container-low": "#f6f4ea",
+                            "outline-variant": "#d2c5ac",
+                            "primary-fixed": "#ffdf94",
+                            "on-secondary": "#ffffff",
+                            "on-surface": "#1c1c16",
+                            "on-surface-variant": "#4e4633",
+                            "primary": "#765b00",
+                            "primary-container": "#f7c325",
+                            "surface-container": "#f1eee4",
+                            "surface-dim": "#dddad0",
+                            "secondary": "#5f5e5e",
+                            "surface": "#fcf9ef",
+                            "surface-container-high": "#ebe8de"
+                        },
+                        borderRadius: { DEFAULT: "0.25rem", lg: "0.5rem", xl: "0.75rem", '2xl': '1rem', full: "9999px" },
+                        spacing: { "container-padding": "28px", "stack-sm": "8px", "gutter": "20px", "stack-md": "16px", "unit": "8px", "stack-lg": "32px" },
+                        fontFamily: {
+                            "headline-lg": ["Libre Caslon Text", "serif"],
+                            "display-lg": ["Libre Caslon Text", "serif"],
+                            "headline-md": ["Libre Caslon Text", "serif"],
+                            "body-md": ["Manrope", "sans-serif"],
+                            "body-lg": ["Manrope", "sans-serif"],
+                            "label-md": ["Manrope", "sans-serif"],
+                            "label-sm": ["Manrope", "sans-serif"]
+                        }
+                    }
+                }
+            }
+        };
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="icon" type="image/png" href="assets/logo.png"/>
 </head>
-<body>
+<body class="bg-background font-body-md text-on-surface antialiased">
 
-    <div class="admin-wrapper">
-        <!-- Sidebar -->
-        <aside class="admin-sidebar">
-            <div class="brand d-flex align-items-center mb-4">
-                <img src="assets/logo.png" alt="Logo" class="navbar-brand-logo me-2" style="height: 38px !important;">
-                <div class="d-flex flex-column lh-1 text-start">
-                    <span class="navbar-brand-title text-white">Boulangerie</span>
-                    <span class="navbar-brand-subtitle">de Babi</span>
-                </div>
+    <!-- SIDEBAR (PRESTIGE DARK CHOCOLATE & GOLD) -->
+    <aside class="fixed left-0 top-0 h-full w-72 prestige-sidebar z-50 flex flex-col p-5">
+        <!-- Official Brand Banner -->
+        <a href="index.html" class="babi-brand-banner-prestige mb-4">
+            <div class="babi-logo-badge">
+                <img src="assets/logo.png" alt="Logo BB"/>
             </div>
-            <ul class="admin-menu">
-                <li><a href="#" class="active" onclick="showTab('overview')"><i class="fa-solid fa-chart-pie"></i> Vue d'ensemble</a></li>
-                <li><a href="#" onclick="showTab('orders')"><i class="fa-solid fa-bag-shopping"></i> Commandes <span id="nav-orders-badge" class="badge bg-danger ms-auto" style="display:none;">0</span></a></li>
-                <li><a href="#" onclick="showTab('events')"><i class="fa-solid fa-cake-candles text-warning"></i> Gâteaux d'Événements <span id="nav-events-badge" class="badge bg-warning text-dark ms-auto" style="display:none;">0</span></a></li>
-                <li><a href="#" onclick="showTab('products')"><i class="fa-solid fa-bread-slice"></i> Produits & Stocks</a></li>
-                <li><a href="#" onclick="showTab('users')"><i class="fa-solid fa-users"></i> Clients</a></li>
-                <li><a href="#" onclick="showTab('team')"><i class="fa-solid fa-user-group"></i> Équipe Boulangerie</a></li>
-                <li><a href="#" onclick="showTab('security')"><i class="fa-solid fa-shield-halved text-info"></i> Sécurité IA & Audit</a></li>
-                <li class="border-top border-secondary my-2 pt-2"><a href="gerante.html" class="text-success"><i class="fa-solid fa-user-tie"></i> Portail Gérante</a></li>
-                <li><a href="caissiere.html" class="text-warning"><i class="fa-solid fa-cash-register"></i> Caisse Tactile (POS)</a></li>
-                <li style="margin-top: 30px;"><a href="index.html" class="text-danger"><i class="fa-solid fa-arrow-right-from-bracket"></i> Quitter (Retour au site)</a></li>
-            </ul>
-        </aside>
+            <div class="babi-brand-texts">
+                <span class="babi-brand-title">Boulangerie</span>
+                <span class="babi-brand-subtitle">
+                    de Babi
+                    <span class="babi-ci-flag">
+                        <span class="c1"></span><span class="c2"></span><span class="c3"></span>
+                    </span>
+                </span>
+            </div>
+        </a>
 
-        <!-- Main Content -->
-        <main class="admin-main">
-            <!-- Topbar -->
-            <header class="admin-topbar">
-                <div class="d-flex align-items-center gap-3">
-                    <h4 class="m-0 fw-bold text-dark" id="page-title">Vue d'ensemble</h4>
-                </div>
-                <div class="d-flex align-items-center gap-3">
-                    <button class="btn btn-outline-secondary btn-sm rounded-pill" onclick="fetchAdminData()"><i class="fa-solid fa-rotate-right me-1"></i> Actualiser</button>
-                    <div class="d-flex align-items-center gap-2 border-start ps-3">
-                        <img src="assets/chef_profile.png" alt="Admin" style="width: 38px; height: 38px; border-radius: 50%; object-fit: cover;">
-                        <div class="lh-1">
-                            <div class="fw-bold" style="font-size: 0.85rem;">Gérant Principal</div>
-                            <small class="text-muted" style="font-size: 0.75rem;">Boulangerie de BABI</small>
-                        </div>
-                    </div>
-                </div>
-            </header>
+        <!-- Navigation Links with Section Groups -->
+        <nav class="flex-1 flex flex-col gap-1 overflow-y-auto pr-1" id="admin-nav">
+            <div class="sidebar-section-title">PILOTAGE GÉNÉRAL</div>
+            <a href="#" onclick="showTab('overview'); return false;" class="prestige-nav-item active" data-tab="overview">
+                <span class="material-symbols-outlined text-xl">query_stats</span>
+                <span class="flex-1">Finance 360</span>
+            </a>
+            <a href="#" onclick="showTab('orders'); return false;" class="prestige-nav-item" data-tab="orders">
+                <span class="material-symbols-outlined text-xl">shopping_bag</span>
+                <span class="flex-1">Commandes</span>
+                <span id="nav-orders-badge" class="prestige-badge prestige-badge-error">4</span>
+            </a>
+            <a href="#" onclick="showTab('events'); return false;" class="prestige-nav-item" data-tab="events">
+                <span class="material-symbols-outlined text-xl">cake</span>
+                <span class="flex-1">Gâteaux & Événements</span>
+                <span class="prestige-badge prestige-badge-amber">2</span>
+            </a>
 
-            <!-- TAB 1: VUE D'ENSEMBLE -->
-            <div id="tab-overview" class="tab-section active">
-                <div class="row g-3 mb-4">
-                    <div class="col-md-3">
-                        <div class="stat-card">
-                            <div class="stat-icon primary"><i class="fa-solid fa-wallet"></i></div>
-                            <div class="stat-details">
-                                <span>Chiffre d'Affaires</span>
-                                <h3 id="stat-revenue">0 FCFA</h3>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="stat-card">
-                            <div class="stat-icon danger"><i class="fa-solid fa-bell"></i></div>
-                            <div class="stat-details">
-                                <span>Nouvelles Commandes</span>
-                                <h3 id="stat-new-orders">0</h3>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="stat-card">
-                            <div class="stat-icon warning"><i class="fa-solid fa-kitchen-set"></i></div>
-                            <div class="stat-details">
-                                <span>En Préparation Fournil</span>
-                                <h3 id="stat-pending-orders">0</h3>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="stat-card">
-                            <div class="stat-icon success"><i class="fa-solid fa-circle-check"></i></div>
-                            <div class="stat-details">
-                                <span>Commandes Récupérées</span>
-                                <h3 id="stat-delivered-orders">0</h3>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            <div class="sidebar-section-title mt-2">GESTION & BOUTIQUE</div>
+            <a href="#" onclick="showTab('products'); return false;" class="prestige-nav-item" data-tab="products">
+                <span class="material-symbols-outlined text-xl">bakery_dining</span>
+                <span class="flex-1">Catalogue & Stocks</span>
+            </a>
+            <a href="#" onclick="showTab('team'); return false;" class="prestige-nav-item" data-tab="team">
+                <span class="material-symbols-outlined text-xl">badge</span>
+                <span class="flex-1">Personnel Fournil</span>
+            </a>
+            <a href="#" onclick="showTab('users'); return false;" class="prestige-nav-item" data-tab="users">
+                <span class="material-symbols-outlined text-xl">group</span>
+                <span class="flex-1">Clients Fidélité</span>
+            </a>
+            <a href="#" onclick="showTab('security'); return false;" class="prestige-nav-item" data-tab="security">
+                <span class="material-symbols-outlined text-xl">shield</span>
+                <span class="flex-1">Sécurité & Audit IA</span>
+            </a>
 
-                <div class="row g-3 mb-4">
-                    <div class="col-lg-8">
-                        <div class="chart-container">
-                            <div class="d-flex justify-content-between align-items-center mb-3">
-                                <h6 class="fw-bold m-0"><i class="fa-solid fa-chart-line text-primary me-2"></i> Évolution des Ventes (7 Derniers Jours)</h6>
-                            </div>
-                            <canvas id="revenueChart" height="220"></canvas>
-                        </div>
-                    </div>
-                    <div class="col-lg-4">
-                        <div class="chart-container">
-                            <div class="d-flex justify-content-between align-items-center mb-3">
-                                <h6 class="fw-bold m-0"><i class="fa-solid fa-chart-pie text-warning me-2"></i> Répartition des Ventes</h6>
-                            </div>
-                            <canvas id="categoryChart" height="220"></canvas>
-                        </div>
-                    </div>
-                </div>
+            <!-- Bottom shortcuts styled as refined luxury buttons -->
+            <div class="mt-auto pt-4 border-t border-[rgba(245,184,0,0.15)] flex flex-col gap-2">
+                <div class="sidebar-section-title p-0 mb-1">ACCÈS DIRECTS</div>
+                <a href="caissiere.html" class="prestige-shortcut-btn btn-pos">
+                    <span class="material-symbols-outlined text-lg">point_of_sale</span>
+                    <span>Caisse Tactile POS</span>
+                </a>
+                <a href="gerante.html" class="prestige-shortcut-btn btn-gerante">
+                    <span class="material-symbols-outlined text-lg">table_restaurant</span>
+                    <span>Portail Gérante Fournil</span>
+                </a>
+                <a href="index.html" class="prestige-shortcut-btn btn-boutique">
+                    <span class="material-symbols-outlined text-lg">storefront</span>
+                    <span>Boutique en Ligne</span>
+                </a>
+            </div>
+        </nav>
+    </aside>
+
+    <!-- MAIN WRAPPER -->
+    <div class="pl-72">
+        <!-- TOPBAR PRESTIGE LUXURY -->
+        <header class="prestige-topbar">
+            <!-- Search bar with gold focus ring -->
+            <div class="prestige-search-box">
+                <span class="material-symbols-outlined text-lg" style="color: #765b00;">search</span>
+                <input placeholder="Rechercher une commande, client, produit..." type="text" id="topbar-search" onkeyup="globalSearch(this.value)"/>
             </div>
 
-            <!-- TAB 2: COMMANDES -->
-            <div id="tab-orders" class="tab-section">
-                <div class="d-flex align-items-center justify-content-between mb-3">
-                    <div class="d-flex align-items-center gap-2">
-                        <input type="text" id="order-search" class="form-control form-control-sm" placeholder="Chercher par nom ou tél..." style="width: 250px;" onkeyup="filterOrdersTable()">
-                        <select id="order-filter-status" class="form-select form-select-sm" style="width: 180px;" onchange="filterOrdersTable()">
-                            <option value="">Tous les statuts</option>
-                            <option value="nouveau">Nouveau</option>
-                            <option value="en preparation">En préparation (Fournil)</option>
-                            <option value="pret">Prêt au comptoir</option>
-                            <option value="recupere">Colis Récupéré</option>
-                        </select>
+            <!-- Profile & Quick Info Actions -->
+            <div class="flex items-center gap-4">
+                <button onclick="fetchAdminData()" class="prestige-refresh-btn">
+                    <span class="material-symbols-outlined text-base" style="color: #765b00;">refresh</span>
+                    <span>Actualiser</span>
+                </button>
+                <!-- Interactive Profile Card & Dropdown -->
+                <div class="relative" id="profileDropdownWrapper">
+                    <div class="prestige-user-card" onclick="toggleProfileDropdown(event)" id="profileTriggerBtn" title="Cliquez pour afficher les options de compte et changer de portail">
+                        <div class="prestige-user-info">
+                            <span class="prestige-user-name">Jean-Marc Konan</span>
+                            <span class="prestige-user-role">Directeur Général • BABI 👑</span>
+                        </div>
+                        <div class="relative flex items-center">
+                            <img alt="Profile" id="topbar-user-avatar" class="profile-avatar" src="assets/chef_profile.png"/>
+                            <span class="online-status-dot"></span>
+                        </div>
+                        <span class="material-symbols-outlined text-sm font-bold transition-transform" id="profileChevron" style="color: #765b00;">expand_more</span>
                     </div>
-                </div>
 
-                <div class="table-custom">
-                    <table class="table table-hover align-middle m-0">
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Client</th>
-                                <th>Adresse / Tél</th>
-                                <th>Articles</th>
-                                <th>Total</th>
-                                <th>Mode Paiement</th>
-                                <th>Statut</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody id="orders-tbody">
-                            <!-- Injected dynamically -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+                    <!-- Luxury Profile Dropdown Menu -->
+                    <div id="profileDropdownMenu" class="prestige-profile-dropdown hidden">
+                        <!-- Header Info -->
+                        <div class="profile-dropdown-header">
+                            <div class="flex items-center gap-3">
+                                <div class="relative cursor-pointer" onclick="openAvatarModal()" title="Cliquer pour changer de photo">
+                                    <img src="assets/chef_profile.png" id="dropdown-user-avatar" class="profile-avatar-lg" alt="Jean-Marc Konan"/>
+                                    <div class="avatar-edit-overlay-btn">
+                                        <span class="material-symbols-outlined text-[12px]">photo_camera</span>
+                                    </div>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-sm text-on-surface">Jean-Marc Konan</h4>
+                                    <span class="text-xs text-amber-700 font-extrabold">Directeur Général & Fondateur</span>
+                                    <div class="text-[11px] text-on-surface-variant font-mono mt-0.5">direction@boulangeriedebabi.ci</div>
+                                </div>
+                            </div>
+                            <div class="mt-3 py-1.5 px-3 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-[11px] font-extrabold flex items-center justify-between">
+                                <span>Accréditation : Super Admin (Niveau 5)</span>
+                                <span class="material-symbols-outlined text-sm text-emerald-600">verified</span>
+                            </div>
+                        </div>
 
-            <!-- TAB: GÂTEAUX D'ÉVÉNEMENTS -->
-            <div id="tab-events" class="tab-section">
-                <div class="d-flex align-items-center justify-content-between mb-3">
-                    <div class="d-flex align-items-center gap-2">
-                        <input type="text" id="event-search" class="form-control form-control-sm" placeholder="Chercher client, réf ou tél..." style="width: 260px;" onkeyup="filterEventsTable()">
-                        <select id="event-filter-type" class="form-select form-select-sm" style="width: 190px;" onchange="filterEventsTable()">
-                            <option value="">Tous les événements</option>
-                            <option value="Mariage">Mariages & Fiançailles</option>
-                            <option value="Anniversaire">Anniversaires</option>
-                            <option value="Baptême">Baptêmes & Baby Showers</option>
-                            <option value="Entreprise">Entreprises & Galas</option>
-                        </select>
-                    </div>
-                    <button class="btn btn-outline-warning btn-sm text-dark fw-bold rounded-pill px-3" onclick="loadEventOrders()"><i class="fa-solid fa-rotate-right me-1"></i> Actualiser</button>
-                </div>
+                        <!-- Section: Bascule Rapide de Rôle / Portail -->
+                        <div class="profile-dropdown-section">
+                            <div class="profile-dropdown-section-title">COMMUTATEUR DE PORTAILS</div>
+                            <a href="admin.html" class="profile-dropdown-item active">
+                                <span class="material-symbols-outlined text-amber-600">admin_panel_settings</span>
+                                <div class="flex flex-col">
+                                    <span class="font-bold text-xs">Direction & Finance 360</span>
+                                    <span class="text-[10px] text-on-surface-variant">Vue consolidée d'ensemble</span>
+                                </div>
+                                <span class="badge-active-pill">Actif</span>
+                            </a>
+                            <a href="gerante.html" class="profile-dropdown-item">
+                                <span class="material-symbols-outlined text-amber-600">oven_gen</span>
+                                <div class="flex flex-col">
+                                    <span class="font-bold text-xs">Fournil & Production</span>
+                                    <span class="text-[10px] text-on-surface-variant">Portail Chef Mamadou Koné</span>
+                                </div>
+                                <span class="material-symbols-outlined text-xs text-on-surface-variant">arrow_forward</span>
+                            </a>
+                            <a href="caissiere.html" class="profile-dropdown-item">
+                                <span class="material-symbols-outlined text-amber-600">point_of_sale</span>
+                                <div class="flex flex-col">
+                                    <span class="font-bold text-xs">Caisse & Vente Tactile POS</span>
+                                    <span class="text-[10px] text-on-surface-variant">Comptoir Awa Kouassi</span>
+                                </div>
+                                <span class="material-symbols-outlined text-xs text-on-surface-variant">arrow_forward</span>
+                            </a>
+                            <a href="index.html" class="profile-dropdown-item">
+                                <span class="material-symbols-outlined text-amber-600">storefront</span>
+                                <div class="flex flex-col">
+                                    <span class="font-bold text-xs">Boutique en Ligne</span>
+                                    <span class="text-[10px] text-on-surface-variant">Expérience client & commandes</span>
+                                </div>
+                                <span class="material-symbols-outlined text-xs text-on-surface-variant">arrow_forward</span>
+                            </a>
+                        </div>
 
-                <div class="table-custom">
-                    <table class="table table-hover align-middle m-0">
-                        <thead>
-                            <tr>
-                                <th>Réf</th>
-                                <th>Client & Contact</th>
-                                <th>Événement</th>
-                                <th>Format & Parfums</th>
-                                <th>Inscription & Thème</th>
-                                <th>Date Retrait</th>
-                                <th>Devis</th>
-                                <th>Statut</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="events-tbody">
-                            <!-- Injected dynamically -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- TAB 3: PRODUITS -->
-            <div id="tab-products" class="tab-section">
-                <div class="d-flex align-items-center justify-content-between mb-3">
-                    <input type="text" id="product-search" class="form-control form-control-sm" placeholder="Rechercher un produit..." style="width: 280px;" onkeyup="filterProductsTable()">
-                    <button class="btn btn-primary btn-sm rounded-pill px-3" data-bs-toggle="modal" data-bs-target="#addProductModal"><i class="fa-solid fa-plus me-1"></i> Nouveau Produit</button>
-                </div>
-
-                <div class="table-custom">
-                    <table class="table table-hover align-middle m-0">
-                        <thead>
-                            <tr>
-                                <th>#ID</th>
-                                <th>Image</th>
-                                <th>Nom</th>
-                                <th>Catégorie</th>
-                                <th>Prix</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="products-tbody">
-                            <!-- Injected dynamically -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- TAB 4: CLIENTS -->
-            <div id="tab-users" class="tab-section">
-                <div class="table-custom">
-                    <table class="table table-hover align-middle m-0">
-                        <thead>
-                            <tr>
-                                <th>#ID</th>
-                                <th>Nom du Client</th>
-                                <th>Email</th>
-                                <th>Téléphone</th>
-                                <th>Statut Compte</th>
-                            </tr>
-                        </thead>
-                        <tbody id="users-tbody">
-                            <!-- Injected dynamically -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- TAB 5: ÉQUIPE BOULANGERIE -->
-            <div id="tab-team" class="tab-section">
-                <div class="row g-3">
-                    <div class="col-md-4">
-                        <div class="bg-white rounded-4 p-4 shadow-sm text-center">
-                            <img src="assets/baker_profile.png" class="rounded-circle mb-3" width="80" height="80" style="object-fit:cover;">
-                            <h5 class="fw-bold mb-1">Michel Yao</h5>
-                            <span class="badge bg-warning text-dark mb-2">Maître Boulanger Chef</span>
-                            <div class="fs-sm text-muted">Poste : Fournil & Cuisson du Jour</div>
+                        <!-- Section: Actions du Compte -->
+                        <div class="profile-dropdown-section border-t border-outline-variant/40">
+                            <button onclick="openAvatarModal()" class="profile-dropdown-item w-full text-left">
+                                <span class="material-symbols-outlined text-amber-600">photo_camera</span>
+                                <span class="font-bold text-xs">Changer ma Photo de Profil</span>
+                            </button>
+                            <button onclick="openChangePasswordModal()" class="profile-dropdown-item w-full text-left">
+                                <span class="material-symbols-outlined text-amber-600">lock_reset</span>
+                                <span class="font-bold text-xs">Modifier Mot de Passe</span>
+                            </button>
+                            <button onclick="resetAllToZeroDayOne()" class="profile-dropdown-item w-full text-left" style="color: #765b00 !important;">
+                                <span class="material-symbols-outlined" style="color: #765b00 !important;">restart_alt</span>
+                                <span class="font-bold text-xs">Nouveau Départ (Remise à Zéro)</span>
+                            </button>
+                            <button onclick="handleAdminLogout()" class="profile-dropdown-item w-full text-left" style="color: #dc2626 !important;">
+                                <span class="material-symbols-outlined" style="color: #dc2626 !important;">logout</span>
+                                <span class="font-extrabold text-xs">Déconnexion Sécurisée</span>
+                            </button>
                         </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="bg-white rounded-4 p-4 shadow-sm text-center">
-                            <img src="assets/aicha.png" class="rounded-circle mb-3" width="80" height="80" style="object-fit:cover;">
-                            <h5 class="fw-bold mb-1">Fatou Soro</h5>
-                            <span class="badge bg-info text-dark mb-2">Chef Pâtissière</span>
-                            <div class="fs-sm text-muted">Poste : Pâtisseries & Entremets</div>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="bg-white rounded-4 p-4 shadow-sm text-center">
-                            <img src="assets/kouassi.png" class="rounded-circle mb-3" width="80" height="80" style="object-fit:cover;">
-                                <h5 class="fw-bold mb-1">Awa Kouassi</h5>
-                            <span class="badge bg-success mb-2">Caissière Principale</span>
-                            <div class="fs-sm text-muted">Poste : Caisse POS & Comptoir</div>
-                        </div>
-                    </div>
-                </div>
-            <!-- TAB 6: SÉCURITÉ IA & AUDIT -->
-            <div id="tab-security" class="tab-section">
-                <!-- Row 1: High Level Status Cards -->
-                <div class="row g-3 mb-4">
-                    <div class="col-md-3">
-                        <div class="stat-card" style="border-left: 4px solid #10b981;">
-                            <div class="stat-icon success"><i class="fa-solid fa-shield-virus"></i></div>
-                            <div class="stat-details">
-                                <span>Moteur IA Sentinel</span>
-                                <h3 class="text-success fs-6 mb-0">GRADE DÉFENSE ACTIF</h3>
-                                <small class="text-muted" id="soc-rules-count">24 Règles WAF & IDS/IPS</small>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="stat-card" style="border-left: 4px solid #3b82f6;">
-                            <div class="stat-icon primary"><i class="fa-solid fa-link"></i></div>
-                            <div class="stat-details">
-                                <span>Arbre de Merkle DAG</span>
-                                <h3 class="text-primary fs-6 mb-0" id="soc-merkle-status">100% INTACT & SCELLÉ</h3>
-                                <small class="text-muted" id="soc-merkle-blocks">0 Blocs Cryptographiques</small>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="stat-card" style="border-left: 4px solid #f59e0b;">
-                            <div class="stat-icon warning"><i class="fa-solid fa-jar"></i></div>
-                            <div class="stat-details">
-                                <span>Pièges Honeytokens</span>
-                                <h3 class="text-warning fs-6 mb-0" id="soc-trapped-count">0 PIRATES PIÉGÉS</h3>
-                                <small class="text-muted">Leurres /.env & /debug-keys</small>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="stat-card" style="border-left: 4px solid #ef4444;">
-                            <div class="stat-icon danger" style="background:#fee2e2; color:#ef4444;"><i class="fa-solid fa-ban"></i></div>
-                            <div class="stat-details">
-                                <span>IPs Neutralisées & Bannies</span>
-                                <h3 class="text-danger fs-6 mb-0" id="soc-banned-count">0 IPs EN QUARANTAINE</h3>
-                                <small class="text-muted">Bannissement auto progressif</small>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Row 2: Universal Threat Neutralization Counters -->
-                <div class="bg-dark text-white rounded-4 p-4 shadow-sm mb-4">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h6 class="fw-bold mb-0 text-warning"><i class="fa-solid fa-shield-halved text-danger me-2"></i> MATRICE DE CYBER-DÉFENSE UNIVERSELLE (OWASP TOP 10 & MITRE ATT&CK)</h6>
-                        <span class="badge bg-success rounded-pill px-3 py-1"><i class="fa-solid fa-circle me-1 small"></i> En Temps Réel</span>
-                    </div>
-                    <div class="row g-2 text-center">
-                        <div class="col-6 col-md-2">
-                            <div class="p-2 bg-secondary bg-opacity-25 rounded-3 border border-secondary">
-                                <small class="text-light d-block" style="font-size:0.72rem;">SQLi & NoSQL</small>
-                                <span class="fw-bold text-success" id="stat-sqli">0 Bloqué(s)</span>
-                            </div>
-                        </div>
-                        <div class="col-6 col-md-2">
-                            <div class="p-2 bg-secondary bg-opacity-25 rounded-3 border border-secondary">
-                                <small class="text-light d-block" style="font-size:0.72rem;">RCE & WebShells</small>
-                                <span class="fw-bold text-success" id="stat-rce">0 Bloqué(s)</span>
-                            </div>
-                        </div>
-                        <div class="col-6 col-md-2">
-                            <div class="p-2 bg-secondary bg-opacity-25 rounded-3 border border-secondary">
-                                <small class="text-light d-block" style="font-size:0.72rem;">XSS & Polyglottes</small>
-                                <span class="fw-bold text-success" id="stat-xss">0 Bloqué(s)</span>
-                            </div>
-                        </div>
-                        <div class="col-6 col-md-2">
-                            <div class="p-2 bg-secondary bg-opacity-25 rounded-3 border border-secondary">
-                                <small class="text-light d-block" style="font-size:0.72rem;">LFI & Traversal</small>
-                                <span class="fw-bold text-success" id="stat-lfi">0 Bloqué(s)</span>
-                            </div>
-                        </div>
-                        <div class="col-6 col-md-2">
-                            <div class="p-2 bg-secondary bg-opacity-25 rounded-3 border border-secondary">
-                                <small class="text-light d-block" style="font-size:0.72rem;">SSRF & Cloud Steal</small>
-                                <span class="fw-bold text-success" id="stat-ssrf">0 Bloqué(s)</span>
-                            </div>
-                        </div>
-                        <div class="col-6 col-md-2">
-                            <div class="p-2 bg-secondary bg-opacity-25 rounded-3 border border-secondary">
-                                <small class="text-light d-block" style="font-size:0.72rem;">Scanners & Bots</small>
-                                <span class="fw-bold text-success" id="stat-bots">0 Bloqué(s)</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Security Audit Logs Table -->
-                <div class="bg-white rounded-4 p-4 shadow-sm">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h5 class="fw-bold mb-0"><i class="fa-solid fa-fingerprint text-primary me-2"></i> Journal d'Audit Cryptographique des Transactions</h5>
-                        <button class="btn btn-outline-primary btn-sm rounded-pill" onclick="fetchSecurityAuditLogs()"><i class="fa-solid fa-rotate-right me-1"></i> Actualiser les Logs</button>
-                    </div>
-                    <div class="table-responsive">
-                        <table class="table table-hover align-middle mb-0">
-                            <thead class="table-light">
-                                <tr>
-                                    <th>Date & Heure</th>
-                                    <th>Type d'Événement</th>
-                                    <th>Réf Commande</th>
-                                    <th>Score IA</th>
-                                    <th>Niveau Risque</th>
-                                    <th>IP Client</th>
-                                    <th>Empreinte SHA-256</th>
-                                </tr>
-                            </thead>
-                            <tbody id="security-logs-tbody">
-                                <tr>
-                                    <td colspan="7" class="text-center text-muted py-4"><i class="fa-solid fa-spinner fa-spin me-2"></i> Chargement des événements de sécurité...</td>
-                                </tr>
-                            </tbody>
-                        </table>
                     </div>
                 </div>
             </div>
+        </header>
 
+        <!-- MAIN BODY CONTENT -->
+        <main class="relative bg-background min-h-screen" style="padding-top: 6.5rem;">
+            <div class="flex flex-col w-full p-container-padding gap-stack-lg">
+
+                <!-- ========================================================= -->
+                <!-- TAB 1: FINANCE 360 / VUE D'ENSEMBLE (MODE MAGAZINE) -->
+                <!-- ========================================================= -->
+                <section id="tab-overview" class="tab-section">
+                    <div class="magazine-container">
+                        <!-- Magazine Header Bar -->
+                        <div class="magazine-header-bar">
+                            <div class="flex flex-col gap-1.5">
+                                <div class="flex items-center gap-3">
+                                    <span class="text-xs font-extrabold uppercase tracking-widest" style="color: #765b00; letter-spacing: 0.12em;">ÉDITION QUOTIDIENNE • DIRECTION</span>
+                                    <span style="background: #dcfce7; color: #166534; border: 1px solid #86efac; border-radius: 9999px; padding: 3px 12px; font-weight: 800; font-size: 11px; display: inline-flex; align-items: center; gap: 6px;">
+                                        <span style="width: 7px; height: 7px; border-radius: 9999px; background: #16a34a; display: inline-block;"></span> Fournil En Direct
+                                    </span>
+                                </div>
+                                <h1 class="font-display-lg text-3xl md:text-4xl text-primary font-bold tracking-tight" style="color: #2b160c;">Finance 360 & Pilotage</h1>
+                                <p class="font-body-md text-on-surface-variant max-w-2xl text-xs" style="color: #5f493b;">Revue consolidée des encaissements, volumes de production et indicateurs de performance.</p>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <div class="magazine-date-badge">
+                                    <span class="material-symbols-outlined text-amber-600 text-sm" style="color: #765b00;">calendar_month</span>
+                                    <span>17 Août 2026</span>
+                                </div>
+                                <button onclick="exportAccountingCSV()" class="magazine-btn-secondary" title="Exporter le journal des ventes en format Excel / CSV">
+                                    <span class="material-symbols-outlined text-sm font-bold" style="color: #765b00;">table_view</span> Export Excel / CSV
+                                </button>
+                                <button onclick="window.print()" class="magazine-btn-primary">
+                                    <span class="material-symbols-outlined text-sm font-bold">download</span> Télécharger Bilan
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- 3 Magazine Metric Cards -->
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <!-- Total Revenue Hero Card -->
+                            <div class="magazine-card-hero flex flex-col justify-between" style="min-height: 190px;">
+                                <div class="flex items-center justify-between">
+                                    <span class="uppercase tracking-widest text-xs font-extrabold text-amber-300">Chiffre d'Affaires</span>
+                                    <div class="kpi-icon-medallion gold">
+                                        <span class="material-symbols-outlined text-2xl">account_balance_wallet</span>
+                                    </div>
+                                </div>
+                                <div class="my-2">
+                                    <span class="font-display-lg text-3xl md:text-4xl font-bold tracking-tight" style="color: #ffc928; text-shadow: 0 2px 10px rgba(245, 184, 0, 0.35);" id="stat-revenue">0 FCFA</span>
+                                </div>
+                                <div class="flex items-center gap-2 text-xs font-bold text-emerald-300">
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full bg-emerald-950/90 border border-emerald-500/50 text-emerald-300 font-bold">
+                                        <span class="material-symbols-outlined text-xs mr-1">bolt</span> Service Démarré
+                                    </span>
+                                    <span class="text-amber-100/70 font-medium">Prêt pour les encaissements</span>
+                                </div>
+                            </div>
+
+                            <!-- Commandes Remises -->
+                            <div class="magazine-card flex flex-col justify-between" style="min-height: 190px;">
+                                <div class="flex items-center justify-between">
+                                    <span class="uppercase tracking-widest text-xs font-extrabold text-on-surface-variant">Commandes Remises</span>
+                                    <div class="kpi-icon-medallion emerald">
+                                        <span class="material-symbols-outlined text-2xl">verified</span>
+                                    </div>
+                                </div>
+                                <div class="my-2">
+                                    <span class="font-display-lg text-3xl md:text-4xl font-bold text-on-surface"><span id="stat-delivered-orders">0</span> <span class="text-xl font-normal text-on-surface-variant">/ <span id="stat-total-orders">0</span></span></span>
+                                </div>
+                                <div class="flex items-center gap-1.5 text-emerald-700 text-xs font-bold">
+                                    <span class="material-symbols-outlined text-sm">check_circle</span>
+                                    <span>Sécurisé par Code PIN</span>
+                                </div>
+                            </div>
+
+                            <!-- Panier Moyen -->
+                            <div class="magazine-card flex flex-col justify-between" style="min-height: 190px;">
+                                <div class="flex items-center justify-between">
+                                    <span class="uppercase tracking-widest text-xs font-extrabold text-on-surface-variant">Panier Moyen</span>
+                                    <div class="kpi-icon-medallion amber">
+                                        <span class="material-symbols-outlined text-2xl">receipt_long</span>
+                                    </div>
+                                </div>
+                                <div class="my-2">
+                                    <span class="font-display-lg text-3xl md:text-4xl font-bold text-on-surface" id="stat-avg-basket">0 FCFA</span>
+                                </div>
+                                <div class="flex items-center gap-1.5 text-primary text-xs font-bold" style="color: #765b00;">
+                                    <span class="material-symbols-outlined text-sm">point_of_sale</span>
+                                    <span>Caisse & En ligne prêts</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Revenue Trend & Top Categories (Magazine Style) -->
+                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                            <!-- Revenue Trend Column -->
+                            <div class="lg:col-span-2 magazine-card flex flex-col gap-5">
+                                <div class="flex items-center justify-between pb-3 border-b border-outline-variant/30">
+                                    <div>
+                                        <h2 class="font-headline-md text-xl text-on-surface font-bold">Évolution des Ventes</h2>
+                                        <p class="text-xs text-on-surface-variant">Recettes quotidiennes enregistrées en boutique et Click & Collect</p>
+                                    </div>
+                                    <div class="flex gap-2">
+                                        <button class="magazine-period-btn active" onclick="switchPeriod('7d', this)">7 Jours</button>
+                                        <button class="magazine-period-btn" onclick="switchPeriod('30d', this)">30 Jours</button>
+                                        <button class="magazine-period-btn" onclick="switchPeriod('1y', this)">Annuel</button>
+                                    </div>
+                                </div>
+
+                                <!-- Interactive Bar Chart Display -->
+                                <div class="h-64 w-full relative flex items-end gap-3 px-2 pt-8" id="revenue-bars-container" style="height: 220px; display: flex; align-items: flex-end;">
+                                    <!-- Background dashed gridlines -->
+                                    <div class="w-full h-full absolute inset-0 flex flex-col justify-between py-6 pointer-events-none opacity-20">
+                                        <div class="w-full border-t border-outline-variant border-dashed"></div>
+                                        <div class="w-full border-t border-outline-variant border-dashed"></div>
+                                        <div class="w-full border-t border-outline-variant border-dashed"></div>
+                                    </div>
+                                    <!-- 7 Days Bars with explicit heights -->
+                                    <div class="revenue-bar relative group" style="height: 48%;">
+                                        <div class="revenue-tooltip">45 000 F</div>
+                                    </div>
+                                    <div class="revenue-bar relative group" style="height: 55%;">
+                                        <div class="revenue-tooltip">52 000 F</div>
+                                    </div>
+                                    <div class="revenue-bar relative group" style="height: 51%;">
+                                        <div class="revenue-tooltip">48 000 F</div>
+                                    </div>
+                                    <div class="revenue-bar relative group" style="height: 64%;">
+                                        <div class="revenue-tooltip">61 000 F</div>
+                                    </div>
+                                    <div class="revenue-bar relative group" style="height: 78%;">
+                                        <div class="revenue-tooltip">74 000 F</div>
+                                    </div>
+                                    <div class="revenue-bar relative group peak-bar" style="height: 100%;">
+                                        <div class="revenue-tooltip">95 000 F 👑</div>
+                                    </div>
+                                    <div class="revenue-bar relative group" style="height: 92%;">
+                                        <div class="revenue-tooltip">88 500 F</div>
+                                    </div>
+                                </div>
+                                <div class="flex justify-between px-2 font-label-sm text-xs text-on-surface-variant font-bold">
+                                    <span class="flex-1 text-center">Lun</span><span class="flex-1 text-center">Mar</span><span class="flex-1 text-center">Mer</span><span class="flex-1 text-center">Jeu</span><span class="flex-1 text-center">Ven</span><span class="flex-1 text-center font-bold" style="color: #765b00;">Sam 👑</span><span class="flex-1 text-center">Dim</span>
+                                </div>
+                            </div>
+
+                            <!-- Top Categories Breakdown -->
+                            <div class="magazine-card flex flex-col gap-4 justify-between">
+                                <div class="pb-3 border-b border-outline-variant/30">
+                                    <h2 class="font-headline-md text-xl text-on-surface font-bold">Mix Produits</h2>
+                                    <p class="text-xs text-on-surface-variant">Répartition des ventes par catégorie</p>
+                                </div>
+                                <div class="flex-1 flex flex-col justify-center gap-4 py-2">
+                                    <div class="flex flex-col gap-1.5">
+                                        <div class="flex justify-between items-center text-xs">
+                                            <span class="font-bold text-on-surface">🥐 Viennoiseries</span>
+                                            <span class="font-bold text-on-surface-variant whitespace-nowrap">45% <small style="color: #8d776a; font-weight: normal;">(173k F)</small></span>
+                                        </div>
+                                        <div class="progress-bar-track">
+                                            <div class="progress-bar-fill" style="width: 45%;"></div>
+                                        </div>
+                                    </div>
+                                    <div class="flex flex-col gap-1.5">
+                                        <div class="flex justify-between items-center text-xs">
+                                            <span class="font-bold text-on-surface">🥖 Pains & Baguettes</span>
+                                            <span class="font-bold text-on-surface-variant whitespace-nowrap">30% <small style="color: #8d776a; font-weight: normal;">(115k F)</small></span>
+                                        </div>
+                                        <div class="progress-bar-track">
+                                            <div class="progress-bar-fill" style="width: 30%;"></div>
+                                        </div>
+                                    </div>
+                                    <div class="flex flex-col gap-1.5">
+                                        <div class="flex justify-between items-center text-xs">
+                                            <span class="font-bold text-on-surface">🎂 Pâtisseries</span>
+                                            <span class="font-bold text-on-surface-variant whitespace-nowrap">15% <small style="color: #8d776a; font-weight: normal;">(58k F)</small></span>
+                                        </div>
+                                        <div class="progress-bar-track">
+                                            <div class="progress-bar-fill" style="width: 15%;"></div>
+                                        </div>
+                                    </div>
+                                    <div class="flex flex-col gap-1.5">
+                                        <div class="flex justify-between items-center text-xs">
+                                            <span class="font-bold text-on-surface">🥤 Jus & Boissons</span>
+                                            <span class="font-bold text-on-surface-variant whitespace-nowrap">10% <small style="color: #8d776a; font-weight: normal;">(38k F)</small></span>
+                                        </div>
+                                        <div class="progress-bar-track">
+                                            <div class="progress-bar-fill" style="width: 10%;"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Recent Transactions Table (Magazine Table Container) -->
+                        <div class="magazine-table-container">
+                            <div class="magazine-table-header">
+                                <div>
+                                    <h2 class="font-headline-md text-xl text-white font-bold tracking-wide">Dernières Commandes</h2>
+                                    <p class="text-xs text-amber-200/80">Flux des encaissements en direct et retraits au comptoir</p>
+                                </div>
+                                <button onclick="showTab('orders')" class="magazine-gold-pill-btn">
+                                    <span>Toutes les commandes</span> <span class="material-symbols-outlined text-sm font-bold">arrow_forward</span>
+                                </button>
+                            </div>
+                            <div class="overflow-x-auto">
+                                <table class="magazine-table w-full text-left border-collapse">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Client / Téléphone</th>
+                                            <th>Articles Commandés</th>
+                                            <th>Montant Total</th>
+                                            <th>Mode Paiement</th>
+                                            <th>Statut Commande</th>
+                                            <th class="text-center">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="orders-tbody">
+                                        <!-- Injected via js/admin.js -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ========================================================= -->
+                <!-- TAB 2: COMMANDES EN DIRECT (MAGAZINE) -->
+                <!-- ========================================================= -->
+                <section id="tab-orders" class="tab-section hidden">
+                    <div class="magazine-container">
+                        <div class="magazine-header-bar">
+                            <div class="flex flex-col gap-1.5">
+                                <div class="flex items-center gap-3">
+                                    <span class="text-xs font-extrabold uppercase tracking-widest" style="color: #765b00;">FOURNIL & COMPTOIR</span>
+                                    <span style="background: #dcfce7; color: #166534; border: 1px solid #86efac; border-radius: 9999px; padding: 3px 12px; font-weight: 800; font-size: 11px; display: inline-flex; align-items: center; gap: 6px;">
+                                        <span style="width: 7px; height: 7px; border-radius: 9999px; background: #16a34a; display: inline-block;"></span> Retraits Ouverts
+                                    </span>
+                                </div>
+                                <h1 class="font-display-lg text-3xl text-primary font-bold">Gestion des Commandes</h1>
+                                <p class="text-xs text-on-surface-variant">Suivi du flux de préparation fournil et remise Click & Collect</p>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <div class="magazine-search-pill">
+                                    <span class="material-symbols-outlined">search</span>
+                                    <input type="text" id="order-search" placeholder="Chercher par nom ou tél..." onkeyup="filterOrdersTable()"/>
+                                </div>
+                                <select id="order-filter-status" class="magazine-select-pill" onchange="filterOrdersTable()">
+                                    <option value="">Tous les statuts</option>
+                                    <option value="nouveau">Nouveau</option>
+                                    <option value="en preparation">En préparation</option>
+                                    <option value="pret">Prêt au comptoir</option>
+                                    <option value="recupere">Colis Récupéré</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="magazine-table-container">
+                            <div class="overflow-x-auto">
+                                <table class="magazine-table w-full text-left border-collapse">
+                                    <thead>
+                                        <tr>
+                                            <th>ID Commande</th>
+                                            <th>Client</th>
+                                            <th>Adresse / Tél</th>
+                                            <th>Articles</th>
+                                            <th>Total</th>
+                                            <th>Méthode</th>
+                                            <th>Statut</th>
+                                            <th class="text-center">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="full-orders-tbody">
+                                        <!-- Injected via JS -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ========================================================= -->
+                <!-- TAB 3: GÂTEAUX D'ÉVÉNEMENTS (MAGAZINE) -->
+                <!-- ========================================================= -->
+                <section id="tab-events" class="tab-section hidden">
+                    <div class="magazine-container">
+                        <div class="magazine-header-bar">
+                            <div>
+                                <span class="text-xs font-extrabold uppercase tracking-widest" style="color: #765b00;">SUR-MESURE & TRAITEUR</span>
+                                <h1 class="font-display-lg text-3xl text-primary font-bold">Gâteaux d'Événements & Mariages</h1>
+                                <p class="text-xs text-on-surface-variant">Commandes de pièces montées, anniversaires et devis traiteur</p>
+                            </div>
+                        </div>
+                        <div class="magazine-table-container">
+                            <div class="overflow-x-auto">
+                                <table class="magazine-table w-full text-left border-collapse">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Client</th>
+                                            <th>Événement & Thème</th>
+                                            <th>Portions</th>
+                                            <th>Budget (FCFA)</th>
+                                            <th>Date de Livraison</th>
+                                            <th>Statut</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="events-tbody">
+                                        <!-- Injected via JS -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ========================================================= -->
+                <!-- TAB 4: CATALOGUE PRODUITS & GESTION DES STOCKS (MAGAZINE) -->
+                <!-- ========================================================= -->
+                <section id="tab-products" class="tab-section hidden">
+                    <div class="magazine-container">
+                        <!-- Header Bar -->
+                        <div class="magazine-header-bar">
+                            <div class="flex flex-col gap-1">
+                                <div class="flex items-center gap-3">
+                                    <span class="text-xs font-extrabold uppercase tracking-widest" style="color: #765b00;">CARTE & INVENTAIRE HAUTE PRÉCISION</span>
+                                    <span style="background: #dcfce7; color: #166534; border: 1px solid #86efac; border-radius: 9999px; padding: 2px 10px; font-weight: 800; font-size: 11px; display: inline-flex; align-items: center; gap: 5px;">
+                                        <span style="width: 6px; height: 6px; border-radius: 9999px; background: #16a34a;"></span> Inventaire en Direct
+                                    </span>
+                                </div>
+                                <h1 class="font-display-lg text-3xl text-primary font-bold">Catalogue Produits & Stocks</h1>
+                                <p class="font-body-md text-on-surface-variant max-w-2xl text-xs">Ajustez les stocks en 1 clic, fixez les seuils d'alerte et gérez la disponibilité en boutique.</p>
+                            </div>
+                            <div class="flex items-center gap-3 flex-wrap">
+                                <button onclick="openBatchRestockModal()" class="magazine-btn-secondary">
+                                    <span class="material-symbols-outlined text-sm font-bold">inventory</span> Réassort Fournil
+                                </button>
+                                <button onclick="openNewProductModal()" class="magazine-btn-primary">
+                                    <span class="material-symbols-outlined text-sm font-bold">add</span> Nouveau Produit
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- 4 Mini Metric Badges -->
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                            <div class="magazine-card p-4 flex items-center justify-between" style="padding: 1.25rem !important;">
+                                <div>
+                                    <span class="text-xs uppercase font-extrabold text-on-surface-variant">Total Produits</span>
+                                    <div class="text-2xl font-black text-on-surface mt-1" id="stock-stat-total">12</div>
+                                </div>
+                                <div class="kpi-icon-medallion amber" style="width: 38px; height: 38px;">
+                                    <span class="material-symbols-outlined text-xl">bakery_dining</span>
+                                </div>
+                            </div>
+                            <div class="magazine-card p-4 flex items-center justify-between" style="padding: 1.25rem !important;">
+                                <div>
+                                    <span class="text-xs uppercase font-extrabold text-emerald-800">En Rayon</span>
+                                    <div class="text-2xl font-black text-emerald-700 mt-1" id="stock-stat-available">10</div>
+                                </div>
+                                <div class="kpi-icon-medallion emerald" style="width: 38px; height: 38px;">
+                                    <span class="material-symbols-outlined text-xl">check_circle</span>
+                                </div>
+                            </div>
+                            <div class="magazine-card p-4 flex items-center justify-between" style="padding: 1.25rem !important;">
+                                <div>
+                                    <span class="text-xs uppercase font-extrabold text-amber-800">Stock Critique</span>
+                                    <div class="text-2xl font-black text-amber-600 mt-1" id="stock-stat-warning">2</div>
+                                </div>
+                                <div class="kpi-icon-medallion gold" style="width: 38px; height: 38px;">
+                                    <span class="material-symbols-outlined text-xl">warning</span>
+                                </div>
+                            </div>
+                            <div class="magazine-card p-4 flex items-center justify-between" style="padding: 1.25rem !important;">
+                                <div>
+                                    <span class="text-xs uppercase font-extrabold text-rose-800">En Rupture</span>
+                                    <div class="text-2xl font-black text-rose-600 mt-1" id="stock-stat-out">0</div>
+                                </div>
+                                <div class="kpi-icon-medallion" style="width: 38px; height: 38px; background: #fee2e2; border: 1.5px solid #fca5a5; color: #dc2626;">
+                                    <span class="material-symbols-outlined text-xl">block</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Filter Controls Bar -->
+                        <div class="magazine-card p-4 flex flex-col md:flex-row md:items-center justify-between gap-4" style="padding: 1rem 1.5rem !important;">
+                            <!-- Category Filter Pills -->
+                            <div class="flex items-center gap-2 overflow-x-auto pb-1" id="product-category-pills">
+                                <button class="magazine-period-btn active" onclick="filterProductCategory('all', this)">Tous</button>
+                                <button class="magazine-period-btn" onclick="filterProductCategory('pains', this)">🥖 Pains</button>
+                                <button class="magazine-period-btn" onclick="filterProductCategory('viennoiseries', this)">🥐 Viennoiseries</button>
+                                <button class="magazine-period-btn" onclick="filterProductCategory('patisseries', this)">🎂 Pâtisseries</button>
+                                <button class="magazine-period-btn" onclick="filterProductCategory('boissons', this)">🥤 Jus & Boissons</button>
+                            </div>
+
+                            <!-- Search and Stock Filter -->
+                            <div class="flex items-center gap-3">
+                                <div class="magazine-search-pill" style="width: 230px !important;">
+                                    <span class="material-symbols-outlined">search</span>
+                                    <input type="text" id="product-search-input" placeholder="Chercher un produit..." onkeyup="filterProductsGrid()"/>
+                                </div>
+                                <select id="product-stock-filter" class="magazine-select-pill" onchange="filterProductsGrid()">
+                                    <option value="all">Tous les stocks</option>
+                                    <option value="available">En rayon uniquement</option>
+                                    <option value="warning">Stock faible (&lt; 10)</option>
+                                    <option value="out">En rupture (0)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Products Grid -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" id="products-grid">
+                            <!-- Injected via JS -->
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ========================================================= -->
+                <!-- TAB 5: PERSONNEL (MAGAZINE) -->
+                <!-- ========================================================= -->
+                <section id="tab-team" class="tab-section hidden">
+                    <div class="magazine-container">
+                        <div class="magazine-header-bar">
+                            <div>
+                                <span class="text-xs font-extrabold uppercase tracking-widest" style="color: #765b00;">BRIGADE DU FOURNIL</span>
+                                <h1 class="font-display-lg text-3xl text-primary font-bold">Équipe & Personnel Fournil</h1>
+                                <p class="text-xs text-on-surface-variant">Planning et responsabilités de l'équipe de production</p>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6" id="team-grid">
+                            <!-- Injected via JS -->
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ========================================================= -->
+                <!-- TAB 6: CLIENTS FIDÉLITÉ (MAGAZINE) -->
+                <!-- ========================================================= -->
+                <section id="tab-users" class="tab-section hidden">
+                    <div class="magazine-container">
+                        <div class="magazine-header-bar">
+                            <div>
+                                <span class="text-xs font-extrabold uppercase tracking-widest" style="color: #765b00;">COMMUNAUTÉ GOURMANDE</span>
+                                <h1 class="font-display-lg text-3xl text-primary font-bold">Clients & Club Fidélité</h1>
+                                <p class="text-xs text-on-surface-variant">Base clients et cagnotte de points fidélité</p>
+                            </div>
+                        </div>
+                        <div class="magazine-table-container">
+                            <div class="overflow-x-auto">
+                                <table class="magazine-table w-full text-left border-collapse">
+                                    <thead>
+                                        <tr>
+                                            <th>Client</th>
+                                            <th>Téléphone / Email</th>
+                                            <th>Points Fidélité</th>
+                                            <th>Commandes Passées</th>
+                                            <th>Dépenses Cumulées</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="users-tbody">
+                                        <!-- Injected via JS -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ========================================================= -->
+                <!-- TAB 7: SÉCURITÉ & AUDIT (MAGAZINE) -->
+                <!-- ========================================================= -->
+                <section id="tab-security" class="tab-section hidden">
+                    <div class="magazine-container">
+                        <!-- Header Bar -->
+                        <div class="magazine-header-bar">
+                            <div class="flex flex-col gap-1.5">
+                                <div class="flex items-center gap-3">
+                                    <span class="text-xs font-extrabold uppercase tracking-widest" style="color: #765b00;">CYBERSÉCURITÉ & AUDIT IMMEUBLE</span>
+                                    <span style="background: #dcfce7; color: #166534; border: 1px solid #86efac; border-radius: 9999px; padding: 3px 12px; font-weight: 800; font-size: 11px; display: inline-flex; align-items: center; gap: 6px;">
+                                        <span style="width: 7px; height: 7px; border-radius: 9999px; background: #16a34a; display: inline-block;"></span> Quantum Shield v2.4 Actif
+                                    </span>
+                                </div>
+                                <h1 class="font-display-lg text-3xl text-primary font-bold">Sécurité, Traçabilité & Audit IA</h1>
+                                <p class="text-xs text-on-surface-variant">Journal cryptographique immuable des validations par code PIN et intégrité de caisse</p>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <button onclick="window.print()" class="magazine-btn-primary">
+                                    <span class="material-symbols-outlined text-sm font-bold">verified_user</span> Certificat d'Audit
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- 4 Cyber Metrics Cards -->
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                            <div class="magazine-card p-4 flex items-center justify-between" style="padding: 1.25rem !important;">
+                                <div>
+                                    <span class="text-xs uppercase font-extrabold text-on-surface-variant">Protection Bouclier</span>
+                                    <div class="text-2xl font-black text-emerald-600 mt-1">100% ACTIF</div>
+                                </div>
+                                <div class="kpi-icon-medallion emerald" style="width: 38px; height: 38px;">
+                                    <span class="material-symbols-outlined text-xl">shield</span>
+                                </div>
+                            </div>
+                            <div class="magazine-card p-4 flex items-center justify-between" style="padding: 1.25rem !important;">
+                                <div>
+                                    <span class="text-xs uppercase font-extrabold text-on-surface-variant">Validation PIN Client</span>
+                                    <div class="text-2xl font-black text-on-surface mt-1">28 / 28 <span class="text-xs text-emerald-600 font-bold">(100%)</span></div>
+                                </div>
+                                <div class="kpi-icon-medallion gold" style="width: 38px; height: 38px;">
+                                    <span class="material-symbols-outlined text-xl">pin</span>
+                                </div>
+                            </div>
+                            <div class="magazine-card p-4 flex items-center justify-between" style="padding: 1.25rem !important;">
+                                <div>
+                                    <span class="text-xs uppercase font-extrabold text-on-surface-variant">Merkle Root Seal</span>
+                                    <div class="text-xl font-black text-amber-700 mt-1 font-mono">#8491 <span class="text-xs text-emerald-600 font-bold">✓ Scellé</span></div>
+                                </div>
+                                <div class="kpi-icon-medallion amber" style="width: 38px; height: 38px;">
+                                    <span class="material-symbols-outlined text-xl">token</span>
+                                </div>
+                            </div>
+                            <div class="magazine-card p-4 flex items-center justify-between" style="padding: 1.25rem !important;">
+                                <div>
+                                    <span class="text-xs uppercase font-extrabold text-on-surface-variant">Menaces Détectées</span>
+                                    <div class="text-2xl font-black text-emerald-700 mt-1">0 <span class="text-xs text-emerald-600 font-bold">Sécurisé</span></div>
+                                </div>
+                                <div class="kpi-icon-medallion emerald" style="width: 38px; height: 38px;">
+                                    <span class="material-symbols-outlined text-xl">gpp_good</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- High Luxury Terminal Window -->
+                        <div class="cyber-terminal-card mt-2">
+                            <!-- Terminal Bar -->
+                            <div class="cyber-terminal-header">
+                                <div class="flex items-center gap-3">
+                                    <div class="terminal-dots">
+                                        <div class="terminal-dot" style="background: #ef4444;"></div>
+                                        <div class="terminal-dot" style="background: #f59e0b;"></div>
+                                        <div class="terminal-dot" style="background: #10b981;"></div>
+                                    </div>
+                                    <span class="text-xs font-mono text-amber-200/80 font-bold">babi-crypto-shield@abidjan-fournil:~# audit --stream --live</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <span style="background: rgba(16, 185, 129, 0.2); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.4); border-radius: 9999px; padding: 2px 10px; font-size: 11px; font-weight: 800; display: inline-flex; align-items: center; gap: 5px;">
+                                        <span style="width: 6px; height: 6px; border-radius: 9999px; background: #10b981;"></span> FLUX TEMPS RÉEL
+                                    </span>
+                                </div>
+                            </div>
+
+                            <!-- Terminal Content -->
+                            <div class="p-5 overflow-x-auto flex flex-col gap-1.5" id="security-logs">
+                                <div class="cyber-log-item">
+                                    <span class="cyber-log-time">[2026-08-17 17:15:22]</span>
+                                    <span class="cyber-log-tag tag-shield">RATE_LIMITER</span>
+                                    <span class="text-amber-100/90 font-mono">Passerelle Wave & Orange Money : 0 anomalie détectée sur les signatures webhook HMAC.</span>
+                                </div>
+                                <div class="cyber-log-item">
+                                    <span class="cyber-log-time">[2026-08-17 16:40:12]</span>
+                                    <span class="cyber-log-tag tag-success">PIN_AUTH_SUCCESS</span>
+                                    <span class="text-amber-100/90 font-mono">Commande #CMD-8488 remise avec succès au client (Empreinte SHA-256 : <span class="text-amber-400 font-bold">0x9a4f...b712</span>).</span>
+                                </div>
+                                <div class="cyber-log-item">
+                                    <span class="cyber-log-time">[2026-08-17 16:32:05]</span>
+                                    <span class="cyber-log-tag tag-merkle">MERKLE_SEAL</span>
+                                    <span class="text-amber-100/90 font-mono">Bloc transactionnel #8491 scellé avec racine cryptographique valide. ZK-Proof certifiée.</span>
+                                </div>
+                                <div class="cyber-log-item">
+                                    <span class="cyber-log-time">[2026-08-17 16:15:22]</span>
+                                    <span class="cyber-log-tag tag-shield">INTEGRITY_CHECK</span>
+                                    <span class="text-amber-100/90 font-mono">Audit automatique d'intégrité de caisse : Conformité 100%, 0 écart détecté.</span>
+                                </div>
+                                <div class="cyber-log-item" style="border-bottom: none;">
+                                    <span class="cyber-log-time">[2026-08-17 15:58:40]</span>
+                                    <span class="cyber-log-tag tag-success">ZK_PIN_VERIFIED</span>
+                                    <span class="text-amber-100/90 font-mono">Commande #CMD-8487 validée au comptoir boutique Cocody avec succès.</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
         </main>
     </div>
 
-    <!-- MODAL ADD PRODUCT -->
-    <div class="modal fade" id="addProductModal" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title fw-bold"><i class="fa-solid fa-plus text-primary me-2"></i> Ajouter un Produit</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="add-product-form">
-                        <div class="mb-3">
-                            <label class="form-label fw-bold fs-sm">Nom du Produit</label>
-                            <input type="text" id="prod-name" class="form-control" required placeholder="ex: Croissant Spécial">
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label fw-bold fs-sm">Prix (FCFA)</label>
-                            <input type="number" id="prod-price" class="form-control" required placeholder="ex: 500">
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label fw-bold fs-sm">Catégorie</label>
-                            <select id="prod-cat" class="form-select" required>
-                                <option value="pain">Pain</option>
-                                <option value="viennoiserie">Viennoiserie</option>
-                                <option value="patisserie">Pâtisserie</option>
-                                <option value="cafe">Café</option>
-                                <option value="jus">Jus</option>
-                                <option value="glace">Glace</option>
-                                <option value="boisson">Boisson</option>
-                                <option value="snack">Snack / Pizza</option>
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label fw-bold fs-sm">Chemin de l'image</label>
-                            <input type="text" id="prod-img" class="form-control" placeholder="assets/processed_products/IMG...jpg ou assets/product_baguette.png">
-                        </div>
-                        <button type="submit" class="btn btn-primary w-100 fw-bold">Enregistrer le Produit</button>
-                    </form>
-                </div>
+    <!-- RECEIPT MODAL -->
+    <div id="receiptModal" class="prestige-modal-backdrop hidden">
+        <div class="prestige-modal-card max-w-md">
+            <button onclick="closeReceiptModal()" class="prestige-modal-close-btn">✕</button>
+            <div id="receiptModalBody"></div>
+            <div class="mt-6 flex gap-2">
+                <button onclick="closeReceiptModal()" class="flex-1 py-2.5 rounded-xl bg-surface-container text-on-surface font-label-md text-xs font-bold">Fermer</button>
+                <button onclick="window.print()" class="flex-1 py-2.5 rounded-xl bg-primary text-on-primary font-label-md text-xs font-bold flex items-center justify-center gap-1">
+                    <span class="material-symbols-outlined text-sm">print</span> Imprimer
+                </button>
             </div>
         </div>
     </div>
 
-    <!-- MODAL RECEIPT / INVOICE -->
-    <div class="modal fade" id="receiptModal" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header bg-dark text-white">
-                    <h5 class="modal-title fw-bold"><i class="fa-solid fa-receipt me-2"></i> Reçu de Commande</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+    <!-- PRODUCT ADD / EDIT MODAL -->
+    <div id="productModal" class="prestige-modal-backdrop hidden">
+        <div class="prestige-modal-card">
+            <button onclick="closeProductModal()" class="prestige-modal-close-btn">✕</button>
+            <div class="flex items-center gap-3 mb-5 pb-3 border-b border-outline-variant/40">
+                <div class="kpi-icon-medallion gold" style="width: 42px; height: 42px;">
+                    <span class="material-symbols-outlined text-2xl">bakery_dining</span>
                 </div>
-                <div class="modal-body" id="receipt-modal-body">
-                    <!-- Injected dynamically -->
+                <div>
+                    <h3 class="font-headline-md text-xl font-bold text-on-surface" id="productModalTitle">Nouveau Produit</h3>
+                    <p class="text-xs text-on-surface-variant">Ajoutez une création artisanale au catalogue de la boulangerie</p>
                 </div>
-                <div class="modal-footer">
-                    <button class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
-                    <button class="btn btn-primary" onclick="window.print()"><i class="fa-solid fa-print me-1"></i> Imprimer</button>
+            </div>
+
+            <form id="productForm" onsubmit="saveProduct(event)">
+                <input type="hidden" id="product-form-id"/>
+                
+                <div class="modal-form-group">
+                    <label class="modal-form-label">Nom du Produit *</label>
+                    <input type="text" id="product-form-name" required placeholder="ex: Baguette Céréales Complètes" class="modal-form-input"/>
                 </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="modal-form-group">
+                        <label class="modal-form-label">Catégorie *</label>
+                        <select id="product-form-category" required class="modal-form-select">
+                            <option value="pains">🥖 Pains</option>
+                            <option value="viennoiseries">🥐 Viennoiseries</option>
+                            <option value="patisseries">🎂 Pâtisseries</option>
+                            <option value="boissons">🥤 Jus & Boissons</option>
+                        </select>
+                    </div>
+                    <div class="modal-form-group">
+                        <label class="modal-form-label">Prix Unitaire (FCFA) *</label>
+                        <input type="number" id="product-form-price" required min="50" step="25" placeholder="ex: 350" class="modal-form-input font-bold text-amber-700"/>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="modal-form-group">
+                        <label class="modal-form-label">Stock Initial *</label>
+                        <input type="number" id="product-form-stock" required min="0" placeholder="ex: 35" class="modal-form-input font-bold"/>
+                    </div>
+                    <div class="modal-form-group">
+                        <label class="modal-form-label">Seuil d'Alerte Critique</label>
+                        <input type="number" id="product-form-threshold" min="1" value="10" placeholder="ex: 10" class="modal-form-input"/>
+                    </div>
+                </div>
+
+                <div class="modal-form-group">
+                    <label class="modal-form-label">Illustration / Photo</label>
+                    <select id="product-form-image" class="modal-form-select">
+                        <option value="assets/baguette 200.png">🥖 Baguette Tradition dorée</option>
+                        <option value="assets/Croissant.png">🥐 Croissant Pur Beurre</option>
+                        <option value="assets/pain au chocolat.png">🍫 Pain au Chocolat</option>
+                    </select>
+                </div>
+
+                <div class="modal-form-group">
+                    <label class="modal-form-label">Description & Ingrédients</label>
+                    <input type="text" id="product-form-desc" placeholder="ex: Farine Label Rouge, levain naturel 24h, cuisson sole" class="modal-form-input"/>
+                </div>
+
+                <div class="flex items-center gap-2 my-4 p-3 bg-surface-container rounded-xl border border-outline-variant/30">
+                    <input type="checkbox" id="product-form-available" checked class="w-4 h-4 accent-amber-600 rounded cursor-pointer"/>
+                    <label for="product-form-available" class="text-xs font-bold text-on-surface cursor-pointer">Rendre immédiatement disponible en boutique et en caisse</label>
+                </div>
+
+                <div class="flex gap-3 mt-6">
+                    <button type="button" onclick="closeProductModal()" class="btn-modal-cancel">Annuler</button>
+                    <button type="submit" class="btn-modal-submit-gold">
+                        <span class="material-symbols-outlined text-sm font-bold">save</span> Enregistrer Produit
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- BATCH RESTOCK MODAL -->
+    <div id="batchRestockModal" class="prestige-modal-backdrop hidden">
+        <div class="prestige-modal-card">
+            <button onclick="closeBatchRestockModal()" class="prestige-modal-close-btn">✕</button>
+            <div class="flex items-center gap-3 mb-5 pb-3 border-b border-outline-variant/40">
+                <div class="kpi-icon-medallion emerald" style="width: 42px; height: 42px;">
+                    <span class="material-symbols-outlined text-2xl">oven_gen</span>
+                </div>
+                <div>
+                    <h3 class="font-headline-md text-xl font-bold text-on-surface">Sortie Fournil & Réassort Rapide</h3>
+                    <p class="text-xs text-on-surface-variant">Ajoutez les pièces sorties du fournil pour réapprovisionner les rayons</p>
+                </div>
+            </div>
+
+            <form onsubmit="applyBatchRestock(event)">
+                <div class="modal-form-group">
+                    <label class="modal-form-label">Sélectionner le Produit à Réapprovisionner *</label>
+                    <select id="restock-product-select" required class="modal-form-select font-bold">
+                        <!-- Injected via JS -->
+                    </select>
+                </div>
+
+                <div class="modal-form-group">
+                    <label class="modal-form-label">Quantité Sortie Fournil (Pièces) *</label>
+                    <div class="flex items-center gap-2">
+                        <input type="number" id="restock-quantity" min="1" max="500" value="30" required class="modal-form-input font-black text-xl text-center text-emerald-800" style="width: 100px !important;"/>
+                        <div class="flex gap-2 flex-1">
+                            <button type="button" onclick="document.getElementById('restock-quantity').value=20" class="preset-qty-btn">+20</button>
+                            <button type="button" onclick="document.getElementById('restock-quantity').value=30" class="preset-qty-btn">+30</button>
+                            <button type="button" onclick="document.getElementById('restock-quantity').value=50" class="preset-qty-btn">+50</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-form-group">
+                    <label class="modal-form-label">Motif / Numéro de Fournée</label>
+                    <input type="text" id="restock-batch-note" placeholder="ex: Fournée de 16h30 - Chef Mamadou" class="modal-form-input"/>
+                </div>
+
+                <div class="flex gap-3 mt-6">
+                    <button type="button" onclick="closeBatchRestockModal()" class="btn-modal-cancel">Annuler</button>
+                    <button type="submit" class="btn-modal-submit-green">
+                        <span class="material-symbols-outlined text-sm font-bold">add_shopping_cart</span> Valider Réassort
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- PASSWORD CHANGE MODAL -->
+    <div id="passwordModal" class="prestige-modal-backdrop hidden">
+        <div class="prestige-modal-card">
+            <button onclick="closeChangePasswordModal()" class="prestige-modal-close-btn">✕</button>
+            <div class="flex items-center gap-3 mb-5 pb-3 border-b border-outline-variant/40">
+                <div class="kpi-icon-medallion gold" style="width: 42px; height: 42px;">
+                    <span class="material-symbols-outlined text-2xl">lock_reset</span>
+                </div>
+                <div>
+                    <h3 class="font-headline-md text-xl font-bold text-on-surface">Sécurité des Accès Direction</h3>
+                    <p class="text-xs text-on-surface-variant">Mettez à jour vos identifiants d'accès Super Admin</p>
+                </div>
+            </div>
+
+            <form onsubmit="handlePasswordChange(event)">
+                <div class="modal-form-group">
+                    <label class="modal-form-label">Mot de Passe Actuel *</label>
+                    <input type="password" id="old-password" required placeholder="••••••••••••" class="modal-form-input"/>
+                </div>
+
+                <div class="modal-form-group">
+                    <label class="modal-form-label">Nouveau Mot de Passe (Min. 8 caractères) *</label>
+                    <input type="password" id="new-password" required minlength="8" placeholder="••••••••••••" class="modal-form-input"/>
+                </div>
+
+                <div class="modal-form-group">
+                    <label class="modal-form-label">Confirmer le Nouveau Mot de Passe *</label>
+                    <input type="password" id="confirm-password" required minlength="8" placeholder="••••••••••••" class="modal-form-input"/>
+                </div>
+
+                <div class="flex gap-3 mt-6">
+                    <button type="button" onclick="closeChangePasswordModal()" class="btn-modal-cancel">Annuler</button>
+                    <button type="submit" class="btn-modal-submit-gold">
+                        <span class="material-symbols-outlined text-sm font-bold">check_circle</span> Mettre à Jour
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- AVATAR UPLOAD & SELECTION MODAL -->
+    <div id="avatarModal" class="prestige-modal-backdrop hidden">
+        <div class="prestige-modal-card" style="max-width: 480px !important;">
+            <button onclick="closeAvatarModal()" class="prestige-modal-close-btn">✕</button>
+            <div class="flex items-center gap-3 mb-5 pb-3 border-b border-outline-variant/40">
+                <div class="kpi-icon-medallion gold" style="width: 42px; height: 42px;">
+                    <span class="material-symbols-outlined text-2xl">account_circle</span>
+                </div>
+                <div>
+                    <h3 class="font-headline-md text-xl font-bold text-on-surface">Photo de Profil Direction</h3>
+                    <p class="text-xs text-on-surface-variant">Téléversez votre portrait ou choisissez un avatar prestige</p>
+                </div>
+            </div>
+
+            <!-- Preview Circle -->
+            <div class="my-4 text-center">
+                <img id="avatar-preview-img" src="assets/chef_profile.png" class="avatar-preview-box" alt="Aperçu"/>
+                <span class="text-xs font-bold text-on-surface-variant mt-2 inline-block">Aperçu en direct</span>
+            </div>
+
+            <!-- Upload File Area -->
+            <input type="file" id="avatarFileInput" accept="image/*" class="hidden" onchange="handleAvatarFileSelect(event)"/>
+            <div class="avatar-upload-dropzone" onclick="document.getElementById('avatarFileInput').click()">
+                <span class="material-symbols-outlined text-3xl" style="color: #765b00;">cloud_upload</span>
+                <div class="text-xs font-extrabold text-on-surface mt-1">Importer une photo depuis votre appareil</div>
+                <div class="text-[11px] text-on-surface-variant">JPG, PNG ou WEBP (Max 5 Mo)</div>
+            </div>
+
+            <!-- Preset Avatars -->
+            <div class="mt-4">
+                <label class="modal-form-label mb-1.5 block">Ou choisir un avatar prédéfini :</label>
+                <div class="avatar-preset-grid">
+                    <img src="assets/chef_profile.png" class="avatar-preset-item selected" onclick="selectPresetAvatar(this, 'assets/chef_profile.png')" title="Directeur Général"/>
+                    <img src="assets/baker_profile.png" class="avatar-preset-item" onclick="selectPresetAvatar(this, 'assets/baker_profile.png')" title="Maître Boulanger"/>
+                    <img src="assets/caissiere.png" class="avatar-preset-item" onclick="selectPresetAvatar(this, 'assets/caissiere.png')" title="Responsable Accueil"/>
+                    <img src="assets/kouassi.png" class="avatar-preset-item" onclick="selectPresetAvatar(this, 'assets/kouassi.png')" title="Artisan Tourier"/>
+                </div>
+            </div>
+
+            <div class="flex gap-3 mt-6">
+                <button type="button" onclick="closeAvatarModal()" class="btn-modal-cancel">Annuler</button>
+                <button type="button" onclick="saveProfileAvatar()" class="btn-modal-submit-gold">
+                    <span class="material-symbols-outlined text-sm font-bold">check_circle</span> Appliquer la Photo
+                </button>
             </div>
         </div>
     </div>
 
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- Custom Admin Script -->
+    <!-- SCRIPTS -->
     <script src="js/admin.js"></script>
-
-    <!-- Unified Luxury Footer -->
-    <footer class="mt-5 text-white py-5" style="background: rgba(43, 22, 12, 0.96); border-top: 3px solid #fb923c;">
-        <div class="container">
-            <div class="row g-4">
-                <div class="col-lg-4 col-md-6">
-                    <div class="d-flex align-items-center mb-3">
-                        <img src="assets/logo.png" alt="Logo" class="footer-brand-logo">
-                        <div class="d-flex flex-column lh-1">
-                            <span class="footer-brand-title">Boulangerie</span>
-                            <span class="footer-brand-subtitle">de Babi</span>
-                        </div>
-                    </div>
-                    <p class="text-white small">L'excellence de la boulangerie et pâtisserie artisanale à Abidjan. Pains croustillants, viennoiseries dorées, pâtisseries fines et jus 100% naturels.</p>
-                    <div class="d-flex gap-2">
-                        <a href="https://maps.app.goo.gl/6JrQ1ryZj2KeD5zG7" target="_blank" class="btn btn-outline-warning btn-sm rounded-circle"><i class="fa-solid fa-location-dot"></i></a>
-                        <a href="tel:2722564123" class="btn btn-outline-warning btn-sm rounded-circle"><i class="fa-solid fa-phone"></i></a>
-                        <a href="tel:0704389201" class="btn btn-outline-warning btn-sm rounded-circle"><i class="fa-solid fa-mobile-screen"></i></a>
-                    </div>
-                </div>
-
-                <div class="col-lg-2 col-md-6">
-                    <h5 class="fw-bold text-warning mb-3">NAVIGATION</h5>
-                    <ul class="list-unstyled small lh-lg mb-0">
-                        <li><a href="index.html" class="text-white text-decoration-none hover-warning"><i class="fa-solid fa-chevron-right text-warning me-1 small"></i> Accueil</a></li>
-                        <li><a href="produits.html" class="text-white text-decoration-none hover-warning"><i class="fa-solid fa-chevron-right text-warning me-1 small"></i> Nos Produits</a></li>
-                        <li><a href="favoris.html" class="text-white text-decoration-none hover-warning"><i class="fa-solid fa-chevron-right text-warning me-1 small"></i> Mes Favoris</a></li>
-                        <li><a href="suivi.html" class="text-white text-decoration-none hover-warning"><i class="fa-solid fa-chevron-right text-warning me-1 small"></i> Suivi Commande</a></li>
-                        <li><a href="fidelite.html" class="text-white text-decoration-none hover-warning"><i class="fa-solid fa-chevron-right text-warning me-1 small"></i> Club Fidélité</a></li>
-                    </ul>
-                </div>
-
-                <div class="col-lg-3 col-md-6">
-                    <h5 class="fw-bold text-warning mb-3">HORAIRES DE LA BOUTIQUE</h5>
-                    <p class="text-white small mb-1"><i class="fa-solid fa-clock text-warning me-2"></i> Lundi - Dimanche : 05h45 - 23h00</p>
-                    <h6 class="fw-bold text-warning mt-3 mb-2" style="font-size:0.9rem;">SORTIES DE PAIN CHAUDS</h6>
-                    <p class="text-white small mb-1">06h00 • 09h00 • 14h00 • 17h00 • 18h00</p>
-                </div>
-
-                <div class="col-lg-3 col-md-6">
-                    <h5 class="fw-bold text-warning mb-3">CONTACT BOUTIQUE</h5>
-                    <p class="text-white small mb-1"><i class="fa-solid fa-location-dot text-warning me-2"></i> Cocody Riviera 2, Abidjan - CI</p>
-                    <p class="text-white small mb-1"><i class="fa-solid fa-phone text-warning me-2"></i> <strong>Fixe :</strong> <a href="tel:2722564123" class="text-white text-decoration-none">27 22 56 41 23</a></p>
-                    <p class="text-white small mb-1"><i class="fa-solid fa-mobile-screen-button text-warning me-2"></i> <strong>Mobiles :</strong> <a href="tel:0704389201" class="text-white text-decoration-none">07 04 38 92 01</a> / <a href="tel:0706817977" class="text-white text-decoration-none">07 06 81 79 77</a></p>
-                    <a href="contact.html" class="btn btn-warning btn-sm w-100 fw-bold mt-2 rounded-pill" style="background:#fb923c; border:none; color:#2b160c;">
-                        <i class="fa-solid fa-paper-plane me-1"></i> Nous Contacter
-                    </a>
-                </div>
-            </div>
-
-            <div class="border-top border-secondary mt-5 pt-3 text-center text-muted small">
-                &copy; 2026 Boulangerie de Babi. Tous droits réservés.
-            </div>
-        </div>
-    </footer>
-
     <script src="js/store_schedule.js"></script>
     <script src="js/anti_hacker_client.js"></script>
 </body>

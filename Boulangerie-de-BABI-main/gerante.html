@@ -1,324 +1,429 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Direction & Gérance — Boulangerie de BABI</title>
-    <!-- Bootstrap 5.3 -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- FontAwesome 6 -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
-    <!-- CSS Custom -->
-    <link rel="stylesheet" href="css/gerante.css">
-    <link rel="icon" type="image/png" href="assets/logo.png">
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Babi Fournil - Planning & Production | Boulangerie de BABI</title>
+    
+    <style>
+        @layer base {
+            html, body { margin: 0; padding: 0; }
+            body { overscroll-behavior: none; }
+            main > :first-child { margin-top: 0 !important; }
+            main > :last-child { margin-bottom: 0 !important; }
+        }
+        ::-webkit-scrollbar { display: none; }
+        @font-face {
+            font-family: 'Libre Caslon Text';
+            src: url('https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:wght@400;700&display=swap');
+        }
+        @font-face {
+            font-family: 'Manrope';
+            src: url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&display=swap');
+        }
+    </style>
+
+    <!-- Google Fonts & Material Symbols -->
+    <link href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:wght@400;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+    <!-- CSS Custom Stylesheets -->
+    <link rel="stylesheet" href="css/gerante.css"/>
+
+    <!-- Tailwind Configuration & CDN -->
+    <script>
+        window.tailwind = {
+            config: {
+                theme: {
+                    extend: {
+                        colors: {
+                            "on-primary": "#ffffff",
+                            "surface-tint": "#765b00",
+                            "background": "#fcf9ef",
+                            "error-container": "#ffdad6",
+                            "outline": "#807661",
+                            "inverse-surface": "#31312a",
+                            "primary-fixed-dim": "#f3c020",
+                            "surface-bright": "#fcf9ef",
+                            "tertiary-fixed-dim": "#f1bf4c",
+                            "tertiary-fixed": "#ffdf9e",
+                            "inverse-on-surface": "#f4f1e7",
+                            "on-tertiary": "#ffffff",
+                            "on-error": "#ffffff",
+                            "error": "#ba1a1a",
+                            "tertiary": "#795900",
+                            "surface-container-lowest": "#ffffff",
+                            "on-background": "#1c1c16",
+                            "on-primary-container": "#6a5100",
+                            "surface-container-highest": "#e5e2d9",
+                            "surface-variant": "#e5e2d9",
+                            "surface-container-low": "#f6f4ea",
+                            "outline-variant": "#d2c5ac",
+                            "primary-fixed": "#ffdf94",
+                            "on-secondary": "#ffffff",
+                            "on-surface": "#1c1c16",
+                            "on-surface-variant": "#4e4633",
+                            "primary": "#765b00",
+                            "primary-container": "#f7c325",
+                            "surface-container": "#f1eee4",
+                            "surface-dim": "#dddad0",
+                            "secondary": "#5f5e5e",
+                            "surface": "#fcf9ef",
+                            "surface-container-high": "#ebe8de",
+                            "on-error-container": "#93000a"
+                        },
+                        borderRadius: { DEFAULT: "0.25rem", lg: "0.5rem", xl: "0.75rem", '2xl': '1rem', full: "9999px" },
+                        spacing: { "container-padding": "24px", "stack-sm": "8px", "gutter": "16px", "stack-md": "16px", "unit": "8px", "stack-lg": "32px" },
+                        fontFamily: {
+                            "headline-lg": ["Libre Caslon Text", "serif"],
+                            "headline-md": ["Libre Caslon Text", "serif"],
+                            "display-lg": ["Libre Caslon Text", "serif"],
+                            "body-md": ["Manrope", "sans-serif"],
+                            "body-lg": ["Manrope", "sans-serif"],
+                            "label-md": ["Manrope", "sans-serif"],
+                            "label-sm": ["Manrope", "sans-serif"]
+                        }
+                    }
+                }
+            }
+        };
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="icon" type="image/png" href="assets/logo.png"/>
 </head>
-<body class="gerante-body">
+<body class="bg-background font-body-md text-on-surface antialiased">
 
-    <!-- NAVBAR GÉRANCE -->
-    <nav class="gerante-navbar d-flex justify-content-between align-items-center">
-        <div class="d-flex align-items-center gap-3">
-            <a href="index.html" class="d-flex align-items-center text-decoration-none text-white me-2">
-                <img src="assets/logo.png" alt="Logo" class="navbar-brand-logo" style="height: 38px !important;">
-                <div class="d-flex flex-column lh-1 me-2">
-                    <span class="navbar-brand-title">Boulangerie</span>
-                    <span class="navbar-brand-subtitle">de Babi</span>
-                </div>
-            </a>
-            <span class="gerante-badge-role"><i class="fa-solid fa-user-tie me-1"></i> POSTE GÉRANTE & DIRECTION</span>
-        </div>
-
-        <div class="d-flex align-items-center gap-3">
-            <a href="caissiere.html" class="btn btn-outline-warning btn-sm fw-bold">
-                <i class="fa-solid fa-cash-register me-1"></i> Vue Caisse (POS)
-            </a>
-            <a href="admin.html" class="btn btn-outline-info btn-sm fw-bold">
-                <i class="fa-solid fa-screwdriver-wrench me-1"></i> Panel Admin
-            </a>
-            <div class="dropdown">
-                <button class="btn btn-dark btn-sm dropdown-toggle border-secondary text-white" type="button" data-bs-toggle="dropdown">
-                    <i class="fa-solid fa-circle-user me-1 text-success"></i>
-                    <span id="gerante-name-badge">Mariam Traoré</span>
-                </button>
-                <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end">
-                    <li><a class="dropdown-item text-danger" href="#" onclick="localStorage.removeItem('babi_user'); window.location.href='connexion.html';"><i class="fa-solid fa-arrow-right-from-bracket me-2"></i>Déconnexion</a></li>
-                </ul>
+    <!-- SIDEBAR (PRESTIGE DARK CHOCOLATE & GOLD) -->
+    <aside class="fixed left-0 top-0 h-full w-72 prestige-sidebar z-50 flex flex-col p-5">
+        <!-- Official Brand Banner -->
+        <a href="index.html" class="babi-brand-banner-prestige mb-4">
+            <div class="babi-logo-badge">
+                <img src="assets/logo.png" alt="Logo BB"/>
             </div>
-        </div>
-    </nav>
+            <div class="babi-brand-texts">
+                <span class="babi-brand-title">Boulangerie</span>
+                <span class="babi-brand-subtitle">
+                    de Babi
+                    <span class="babi-ci-flag">
+                        <span class="c1"></span><span class="c2"></span><span class="c3"></span>
+                    </span>
+                </span>
+            </div>
+        </a>
 
-    <!-- MAIN CONTAINER -->
-    <div class="gerante-container">
+        <!-- Navigation Links -->
+        <nav class="flex-1 flex flex-col gap-1 overflow-y-auto pr-1">
+            <div class="sidebar-section-title">PRODUCTION & FOURNIL</div>
+            <a href="#" onclick="showGeranteTab('schedule'); return false;" class="prestige-nav-item active" id="nav-gerante-schedule">
+                <span class="material-symbols-outlined text-xl">table_restaurant</span>
+                <span class="flex-1">Planning Fournil</span>
+            </a>
+            <a href="#" onclick="showGeranteTab('inventory'); return false;" class="prestige-nav-item" id="nav-gerante-inventory">
+                <span class="material-symbols-outlined text-xl">inventory</span>
+                <span class="flex-1">Ajustements Stock</span>
+            </a>
+            <a href="#" onclick="showGeranteTab('waste'); return false;" class="prestige-nav-item" id="nav-gerante-waste">
+                <span class="material-symbols-outlined text-xl">delete_sweep</span>
+                <span class="flex-1">Suivi des Pertes</span>
+            </a>
 
-        <!-- ALERT BANNER SI STOCK FAIBLE -->
-        <div class="alert alert-danger align-items-center justify-content-between mb-4 shadow" id="low-stock-alert-banner" style="display: none; border-radius: 12px;">
-            <div class="d-flex align-items-center gap-3">
-                <i class="fa-solid fa-triangle-exclamation fs-3 text-danger"></i>
+            <!-- Quick Links & Shortcuts -->
+            <div class="mt-auto pt-4 border-t border-[rgba(245,184,0,0.15)] flex flex-col gap-2">
+                <div class="sidebar-section-title p-0 mb-1">ACCÈS DIRECTS</div>
+                <a href="caissiere.html" class="prestige-shortcut-btn btn-pos">
+                    <span class="material-symbols-outlined text-base">point_of_sale</span> Caisse Tactile POS
+                </a>
+                <a href="admin.html" class="prestige-shortcut-btn btn-gerante">
+                    <span class="material-symbols-outlined text-base">dashboard</span> Espace Admin Finance
+                </a>
+                <a href="index.html" class="prestige-shortcut-btn btn-boutique">
+                    <span class="material-symbols-outlined text-base">storefront</span> Boutique en Ligne
+                </a>
+            </div>
+        </nav>
+    </aside>
+
+    <!-- MAIN WRAPPER -->
+    <div class="pl-72">
+        <!-- TOPBAR PRESTIGE LUXURY -->
+        <header class="prestige-topbar">
+            <!-- Search bar with gold focus ring -->
+            <div class="prestige-search-box">
+                <span class="material-symbols-outlined text-lg" style="color: #765b00;">search</span>
+                <input placeholder="Rechercher une fournée, matière première..." type="text"/>
+            </div>
+
+            <!-- Profile Chef Fournil -->
+            <div class="flex items-center gap-4">
+                <span class="px-3 py-1.5 bg-amber-50 text-amber-900 rounded-full font-bold text-xs flex items-center gap-1.5 border border-amber-300 shadow-sm">
+                    <span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span> Fournil en Direct (Poste 1)
+                </span>
+                <div class="prestige-user-card">
+                    <div class="prestige-user-info">
+                        <span class="prestige-user-name">Mamadou Koné</span>
+                        <span class="prestige-user-role">Chef Fournil • Maître Boulanger 🥖</span>
+                    </div>
+                    <img alt="Profile" class="profile-avatar" src="assets/caissiere1.png"/>
+                </div>
+            </div>
+        </header>
+
+        <!-- MAIN CONTENT -->
+        <main class="relative bg-background min-h-screen" style="padding-top: 6.5rem;">
+            <div class="flex flex-col w-full h-full p-container-padding gap-stack-lg">
+
+                <!-- 4 Overview Cards -->
+                <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-gutter">
+                    <!-- Card 1: Production -->
+                    <div class="bg-surface-container rounded-2xl p-5 flex flex-col gap-2 relative overflow-hidden group border border-outline-variant/30 shadow-sm">
+                        <div class="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                        <div class="flex justify-between items-start">
+                            <div class="flex flex-col">
+                                <span class="font-label-sm text-xs uppercase text-on-surface-variant font-bold">Production du Jour</span>
+                                <span class="font-display-lg text-3xl font-bold text-on-surface mt-1">1 240</span>
+                            </div>
+                            <div class="w-11 h-11 rounded-full bg-primary-container flex items-center justify-center text-on-primary-container shadow-sm">
+                                <span class="material-symbols-outlined text-2xl">bakery_dining</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-1.5 mt-auto text-emerald-700 font-bold text-xs">
+                            <span class="material-symbols-outlined text-sm">trending_up</span>
+                            <span>+12% vs Hier</span>
+                        </div>
+                    </div>
+
+                    <!-- Card 2: En Cuisson -->
+                    <div class="bg-surface-container rounded-2xl p-5 flex flex-col gap-2 relative overflow-hidden group border border-outline-variant/30 shadow-sm">
+                        <div class="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                        <div class="flex justify-between items-start">
+                            <div class="flex flex-col">
+                                <span class="font-label-sm text-xs uppercase text-on-surface-variant font-bold">En Cuisson Four</span>
+                                <span class="font-display-lg text-3xl font-bold text-on-surface mt-1">320</span>
+                            </div>
+                            <div class="w-11 h-11 rounded-full bg-tertiary-container flex items-center justify-center text-on-tertiary-container shadow-sm">
+                                <span class="material-symbols-outlined text-2xl">local_fire_department</span>
+                            </div>
+                        </div>
+                        <div class="w-full bg-surface-dim rounded-full h-2 mt-auto overflow-hidden">
+                            <div class="bg-tertiary h-full rounded-full w-3/4"></div>
+                        </div>
+                    </div>
+
+                    <!-- Card 3: Pertes -->
+                    <div class="bg-surface-container rounded-2xl p-5 flex flex-col gap-2 relative overflow-hidden group border border-outline-variant/30 shadow-sm">
+                        <div class="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                        <div class="flex justify-between items-start">
+                            <div class="flex flex-col">
+                                <span class="font-label-sm text-xs uppercase text-on-surface-variant font-bold">Pertes Estimées</span>
+                                <span class="font-display-lg text-3xl font-bold text-rose-700 mt-1">45</span>
+                            </div>
+                            <div class="w-11 h-11 rounded-full bg-rose-100 flex items-center justify-center text-rose-700 shadow-sm">
+                                <span class="material-symbols-outlined text-2xl">warning</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-1 mt-auto text-xs text-on-surface-variant">
+                            <span>Soit <strong>3.6%</strong> de la production</span>
+                        </div>
+                    </div>
+
+                    <!-- Card 4: Prochaine Fournée -->
+                    <div class="bg-surface-container rounded-2xl p-5 flex flex-col gap-2 relative overflow-hidden group border border-outline-variant/30 shadow-sm">
+                        <div class="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                        <div class="flex justify-between items-start">
+                            <div class="flex flex-col">
+                                <span class="font-label-sm text-xs uppercase text-on-surface-variant font-bold">Prochaine Fournée</span>
+                                <span class="font-headline-md text-base font-bold text-on-surface mt-1 line-clamp-1">Baguette Tradition</span>
+                            </div>
+                            <div class="w-11 h-11 rounded-full bg-secondary-container flex items-center justify-center text-on-secondary-container shadow-sm">
+                                <span class="material-symbols-outlined text-2xl">schedule</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-1 mt-auto text-xs font-bold text-primary">
+                            <span class="material-symbols-outlined text-sm">alarm</span>
+                            <span>Sortie dans 15 min (17h00)</span>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Main Content Grid -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-gutter">
+                    <!-- Left 2 Cols: Planning de Cuisson -->
+                    <section class="lg:col-span-2 bg-surface rounded-2xl shadow-sm p-6 flex flex-col gap-4 border border-outline-variant/30">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <h2 class="font-headline-lg text-2xl text-on-surface font-bold">Planning de Cuisson du Jour</h2>
+                                <p class="text-xs text-on-surface-variant">Fournées programmées et répartition par fournil</p>
+                            </div>
+                            <button onclick="openBakingModal()" class="bg-primary text-on-primary font-label-md text-xs font-bold px-4 py-2.5 rounded-xl flex items-center gap-1.5 shadow-sm hover:brightness-110 transition-all">
+                                <span class="material-symbols-outlined text-sm">add</span> Ajouter Fournée
+                            </button>
+                        </div>
+
+                        <!-- Category Filters -->
+                        <div class="flex gap-2 pb-1 overflow-x-auto">
+                            <button class="px-4 py-1.5 rounded-full bg-primary-container text-on-primary-container font-label-md text-xs font-bold shrink-0 shadow-sm">Toutes (5)</button>
+                            <button class="px-4 py-1.5 rounded-full bg-surface-container-high text-on-surface-variant font-label-md text-xs font-bold hover:bg-surface-container-highest shrink-0">Pains Tradition</button>
+                            <button class="px-4 py-1.5 rounded-full bg-surface-container-high text-on-surface-variant font-label-md text-xs font-bold hover:bg-surface-container-highest shrink-0">Viennoiseries</button>
+                            <button class="px-4 py-1.5 rounded-full bg-surface-container-high text-on-surface-variant font-label-md text-xs font-bold hover:bg-surface-container-highest shrink-0">Pâtisseries</button>
+                        </div>
+
+                        <!-- Fournée Items -->
+                        <div class="flex flex-col gap-3">
+                            <!-- Item 1 -->
+                            <div class="bg-surface-container-lowest p-4 rounded-xl flex items-center justify-between group hover:shadow-md transition-shadow border border-outline-variant/20">
+                                <div class="flex items-center gap-4">
+                                    <div class="w-14 h-14 rounded-xl bg-surface-variant flex items-center justify-center font-headline-md font-bold text-primary text-base">
+                                        17:00
+                                    </div>
+                                    <div>
+                                        <h3 class="font-body-lg font-bold text-sm text-on-surface">Baguette Traditionnelle x150</h3>
+                                        <p class="font-body-md text-xs text-on-surface-variant">Four 1 (Sole 240°C) • Responsable: Mamadou</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-3">
+                                    <span class="px-3 py-1 rounded-full bg-tertiary-container text-on-tertiary-container font-label-sm text-xs font-bold uppercase">En Cuisson</span>
+                                    <button class="w-8 h-8 rounded-full hover:bg-surface-variant flex items-center justify-center text-on-surface-variant"><span class="material-symbols-outlined text-sm">more_vert</span></button>
+                                </div>
+                            </div>
+
+                            <!-- Item 2 -->
+                            <div class="bg-surface-container-lowest p-4 rounded-xl flex items-center justify-between group hover:shadow-md transition-shadow border border-outline-variant/20">
+                                <div class="flex items-center gap-4">
+                                    <div class="w-14 h-14 rounded-xl bg-surface-variant flex items-center justify-center font-headline-md font-bold text-primary text-base">
+                                        18:00
+                                    </div>
+                                    <div>
+                                        <h3 class="font-body-lg font-bold text-sm text-on-surface">Croissants Pur Beurre & Pains Choc x100</h3>
+                                        <p class="font-body-md text-xs text-on-surface-variant">Four 2 (Ventilé 180°C) • Responsable: Aïcha</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-3">
+                                    <span class="px-3 py-1 rounded-full bg-primary-container text-on-primary-container font-label-sm text-xs font-bold uppercase">En Pousse</span>
+                                    <button class="w-8 h-8 rounded-full hover:bg-surface-variant flex items-center justify-center text-on-surface-variant"><span class="material-symbols-outlined text-sm">more_vert</span></button>
+                                </div>
+                            </div>
+
+                            <!-- Item 3 -->
+                            <div class="bg-surface-container-lowest p-4 rounded-xl flex items-center justify-between group hover:shadow-md transition-shadow opacity-70 border border-outline-variant/20">
+                                <div class="flex items-center gap-4">
+                                    <div class="w-14 h-14 rounded-xl bg-surface-variant flex items-center justify-center font-headline-md font-bold text-on-surface-variant text-base">
+                                        14:00
+                                    </div>
+                                    <div>
+                                        <h3 class="font-body-lg font-bold text-sm text-on-surface">Pain Complet & Pain de Mie x80</h3>
+                                        <p class="font-body-md text-xs text-on-surface-variant">Four 1 • Responsable: Bakary</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-3">
+                                    <span class="px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 font-label-sm text-xs font-bold uppercase">Terminé & En Rayon</span>
+                                    <button class="w-8 h-8 rounded-full hover:bg-surface-variant flex items-center justify-center text-on-surface-variant"><span class="material-symbols-outlined text-sm">check</span></button>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Right Col: Side Panel -->
+                    <section class="flex flex-col gap-4">
+                        <!-- Stock Alert -->
+                        <div class="bg-error-container text-on-error-container rounded-2xl p-5 shadow-sm border border-rose-200">
+                            <div class="flex items-start gap-3">
+                                <span class="material-symbols-outlined text-rose-700 text-2xl mt-0.5">inventory_2</span>
+                                <div>
+                                    <h3 class="font-headline-md text-base font-bold mb-1">Alerte Matières Premières</h3>
+                                    <p class="font-body-md text-xs mb-3 text-rose-900">La Farine Grand Moulins T55 est sous le seuil critique (Reste: <strong>15 kg</strong>).</p>
+                                    <button onclick="alert('Commande de réapprovisionnement envoyée au fournisseur !')" class="bg-rose-800 text-white font-label-md text-xs font-bold px-4 py-2 rounded-xl hover:bg-rose-900 transition-all shadow-sm">
+                                        Commander Réassort
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Quick Actions -->
+                        <div class="bg-surface rounded-2xl p-5 shadow-sm flex flex-col gap-2 border border-outline-variant/30">
+                            <h3 class="font-headline-md text-base font-bold text-on-surface mb-1">Actions Rapides</h3>
+                            <button onclick="alert('Entrée en rayon validée pour la dernière fournée !')" class="w-full flex items-center justify-between p-3 rounded-xl bg-surface-container hover:bg-surface-container-high text-on-surface transition-colors border border-outline-variant/20">
+                                <div class="flex items-center gap-3">
+                                    <span class="material-symbols-outlined text-primary text-lg">check_circle</span>
+                                    <span class="font-label-md text-xs font-bold">Valider Entrée en Rayon</span>
+                                </div>
+                                <span class="material-symbols-outlined text-outline-variant text-base">chevron_right</span>
+                            </button>
+                            <button onclick="alert('Formulaire de déclaration de casse ouvert.')" class="w-full flex items-center justify-between p-3 rounded-xl bg-surface-container hover:bg-surface-container-high text-on-surface transition-colors border border-outline-variant/20">
+                                <div class="flex items-center gap-3">
+                                    <span class="material-symbols-outlined text-rose-700 text-lg">delete_sweep</span>
+                                    <span class="font-label-md text-xs font-bold">Déclarer Invendus / Pertes</span>
+                                </div>
+                                <span class="material-symbols-outlined text-outline-variant text-base">chevron_right</span>
+                            </button>
+                            <button onclick="alert('Températures des chambres froides conformes (+3.8°C).')" class="w-full flex items-center justify-between p-3 rounded-xl bg-surface-container hover:bg-surface-container-high text-on-surface transition-colors border border-outline-variant/20">
+                                <div class="flex items-center gap-3">
+                                    <span class="material-symbols-outlined text-sky-700 text-lg">ac_unit</span>
+                                    <span class="font-label-md text-xs font-bold">Contrôle Frigos & Pousse</span>
+                                </div>
+                                <span class="material-symbols-outlined text-outline-variant text-base">chevron_right</span>
+                            </button>
+                        </div>
+
+                        <!-- Visual Inspiration of the day -->
+                        <div class="rounded-2xl overflow-hidden h-44 shadow-sm relative group border border-outline-variant/30">
+                            <div class="bg-cover bg-center w-full h-full" style="background-image: url('assets/luxury_bakery_bg.jpg')"></div>
+                            <div class="absolute inset-0 bg-gradient-to-t from-inverse-surface/85 to-transparent flex flex-col justify-end p-4">
+                                <span class="font-label-sm text-amber-300 text-xs uppercase tracking-widest font-bold">Savoir-Faire Artisanal</span>
+                                <span class="font-headline-md text-white text-base font-bold">L'Excellence du Fournil de Babi</span>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- ADD BAKING MODAL -->
+    <div id="bakingModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6">
+            <h3 class="font-headline-md text-xl font-bold text-on-surface mb-2">Programmer une Nouvelle Fournée</h3>
+            <div class="flex flex-col gap-3 my-4">
                 <div>
-                    <h6 class="mb-0 fw-bold" id="alert-count-text">Alerte de Stock Faible !</h6>
-                    <small>Certains articles nécessitent une fournée immédiate au fournil.</small>
+                    <label class="text-xs font-bold text-on-surface-variant block mb-1">Type de Produit :</label>
+                    <input type="text" class="w-full p-2.5 rounded-xl border border-outline-variant/40 text-sm outline-none" placeholder="Ex: Baguette Tradition, Croissants Pur Beurre..."/>
                 </div>
-            </div>
-            <a href="#stocks-tab" class="btn btn-danger btn-sm fw-bold" onclick="bootstrap.Tab.getInstance(document.querySelector('#tab-btn-stocks')).show()">
-                Voir les stocks critiques
-            </a>
-        </div>
-
-        <!-- 4 KPIS HERO -->
-        <div class="row g-3 mb-4">
-            <div class="col-md-3">
-                <div class="kpi-card kpi-success">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <div class="kpi-label">Chiffre d'Affaires du Jour</div>
-                            <div class="kpi-val" id="kpi-revenue-today">0 F</div>
-                        </div>
-                        <div class="kpi-icon bg-success bg-opacity-25 text-success">
-                            <i class="fa-solid fa-coins"></i>
-                        </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="text-xs font-bold text-on-surface-variant block mb-1">Quantité (Unités) :</label>
+                        <input type="number" class="w-full p-2.5 rounded-xl border border-outline-variant/40 text-sm outline-none" value="100"/>
+                    </div>
+                    <div>
+                        <label class="text-xs font-bold text-on-surface-variant block mb-1">Heure de Sortie :</label>
+                        <input type="time" class="w-full p-2.5 rounded-xl border border-outline-variant/40 text-sm outline-none" value="18:30"/>
                     </div>
                 </div>
             </div>
-
-            <div class="col-md-3">
-                <div class="kpi-card kpi-info">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <div class="kpi-label">En Attente Fournil</div>
-                            <div class="kpi-val text-info" id="kpi-orders-fournil">0</div>
-                        </div>
-                        <div class="kpi-icon bg-info bg-opacity-25 text-info">
-                            <i class="fa-solid fa-fire-burner"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-3">
-                <div class="kpi-card kpi-danger">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <div class="kpi-label">Alertes Stocks Faibles</div>
-                            <div class="kpi-val text-danger" id="kpi-low-stocks">0</div>
-                        </div>
-                        <div class="kpi-icon bg-danger bg-opacity-25 text-danger">
-                            <i class="fa-solid fa-boxes-stacked"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-3">
-                <div class="kpi-card">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <div class="kpi-label">Personnel en Poste</div>
-                            <div class="kpi-val text-warning" id="kpi-employees-present">0 / 0</div>
-                        </div>
-                        <div class="kpi-icon bg-warning bg-opacity-25 text-warning">
-                            <i class="fa-solid fa-users"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- NAVIGATION DES ONGLETS -->
-        <ul class="nav gerante-nav-pills mb-4 gap-2" role="tablist">
-            <li class="nav-item">
-                <button class="nav-link active" id="tab-btn-stocks" data-bs-toggle="pill" data-bs-target="#tab-stocks">
-                    <i class="fa-solid fa-boxes-stacked me-1"></i> Pilotage Stocks & Fournil
-                </button>
-            </li>
-            <li class="nav-item">
-                <button class="nav-link" data-bs-toggle="pill" data-bs-target="#tab-fournil">
-                    <i class="fa-solid fa-kitchen-set me-1"></i> Commandes & Cuisson Fournil
-                </button>
-            </li>
-            <li class="nav-item">
-                <button class="nav-link" data-bs-toggle="pill" data-bs-target="#tab-events">
-                    <i class="fa-solid fa-cake-candles text-warning me-1"></i> Gâteaux d'Événements
-                </button>
-            </li>
-            <li class="nav-item">
-                <button class="nav-link" data-bs-toggle="pill" data-bs-target="#tab-employees">
-                    <i class="fa-solid fa-user-group me-1"></i> Gestion de l'Équipe & Présences
-                </button>
-            </li>
-            <li class="nav-item">
-                <button class="nav-link" data-bs-toggle="pill" data-bs-target="#tab-movements">
-                    <i class="fa-solid fa-clock-rotate-left me-1"></i> Mouvements de Stock
-                </button>
-            </li>
-        </ul>
-
-        <!-- CONTENU DES ONGLETS -->
-        <div class="tab-content">
-            
-            <!-- TAB 1 : STOCKS & FOURNIL -->
-            <div class="tab-pane fade show active" id="tab-stocks">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <div class="position-relative" style="width: 320px;">
-                        <input type="text" class="form-control gerante-input" id="stock-search-input" placeholder="🔍 Filtrer les stocks..." oninput="renderStocksList()">
-                    </div>
-                    <button class="btn btn-warning fw-bold text-dark" onclick="openAdjustStockModal(1, 'Baguette Tradition', 40)">
-                        <i class="fa-solid fa-plus me-1"></i> Enregistrer Nouvelle Fournée
-                    </button>
-                </div>
-                <div id="stocks-list-container">
-                    <!-- Injected dynamically -->
-                </div>
-            </div>
-
-            <!-- TAB 2 : COMMANDES FOURNIL & CUISSON -->
-            <div class="tab-pane fade" id="tab-fournil">
-                <div class="card bg-dark border-secondary p-3 rounded-4">
-                    <h5 class="fw-bold text-warning mb-3"><i class="fa-solid fa-fire me-2"></i>Flux de Production & Cuisson en Direct</h5>
-                    <div class="table-responsive">
-                        <table class="gerante-table">
-                            <thead>
-                                <tr>
-                                    <th>N° Commande</th>
-                                    <th>Client / Tél</th>
-                                    <th>Articles Fournil</th>
-                                    <th>Total</th>
-                                    <th>Statut Actuel</th>
-                                    <th>Action Gérante</th>
-                                </tr>
-                            </thead>
-                            <tbody id="fournil-orders-tbody">
-                                <!-- Injected dynamically -->
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-            <!-- TAB : RÉSERVATIONS GÂTEAUX ÉVÉNEMENTS -->
-            <div class="tab-pane fade" id="tab-events">
-                <div class="card bg-dark border-secondary p-3 rounded-4">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h5 class="fw-bold text-warning mb-0"><i class="fa-solid fa-cake-candles me-2"></i>Réservations & Pièces Montées sur Mesure</h5>
-                        <button class="btn btn-outline-warning btn-sm fw-bold" onclick="renderGeranteEventOrders()"><i class="fa-solid fa-rotate-right me-1"></i> Actualiser</button>
-                    </div>
-                    <div class="table-responsive">
-                        <table class="gerante-table">
-                            <thead>
-                                <tr>
-                                    <th>Réf</th>
-                                    <th>Client & Tél</th>
-                                    <th>Événement</th>
-                                    <th>Format & Parfums</th>
-                                    <th>Inscription</th>
-                                    <th>Date Retrait</th>
-                                    <th>Devis</th>
-                                    <th>Statut & Action</th>
-                                </tr>
-                            </thead>
-                            <tbody id="gerante-events-tbody">
-                                <!-- Injected dynamically -->
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-            <!-- TAB 3 : EMPLOYEES & POINTAGE -->
-            <div class="tab-pane fade" id="tab-employees">
-                <div class="card bg-dark border-secondary p-3 rounded-4">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h5 class="fw-bold text-warning mb-0"><i class="fa-solid fa-users me-2"></i>Tableau de Bord du Personnel</h5>
-                    </div>
-                    <div class="table-responsive">
-                        <table class="gerante-table">
-                            <thead>
-                                <tr>
-                                    <th>Employé</th>
-                                    <th>Poste Occupé</th>
-                                    <th>Téléphone</th>
-                                    <th>Statut Présence</th>
-                                    <th>Pointer / Modifier</th>
-                                </tr>
-                            </thead>
-                            <tbody id="employees-tbody">
-                                <!-- Injected dynamically -->
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-            <!-- TAB 4 : MOUVEMENTS DE STOCK -->
-            <div class="tab-pane fade" id="tab-movements">
-                <div class="card bg-dark border-secondary p-3 rounded-4">
-                    <h5 class="fw-bold text-warning mb-3"><i class="fa-solid fa-clock-rotate-left me-2"></i>Historique des Entrées / Sorties</h5>
-                    <div class="table-responsive">
-                        <table class="gerante-table">
-                            <thead>
-                                <tr>
-                                    <th>Date / Heure</th>
-                                    <th>Produit</th>
-                                    <th>Variation</th>
-                                    <th>Motif</th>
-                                    <th>Responsable</th>
-                                </tr>
-                            </thead>
-                            <tbody id="movements-tbody">
-                                <!-- Injected dynamically -->
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-        </div>
-
-    </div>
-
-    <!-- MODAL AJUSTEMENT / FOURNÉE STOCK -->
-    <div class="modal fade" id="adjustStockModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content bg-dark text-white border-secondary">
-                <div class="modal-header border-secondary">
-                    <h5 class="modal-title fw-bold text-warning"><i class="fa-solid fa-bread-slice me-2"></i>Ajouter une Fournée / Ajuster Stock</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body p-4">
-                    <input type="hidden" id="modal-stock-id">
-                    <div class="mb-3">
-                        <div class="text-muted small">ARTICLE :</div>
-                        <div class="fs-5 fw-bold text-warning" id="modal-stock-name">Baguette Tradition</div>
-                        <div class="small text-muted">Stock actuel en rayon : <span id="modal-stock-current">40</span> pièces</div>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label text-muted">Quantité sortie du Fournil (+ pour ajout, - pour perte/casse) :</label>
-                        <input type="number" class="form-control form-control-lg bg-dark text-white border-warning fw-bold text-center" id="modal-stock-delta" value="20">
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label text-muted">Motif :</label>
-                        <select class="form-select bg-dark text-white border-secondary" id="modal-stock-motif">
-                            <option value="Fournée fraîche du matin">🥖 Fournée fraîche du matin</option>
-                            <option value="Fournée chaude de midi">🥖 Fournée chaude de midi</option>
-                            <option value="Fournée du soir">🥖 Fournée du soir</option>
-                            <option value="Arrivage matières premières">📦 Arrivage matières premières</option>
-                            <option value="Perte / Casse fournil">⚠️ Perte / Casse fournil</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="modal-footer border-secondary">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-                    <button type="button" class="btn btn-warning fw-bold" onclick="submitStockAdjustment()">
-                        <i class="fa-solid fa-check me-1"></i> Valider l'Entrée en Rayon
-                    </button>
-                </div>
+            <div class="flex gap-2">
+                <button onclick="closeBakingModal()" class="flex-1 py-2.5 rounded-xl bg-surface-container text-on-surface text-xs font-bold">Annuler</button>
+                <button onclick="closeBakingModal(); alert('Fournée ajoutée au planning avec succès !');" class="flex-1 py-2.5 rounded-xl bg-primary text-on-primary text-xs font-bold">Valider</button>
             </div>
         </div>
     </div>
 
-    <!-- Bootstrap Bundle JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="js/gerante.js"></script>
+    <!-- SCRIPTS -->
+    <script>
+        function openBakingModal() {
+            document.getElementById('bakingModal').classList.remove('hidden');
+        }
+        function closeBakingModal() {
+            document.getElementById('bakingModal').classList.add('hidden');
+        }
+        function showGeranteTab(tab) {
+            document.querySelectorAll('.prestige-nav-item').forEach(b => {
+                b.classList.remove('active');
+            });
+            const btn = document.getElementById(`nav-gerante-${tab}`);
+            if (btn) {
+                btn.classList.add('active');
+            }
+        }
+    </script>
+    <script src="js/store_schedule.js"></script>
     <script src="js/anti_hacker_client.js"></script>
 </body>
 </html>

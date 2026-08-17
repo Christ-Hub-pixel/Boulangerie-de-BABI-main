@@ -403,3 +403,120 @@ function renderGeranteEventOrders() {
         `;
     }).join('');
 }
+
+// =============================================================
+// CARILLON AUDIO DU FOURNIL (NOUVELLE COMMANDE)
+// =============================================================
+function playFournilChime() {
+    try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        
+        // Clochette harmonique 1
+        const osc1 = ctx.createOscillator();
+        const gain1 = ctx.createGain();
+        osc1.frequency.setValueAtTime(880, ctx.currentTime); // A5 Note
+        gain1.gain.setValueAtTime(0.4, ctx.currentTime);
+        gain1.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 1.2);
+        osc1.connect(gain1);
+        gain1.connect(ctx.destination);
+        osc1.start();
+        osc1.stop(ctx.currentTime + 1.2);
+
+        // Clochette harmonique 2
+        const osc2 = ctx.createOscillator();
+        const gain2 = ctx.createGain();
+        osc2.frequency.setValueAtTime(1320, ctx.currentTime + 0.1); // E6 Note
+        gain2.gain.setValueAtTime(0.3, ctx.currentTime + 0.1);
+        gain2.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 1.5);
+        osc2.connect(gain2);
+        gain2.connect(ctx.destination);
+        osc2.start(ctx.currentTime + 0.1);
+        osc2.stop(ctx.currentTime + 1.5);
+    } catch(e) {
+        console.log("Audio non autorisé sans interaction préalable");
+    }
+}
+
+// =============================================================
+// IMPRESSION TICKET DE PRÉPARATION FOURNIL (FORMAT 80MM)
+// =============================================================
+function printBakingTicket(orderId) {
+    const orders = JSON.parse(localStorage.getItem('babi_orders') || '[]');
+    const order = orders.find(o => String(o.id) === String(orderId)) || {
+        id: orderId || 'BAB-001',
+        customer_name: 'Client BABI',
+        customer_phone: '07 04 38 92 01',
+        items_summary: '2x Baguette Tradition, 3x Croissants Pur Beurre',
+        pickup_slot: '16h00 - 17h00',
+        total_price: 3500
+    };
+
+    const printWindow = window.open('', '_blank', 'width=380,height=600');
+    if (!printWindow) {
+        alert("Veuillez autoriser les fenêtres contextuelles pour imprimer le ticket.");
+        return;
+    }
+
+    printWindow.document.write(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>Bon de Fournil #${order.id}</title>
+            <style>
+                @page { size: 80mm auto; margin: 4mm; }
+                body {
+                    font-family: 'Courier New', monospace;
+                    width: 72mm;
+                    margin: 0 auto;
+                    color: #000;
+                    font-size: 12px;
+                    line-height: 1.3;
+                }
+                .text-center { text-align: center; }
+                .text-right { text-align: right; }
+                .bold { font-weight: bold; }
+                .border-top { border-top: 1px dashed #000; padding-top: 5px; margin-top: 5px; }
+                .border-bottom { border-bottom: 1px dashed #000; padding-bottom: 5px; margin-bottom: 5px; }
+                .title { font-size: 16px; font-weight: bold; text-transform: uppercase; }
+                .large { font-size: 14px; font-weight: bold; }
+                .qr-placeholder { margin: 8px auto; text-align: center; border: 1px solid #000; padding: 4px; width: 60px; font-size: 9px; }
+            </style>
+        </head>
+        <body onload="window.print(); window.close();">
+            <div class="text-center">
+                <div class="title">BOULANGERIE DE BABI</div>
+                <div>*** BON DE PRÉPARATION FOURNIL ***</div>
+                <div class="border-bottom">Abidjan - Côte d'Ivoire</div>
+            </div>
+
+            <div style="margin: 6px 0;">
+                <div><strong>COMMANDE :</strong> #${order.id}</div>
+                <div><strong>CLIENT :</strong> ${order.customer_name}</div>
+                <div><strong>TÉLÉPHONE :</strong> ${order.customer_phone}</div>
+                <div><strong>CRÉNEAU RETRAIT :</strong> <span class="large">${order.pickup_slot || '16h00 - 17h00'}</span></div>
+                <div><strong>DATE :</strong> ${new Date().toLocaleDateString('fr-FR')} à ${new Date().toLocaleTimeString('fr-FR', {hour:'2-digit', minute:'2-digit'})}</div>
+            </div>
+
+            <div class="border-top border-bottom">
+                <div class="bold" style="margin-bottom: 4px;">ARTICLES À PRÉPARER :</div>
+                <div style="font-size: 13px; font-weight: bold;">
+                    ${order.items_summary.split(',').map(i => `<div>[ ] ${i.trim()}</div>`).join('')}
+                </div>
+            </div>
+
+            <div style="margin: 6px 0;" class="text-right">
+                <div>TOTAL RÉGLÉ : <strong>${(order.total_price || 0).toLocaleString()} FCFA</strong></div>
+                <div>STATUT PAIEMENT : <strong>PAYÉ (WAVE / OM)</strong></div>
+            </div>
+
+            <div class="text-center border-top" style="margin-top: 10px; font-size: 10px;">
+                <div>Emballer avec sachet kraft BABI</div>
+                <div>Apposer le sticker de scellé doré</div>
+                <div>Fournil de BABI 👑 - Qualité Artisanale</div>
+            </div>
+        </body>
+        </html>
+    `);
+    printWindow.document.close();
+}
+
