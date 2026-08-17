@@ -8,6 +8,19 @@ body {
     background-size: cover;
 }
 
+/* Remplacement des surfaces blanches froides par du verre doré noble */
+.bg-white {
+    background: rgba(255, 252, 245, 0.94) !important;
+    backdrop-filter: blur(10px) !important;
+    border: 1px solid rgba(251, 191, 36, 0.32) !important;
+    box-shadow: 0 6px 20px rgba(43, 22, 12, 0.08) !important;
+}
+
+.card {
+    background: rgba(255, 252, 245, 0.95) !important;
+    border: 1px solid rgba(251, 191, 36, 0.28) !important;
+}
+
 /* Jumia Hero */
 .jumia-hero {
     background-color: transparent;
