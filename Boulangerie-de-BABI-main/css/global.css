@@ -40,22 +40,24 @@ body {
     font-family: 'Inter', sans-serif;
     color: var(--dark);
     line-height: 1.6;
-    background: linear-gradient(180deg, rgba(254, 243, 199, 0.86) 0%, rgba(253, 230, 138, 0.74) 40%, rgba(245, 158, 11, 0.58) 100%), 
+    background: linear-gradient(180deg, rgba(20, 10, 5, 0.35) 0%, rgba(245, 158, 11, 0.15) 50%, rgba(20, 10, 5, 0.45) 100%), 
                 url('../assets/luxury_bakery_bg.jpg') no-repeat center center fixed;
     background-size: cover;
 }
 
-/* Remplacement universel des fonds blancs froids par du verre ivoire doré noble */
+/* Surfaces ivoire doré douces (sans forcer les cartes sombres) */
 .bg-white {
     background: rgba(255, 252, 245, 0.94) !important;
-    backdrop-filter: blur(10px) !important;
-    border: 1px solid rgba(251, 191, 36, 0.32) !important;
-    box-shadow: 0 6px 20px rgba(43, 22, 12, 0.08) !important;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(251, 191, 36, 0.32);
+    box-shadow: 0 6px 20px rgba(43, 22, 12, 0.08);
 }
 
-.card {
-    background: rgba(255, 252, 245, 0.95) !important;
-    border: 1px solid rgba(251, 191, 36, 0.28) !important;
+.dark-luxury-card {
+    background: linear-gradient(135deg, #140a04 0%, #2b160c 60%, #431407 100%) !important;
+    color: #ffffff !important;
+    border: 2px solid rgba(251, 146, 60, 0.5) !important;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3) !important;
 }
 
 h1, h2, h3, .logo-title {
@@ -1260,6 +1262,7 @@ footer h4, footer h5, footer .text-warning, footer i.text-warning {
     margin-top: -3px !important;
     color: #fbbf24 !important;
     line-height: 1 !important;
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
 }
 
 /* Official Côte d'Ivoire Flag Component (Orange, Blanc, Vert) */
