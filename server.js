@@ -1190,9 +1190,13 @@ function startAutomatedRefundWorker(database) {
 initDB().then(database => {
     db = database;
     startAutomatedRefundWorker(db);
-    app.listen(PORT, () => {
-        console.log(`🚀 Serveur Boulangerie de BABI (4 Postes) démarré sur http://localhost:${PORT}`);
-    });
+    if (!process.env.VERCEL) {
+        app.listen(PORT, () => {
+            console.log(`🚀 Serveur Boulangerie de BABI (4 Postes) démarré sur http://localhost:${PORT}`);
+        });
+    }
 }).catch(err => {
     console.error("Erreur d'initialisation de la BD :", err);
 });
+
+module.exports = app;

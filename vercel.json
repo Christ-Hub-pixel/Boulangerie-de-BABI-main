@@ -13,22 +13,6 @@
     }
   ],
   "rewrites": [
-    { "source": "/", "destination": "/index.html" },
-    { "source": "/admin", "destination": "/admin.html" },
-    { "source": "/gerante", "destination": "/gerante.html" },
-    { "source": "/caissiere", "destination": "/caissiere.html" },
-    { "source": "/connexion", "destination": "/connexion.html" },
-    { "source": "/inscription", "destination": "/inscription.html" },
-    { "source": "/compte", "destination": "/compte.html" },
-    { "source": "/cart", "destination": "/cart.html" },
-    { "source": "/checkout", "destination": "/checkout.html" },
-    { "source": "/suivi", "destination": "/suivi.html" },
-    { "source": "/evenements", "destination": "/evenements.html" },
-    { "source": "/produits", "destination": "/produits.html" },
-    { "source": "/fidelite", "destination": "/fidelite.html" },
-    { "source": "/favoris", "destination": "/favoris.html" },
-    { "source": "/contact", "destination": "/contact.html" },
-    { "source": "/apropos", "destination": "/apropos.html" },
-    { "source": "/galerie_photos", "destination": "/galerie_photos.html" }
+    { "source": "/api/(.*)", "destination": "/api/index.js" }
   ]
 }
