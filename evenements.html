@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gâteaux d'Événements & Sur-Mesure — Boulangerie de Babi</title>
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/global.css">
+    <link rel="stylesheet" href="css/animations.css">
+    <link rel="icon" type="image/png" href="assets/logo.png">
+
+    <style>
+        :root {
+            --babi-chocolate: #2b160c;
+            --babi-amber: #fb923c;
+            --babi-gold: #f59e0b;
+        }
+
+        body {
+            background-color: #fdfbf7;
+            color: #2b160c;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .event-hero {
+            background: linear-gradient(135deg, rgba(20, 10, 4, 0.94) 0%, rgba(43, 22, 12, 0.88) 100%), url('assets/gateau de mariiage.png') center/cover;
+            padding: 130px 0 70px 0;
+            color: #ffffff;
+            position: relative;
+        }
+
+        .event-card {
+            border: 1px solid rgba(251, 146, 60, 0.2);
+            border-radius: 18px;
+            transition: all 0.3s ease;
+            overflow: hidden;
+            background: #ffffff;
+        }
+
+        .event-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 15px 30px rgba(43, 22, 12, 0.12);
+            border-color: #fb923c;
+        }
+
+        .event-card-img {
+            height: 220px;
+            width: 100%;
+            object-fit: contain !important;
+            background: #ffffff;
+            padding: 10px;
+        }
+
+        .config-box {
+            background: #ffffff;
+            border-radius: 24px;
+            box-shadow: 0 12px 35px rgba(43, 22, 12, 0.08);
+            border: 2px solid #fb923c;
+        }
+
+        .tier-option, .flavor-option {
+            cursor: pointer;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 10px 14px;
+            transition: all 0.2s ease;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .tier-option:hover, .flavor-option:hover {
+            border-color: #fb923c;
+            background: rgba(251, 146, 60, 0.05);
+        }
+
+        .tier-option.selected, .flavor-option.selected {
+            border-color: #ea580c;
+            background: #fffaf0;
+            color: #ea580c;
+        }
+
+        .price-tag-badge {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: #ea580c;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .gold-divider {
+            height: 3px;
+            background: linear-gradient(90deg, transparent, #fb923c, transparent);
+            margin: 20px 0;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- E-commerce Navbar -->
+    <nav class="navbar navbar-expand-lg fixed-top py-2"
+        style="background: rgba(43, 22, 12, 0.95); backdrop-filter: blur(10px); box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+        <div class="container align-items-center">
+            <!-- Toggler for Mobile Sidebar -->
+            <button class="navbar-toggler border-0 px-1 me-2 text-white" type="button" data-bs-toggle="offcanvas"
+                data-bs-target="#mobileSidebar">
+                <i class="fa-solid fa-bars fs-2"></i>
+            </button>
+
+            <!-- Logo -->
+            <a class="navbar-brand d-flex align-items-center text-decoration-none me-auto me-lg-3" href="index.html">
+                <img src="assets/logo.png" alt="Logo" class="navbar-brand-logo">
+                <div class="d-flex flex-column lh-1 me-2">
+                    <span class="navbar-brand-title">Boulangerie</span>
+                    <span class="navbar-brand-subtitle d-flex align-items-center">de Babi</span>
+                </div>
+            </a>
+
+            <!-- Search Bar (Desktop) -->
+            <div class="d-none d-lg-flex flex-grow-1 header-search-container mx-3">
+                <form class="babi-search-form w-100 m-0" role="search" onsubmit="event.preventDefault();">
+                    <div class="babi-search-wrapper">
+                        <i class="fa-solid fa-magnifying-glass babi-search-icon"></i>
+                        <input type="text" class="babi-search-input"
+                            placeholder="Gâteaux, wedding cakes, anniversaires..." 
+                            aria-label="Rechercher"
+                            autocomplete="off">
+                        <button type="submit" class="babi-search-btn">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                            <span>Rechercher</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Header Right Icons -->
+            <div class="d-flex align-items-center gap-2">
+                <a href="index.html" class="btn btn-outline-light btn-sm rounded-pill px-3 fw-bold">
+                    <i class="fa-solid fa-house me-1 text-warning"></i> Accueil
+                </a>
+                <a href="produits.html" class="btn btn-outline-light btn-sm rounded-pill px-3 fw-bold d-none d-md-inline-flex">
+                    <i class="fa-solid fa-store me-1 text-warning"></i> Boutique
+                </a>
+                <a href="cart.html" class="btn btn-warning btn-sm fw-bold text-dark rounded-pill px-3 shadow-sm" style="background:#fb923c; border:none;">
+                    <i class="fa-solid fa-cart-shopping me-1"></i> Panier
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Offcanvas Mobile Sidebar -->
+    <div class="offcanvas offcanvas-start" tabindex="-1" id="mobileSidebar">
+        <div class="offcanvas-header bg-dark text-white">
+            <h5 class="offcanvas-title"><i class="fa-solid fa-wheat-awn text-primary"></i> Boulangerie de Babi</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
+        </div>
+        <div class="offcanvas-body p-0">
+            <div class="list-group list-group-flush">
+                <a href="index.html" class="list-group-item list-group-item-action"><i class="fa-solid fa-house me-2"></i> Accueil</a>
+                <a href="evenements.html" class="list-group-item list-group-item-action active fw-bold text-warning" style="background:#2b160c !important;"><i class="fa-solid fa-cake-candles me-2"></i> Gâteaux d'Événements</a>
+                <a href="produits.html" class="list-group-item list-group-item-action"><i class="fa-solid fa-bread-slice me-2"></i> Tous les Produits</a>
+                <a href="fidelite.html" class="list-group-item list-group-item-action"><i class="fa-solid fa-gift me-2"></i> Fidélité</a>
+                <a href="contact.html" class="list-group-item list-group-item-action"><i class="fa-solid fa-envelope me-2"></i> Contact</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Event Hero Section -->
+    <section class="event-hero text-center">
+        <div class="container">
+            <span class="badge px-3 py-2 rounded-pill mb-3 fw-bold" style="background: rgba(251, 146, 60, 0.2); border: 1px solid #fb923c; color: #fbbf24;">
+                🎂 HAUTE PÂTISSERIE ARTISANALE & PIÈCES MONTÉES
+            </span>
+            <h1 class="display-4 fw-bold mb-3" style="font-family: 'Playfair Display', serif;">
+                Gâteaux d'Événements sur Mesure
+            </h1>
+            <p class="lead mx-auto mb-4" style="max-width: 720px; color: #e2e8f0;">
+                Sublimez vos moments inoubliables : mariages féeriques, anniversaires personnalisés, baptêmes et réceptions d'entreprise. Conçus avec passion par nos maîtres pâtissiers à Abidjan.
+            </p>
+            <div class="d-flex justify-content-center gap-3 flex-wrap">
+                <a href="#configurateur" class="btn btn-warning btn-lg fw-bold rounded-pill px-4 py-3 shadow-lg" style="background: linear-gradient(135deg, #fb923c, #f59e0b); border:none; color: #2b160c;">
+                    <i class="fa-solid fa-wand-magic-sparkles me-2"></i> Configurer Mon Gâteau
+                </a>
+                <a href="https://api.whatsapp.com/send?phone=2250704389201&text=Bonjour%20Boulangerie%20de%20BABI,%20je%20souhaite%20commander%20un%20g%C3%A2teau%20d'%C3%A9v%C3%A9nement%20personnalis%C3%A9." target="_blank" class="btn btn-outline-light btn-lg fw-bold rounded-pill px-4 py-3">
+                    <i class="fa-brands fa-whatsapp text-success me-2 fs-5"></i> Échanger sur WhatsApp
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Nos Créations d'Événements -->
+    <section class="py-5">
+        <div class="container">
+            <div class="text-center mb-5">
+                <h6 class="text-uppercase fw-bold text-warning mb-1" style="letter-spacing: 2px;">INSPIRATIONS & MODÈLES</h6>
+                <h2 class="fw-bold" style="font-family: 'Playfair Display', serif; color: #2b160c;">Nos Catégories d'Événements</h2>
+                <div class="gold-divider mx-auto" style="width: 120px;"></div>
+            </div>
+
+            <div class="row g-4">
+                <!-- Modèle 1: Mariage -->
+                <div class="col-md-6 col-lg-3">
+                    <div class="card event-card h-100 shadow-sm">
+                        <img src="assets/gateau de mariiage.png" class="event-card-img" alt="Pièce Montée Mariage">
+                        <div class="card-body p-4 d-flex flex-column">
+                            <span class="badge bg-warning text-dark fw-bold mb-2 align-self-start">Mariages & Fiançailles</span>
+                            <h5 class="fw-bold mb-2" style="color: #2b160c;">Pièce Montée Royale</h5>
+                            <p class="text-muted small mb-3">De 2 à 4 étages somptueux avec décors floraux comestibles et finition satinée.</p>
+                            <div class="mt-auto pt-2 border-top d-flex justify-content-between align-items-center">
+                                <span class="fw-bold fs-6 text-danger">Dès 35 000 FCFA</span>
+                                <button class="btn btn-sm btn-outline-dark rounded-pill fw-bold" onclick="selectModelPreset('Mariage', 'Pièce Montée Royale', 30, 2)">Choisir</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Modèle 2: Anniversaire -->
+                <div class="col-md-6 col-lg-3">
+                    <div class="card event-card h-100 shadow-sm">
+                        <img src="assets/gateau evenement.png" class="event-card-img" alt="Gâteau Anniversaire Prestige">
+                        <div class="card-body p-4 d-flex flex-column">
+                            <span class="badge bg-danger text-white fw-bold mb-2 align-self-start">Anniversaires VIP</span>
+                            <h5 class="fw-bold mb-2" style="color: #2b160c;">Gâteau Anniversaire Thématique</h5>
+                            <p class="text-muted small mb-3">Personnalisé avec chiffres, prénoms, modelages enfants ou designs épurés pour adultes.</p>
+                            <div class="mt-auto pt-2 border-top d-flex justify-content-between align-items-center">
+                                <span class="fw-bold fs-6 text-danger">Dès 20 000 FCFA</span>
+                                <button class="btn btn-sm btn-outline-dark rounded-pill fw-bold" onclick="selectModelPreset('Anniversaire', 'Gâteau Anniversaire Thématique', 15, 1)">Choisir</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Modèle 3: Baptême -->
+                <div class="col-md-6 col-lg-3">
+                    <div class="card event-card h-100 shadow-sm">
+                        <img src="assets/gateau  d evenement2.png" class="event-card-img" alt="Baptême & Baby Shower">
+                        <div class="card-body p-4 d-flex flex-column">
+                            <span class="badge bg-info text-dark fw-bold mb-2 align-self-start">Baptême & Baby Shower</span>
+                            <h5 class="fw-bold mb-2" style="color: #2b160c;">Douceur Céleste</h5>
+                            <p class="text-muted small mb-3">Tons pastels délicats, macarons fondants et saveurs légères vanille-fruits rouges.</p>
+                            <div class="mt-auto pt-2 border-top d-flex justify-content-between align-items-center">
+                                <span class="fw-bold fs-6 text-danger">Dès 25 000 FCFA</span>
+                                <button class="btn btn-sm btn-outline-dark rounded-pill fw-bold" onclick="selectModelPreset('Baptême', 'Douceur Céleste', 20, 1)">Choisir</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Modèle 4: Entreprise -->
+                <div class="col-md-6 col-lg-3">
+                    <div class="card event-card h-100 shadow-sm">
+                        <img src="assets/gateau mariage.png" class="event-card-img" alt="Soirée & Gala Entreprise">
+                        <div class="card-body p-4 d-flex flex-column">
+                            <span class="badge bg-dark text-white fw-bold mb-2 align-self-start">Entreprise & Galas</span>
+                            <h5 class="fw-bold mb-2" style="color: #2b160c;">Prestige Corporate</h5>
+                            <p class="text-muted small mb-3">Grand format avec reproduction de logo d'entreprise comestible et mignardises assorties.</p>
+                            <div class="mt-auto pt-2 border-top d-flex justify-content-between align-items-center">
+                                <span class="fw-bold fs-6 text-danger">Dès 45 000 FCFA</span>
+                                <button class="btn btn-sm btn-outline-dark rounded-pill fw-bold" onclick="selectModelPreset('Entreprise', 'Prestige Corporate', 40, 2)">Choisir</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CONFIGURATEUR & FORMULAIRE DE RÉSERVATION -->
+    <section class="py-5 bg-white border-top" id="configurateur">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-10">
+                    <div class="config-box p-4 p-md-5">
+                        
+                        <div class="text-center mb-4">
+                            <div class="d-inline-flex align-items-center justify-content-center p-3 rounded-circle mb-2" style="background: rgba(251, 146, 60, 0.15); width: 64px; height: 64px;">
+                                <i class="fa-solid fa-cake-candles fs-2" style="color: #ea580c;"></i>
+                            </div>
+                            <h2 class="fw-bold mb-1" style="font-family: 'Playfair Display', serif; color: #2b160c;">
+                                Personnalisez & Réservez Votre Gâteau
+                            </h2>
+                            <p class="text-muted small">
+                                Calculez votre tarif en temps réel et validez votre créneau au fournil.
+                            </p>
+                        </div>
+
+                        <form id="eventCakeForm" onsubmit="event.preventDefault(); submitEventCakeOrder();">
+                            <div class="row g-4">
+                                
+                                <!-- 1. Type d'Événement -->
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold text-dark small"><i class="fa-solid fa-champagne-glasses text-warning me-1"></i> Type d'Événement *</label>
+                                    <select class="form-select form-select-lg shadow-none fw-bold" id="eventTypeSelect" onchange="calculateCakePrice()" required>
+                                        <option value="Anniversaire" selected>🎂 Anniversaire</option>
+                                        <option value="Mariage">💍 Mariage & Fiançailles</option>
+                                        <option value="Baptême">👶 Baptême / Communion</option>
+                                        <option value="Baby Shower">🍼 Baby Shower</option>
+                                        <option value="Entreprise">🥂 Soirée d'Entreprise & Gala</option>
+                                        <option value="Autre">✨ Autre Célébration</option>
+                                    </select>
+                                </div>
+
+                                <!-- 2. Nombre de Parts -->
+                                <div class="col-md-6">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <label class="form-label fw-bold text-dark small mb-0"><i class="fa-solid fa-users text-warning me-1"></i> Nombre de Parts : <span id="portionsDisplay" class="text-danger fw-bold fs-5">20</span> personnes</label>
+                                    </div>
+                                    <input type="range" class="form-range" id="portionsRange" min="10" max="100" step="5" value="20" oninput="updatePortions(this.value)">
+                                    <div class="d-flex justify-content-between small text-muted">
+                                        <span>10 parts</span>
+                                        <span>30 parts</span>
+                                        <span>50 parts</span>
+                                        <span>100+ parts</span>
+                                    </div>
+                                </div>
+
+                                <!-- 3. Nombre d'Étages -->
+                                <div class="col-12">
+                                    <label class="form-label fw-bold text-dark small mb-2"><i class="fa-solid fa-layer-group text-warning me-1"></i> Architecture du Gâteau (Nombre d'Étages)</label>
+                                    <div class="row g-2" id="tierSelector">
+                                        <div class="col-4">
+                                            <div class="tier-option selected text-center p-3" onclick="selectTier(1, this)">
+                                                <i class="fa-solid fa-circle text-warning mb-1"></i>
+                                                <div class="fw-bold">1 Étage</div>
+                                                <small class="text-muted">10 à 25 parts</small>
+                                            </div>
+                                        </div>
+                                        <div class="col-4">
+                                            <div class="tier-option text-center p-3" onclick="selectTier(2, this)">
+                                                <i class="fa-solid fa-cubes-stacked text-warning mb-1"></i>
+                                                <div class="fw-bold">2 Étages</div>
+                                                <small class="text-muted">25 à 50 parts</small>
+                                            </div>
+                                        </div>
+                                        <div class="col-4">
+                                            <div class="tier-option text-center p-3" onclick="selectTier(3, this)">
+                                                <i class="fa-solid fa-crown text-warning mb-1"></i>
+                                                <div class="fw-bold">3 Étages Royal</div>
+                                                <small class="text-muted">50+ parts</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- 4. Choix de la Saveur & Garniture -->
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold text-dark small"><i class="fa-solid fa-spoon text-warning me-1"></i> Parfum du Biscuit & Garniture *</label>
+                                    <select class="form-select shadow-none fw-bold" id="flavorSelect" onchange="calculateCakePrice()" required>
+                                        <option value="Chocolat Grand Cru & Praliné" selected>🍫 Chocolat Noir Grand Cru & Praliné Croquant</option>
+                                        <option value="Vanille Bourbon & Fruits Rouges">🍓 Vanille Bourbon & Coulis Fruits Rouges Frais</option>
+                                        <option value="Forêt Noire Traditionnelle">🍒 Forêt Noire Prestige (Griottes & Crème)</option>
+                                        <option value="Caramel Beurre Salé & Noisette">🍮 Caramel Beurre Salé & Noisettes Torréfiées</option>
+                                        <option value="Red Velvet Exotique">❤️ Red Velvet & Glaçage Mascarpone Doux</option>
+                                        <option value="Mangue & Fruit de la Passion">🥭 Mangue & Passion 100% Fraîcheur d'Abidjan</option>
+                                    </select>
+                                </div>
+
+                                <!-- 5. Inscription sur le Gâteau -->
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold text-dark small"><i class="fa-solid fa-pen-nib text-warning me-1"></i> Message à Inscrire sur le Gâteau</label>
+                                    <input type="text" class="form-control shadow-none fw-bold" id="customMessageInput" placeholder="Ex : Joyeux Anniversaire Aminata (25 ans) !">
+                                </div>
+
+                                <!-- 6. Date et Heure de Récupération -->
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold text-dark small"><i class="fa-solid fa-calendar-day text-warning me-1"></i> Date Souhaitée de Retrait / Livraison *</label>
+                                    <input type="date" class="form-control shadow-none fw-bold" id="eventDateInput" required>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold text-dark small"><i class="fa-solid fa-clock text-warning me-1"></i> Heure de Retrait Souhaitée *</label>
+                                    <select class="form-select shadow-none fw-bold" id="eventTimeSelect">
+                                        <option value="Matinée (09h00 - 12h00)">Matinée (09h00 - 12h00)</option>
+                                        <option value="Après-midi (14h00 - 17h00)" selected>Après-midi (14h00 - 17h00)</option>
+                                        <option value="Soirée (17h00 - 20h00)">Soirée (17h00 - 20h00)</option>
+                                    </select>
+                                </div>
+
+                                <!-- 7. Coordonnées Client -->
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold text-dark small"><i class="fa-solid fa-user text-warning me-1"></i> Votre Nom et Prénom *</label>
+                                    <input type="text" class="form-control shadow-none fw-bold" id="clientName" placeholder="Ex : Kouassi Marc" required>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold text-dark small"><i class="fa-solid fa-phone text-warning me-1"></i> Numéro de Téléphone *</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-white fw-bold"><span class="flag-ci"></span> +225</span>
+                                        <input type="tel" class="form-control shadow-none fw-bold" id="clientPhone" placeholder="07 04 38 92 01" required>
+                                    </div>
+                                </div>
+
+                                <!-- 8. Remarques ou Thème Spécial -->
+                                <div class="col-12">
+                                    <label class="form-label fw-bold text-dark small"><i class="fa-solid fa-palette text-warning me-1"></i> Instructions Spéciales, Couleurs ou Thème</label>
+                                    <textarea class="form-control shadow-none" id="eventNotes" rows="2" placeholder="Ex : Thème Princesse doré et blanc, sans arachides."></textarea>
+                                </div>
+
+                                <!-- BANDEAU RÉSUMÉ DU DEVIS EN DIRECT -->
+                                <div class="col-12">
+                                    <div class="p-4 rounded-4 text-center" style="background: #fffaf0; border: 2px dashed #fb923c;">
+                                        <div class="text-uppercase fw-bold text-muted small mb-1">Tarif Estimé de Votre Création</div>
+                                        <div class="price-tag-badge mb-2" id="estimatedPrice">30 000 FCFA</div>
+                                        <div class="small text-muted mb-3">
+                                            <i class="fa-solid fa-shield-halved text-success me-1"></i> Inclus : Décoration sur mesure, boîte de transport rigide & bougies offertes.
+                                        </div>
+
+                                        <div class="d-flex justify-content-center gap-3 flex-wrap">
+                                            <button type="submit" class="btn btn-warning btn-lg fw-bold rounded-pill px-4 py-3 shadow text-dark d-flex align-items-center gap-2" style="background: linear-gradient(135deg, #fb923c, #f59e0b); border:none;">
+                                                <i class="fa-solid fa-calendar-check fs-5"></i>
+                                                <span>RÉSERVER CE GÂTEAU</span>
+                                            </button>
+                                            <button type="button" class="btn btn-success btn-lg fw-bold rounded-pill px-4 py-3 shadow d-flex align-items-center gap-2" onclick="sendWhatsAppEventOrder()">
+                                                <i class="fa-brands fa-whatsapp fs-4"></i>
+                                                <span>Commander via WhatsApp</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </form>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Modal Confirmation Réservation Gâteau -->
+    <div class="modal fade" id="eventSuccessModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 rounded-4 shadow-lg overflow-hidden">
+                <div class="modal-header border-0 text-white p-4" style="background: linear-gradient(135deg, #2b160c, #422212);">
+                    <div class="d-flex align-items-center gap-2">
+                        <div class="bg-warning text-dark rounded-circle p-2 d-flex align-items-center justify-content-center" style="width:44px;height:44px;">
+                            <i class="fa-solid fa-cake-candles fs-5"></i>
+                        </div>
+                        <div>
+                            <h5 class="modal-title fw-bold mb-0">Réservation Enregistrée !</h5>
+                            <small class="text-warning">Boulangerie de BABI — Riviera 2</small>
+                        </div>
+                    </div>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4 text-center">
+                    <div class="text-success display-4 mb-3">
+                        <i class="fa-solid fa-circle-check"></i>
+                    </div>
+                    <h4 class="fw-bold mb-2" style="color: #2b160c;">Merci pour votre réservation !</h4>
+                    <p class="text-muted small mb-3">Nos maîtres pâtissiers ont bien reçu votre demande de gâteau d'événement. Nous vous contacterons rapidement pour valider les derniers détails décoratifs.</p>
+                    
+                    <div class="p-3 bg-light rounded-3 text-start small border mb-3">
+                        <div class="d-flex justify-content-between mb-1">
+                            <span class="text-muted">Réf Réservation :</span>
+                            <strong class="text-dark" id="modalRef">#BABI-EVENT-892</strong>
+                        </div>
+                        <div class="d-flex justify-content-between mb-1">
+                            <span class="text-muted">Date retenue :</span>
+                            <strong class="text-dark" id="modalDate">---</strong>
+                        </div>
+                        <div class="d-flex justify-content-between mb-1">
+                            <span class="text-muted">Format :</span>
+                            <strong class="text-dark" id="modalDetails">20 parts (1 Étage)</strong>
+                        </div>
+                        <div class="d-flex justify-content-between border-top pt-2 mt-2">
+                            <span class="fw-bold text-dark">Montant Total :</span>
+                            <strong class="text-danger fs-6" id="modalPrice">30 000 FCFA</strong>
+                        </div>
+                    </div>
+
+                    <a id="modalWaveBtn" href="https://pay.wave.com/m/M_ci_7X1JfUg2eEsX/c/ci/?src=p" target="_blank" class="btn btn-info w-100 fw-bold rounded-pill py-3 shadow-sm d-flex align-items-center justify-content-center gap-2 mb-2 text-white" style="background: linear-gradient(135deg, #1dc4e9, #0284c7); border:none;">
+                        <i class="fa-solid fa-mobile-screen fs-5"></i> Régler l'acompte 50% via Wave (1-Clic)
+                    </a>
+
+                    <a id="modalWhatsAppBtn" href="#" target="_blank" class="btn btn-success w-100 fw-bold rounded-pill py-3 shadow-sm d-flex align-items-center justify-content-center gap-2">
+                        <i class="fa-brands fa-whatsapp fs-5"></i> Confirmer sur WhatsApp avec le Pâtissier
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Unified Luxury Footer -->
+    <footer class="mt-5 text-white py-5" style="background: rgba(43, 22, 12, 0.96); border-top: 3px solid #fb923c;">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-4 col-md-6">
+                    <div class="d-flex align-items-center mb-3">
+                        <img src="assets/logo.png" alt="Logo" class="footer-brand-logo">
+                        <div class="d-flex flex-column lh-1">
+                            <span class="footer-brand-title">Boulangerie</span>
+                            <span class="footer-brand-subtitle">de Babi</span>
+                        </div>
+                    </div>
+                    <p class="text-white small">L'excellence de la boulangerie et pâtisserie artisanale à Abidjan. Pièces montées, gâteaux d'anniversaires, viennoiseries dorées et jus 100% naturels.</p>
+                </div>
+
+                <div class="col-lg-2 col-md-6">
+                    <h5 class="fw-bold text-warning mb-3">NAVIGATION</h5>
+                    <ul class="list-unstyled small lh-lg mb-0">
+                        <li><a href="index.html" class="text-white text-decoration-none"><i class="fa-solid fa-chevron-right text-warning me-1 small"></i> Accueil</a></li>
+                        <li><a href="evenements.html" class="text-white text-decoration-none"><i class="fa-solid fa-chevron-right text-warning me-1 small"></i> Gâteaux Événements</a></li>
+                        <li><a href="produits.html" class="text-white text-decoration-none"><i class="fa-solid fa-chevron-right text-warning me-1 small"></i> Nos Produits</a></li>
+                        <li><a href="suivi.html" class="text-white text-decoration-none"><i class="fa-solid fa-chevron-right text-warning me-1 small"></i> Suivi Commande</a></li>
+                    </ul>
+                </div>
+
+                <div class="col-lg-3 col-md-6">
+                    <h5 class="fw-bold text-warning mb-3">CONTACT FOURNIL</h5>
+                    <p class="text-white small mb-1"><i class="fa-solid fa-location-dot text-warning me-2"></i> Cocody Riviera 2, Abidjan - CI</p>
+                    <p class="text-white small mb-1"><i class="fa-solid fa-phone text-warning me-2"></i> <strong>Fixe :</strong> 27 22 56 41 23</p>
+                    <p class="text-white small mb-1"><i class="fa-solid fa-mobile-screen-button text-warning me-2"></i> <strong>Mobiles :</strong> 07 04 38 92 01 / 07 06 81 79 77</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Custom JavaScript for Event Cake Calculator -->
+    <script>
+        let selectedTiers = 1;
+
+        // Set default minimum date to tomorrow
+        document.addEventListener('DOMContentLoaded', () => {
+            const dateInput = document.getElementById('eventDateInput');
+            if (dateInput) {
+                const tomorrow = new Date();
+                tomorrow.setDate(tomorrow.getDate() + 1);
+                dateInput.min = tomorrow.toISOString().split('T')[0];
+                dateInput.value = tomorrow.toISOString().split('T')[0];
+            }
+            calculateCakePrice();
+        });
+
+        function updatePortions(val) {
+            document.getElementById('portionsDisplay').innerText = val;
+            calculateCakePrice();
+        }
+
+        function selectTier(tiers, el) {
+            selectedTiers = tiers;
+            document.querySelectorAll('.tier-option').forEach(t => t.classList.remove('selected'));
+            if (el) el.classList.add('selected');
+            calculateCakePrice();
+        }
+
+        function calculateCakePrice() {
+            const portions = parseInt(document.getElementById('portionsRange').value) || 20;
+            const eventType = document.getElementById('eventTypeSelect').value;
+
+            // Base price per portion (1500 FCFA/part)
+            let basePerPortion = 1500;
+            if (eventType === 'Mariage') basePerPortion = 1800; // Plus de finitions & dorures
+            if (eventType === 'Entreprise') basePerPortion = 1600;
+
+            let total = portions * basePerPortion;
+
+            // Extra for multi-tiers
+            if (selectedTiers === 2) total += 5000;
+            if (selectedTiers === 3) total += 12000;
+
+            document.getElementById('estimatedPrice').innerText = total.toLocaleString() + ' FCFA';
+            return total;
+        }
+
+        function selectModelPreset(eventType, modelName, portions, tiers) {
+            document.getElementById('eventTypeSelect').value = eventType;
+            document.getElementById('portionsRange').value = portions;
+            document.getElementById('portionsDisplay').innerText = portions;
+            
+            const tierEls = document.querySelectorAll('.tier-option');
+            if (tierEls[tiers - 1]) {
+                selectTier(tiers, tierEls[tiers - 1]);
+            }
+            
+            calculateCakePrice();
+            document.getElementById('configurateur').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function buildEventOrderData() {
+            const eventType = document.getElementById('eventTypeSelect').value;
+            const portions = document.getElementById('portionsRange').value;
+            const flavor = document.getElementById('flavorSelect').value;
+            const message = document.getElementById('customMessageInput').value.trim();
+            const date = document.getElementById('eventDateInput').value;
+            const time = document.getElementById('eventTimeSelect').value;
+            const name = document.getElementById('clientName').value.trim() || 'Client BABI';
+            const phone = document.getElementById('clientPhone').value.trim() || '07 04 38 92 01';
+            const notes = document.getElementById('eventNotes').value.trim();
+            const price = calculateCakePrice();
+            const ref = 'BABI-EVT-' + Math.floor(100000 + Math.random() * 900000);
+
+            return {
+                id: ref,
+                ref: ref,
+                eventType,
+                portions,
+                tiers: selectedTiers,
+                flavor,
+                message,
+                date,
+                time,
+                name,
+                phone,
+                notes,
+                price
+            };
+        }
+
+        function submitEventCakeOrder() {
+            const data = buildEventOrderData();
+
+            // Save to localStorage
+            try {
+                let eventOrders = JSON.parse(localStorage.getItem('babi_event_orders')) || [];
+                eventOrders.unshift(data);
+                localStorage.setItem('babi_event_orders', JSON.stringify(eventOrders));
+            } catch(e) {}
+
+            // Populate Modal
+            document.getElementById('modalRef').innerText = '#' + data.ref;
+            document.getElementById('modalDate').innerText = data.date + ' (' + data.time + ')';
+            document.getElementById('modalDetails').innerText = `${data.portions} parts (${data.tiers} Étage${data.tiers > 1 ? 's' : ''}) - ${data.flavor}`;
+            document.getElementById('modalPrice').innerText = data.price.toLocaleString() + ' FCFA';
+
+            const depositAmount = Math.round(data.price * 0.5);
+            const waveUrl = `https://pay.wave.com/m/M_ci_7X1JfUg2eEsX/c/ci/?amount=${depositAmount}&client_reference=${encodeURIComponent(data.ref)}`;
+            const waveBtn = document.getElementById('modalWaveBtn');
+            if (waveBtn) {
+                waveBtn.href = waveUrl;
+                waveBtn.innerHTML = `<i class="fa-solid fa-mobile-screen fs-5 me-1"></i> Régler l'acompte 50% Wave (${depositAmount.toLocaleString()} FCFA)`;
+            }
+
+            const whatsappUrl = generateWhatsAppEventUrl(data);
+            document.getElementById('modalWhatsAppBtn').href = whatsappUrl;
+
+            const modal = new bootstrap.Modal(document.getElementById('eventSuccessModal'));
+            modal.show();
+        }
+
+        function generateWhatsAppEventUrl(data) {
+            const bakeryWhatsApp = "2250704389201";
+            let msg = `🎂 *RÉSERVATION DE GÂTEAU D'ÉVÉNEMENT — BOULANGERIE DE BABI*\n`;
+            msg += `━━━━━━━━━━━━━━━━━━━━━\n`;
+            msg += `📋 *Réf :* #${data.ref}\n`;
+            msg += `👤 *Client :* ${data.name}\n`;
+            msg += `📞 *Téléphone :* ${data.phone}\n`;
+            msg += `🎉 *Événement :* ${data.eventType}\n`;
+            msg += `🍰 *Format :* ${data.portions} parts (${data.tiers} Étage${data.tiers > 1 ? 's' : ''})\n`;
+            msg += `🍫 *Parfum / Garniture :* ${data.flavor}\n`;
+            if (data.message) msg += `✍️ *Inscription :* "${data.message}"\n`;
+            msg += `📅 *Date Souhaitée :* ${data.date} (${data.time})\n`;
+            if (data.notes) msg += `📝 *Notes & Thème :* ${data.notes}\n`;
+            msg += `━━━━━━━━━━━━━━━━━━━━━\n`;
+            msg += `💰 *Devis Estimé :* *${data.price.toLocaleString()} FCFA*\n`;
+            msg += `📍 *Retrait :* Fournil Riviera 2, Abidjan\n\n`;
+            msg += `_Merci de me confirmer la disponibilité et les modalités d'acompte._ 🥖✨`;
+
+            return `https://api.whatsapp.com/send?phone=${bakeryWhatsApp}&text=${encodeURIComponent(msg)}`;
+        }
+
+        function sendWhatsAppEventOrder() {
+            const data = buildEventOrderData();
+            const url = generateWhatsAppEventUrl(data);
+            window.open(url, '_blank');
+        }
+    </script>
+    <script src="js/anti_hacker_client.js"></script>
+</body>
+</html>

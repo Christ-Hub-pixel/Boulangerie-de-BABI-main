@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fidélité - Boulangerie de Babi</title>
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/global.css">
+    <link rel="stylesheet" href="css/animations.css">
+    <link rel="stylesheet" href="css/fidelite.css">
+</head>
+<body class="bg-gray-light">
+
+            <!-- E-commerce Navbar -->
+    <nav class="navbar navbar-expand-lg fixed-top py-2" style="background: rgba(43, 22, 12, 0.95); backdrop-filter: blur(10px); box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+        <div class="container align-items-center">
+            <!-- Toggler for Mobile Sidebar -->
+            <button class="navbar-toggler border-0 px-1 me-2 text-white" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileSidebar">
+                <i class="fa-solid fa-bars fs-2"></i>
+            </button>
+
+            <!-- Logo -->
+            <a class="navbar-brand d-flex align-items-center text-decoration-none me-auto me-lg-4" href="index.html">
+                <img src="assets/logo.png" alt="Logo" class="navbar-brand-logo">
+                <div class="d-flex flex-column lh-1">
+                    <span class="navbar-brand-title">Boulangerie</span>
+                    <span class="navbar-brand-subtitle d-flex align-items-center">de Babi <span class="flag-ci flag-ci-sm ms-1"></span></span>
+                </div>
+            </a>
+            
+            <!-- Search Bar (Desktop) -->
+            <div class="d-none d-lg-flex flex-grow-1 header-search-container mx-3">
+                <form class="babi-search-form w-100 m-0" role="search" onsubmit="event.preventDefault();">
+                    <div class="babi-search-wrapper">
+                        <i class="fa-solid fa-magnifying-glass babi-search-icon"></i>
+                        <input type="text" class="babi-search-input"
+                            placeholder="Pain chaud, croissant, gâteau, bissap..." 
+                            aria-label="Rechercher un produit"
+                            autocomplete="off"
+                            spellcheck="false">
+                        <button type="button" class="search-clear-btn" title="Effacer la recherche" aria-label="Effacer">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                        <kbd class="babi-search-kbd d-none d-xl-inline-flex" title="Raccourci clavier">Ctrl K</kbd>
+                        <button type="submit" class="babi-search-btn">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                            <span>Rechercher</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Icons (Desktop & Mobile) -->
+            <div class="d-flex align-items-center gap-3 gap-lg-4">
+                <a href="connexion.html" class="text-white text-decoration-none d-flex align-items-center gap-2">
+                    <i class="fa-regular fa-user fs-4"></i>
+                    <div class="d-none d-lg-flex flex-column lh-1">
+                        <span style="font-size: 0.75rem; color: #ccc;">Bonjour, Connectez-vous</span>
+                        <span class="fw-bold" style="font-size: 0.9rem;">Mon Compte <i class="fa-solid fa-chevron-down ms-1" style="font-size:0.7rem;"></i></span>
+                    </div>
+                </a>
+                
+                <a href="apropos.html" class="text-white text-decoration-none d-none d-lg-flex align-items-center gap-2">
+                    <i class="fa-regular fa-circle-question fs-4"></i>
+                    <div class="d-flex flex-column lh-1">
+                        <span class="fw-bold mt-2" style="font-size: 0.9rem;">Aide <i class="fa-solid fa-chevron-down ms-1" style="font-size:0.7rem;"></i></span>
+                    </div>
+                </a>
+
+                <a href="cart.html" class="position-relative text-white text-decoration-none d-flex align-items-center gap-2">
+                    <i class="fa-solid fa-cart-shopping fs-4"></i>
+                    <span class="position-absolute top-0 start-0 translate-middle badge rounded-pill bg-danger cart-badge ms-2 mt-1" style="font-size: 0.6em;display:none;">0</span>
+                    <span class="d-none d-lg-block fw-bold mt-1">Panier</span>
+                </a>
+            </div>
+        </div>
+        
+        <!-- Search Bar (Mobile) -->
+        <div class="container d-lg-none mt-2 pb-1 header-search-mobile">
+            <form class="babi-search-form w-100 m-0" role="search" onsubmit="event.preventDefault();">
+                <div class="babi-search-wrapper">
+                    <i class="fa-solid fa-magnifying-glass babi-search-icon"></i>
+                    <input type="text" class="babi-search-input" 
+                        placeholder="Pain, croissant, gâteau, jus..." 
+                        aria-label="Rechercher un produit"
+                        autocomplete="off"
+                        spellcheck="false">
+                    <button type="button" class="search-clear-btn" title="Effacer la recherche" aria-label="Effacer">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                    <button type="submit" class="babi-search-btn px-2 py-1">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </nav>
+    
+    <!-- Offcanvas Mobile Sidebar -->
+    <div class="offcanvas offcanvas-start" tabindex="-1" id="mobileSidebar">
+        <div class="offcanvas-header bg-dark text-white">
+            <h5 class="offcanvas-title"><i class="fa-solid fa-wheat-awn text-primary"></i> Boulangerie de Babi</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
+        </div>
+        <div class="offcanvas-body p-0">
+            <div class="list-group list-group-flush">
+                <a href="index.html" class="list-group-item list-group-item-action fw-bold"><i class="fa-solid fa-house me-2"></i> Accueil</a>
+                <a href="produits.html" class="list-group-item list-group-item-action"><i class="fa-solid fa-bread-slice me-2"></i> Pains</a>
+                <a href="produits.html" class="list-group-item list-group-item-action"><i class="fa-solid fa-cookie me-2"></i> Viennoiseries</a>
+                <a href="produits.html" class="list-group-item list-group-item-action"><i class="fa-solid fa-cake-candles me-2"></i> Pâtisseries</a>
+                <a href="produits.html" class="list-group-item list-group-item-action"><i class="fa-solid fa-mug-hot me-2"></i> Boissons</a>
+                <a href="fidelite.html" class="list-group-item list-group-item-action"><i class="fa-solid fa-gift me-2"></i> Fidélité</a>
+                <a href="contact.html" class="list-group-item list-group-item-action"><i class="fa-solid fa-envelope me-2"></i> Contact</a>
+            </div>
+        </div>
+    </div>
+
+        <div class="bg-white py-2 shadow-sm" style="margin-top: 100px;">
+        <div class="container fs-sm text-muted">
+            <a href="index.html" class="text-decoration-none text-dark hover-primary"><i class="fa-solid fa-house"></i> Accueil</a> 
+            <i class="fa-solid fa-chevron-right mx-2" style="font-size:0.7em;"></i> <span>Programme de Fidélité</span>
+        </div>
+    </div>
+    
+    <div class="container my-4">
+        <div class="bg-white rounded shadow-sm p-4 p-lg-5">
+
+    <!-- Features Ribbon -->
+    <section class="fidelity-features-bar">
+        <div class="ff-container">
+            <div class="ff-item">
+                <i class="fa-solid fa-bag-shopping"></i>
+                <div class="ff-text">
+                    <strong>100 FCFA = 1 POINT</strong><br>
+                    <span>Cumulez des points à chaque achat.</span>
+                </div>
+            </div>
+            <div class="ff-item">
+                <i class="fa-solid fa-gift"></i>
+                <div class="ff-text">
+                    <strong>RÉCOMPENSES EXCLUSIVES</strong><br>
+                    <span>Échangez vos points contre des réductions et des cadeaux.</span>
+                </div>
+            </div>
+            <div class="ff-item">
+                <i class="fa-solid fa-tags"></i>
+                <div class="ff-text">
+                    <strong>OFFRES PERSONNALISÉES</strong><br>
+                    <span>Profitez d'offres spéciales rien que pour vous.</span>
+                </div>
+            </div>
+            <div class="ff-item">
+                <i class="fa-solid fa-cake-candles"></i>
+                <div class="ff-text">
+                    <strong>PRODUITS OFFERTS</strong><br>
+                    <span>Gagnez des produits gratuits avec vos points.</span>
+                </div>
+            </div>
+            <div class="ff-item">
+                <i class="fa-solid fa-crown"></i>
+                <div class="ff-text">
+                    <strong>CLIENT PREMIUM</strong><br>
+                    <span>Accédez à des avantages réservés à nos fidèles clients.</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Comment ça marche -->
+    <section id="how-it-works" class="how-it-works-section" style="background-color: #fdfaf2; padding-top: 60px;">
+        <h2 class="section-title text-center">COMMENT ÇA MARCHE ?</h2>
+        <div class="wheat-separator mx-auto"><i class="fa-solid fa-wheat-awn"></i></div>
+        
+        <div class="timeline-container">
+            <div class="timeline-step fidelity-step">
+                <div class="ts-icon"><i class="fa-solid fa-basket-shopping"></i></div>
+                <div class="ts-number">1</div>
+                <h4>Commandez</h4>
+                <p>Passez vos commandes en toute simplicité sur notre site.</p>
+            </div>
+            <div class="ts-arrow"><i class="fa-solid fa-arrow-right-long"></i></div>
+            <div class="timeline-step fidelity-step">
+                <div class="ts-icon"><i class="fa-solid fa-star"></i></div>
+                <div class="ts-number">2</div>
+                <h4>Cumulez des points</h4>
+                <p>Vous gagnez 1 point pour chaque 100 FCFA dépensé.</p>
+            </div>
+            <div class="ts-arrow"><i class="fa-solid fa-arrow-right-long"></i></div>
+            <div class="timeline-step fidelity-step">
+                <div class="ts-icon"><i class="fa-solid fa-gift"></i></div>
+                <div class="ts-number">3</div>
+                <h4>Atteignez des paliers</h4>
+                <p>Plus vous cumulez de points, plus vous débloquez d'avantages.</p>
+            </div>
+            <div class="ts-arrow"><i class="fa-solid fa-arrow-right-long"></i></div>
+            <div class="timeline-step fidelity-step">
+                <div class="ts-icon"><i class="fa-solid fa-percent"></i></div>
+                <div class="ts-number">4</div>
+                <h4>Échangez vos points</h4>
+                <p>Utilisez vos points pour obtenir des réductions ou des produits.</p>
+            </div>
+            <div class="ts-arrow"><i class="fa-solid fa-arrow-right-long"></i></div>
+            <div class="timeline-step fidelity-step">
+                <div class="ts-icon"><i class="fa-regular fa-heart"></i></div>
+                <div class="ts-number">5</div>
+                <h4>Profitez d'avantages</h4>
+                <p>Bénéficiez d'offres exclusives en tant que client fidèle.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Paliers de Fidélité -->
+    <section class="fidelity-tiers-section">
+        <h2 class="section-title text-center">PALIERS DE FIDÉLITÉ</h2>
+        <div class="wheat-separator mx-auto"><i class="fa-solid fa-wheat-awn"></i></div>
+        
+        <div class="tiers-container">
+            <!-- Bronze -->
+            <div class="tier-card bronze">
+                <div class="tier-header">
+                    <div class="tier-icon"><i class="fa-solid fa-medal"></i></div>
+                    <h3>BRONZE</h3>
+                    <p class="tier-points">0 - 499 points</p>
+                </div>
+                <ul class="tier-benefits">
+                    <li><i class="fa-regular fa-circle-check"></i> 1 point = 100 FCFA</li>
+                    <li><i class="fa-regular fa-circle-check"></i> Offres spéciales</li>
+                    <li><i class="fa-regular fa-circle-check"></i> Newsletters exclusives</li>
+                </ul>
+                <div class="tier-footer current">
+                    Votre niveau actuel
+                </div>
+            </div>
+
+            <!-- Argent -->
+            <div class="tier-card silver">
+                <div class="tier-header">
+                    <div class="tier-icon"><i class="fa-solid fa-medal"></i></div>
+                    <h3>ARGENT</h3>
+                    <p class="tier-points">500 - 1 499 points</p>
+                </div>
+                <ul class="tier-benefits">
+                    <li><i class="fa-regular fa-circle-check"></i> 5% de réduction</li>
+                    <li><i class="fa-regular fa-circle-check"></i> Offres exclusives</li>
+                    <li><i class="fa-regular fa-circle-check"></i> Cadeau d'anniversaire</li>
+                </ul>
+                <div class="tier-footer">
+                    Atteignez 500 points
+                </div>
+            </div>
+
+            <!-- Or -->
+            <div class="tier-card gold">
+                <div class="tier-header">
+                    <div class="tier-icon"><i class="fa-solid fa-medal"></i></div>
+                    <h3>OR</h3>
+                    <p class="tier-points">1 500 - 2 999 points</p>
+                </div>
+                <ul class="tier-benefits">
+                    <li><i class="fa-regular fa-circle-check"></i> 10% de réduction</li>
+                    <li><i class="fa-regular fa-circle-check"></i> Viennoiserie offerte</li>
+                    <li><i class="fa-regular fa-circle-check"></i> Produits exclusifs</li>
+                </ul>
+                <div class="tier-footer">
+                    Atteignez 1 500 points
+                </div>
+            </div>
+
+            <!-- Platine -->
+            <div class="tier-card platinum">
+                <div class="tier-header">
+                    <div class="tier-icon"><i class="fa-solid fa-crown"></i></div>
+                    <h3>PLATINE</h3>
+                    <p class="tier-points">3 000 points et +</p>
+                </div>
+                <ul class="tier-benefits">
+                    <li><i class="fa-solid fa-check"></i> 15% de réduction</li>
+                    <li><i class="fa-solid fa-check"></i> Accès aux nouveautés en avant-première</li>
+                    <li><i class="fa-solid fa-check"></i> Service client prioritaire</li>
+                    <li><i class="fa-solid fa-check"></i> Cadeaux exclusifs</li>
+                </ul>
+                <div class="tier-footer">
+                    Atteignez 3 000 points
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Exemples de Récompenses -->
+    <section class="rewards-section">
+        <h2 class="section-title text-center">EXEMPLES DE RÉCOMPENSES</h2>
+        <div class="wheat-separator mx-auto"><i class="fa-solid fa-wheat-awn"></i></div>
+
+        <div class="rewards-grid">
+            <div class="reward-card">
+                <div class="reward-points">100 POINTS</div>
+                <img loading="lazy" src="assets/product_croissant.png" alt="Croissant">
+                <h4>Croissant <span class="fw-normal">au beurre offert</span></h4>
+            </div>
+            
+            <div class="reward-card">
+                <div class="reward-points">250 POINTS</div>
+                <img loading="lazy" src="assets/product_baguette.png" alt="Baguette">
+                <h4>Baguette tradition <span class="fw-normal">offerte</span></h4>
+            </div>
+
+            <div class="reward-card">
+                <div class="reward-points">500 POINTS</div>
+                <img loading="lazy" src="assets/product_chocolat.png" alt="Gâteau au chocolat">
+                <h4>5% de réduction sur <span class="fw-normal">votre commande</span></h4>
+            </div>
+
+            <div class="reward-card">
+                <div class="reward-points">1 000 POINTS</div>
+                <img loading="lazy" src="assets/product_jus_ananas.png" alt="Jus d'Ananas">
+                <h4>Jus d'Ananas 1L <span class="fw-normal">offert</span></h4>
+            </div>
+
+            <div class="reward-card">
+                <div class="reward-points">1 500 POINTS</div>
+                <img loading="lazy" src="assets/product_foret_noire.png" alt="Forêt noire">
+                <h4>10% de réduction sur <span class="fw-normal">votre commande</span></h4>
+            </div>
+
+            <div class="reward-card">
+                <div class="reward-points">2 500 POINTS</div>
+                <img src="assets/gift_box_fidelite.svg" alt="Coffret cadeau" style="padding:20px;">
+                <h4>Coffret gourmand <span class="fw-normal">offert</span></h4>
+            </div>
+        </div>
+
+        <div class="text-center mt-5">
+            <a href="#" class="btn btn-outline-dark"><i class="fa-solid fa-gift"></i> VOIR TOUTES LES RÉCOMPENSES</a>
+        </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="faq-section">
+        <h2 class="section-title text-center">QUESTIONS FRÉQUENTES</h2>
+        <div class="wheat-separator mx-auto"><i class="fa-solid fa-wheat-awn"></i></div>
+
+        <div class="faq-grid">
+            <div class="faq-col">
+                <div class="faq-item">
+                    <span>Comment cumuler des points ?</span>
+                    <i class="fa-solid fa-circle-plus"></i>
+                </div>
+                <div class="faq-item">
+                    <span>Quand mes points expirent-ils ?</span>
+                    <i class="fa-solid fa-circle-plus"></i>
+                </div>
+                <div class="faq-item">
+                    <span>Comment utiliser mes points ?</span>
+                    <i class="fa-solid fa-circle-plus"></i>
+                </div>
+            </div>
+            <div class="faq-col">
+                <div class="faq-item">
+                    <span>Les points sont-ils valables en Click & Collect ?</span>
+                    <i class="fa-solid fa-circle-plus"></i>
+                </div>
+                <div class="faq-item">
+                    <span>Puis-je cumuler plusieurs promotions ?</span>
+                    <i class="fa-solid fa-circle-plus"></i>
+                </div>
+                <div class="faq-item">
+                    <span>Comment connaître mon solde de points ?</span>
+                    <i class="fa-solid fa-circle-plus"></i>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Engagement Final -->
+    <div class="engagement-banner">
+        <div class="eb-container align-items-center">
+            <div class="eb-title flex-1">
+                <i class="fa-solid fa-gift" style="font-size: 3.5rem;"></i>
+                <div>
+                    <h2 style="font-size: 1.8rem; margin:0;">Rejoignez le programme fidélité</h2>
+                    <h2 class="highlight-italic" style="font-size: 1.8rem; margin:0; color: var(--primary);">et profitez d'avantages exclusifs !</h2>
+                </div>
+            </div>
+            <div class="eb-features" style="gap: 20px;">
+                <div class="eb-feature flex-column align-items-center text-center">
+                    <i class="fa-solid fa-user-check" style="font-size: 1.5rem; margin-bottom:5px;"></i>
+                    <span style="font-size: 0.8rem;">Inscription<br>gratuite</span>
+                </div>
+                <div class="eb-feature flex-column align-items-center text-center">
+                    <i class="fa-solid fa-star" style="font-size: 1.5rem; margin-bottom:5px;"></i>
+                    <span style="font-size: 0.8rem;">Des points<br>dès votre 1ère commande</span>
+                </div>
+                <div class="eb-feature flex-column align-items-center text-center">
+                    <i class="fa-solid fa-gift" style="font-size: 1.5rem; margin-bottom:5px;"></i>
+                    <span style="font-size: 0.8rem;">Des surprises<br>toute l'année</span>
+                </div>
+                <a href="#" class="btn btn-primary" style="margin-left: 20px;">CRÉER MON COMPTE</a>
+            </div>
+        </div>
+    </div>
+
+    </div></div>
+<!-- Footer -->
+            <!-- Unified Luxury Footer -->
+    <footer class="mt-5 text-white py-5" style="background: rgba(43, 22, 12, 0.96); border-top: 3px solid #fb923c;">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-4 col-md-6">
+                    <div class="d-flex align-items-center mb-3">
+                        <img src="assets/logo.png" alt="Logo" class="footer-brand-logo">
+                        <div class="d-flex flex-column lh-1">
+                            <span class="footer-brand-title">Boulangerie</span>
+                            <span class="footer-brand-subtitle">de Babi</span>
+                        </div>
+                    </div>
+                    <p class="text-white small">L'excellence de la boulangerie et pâtisserie artisanale à Abidjan. Pains croustillants, viennoiseries dorées, pâtisseries fines et jus 100% naturels.</p>
+                    <div class="d-flex gap-2">
+                        <a href="https://maps.app.goo.gl/6JrQ1ryZj2KeD5zG7" target="_blank" class="btn btn-outline-warning btn-sm rounded-circle"><i class="fa-solid fa-location-dot"></i></a>
+                        <a href="tel:2722564123" class="btn btn-outline-warning btn-sm rounded-circle"><i class="fa-solid fa-phone"></i></a>
+                        <a href="tel:0704389201" class="btn btn-outline-warning btn-sm rounded-circle"><i class="fa-solid fa-mobile-screen"></i></a>
+                    </div>
+                </div>
+
+                <div class="col-lg-2 col-md-6">
+                    <h5 class="fw-bold text-warning mb-3">NAVIGATION</h5>
+                    <ul class="list-unstyled small lh-lg mb-0">
+                        <li><a href="index.html" class="text-white text-decoration-none hover-warning"><i class="fa-solid fa-chevron-right text-warning me-1 small"></i> Accueil</a></li>
+                        <li><a href="produits.html" class="text-white text-decoration-none hover-warning"><i class="fa-solid fa-chevron-right text-warning me-1 small"></i> Nos Produits</a></li>
+                        <li><a href="favoris.html" class="text-white text-decoration-none hover-warning"><i class="fa-solid fa-chevron-right text-warning me-1 small"></i> Mes Favoris</a></li>
+                        <li><a href="suivi.html" class="text-white text-decoration-none hover-warning"><i class="fa-solid fa-chevron-right text-warning me-1 small"></i> Suivi Commande</a></li>
+                        <li><a href="fidelite.html" class="text-white text-decoration-none hover-warning"><i class="fa-solid fa-chevron-right text-warning me-1 small"></i> Club Fidélité</a></li>
+                    </ul>
+                </div>
+
+                <div class="col-lg-3 col-md-6">
+                    <h5 class="fw-bold text-warning mb-3">HORAIRES DE LA BOUTIQUE</h5>
+                    <p class="text-white small mb-1"><i class="fa-solid fa-clock text-warning me-2"></i> Lundi - Dimanche : 05h45 - 23h00</p>
+                    <h6 class="fw-bold text-warning mt-3 mb-2" style="font-size:0.9rem;">SORTIES DE PAIN CHAUDS</h6>
+                    <p class="text-white small mb-1">06h00 • 09h00 • 14h00 • 17h00 • 18h00</p>
+                </div>
+
+                <div class="col-lg-3 col-md-6">
+                    <h5 class="fw-bold text-warning mb-3">CONTACT BOUTIQUE</h5>
+                    <p class="text-white small mb-1"><i class="fa-solid fa-location-dot text-warning me-2"></i> Cocody Riviera 2, Abidjan - CI</p>
+                    <p class="text-white small mb-1"><i class="fa-solid fa-phone text-warning me-2"></i> <strong>Fixe :</strong> <a href="tel:2722564123" class="text-white text-decoration-none">27 22 56 41 23</a></p>
+                    <p class="text-white small mb-1"><i class="fa-solid fa-mobile-screen-button text-warning me-2"></i> <strong>Mobiles :</strong> <a href="tel:0704389201" class="text-white text-decoration-none">07 04 38 92 01</a> / <a href="tel:0706817977" class="text-white text-decoration-none">07 06 81 79 77</a></p>
+                    <a href="contact.html" class="btn btn-warning btn-sm w-100 fw-bold mt-2 rounded-pill" style="background:#fb923c; border:none; color:#2b160c;">
+                        <i class="fa-solid fa-paper-plane me-1"></i> Nous Contacter
+                    </a>
+                </div>
+            </div>
+
+            <div class="border-top border-secondary mt-5 pt-3 text-center text-muted small">
+                &copy; 2026 Boulangerie de Babi. Tous droits réservés.
+            </div>
+        </div>
+    </footer>
+
+<!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+    <script src="js/cart.js"></script>
+    <script src="js/store_schedule.js"></script>
+    <script src="js/script.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/cart_actions.js"></script>
+    <script src="js/wishlist.js"></script>
+    <script src="js/search.js"></script>
+</body>
+</html>

@@ -1,0 +1,249 @@
+
+/* --- WORKFLOW ANIMATIONS --- */
+
+/* 1. Page Load Fade In */
+body {
+    animation: fadeInPage 0.8s ease-out forwards;
+}
+
+@keyframes fadeInPage {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* 2. Slide-up Elements (for cards, titles) */
+.slide-up {
+    opacity: 0;
+    transform: translateY(30px);
+    animation: slideUp 0.6s ease-out forwards;
+}
+
+@keyframes slideUp {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Staggered slide up for product cards */
+.row > div:nth-child(1) .card { animation-delay: 0.1s; }
+.row > div:nth-child(2) .card { animation-delay: 0.2s; }
+.row > div:nth-child(3) .card { animation-delay: 0.3s; }
+.row > div:nth-child(4) .card { animation-delay: 0.4s; }
+
+/* 3. Hover Effects for Cards & Buttons */
+.card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease !important;
+}
+.card:hover {
+    transform: translateY(-10px) !important;
+    box-shadow: 0 15px 30px rgba(0,0,0,0.15) !important;
+}
+
+.card .card-img-top {
+    transition: transform 0.4s ease;
+}
+.card:hover .card-img-top {
+    transform: scale(1.05);
+}
+
+.btn-add-to-cart {
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+.btn-add-to-cart:hover {
+    background-color: #2b160c !important;
+    color: #f4b400 !important;
+    border-color: #2b160c !important;
+    transform: scale(1.05);
+}
+.btn-add-to-cart:active {
+    transform: scale(0.95);
+}
+
+/* Pulse animation for primary CTA (checkout) */
+.btn-pulse {
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(244, 180, 0, 0.7); }
+    70% { transform: scale(1.03); box-shadow: 0 0 0 10px rgba(244, 180, 0, 0); }
+    100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(244, 180, 0, 0); }
+}
+
+/* 4. Toast Notification Style */
+.toast-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+}
+
+.custom-toast {
+    background: #fff;
+    border-left: 5px solid #28a745;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    border-radius: 4px;
+    padding: 15px 20px;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    transform: translateX(120%);
+    opacity: 0;
+    transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.custom-toast.show {
+    transform: translateX(0);
+    opacity: 1;
+}
+
+.toast-icon {
+    font-size: 1.5rem;
+    color: #28a745;
+}
+
+.toast-content h6 {
+    margin: 0;
+    font-weight: bold;
+    color: #333;
+}
+.toast-content p {
+    margin: 0;
+    font-size: 0.85rem;
+    color: #666;
+}
+
+/* Badge pop animation */
+@keyframes badgePop {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.5); }
+    100% { transform: scale(1); }
+}
+.badge-pop {
+    animation: badgePop 0.4s ease;
+}
+
+/* === PREMIUM PRODUCT CARDS === */
+.premium-product-card {
+    border-radius: 12px !important;
+    transition: transform 0.3s ease, box-shadow 0.3s ease !important;
+    cursor: pointer;
+}
+.premium-product-card:hover {
+    transform: translateY(-8px) !important;
+    box-shadow: 0 12px 28px rgba(43,22,12,0.15) !important;
+}
+.premium-product-card .product-img {
+    border-radius: 12px 12px 0 0;
+}
+.premium-product-card:hover .product-img {
+    transform: scale(1.06) !important;
+}
+.wishlist-btn {
+    opacity: 0;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    transform: scale(0.8);
+}
+.premium-product-card:hover .wishlist-btn {
+    opacity: 1;
+    transform: scale(1);
+}
+.wishlist-btn:hover i {
+    font-weight: 900;
+}
+.wishlist-btn.active i {
+    font-weight: 900;
+    color: #e74c3c;
+}
+
+/* === CART ICON === */
+.cart-icon-wrapper:hover {
+    background: rgba(244,180,0,0.3) !important;
+    border-color: #f4b400 !important;
+    transform: scale(1.05);
+}
+
+/* Dropdown cart */
+.dropdown-menu .custom-toast-row {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+.dropdown-menu .custom-toast-row img {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+/* --- PAGE BACKGROUND FOR INDEX --- */
+body {
+    background-color: #fffdf5 !important;
+    background: linear-gradient(180deg, #ffffff 0%, rgba(254, 243, 199, 0.30) 25%, rgba(251, 146, 60, 0.10) 75%, #fffdf5 100%) !important;
+}
+
+/* --- INFINITE SCROLLING MARQUEE BANNER --- */
+.bakery-marquee-wrapper {
+    background: linear-gradient(90deg, #2b160c 0%, #3d2012 50%, #2b160c 100%);
+    color: #ffffff;
+    overflow: hidden;
+    white-space: nowrap;
+    position: relative;
+    padding: 14px 0;
+    margin: 1mm 0 !important;
+    border-top: 2px solid #ffc107;
+    border-bottom: 2px solid #ffc107;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+}
+
+.bakery-marquee-track {
+    display: inline-flex;
+    align-items: center;
+    gap: 40px;
+    animation: marqueeScroll 28s linear infinite;
+}
+
+.bakery-marquee-wrapper:hover .bakery-marquee-track {
+    animation-play-state: paused;
+}
+
+.marquee-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #ffffff;
+    letter-spacing: 0.5px;
+}
+
+.marquee-item img {
+    height: 38px;
+    width: 38px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 2px solid #ffc107;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+}
+
+.marquee-item i {
+    color: #ffc107;
+    font-size: 1.3rem;
+}
+
+.marquee-divider {
+    color: #ffc107;
+    font-size: 1.1rem;
+    opacity: 0.8;
+}
+
+@keyframes marqueeScroll {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+}

@@ -1,0 +1,9 @@
+node_modules/
+database.sqlite
+assets/a nettoie la qualite de la photo en produit/
+*.py
+*.apk
+*.zip
+.dart_tool/
+build/
+

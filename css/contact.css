@@ -1,0 +1,490 @@
+/* Hero Section */
+.contact-hero {
+    background-image: linear-gradient(rgba(20, 10, 5, 0.8), rgba(20, 10, 5, 0.9)), url('../assets/hero_bakery.png');
+    background-size: cover;
+    background-position: center;
+    padding: 120px 5% 60px;
+    color: var(--white);
+    margin-top: 70px;
+}
+
+.contact-hero-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    text-align: left;
+}
+
+.ch-badge {
+    color: var(--primary);
+    font-size: 0.85rem;
+    font-weight: bold;
+    letter-spacing: 1px;
+    margin-bottom: 20px;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.ch-title {
+    font-size: 3.5rem;
+    font-family: 'Playfair Display', serif;
+    line-height: 1.1;
+    margin-bottom: 25px;
+    color: #fff;
+}
+
+.ch-title .highlight-italic {
+    font-family: 'Great Vibes', cursive;
+    color: var(--primary);
+    font-size: 4.5rem;
+    font-weight: normal;
+    display: block;
+    margin-top: -10px;
+}
+
+.ch-desc {
+    font-size: 1.1rem;
+    color: #ddd;
+    margin-bottom: 50px;
+    line-height: 1.6;
+    max-width: 600px;
+}
+
+.ch-features {
+    max-width: 1400px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 20px;
+    border-top: 1px solid rgba(255,255,255,0.1);
+    padding-top: 40px;
+}
+
+.ch-feature {
+    display: flex;
+    align-items: flex-start;
+    gap: 15px;
+    flex: 1;
+    min-width: 200px;
+}
+
+.ch-feature i {
+    color: var(--primary);
+    font-size: 1.8rem;
+}
+
+.chf-text {
+    font-size: 0.85rem;
+    color: #aaa;
+    line-height: 1.4;
+}
+
+.chf-text strong {
+    color: #fff;
+    font-size: 0.95rem;
+    display: block;
+    margin-bottom: 5px;
+}
+
+/* Main Contact Section */
+.contact-main-section {
+    padding: 80px 5%;
+    background: #fcfbf9;
+}
+
+.cms-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    display: flex;
+    gap: 40px;
+    align-items: stretch;
+}
+
+.cms-form-box, .cms-info-box {
+    background: #fff;
+    border-radius: 12px;
+    padding: 50px;
+    box-shadow: 0 5px 25px rgba(0,0,0,0.03);
+    flex: 1;
+}
+
+/* Contact Form */
+.contact-form {
+    margin-top: 30px;
+}
+
+.form-row-contact {
+    display: flex;
+    gap: 20px;
+}
+
+.form-group-contact {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group-contact label {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--dark);
+    margin-bottom: 8px;
+}
+
+.form-group-contact input,
+.form-group-contact select,
+.form-group-contact textarea {
+    padding: 12px 15px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.95rem;
+    color: var(--dark);
+    transition: 0.3s;
+    background: #fafafa;
+}
+
+.form-group-contact input:focus,
+.form-group-contact select:focus,
+.form-group-contact textarea:focus {
+    outline: none;
+    border-color: var(--primary-dark);
+    background: #fff;
+    box-shadow: 0 0 0 3px rgba(201, 138, 88, 0.1);
+}
+
+.select-wrapper {
+    position: relative;
+}
+
+.select-wrapper select {
+    width: 100%;
+    appearance: none;
+    -webkit-appearance: none;
+    cursor: pointer;
+}
+
+.select-wrapper i {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #999;
+    pointer-events: none;
+}
+
+.mt-15 { margin-top: 15px; }
+.mt-20 { margin-top: 20px; }
+.btn-block { width: 100%; display: block; text-align: center; }
+
+.security-note {
+    text-align: center;
+    font-size: 0.8rem;
+    color: #888;
+    margin-top: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.security-note i {
+    color: #aaa;
+}
+
+/* Info Box */
+.contact-details {
+    margin-top: 30px;
+    margin-bottom: 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.cd-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+}
+
+.cd-icon {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    background: #2b160c;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    flex-shrink: 0;
+}
+
+.cd-text {
+    font-size: 0.95rem;
+    color: #555;
+    line-height: 1.5;
+}
+
+.cd-text strong {
+    display: block;
+    color: var(--dark);
+    margin-bottom: 5px;
+    font-size: 1rem;
+}
+
+.map-container {
+    margin-top: 20px;
+}
+
+.empty-map-placeholder-small {
+    width: 100%;
+    height: 250px;
+    background: #e9e5db;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px dashed #d1bfae;
+    color: #a89a8c;
+    font-weight: bold;
+    font-size: 1rem;
+    text-align: center;
+}
+
+.btn-dark-brown {
+    background: #2b160c;
+    color: #fff;
+    padding: 15px;
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+.btn-dark-brown:hover {
+    background: #422415;
+    color: #fff;
+}
+
+/* Socials & Boutiques Grid */
+.socials-section {
+    padding: 40px 5%;
+    background: #fdfaf2;
+}
+
+.socials-grid {
+    max-width: 1400px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 30px;
+}
+
+.social-card {
+    background: #fff;
+    padding: 30px 20px;
+    border-radius: 12px;
+    text-align: center;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.03);
+    border: 1px solid #f0f0f0;
+    transition: 0.3s;
+}
+
+.social-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+}
+
+.sc-icon {
+    font-size: 2.5rem;
+    margin-bottom: 15px;
+}
+
+.whatsapp-color { color: #25D366; }
+.insta-color { color: #E1306C; }
+.fb-color { color: #1877F2; }
+.store-color { color: #c98a58; }
+
+.social-card h4 {
+    color: var(--dark);
+    font-size: 1.1rem;
+    margin-bottom: 10px;
+}
+
+.social-card p {
+    color: #666;
+    font-size: 0.85rem;
+    margin-bottom: 25px;
+    line-height: 1.4;
+}
+
+.btn-sc {
+    display: inline-block;
+    padding: 10px 15px;
+    border-radius: 5px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    text-decoration: none;
+    transition: 0.3s;
+    background: transparent;
+}
+
+.whatsapp-btn { border: 1px solid #25D366; color: #25D366; }
+.whatsapp-btn:hover { background: #25D366; color: #fff; }
+
+.insta-btn { border: 1px solid #E1306C; color: #E1306C; }
+.insta-btn:hover { background: #E1306C; color: #fff; }
+
+.fb-btn { border: 1px solid #1877F2; color: #1877F2; }
+.fb-btn:hover { background: #1877F2; color: #fff; }
+
+.store-btn { border: 1px solid #c98a58; color: #c98a58; }
+.store-btn:hover { background: #c98a58; color: #fff; }
+
+/* Special Request Banner */
+.special-request-banner {
+    position: relative;
+    padding: 60px 5%;
+    margin-top: 40px;
+    overflow: hidden;
+}
+
+.srb-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: linear-gradient(rgba(20, 10, 5, 0.9), rgba(20, 10, 5, 0.9)), url('../assets/product_baguette.png');
+    background-size: cover;
+    background-position: center;
+    z-index: 1;
+}
+
+.srb-container {
+    position: relative;
+    z-index: 2;
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 30px;
+    flex-wrap: wrap;
+}
+
+.srb-text h2 {
+    color: #fff;
+    font-size: 2rem;
+    font-family: 'Playfair Display', serif;
+    margin-bottom: 10px;
+}
+
+.srb-text p {
+    color: #ccc;
+    font-size: 1rem;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+    .cms-container {
+        flex-direction: column;
+    }
+    .cms-form-box, .cms-info-box {
+        padding: 30px 20px;
+    }
+    .srb-container {
+        text-align: center;
+        justify-content: center;
+    }
+}
+@media (max-width: 768px) {
+    .form-row-contact {
+        flex-direction: column;
+        gap: 15px;
+    }
+    .ch-title {
+        font-size: 2.5rem;
+    }
+    .ch-title .highlight-italic {
+        font-size: 3.5rem;
+    }
+}
+
+/* =========================================
+   LOGIN PAGE STYLES
+   ========================================= */
+
+.login-wrapper {
+    background: #fdfaf2;
+    min-height: calc(100vh - 70px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 5%;
+    margin-top: 70px;
+}
+
+.login-container {
+    max-width: 1200px;
+    width: 100%;
+    display: flex;
+    background: #fff;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.08);
+}
+
+/* FAQ (Copied from fidelite) */
+.faq-section {
+    padding: 80px 5%;
+    background: #fff;
+}
+
+.faq-grid {
+    max-width: 1000px;
+    margin: 50px auto 0;
+    display: flex;
+    gap: 30px;
+}
+
+.faq-col {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.faq-item {
+    border: 1px solid #eaeaea;
+    padding: 20px 25px;
+    border-radius: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    transition: 0.3s;
+    background: #fafafa;
+}
+
+.faq-item:hover {
+    border-color: #ccc;
+    background: #fff;
+}
+
+.faq-item span {
+    font-size: 0.95rem;
+    color: var(--dark);
+    font-weight: 500;
+}
+
+.faq-item i {
+    color: #999;
+    font-size: 1.2rem;
+}
+
+@media (max-width: 1024px) {
+    .faq-grid {
+        flex-direction: column;
+    }
+}

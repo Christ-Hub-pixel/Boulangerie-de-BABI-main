@@ -1,0 +1,179 @@
+/* =========================================
+   INDEX PAGE - JUMIA E-COMMERCE STYLE
+   ========================================= */
+
+body {
+    background: linear-gradient(180deg, rgba(20, 10, 5, 0.35) 0%, rgba(245, 158, 11, 0.15) 50%, rgba(20, 10, 5, 0.45) 100%), 
+                url('../assets/luxury_bakery_bg.jpg') no-repeat center center fixed;
+    background-size: cover;
+}
+
+/* Surfaces ivoire doré douces (sans forcer les cartes sombres) */
+.bg-white {
+    background: rgba(255, 252, 245, 0.94) !important;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(251, 191, 36, 0.32);
+    box-shadow: 0 6px 20px rgba(43, 22, 12, 0.08);
+}
+
+.dark-luxury-card {
+    background: linear-gradient(135deg, #140a04 0%, #2b160c 60%, #431407 100%) !important;
+    color: #ffffff !important;
+    border: 2px solid rgba(251, 146, 60, 0.5) !important;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Jumia Hero */
+.jumia-hero {
+    background-color: transparent;
+}
+
+/* Hero Carousel Styling */
+.main-hero-carousel {
+    height: 380px;
+    position: relative;
+}
+.main-hero-carousel .carousel-inner,
+.main-hero-carousel .carousel-item {
+    height: 100%;
+    min-height: 380px;
+}
+.main-hero-carousel .carousel-indicators {
+    bottom: 12px;
+    margin-bottom: 0;
+    z-index: 5;
+}
+.main-hero-carousel .carousel-indicators [data-bs-target] {
+    width: 24px;
+    height: 4px;
+    border-radius: 4px;
+    border: none;
+    background-color: rgba(255, 255, 255, 0.5);
+    transition: all 0.3s ease;
+}
+.main-hero-carousel .carousel-indicators .active {
+    width: 38px;
+    background-color: #f59e0b;
+}
+.main-hero-carousel .carousel-control-prev,
+.main-hero-carousel .carousel-control-next {
+    width: 36px;
+    height: 36px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(0, 0, 0, 0.45);
+    backdrop-filter: blur(4px);
+    border-radius: 50%;
+    margin: 0 10px;
+    opacity: 0.8;
+    transition: all 0.2s ease;
+}
+.main-hero-carousel .carousel-control-prev:hover,
+.main-hero-carousel .carousel-control-next:hover {
+    background: rgba(0, 0, 0, 0.75);
+    opacity: 1;
+    transform: translateY(-50%) scale(1.08);
+}
+
+/* Hero Categories Sidebar */
+.hover-primary:hover {
+    background-color: rgba(244, 180, 0, 0.1);
+    color: var(--primary) !important;
+}
+
+/* Scrollbar Hide for horizontal scrolling elements */
+.scrollbar-hide::-webkit-scrollbar {
+    display: none;
+}
+.scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+/* Quick Categories */
+.quick-categories .category-item:hover .category-icon {
+    background-color: var(--primary-light) !important;
+    border-color: var(--primary) !important;
+}
+.quick-categories .category-icon {
+    transition: all 0.2s ease-in-out;
+}
+
+/* Flash Sales (Ventes Chaudes) */
+.flash-sales .card:hover {
+    transform: translateY(-3px) !important;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+/* Recommended Products (Nos Délices) */
+.delices .card:hover {
+    transform: translateY(-3px) !important;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1) !important;
+}
+
+/* Responsive Overrides */
+@media (max-width: 992px) {
+    .jumia-hero {
+        margin-top: 130px !important; /* Account for double-deck navbar on mobile */
+    }
+}
+@media (max-width: 576px) {
+    .jumia-hero {
+        margin-top: 120px !important; 
+    }
+}
+
+/* Image Category Cards */
+.category-img-card {
+    display: block;
+    width: 100px;
+    height: 120px;
+    position: relative;
+    border-radius: 8px;
+    overflow: hidden;
+    text-decoration: none;
+    flex-shrink: 0;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.category-img-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s ease;
+}
+.category-img-card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.1) 60%);
+    pointer-events: none;
+}
+.category-img-card span {
+    position: absolute;
+    bottom: 8px;
+    left: 0;
+    width: 100%;
+    text-align: center;
+    color: #fff;
+    font-size: 0.85rem;
+    font-weight: 600;
+    z-index: 1;
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.8);
+}
+.category-img-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 15px rgba(0,0,0,0.2);
+}
+.category-img-card:hover img {
+    transform: scale(1.1);
+}
+@media (min-width: 768px) {
+    .category-img-card {
+        width: 140px;
+        height: 160px;
+    }
+    .category-img-card span {
+        font-size: 1rem;
+        bottom: 12px;
+    }
+}
