@@ -27,6 +27,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:wght@400;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
     <!-- CSS Custom Stylesheets -->
+    <link rel="stylesheet" href="css/admin.css"/>
     <link rel="stylesheet" href="css/gerante.css"/>
 
     <!-- Tailwind Configuration & CDN -->
@@ -76,7 +77,7 @@
                         fontFamily: {
                             "headline-lg": ["Libre Caslon Text", "serif"],
                             "headline-md": ["Libre Caslon Text", "serif"],
-                            "display-lg": ["Libre Caslon Text", "serif"],
+                            "headline-sm": ["Libre Caslon Text", "serif"],
                             "body-md": ["Manrope", "sans-serif"],
                             "body-lg": ["Manrope", "sans-serif"],
                             "label-md": ["Manrope", "sans-serif"],
@@ -147,22 +148,93 @@
         <!-- TOPBAR PRESTIGE LUXURY -->
         <header class="prestige-topbar">
             <!-- Search bar with gold focus ring -->
-            <div class="prestige-search-box">
-                <span class="material-symbols-outlined text-lg" style="color: #765b00;">search</span>
-                <input placeholder="Rechercher une fournée, matière première..." type="text"/>
+            <div class="magazine-search-pill" style="max-width: 480px;">
+                <span class="material-symbols-outlined search-icon" style="color: #765b00;">search</span>
+                <input placeholder="Rechercher une fournée, matière première, cuisson..." type="text"/>
             </div>
 
-            <!-- Profile Chef Fournil -->
-            <div class="flex items-center gap-4">
-                <span class="px-3 py-1.5 bg-amber-50 text-amber-900 rounded-full font-bold text-xs flex items-center gap-1.5 border border-amber-300 shadow-sm">
-                    <span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span> Fournil en Direct (Poste 1)
+            <!-- Profile Chef Fournil & Live Status -->
+            <div class="flex items-center gap-3">
+                <button type="button" onclick="openHelpGuideModal()" class="prestige-help-pill-btn">
+                    <span class="material-symbols-outlined text-base">help</span>
+                    <span>Guide d'utilisation Express</span>
+                </button>
+                <span class="prestige-status-badge amber">
+                    <span class="status-pulse-dot amber"></span>
+                    <span>Fournil en Direct (Poste 1)</span>
                 </span>
-                <div class="prestige-user-card">
-                    <div class="prestige-user-info">
-                        <span class="prestige-user-name">Mamadou Koné</span>
-                        <span class="prestige-user-role">Chef Fournil • Maître Boulanger 🥖</span>
+                <!-- Interactive Profile Card & Dropdown -->
+                <div class="relative" id="profileDropdownWrapper">
+                    <div class="prestige-user-card" onclick="toggleProfileDropdown(event)" id="profileTriggerBtn">
+                        <div class="relative flex items-center">
+                            <img alt="Profile" class="profile-avatar" src="assets/baker_profile.png"/>
+                            <span class="online-status-dot"></span>
+                        </div>
+                        <div class="prestige-user-info">
+                            <span class="prestige-user-name">Mamadou Koné</span>
+                            <span class="prestige-user-role">Chef Fournil • Maître Boulanger 🥖</span>
+                        </div>
+                        <span class="material-symbols-outlined text-sm font-bold transition-transform" id="profileChevron" style="color: #765b00;">expand_more</span>
                     </div>
-                    <img alt="Profile" class="profile-avatar" src="assets/caissiere1.png"/>
+
+                    <!-- Luxury Profile Dropdown Menu -->
+                    <div id="profileDropdownMenu" class="prestige-profile-dropdown hidden">
+                        <!-- Header Info -->
+                        <div class="profile-dropdown-header">
+                            <div class="flex items-center gap-3">
+                                <img src="assets/baker_profile.png" class="profile-avatar-lg" alt="Mamadou Koné"/>
+                                <div>
+                                    <h4 class="font-bold text-sm text-on-surface">Mamadou Koné</h4>
+                                    <span class="text-xs text-amber-700 font-extrabold">Chef Fournil & Production</span>
+                                    <div class="text-[11px] text-on-surface-variant font-mono mt-0.5">fournil@boulangeriedebabi.ci</div>
+                                </div>
+                            </div>
+                            <div class="mt-3 py-1.5 px-3 rounded-full bg-amber-50 border border-amber-200 text-amber-900 text-[11px] font-extrabold flex items-center justify-between">
+                                <span>Poste : Maître de Fournil (Poste 1)</span>
+                                <span class="material-symbols-outlined text-sm text-amber-600">verified</span>
+                            </div>
+                        </div>
+
+                        <!-- Section: Bascule Rapide de Rôle / Portail -->
+                        <div class="profile-dropdown-section">
+                            <div class="profile-dropdown-section-title">COMMUTATEUR DE PORTAILS</div>
+                            <a href="admin.html" class="profile-dropdown-item">
+                                <span class="material-symbols-outlined text-amber-600">admin_panel_settings</span>
+                                <div class="flex flex-col">
+                                    <span class="font-bold text-xs">Direction & Finance 360</span>
+                                    <span class="text-[10px] text-on-surface-variant">Vue consolidée d'ensemble</span>
+                                </div>
+                            </a>
+                            <a href="gerante.html" class="profile-dropdown-item active">
+                                <span class="material-symbols-outlined text-amber-600">oven_gen</span>
+                                <div class="flex flex-col">
+                                    <span class="font-bold text-xs">Fournil & Production</span>
+                                    <span class="text-[10px] text-on-surface-variant">Planning & cuissons en direct</span>
+                                </div>
+                                <span class="badge-active-pill">Actif</span>
+                            </a>
+                            <a href="caissiere.html" class="profile-dropdown-item">
+                                <span class="material-symbols-outlined text-emerald-600">point_of_sale</span>
+                                <div class="flex flex-col">
+                                    <span class="font-bold text-xs">Caisse & Vente POS</span>
+                                    <span class="text-[10px] text-on-surface-variant">Encaissement & clôtures</span>
+                                </div>
+                            </a>
+                        </div>
+
+                        <!-- Section: Actions du Compte -->
+                        <div class="profile-dropdown-section">
+                            <div class="profile-dropdown-section-title">OPTIONS DE SESSION</div>
+                            <button type="button" onclick="lockCurrentSession()" class="profile-dropdown-item w-full text-left">
+                                <span class="material-symbols-outlined text-amber-600">lock</span>
+                                <span class="font-bold text-xs">Verrouiller la session</span>
+                            </button>
+                            <button type="button" onclick="handleLogout()" class="profile-dropdown-item w-full text-left text-rose-700 hover:bg-rose-50">
+                                <span class="material-symbols-outlined text-rose-600">logout</span>
+                                <span class="font-bold text-xs">Déconnexion</span>
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </header>
@@ -171,204 +243,195 @@
         <main class="relative bg-background min-h-screen" style="padding-top: 6.5rem;">
             <div class="flex flex-col w-full h-full p-container-padding gap-stack-lg">
 
-                <!-- 4 Overview Cards -->
+                <!-- 4 Overview Cards (Saisies et Calculs Manuels Réels) -->
                 <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-gutter">
                     <!-- Card 1: Production -->
-                    <div class="bg-surface-container rounded-2xl p-5 flex flex-col gap-2 relative overflow-hidden group border border-outline-variant/30 shadow-sm">
-                        <div class="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    <div class="magazine-card flex flex-col justify-between" style="min-height: 160px;">
                         <div class="flex justify-between items-start">
                             <div class="flex flex-col">
                                 <span class="font-label-sm text-xs uppercase text-on-surface-variant font-bold">Production du Jour</span>
-                                <span class="font-display-lg text-3xl font-bold text-on-surface mt-1">1 240</span>
+                                <span class="font-display-lg text-3xl font-bold text-on-surface mt-1" id="kpi-production-count">0</span>
                             </div>
-                            <div class="w-11 h-11 rounded-full bg-primary-container flex items-center justify-center text-on-primary-container shadow-sm">
+                            <div class="kpi-icon-medallion gold">
                                 <span class="material-symbols-outlined text-2xl">bakery_dining</span>
                             </div>
                         </div>
-                        <div class="flex items-center gap-1.5 mt-auto text-emerald-700 font-bold text-xs">
-                            <span class="material-symbols-outlined text-sm">trending_up</span>
-                            <span>+12% vs Hier</span>
+                        <div class="flex items-center gap-1.5 text-emerald-700 font-bold text-xs" id="kpi-production-sub">
+                            <span class="material-symbols-outlined text-sm">edit_note</span>
+                            <span>Saisie manuelle des fournées</span>
                         </div>
                     </div>
 
                     <!-- Card 2: En Cuisson -->
-                    <div class="bg-surface-container rounded-2xl p-5 flex flex-col gap-2 relative overflow-hidden group border border-outline-variant/30 shadow-sm">
-                        <div class="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    <div class="magazine-card flex flex-col justify-between" style="min-height: 160px;">
                         <div class="flex justify-between items-start">
                             <div class="flex flex-col">
                                 <span class="font-label-sm text-xs uppercase text-on-surface-variant font-bold">En Cuisson Four</span>
-                                <span class="font-display-lg text-3xl font-bold text-on-surface mt-1">320</span>
+                                <span class="font-display-lg text-3xl font-bold text-on-surface mt-1" id="kpi-cuisson-count">0</span>
                             </div>
-                            <div class="w-11 h-11 rounded-full bg-tertiary-container flex items-center justify-center text-on-tertiary-container shadow-sm">
+                            <div class="kpi-icon-medallion amber">
                                 <span class="material-symbols-outlined text-2xl">local_fire_department</span>
                             </div>
                         </div>
                         <div class="w-full bg-surface-dim rounded-full h-2 mt-auto overflow-hidden">
-                            <div class="bg-tertiary h-full rounded-full w-3/4"></div>
+                            <div class="bg-amber-600 h-full rounded-full" id="kpi-cuisson-bar" style="width: 0%;"></div>
                         </div>
                     </div>
 
                     <!-- Card 3: Pertes -->
-                    <div class="bg-surface-container rounded-2xl p-5 flex flex-col gap-2 relative overflow-hidden group border border-outline-variant/30 shadow-sm">
-                        <div class="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    <div class="magazine-card flex flex-col justify-between" style="min-height: 160px;">
                         <div class="flex justify-between items-start">
                             <div class="flex flex-col">
-                                <span class="font-label-sm text-xs uppercase text-on-surface-variant font-bold">Pertes Estimées</span>
-                                <span class="font-display-lg text-3xl font-bold text-rose-700 mt-1">45</span>
+                                <span class="font-label-sm text-xs uppercase text-on-surface-variant font-bold">Pertes Déclarées</span>
+                                <span class="font-display-lg text-3xl font-bold text-rose-700 mt-1" id="kpi-pertes-count">0</span>
                             </div>
-                            <div class="w-11 h-11 rounded-full bg-rose-100 flex items-center justify-center text-rose-700 shadow-sm">
+                            <div class="kpi-icon-medallion rose">
                                 <span class="material-symbols-outlined text-2xl">warning</span>
                             </div>
                         </div>
-                        <div class="flex items-center gap-1 mt-auto text-xs text-on-surface-variant">
-                            <span>Soit <strong>3.6%</strong> de la production</span>
+                        <div class="flex items-center gap-1 text-xs text-on-surface-variant" id="kpi-pertes-sub">
+                            <span>Aucune perte enregistrée</span>
                         </div>
                     </div>
 
                     <!-- Card 4: Prochaine Fournée -->
-                    <div class="bg-surface-container rounded-2xl p-5 flex flex-col gap-2 relative overflow-hidden group border border-outline-variant/30 shadow-sm">
-                        <div class="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    <div class="magazine-card flex flex-col justify-between" style="min-height: 160px;">
                         <div class="flex justify-between items-start">
                             <div class="flex flex-col">
                                 <span class="font-label-sm text-xs uppercase text-on-surface-variant font-bold">Prochaine Fournée</span>
-                                <span class="font-headline-md text-base font-bold text-on-surface mt-1 line-clamp-1">Baguette Tradition</span>
+                                <span class="font-headline-md text-base font-bold text-on-surface mt-1 line-clamp-1" id="kpi-next-batch-name">Aucune</span>
                             </div>
-                            <div class="w-11 h-11 rounded-full bg-secondary-container flex items-center justify-center text-on-secondary-container shadow-sm">
+                            <div class="kpi-icon-medallion emerald">
                                 <span class="material-symbols-outlined text-2xl">schedule</span>
                             </div>
                         </div>
-                        <div class="flex items-center gap-1 mt-auto text-xs font-bold text-primary">
+                        <div class="flex items-center gap-1 text-xs font-bold text-primary" style="color: #765b00;" id="kpi-next-batch-time">
                             <span class="material-symbols-outlined text-sm">alarm</span>
-                            <span>Sortie dans 15 min (17h00)</span>
+                            <span>En attente de programmation</span>
                         </div>
                     </div>
                 </section>
 
                 <!-- Main Content Grid -->
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-gutter">
-                    <!-- Left 2 Cols: Planning de Cuisson -->
-                    <section class="lg:col-span-2 bg-surface rounded-2xl shadow-sm p-6 flex flex-col gap-4 border border-outline-variant/30">
-                        <div class="flex justify-between items-center">
+                    <!-- Left 2 Cols: Planning de Cuisson Dynamique -->
+                    <section class="lg:col-span-2 magazine-card flex flex-col gap-5">
+                        <div class="flex justify-between items-center pb-2 border-b border-[var(--magazine-line)]">
                             <div>
                                 <h2 class="font-headline-lg text-2xl text-on-surface font-bold">Planning de Cuisson du Jour</h2>
-                                <p class="text-xs text-on-surface-variant">Fournées programmées et répartition par fournil</p>
+                                <p class="text-xs text-on-surface-variant">Saisie manuelle des fournées, gestion des fours et sorties</p>
                             </div>
-                            <button onclick="openBakingModal()" class="bg-primary text-on-primary font-label-md text-xs font-bold px-4 py-2.5 rounded-xl flex items-center gap-1.5 shadow-sm hover:brightness-110 transition-all">
+                            <button onclick="openBakingModal()" class="magazine-btn-primary">
                                 <span class="material-symbols-outlined text-sm">add</span> Ajouter Fournée
                             </button>
                         </div>
 
                         <!-- Category Filters -->
                         <div class="flex gap-2 pb-1 overflow-x-auto">
-                            <button class="px-4 py-1.5 rounded-full bg-primary-container text-on-primary-container font-label-md text-xs font-bold shrink-0 shadow-sm">Toutes (5)</button>
-                            <button class="px-4 py-1.5 rounded-full bg-surface-container-high text-on-surface-variant font-label-md text-xs font-bold hover:bg-surface-container-highest shrink-0">Pains Tradition</button>
-                            <button class="px-4 py-1.5 rounded-full bg-surface-container-high text-on-surface-variant font-label-md text-xs font-bold hover:bg-surface-container-highest shrink-0">Viennoiseries</button>
-                            <button class="px-4 py-1.5 rounded-full bg-surface-container-high text-on-surface-variant font-label-md text-xs font-bold hover:bg-surface-container-highest shrink-0">Pâtisseries</button>
+                            <button onclick="filterFourneesCategory('all', this)" class="magazine-period-btn active shrink-0">Toutes</button>
+                            <button onclick="filterFourneesCategory('pains', this)" class="magazine-period-btn shrink-0">Pains Tradition</button>
+                            <button onclick="filterFourneesCategory('viennoiseries', this)" class="magazine-period-btn shrink-0">Viennoiseries</button>
+                            <button onclick="filterFourneesCategory('patisseries', this)" class="magazine-period-btn shrink-0">Pâtisseries</button>
                         </div>
 
-                        <!-- Fournée Items -->
-                        <div class="flex flex-col gap-3">
-                            <!-- Item 1 -->
-                            <div class="bg-surface-container-lowest p-4 rounded-xl flex items-center justify-between group hover:shadow-md transition-shadow border border-outline-variant/20">
-                                <div class="flex items-center gap-4">
-                                    <div class="w-14 h-14 rounded-xl bg-surface-variant flex items-center justify-center font-headline-md font-bold text-primary text-base">
-                                        17:00
-                                    </div>
-                                    <div>
-                                        <h3 class="font-body-lg font-bold text-sm text-on-surface">Baguette Traditionnelle x150</h3>
-                                        <p class="font-body-md text-xs text-on-surface-variant">Four 1 (Sole 240°C) • Responsable: Mamadou</p>
-                                    </div>
-                                </div>
-                                <div class="flex items-center gap-3">
-                                    <span class="px-3 py-1 rounded-full bg-tertiary-container text-on-tertiary-container font-label-sm text-xs font-bold uppercase">En Cuisson</span>
-                                    <button class="w-8 h-8 rounded-full hover:bg-surface-variant flex items-center justify-center text-on-surface-variant"><span class="material-symbols-outlined text-sm">more_vert</span></button>
-                                </div>
-                            </div>
-
-                            <!-- Item 2 -->
-                            <div class="bg-surface-container-lowest p-4 rounded-xl flex items-center justify-between group hover:shadow-md transition-shadow border border-outline-variant/20">
-                                <div class="flex items-center gap-4">
-                                    <div class="w-14 h-14 rounded-xl bg-surface-variant flex items-center justify-center font-headline-md font-bold text-primary text-base">
-                                        18:00
-                                    </div>
-                                    <div>
-                                        <h3 class="font-body-lg font-bold text-sm text-on-surface">Croissants Pur Beurre & Pains Choc x100</h3>
-                                        <p class="font-body-md text-xs text-on-surface-variant">Four 2 (Ventilé 180°C) • Responsable: Aïcha</p>
-                                    </div>
-                                </div>
-                                <div class="flex items-center gap-3">
-                                    <span class="px-3 py-1 rounded-full bg-primary-container text-on-primary-container font-label-sm text-xs font-bold uppercase">En Pousse</span>
-                                    <button class="w-8 h-8 rounded-full hover:bg-surface-variant flex items-center justify-center text-on-surface-variant"><span class="material-symbols-outlined text-sm">more_vert</span></button>
-                                </div>
-                            </div>
-
-                            <!-- Item 3 -->
-                            <div class="bg-surface-container-lowest p-4 rounded-xl flex items-center justify-between group hover:shadow-md transition-shadow opacity-70 border border-outline-variant/20">
-                                <div class="flex items-center gap-4">
-                                    <div class="w-14 h-14 rounded-xl bg-surface-variant flex items-center justify-center font-headline-md font-bold text-on-surface-variant text-base">
-                                        14:00
-                                    </div>
-                                    <div>
-                                        <h3 class="font-body-lg font-bold text-sm text-on-surface">Pain Complet & Pain de Mie x80</h3>
-                                        <p class="font-body-md text-xs text-on-surface-variant">Four 1 • Responsable: Bakary</p>
-                                    </div>
-                                </div>
-                                <div class="flex items-center gap-3">
-                                    <span class="px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 font-label-sm text-xs font-bold uppercase">Terminé & En Rayon</span>
-                                    <button class="w-8 h-8 rounded-full hover:bg-surface-variant flex items-center justify-center text-on-surface-variant"><span class="material-symbols-outlined text-sm">check</span></button>
-                                </div>
-                            </div>
+                        <!-- Fournée Items Dynamiques -->
+                        <div class="flex flex-col gap-3" id="fournees-list-container">
+                            <!-- Rendu dynamique via JS -->
                         </div>
                     </section>
 
                     <!-- Right Col: Side Panel -->
                     <section class="flex flex-col gap-4">
                         <!-- Stock Alert -->
-                        <div class="bg-error-container text-on-error-container rounded-2xl p-5 shadow-sm border border-rose-200">
+                        <div class="magazine-card text-on-error-container p-5 flex flex-col gap-3" style="background: linear-gradient(135deg, #fff1f2 0%, #ffe4e6 100%); border: 1px solid #fecdd3;">
                             <div class="flex items-start gap-3">
-                                <span class="material-symbols-outlined text-rose-700 text-2xl mt-0.5">inventory_2</span>
+                                <div class="kpi-icon-medallion rose shrink-0" style="width: 42px; height: 42px;">
+                                    <span class="material-symbols-outlined text-xl">inventory_2</span>
+                                </div>
                                 <div>
-                                    <h3 class="font-headline-md text-base font-bold mb-1">Alerte Matières Premières</h3>
-                                    <p class="font-body-md text-xs mb-3 text-rose-900">La Farine Grand Moulins T55 est sous le seuil critique (Reste: <strong>15 kg</strong>).</p>
-                                    <button onclick="alert('Commande de réapprovisionnement envoyée au fournisseur !')" class="bg-rose-800 text-white font-label-md text-xs font-bold px-4 py-2 rounded-xl hover:bg-rose-900 transition-all shadow-sm">
-                                        Commander Réassort
+                                    <h3 class="font-headline-md text-base font-bold mb-1 text-rose-950">Alerte Matières Premières</h3>
+                                    <p class="font-body-md text-xs mb-3 text-rose-900" id="stock-alert-text">Suivi manuel des réassorts et stocks critiques.</p>
+                                    <button onclick="openReassortModal()" class="btn-modal-submit-gold" style="height: 38px; font-size: 11px; padding: 0 16px; border-radius: 9999px;">
+                                        <span class="material-symbols-outlined text-base">local_shipping</span> Commander Réassort
                                     </button>
                                 </div>
                             </div>
                         </div>
 
                         <!-- Quick Actions -->
-                        <div class="bg-surface rounded-2xl p-5 shadow-sm flex flex-col gap-2 border border-outline-variant/30">
-                            <h3 class="font-headline-md text-base font-bold text-on-surface mb-1">Actions Rapides</h3>
-                            <button onclick="alert('Entrée en rayon validée pour la dernière fournée !')" class="w-full flex items-center justify-between p-3 rounded-xl bg-surface-container hover:bg-surface-container-high text-on-surface transition-colors border border-outline-variant/20">
+                        <div class="magazine-card p-5 flex flex-col gap-2">
+                            <h3 class="font-headline-md text-base font-bold text-on-surface pb-2 border-b border-[var(--magazine-line)] mb-1">Actions Rapides Fournil</h3>
+                            
+                            <!-- Action 1: Entrée Rayon Manuelle -->
+                            <button onclick="openRayonModal()" class="prestige-action-card">
                                 <div class="flex items-center gap-3">
-                                    <span class="material-symbols-outlined text-primary text-lg">check_circle</span>
-                                    <span class="font-label-md text-xs font-bold">Valider Entrée en Rayon</span>
+                                    <div class="action-icon-badge emerald">
+                                        <span class="material-symbols-outlined text-xl">check_circle</span>
+                                    </div>
+                                    <div>
+                                        <span class="action-title">Valider Entrée en Rayon</span>
+                                        <span class="action-subtitle">Saisir les pièces livrées en boutique</span>
+                                    </div>
                                 </div>
-                                <span class="material-symbols-outlined text-outline-variant text-base">chevron_right</span>
+                                <span class="material-symbols-outlined action-chevron">chevron_right</span>
                             </button>
-                            <button onclick="alert('Formulaire de déclaration de casse ouvert.')" class="w-full flex items-center justify-between p-3 rounded-xl bg-surface-container hover:bg-surface-container-high text-on-surface transition-colors border border-outline-variant/20">
+
+                            <!-- Action 2: Invendus & Pertes Manuel -->
+                            <button onclick="openWasteModal()" class="prestige-action-card">
                                 <div class="flex items-center gap-3">
-                                    <span class="material-symbols-outlined text-rose-700 text-lg">delete_sweep</span>
-                                    <span class="font-label-md text-xs font-bold">Déclarer Invendus / Pertes</span>
+                                    <div class="action-icon-badge rose">
+                                        <span class="material-symbols-outlined text-xl">delete_sweep</span>
+                                    </div>
+                                    <div>
+                                        <span class="action-title">Déclarer Invendus / Pertes</span>
+                                        <span class="action-subtitle">Saisir motif, quantité et casse</span>
+                                    </div>
                                 </div>
-                                <span class="material-symbols-outlined text-outline-variant text-base">chevron_right</span>
+                                <span class="material-symbols-outlined action-chevron">chevron_right</span>
                             </button>
-                            <button onclick="alert('Températures des chambres froides conformes (+3.8°C).')" class="w-full flex items-center justify-between p-3 rounded-xl bg-surface-container hover:bg-surface-container-high text-on-surface transition-colors border border-outline-variant/20">
+
+                            <!-- Action 3: Contrôle Températures Manuel -->
+                            <button onclick="openTempModal()" class="prestige-action-card">
                                 <div class="flex items-center gap-3">
-                                    <span class="material-symbols-outlined text-sky-700 text-lg">ac_unit</span>
-                                    <span class="font-label-md text-xs font-bold">Contrôle Frigos & Pousse</span>
+                                    <div class="action-icon-badge cyan">
+                                        <span class="material-symbols-outlined text-xl">ac_unit</span>
+                                    </div>
+                                    <div>
+                                        <span class="action-title">Contrôle Frigos & Pousse</span>
+                                        <span class="action-subtitle">Enregistrer relevé thermique (°C)</span>
+                                    </div>
                                 </div>
-                                <span class="material-symbols-outlined text-outline-variant text-base">chevron_right</span>
+                                <span class="material-symbols-outlined action-chevron">chevron_right</span>
+                            </button>
+
+                            <!-- Action 4: Impression Bon Fournil -->
+                            <button onclick="printBakingTicket('TOUTES')" class="prestige-action-card">
+                                <div class="flex items-center gap-3">
+                                    <div class="action-icon-badge gold">
+                                        <span class="material-symbols-outlined text-xl">print</span>
+                                    </div>
+                                    <div>
+                                        <span class="action-title">Imprimer Bons du Jour (80mm)</span>
+                                        <span class="action-subtitle">Tickets de préparation & étiquettes</span>
+                                    </div>
+                                </div>
+                                <span class="material-symbols-outlined action-chevron">chevron_right</span>
                             </button>
                         </div>
 
                         <!-- Visual Inspiration of the day -->
-                        <div class="rounded-2xl overflow-hidden h-44 shadow-sm relative group border border-outline-variant/30">
-                            <div class="bg-cover bg-center w-full h-full" style="background-image: url('assets/luxury_bakery_bg.jpg')"></div>
-                            <div class="absolute inset-0 bg-gradient-to-t from-inverse-surface/85 to-transparent flex flex-col justify-end p-4">
-                                <span class="font-label-sm text-amber-300 text-xs uppercase tracking-widest font-bold">Savoir-Faire Artisanal</span>
-                                <span class="font-headline-md text-white text-base font-bold">L'Excellence du Fournil de Babi</span>
+                        <div class="rounded-2xl overflow-hidden h-44 relative group" style="border: 1px solid rgba(245, 184, 0, 0.35); box-shadow: 0 6px 20px rgba(43, 22, 12, 0.08);">
+                            <div class="bg-cover bg-center w-full h-full" style="background-image: url('assets/luxury_bakery_bg.jpg'); transform: scale(1.02); transition: transform 0.4s ease;"></div>
+                            <div class="absolute inset-0 flex flex-col justify-end p-4" style="background: linear-gradient(to top, rgba(20, 9, 4, 0.95) 0%, rgba(28, 14, 7, 0.75) 55%, rgba(0, 0, 0, 0.15) 100%);">
+                                <span style="color: #f5b800; font-size: 11px; font-weight: 900; letter-spacing: 0.12em; text-transform: uppercase; text-shadow: 0 2px 4px rgba(0,0,0,0.9); display: flex; align-items: center; gap: 6px;">
+                                    <span style="width: 6px; height: 6px; border-radius: 50%; background: #f5b800; display: inline-block;"></span> SAVOIR-FAIRE ARTISANAL
+                                </span>
+                                <span style="color: #ffffff; font-family: 'Libre Caslon Text', serif; font-size: 17px; font-weight: 700; text-shadow: 0 2px 8px rgba(0,0,0,0.95); margin-top: 4px; line-height: 1.25;">
+                                    L'Excellence du Fournil de Babi
+                                </span>
+                                <span style="color: rgba(255, 255, 255, 0.85); font-size: 11px; font-weight: 600; text-shadow: 0 1px 4px rgba(0,0,0,0.9); margin-top: 2px;">
+                                    Farines T55 sélectionnées & cuisson sur sole de pierre 🥖✨
+                                </span>
                             </div>
                         </div>
                     </section>
@@ -378,51 +441,360 @@
         </main>
     </div>
 
-    <!-- ADD BAKING MODAL -->
-    <div id="bakingModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6">
-            <h3 class="font-headline-md text-xl font-bold text-on-surface mb-2">Programmer une Nouvelle Fournée</h3>
-            <div class="flex flex-col gap-3 my-4">
-                <div>
-                    <label class="text-xs font-bold text-on-surface-variant block mb-1">Type de Produit :</label>
-                    <input type="text" class="w-full p-2.5 rounded-xl border border-outline-variant/40 text-sm outline-none" placeholder="Ex: Baguette Tradition, Croissants Pur Beurre..."/>
-                </div>
-                <div class="grid grid-cols-2 gap-3">
-                    <div>
-                        <label class="text-xs font-bold text-on-surface-variant block mb-1">Quantité (Unités) :</label>
-                        <input type="number" class="w-full p-2.5 rounded-xl border border-outline-variant/40 text-sm outline-none" value="100"/>
+    <!-- 1. ADD BAKING MODAL SENIOR PRINCIPAL (WAOU HAUTE JOAILLERIE) -->
+    <div id="bakingModal" class="prestige-modal-backdrop hidden">
+        <div class="prestige-modal-card">
+            <!-- Modal Header -->
+            <div class="prestige-modal-header">
+                <div class="flex items-center gap-3">
+                    <div class="action-icon-badge gold" style="width: 44px; height: 44px; min-width: 44px; border-radius: 14px; box-shadow: 0 4px 14px rgba(245, 184, 0, 0.35);">
+                        <span class="material-symbols-outlined text-2xl">local_fire_department</span>
                     </div>
                     <div>
-                        <label class="text-xs font-bold text-on-surface-variant block mb-1">Heure de Sortie :</label>
-                        <input type="time" class="w-full p-2.5 rounded-xl border border-outline-variant/40 text-sm outline-none" value="18:30"/>
+                        <h3 class="prestige-modal-title">Programmer une Fournée</h3>
+                        <span style="font-size: 11.5px; font-weight: 700; color: #765b00;">Sélection Express en 1 Clic ou Saisie Libre</span>
+                    </div>
+                </div>
+                <button type="button" onclick="closeBakingModal()" class="prestige-modal-close-btn" title="Fermer">✕</button>
+            </div>
+
+            <!-- Grille Presets Horizontale 5 Colonnes -->
+            <div class="flex flex-col gap-1.5">
+                <label class="prestige-form-label">⚡ Recettes Populaires (1 Clic) :</label>
+                <div class="preset-grid-5">
+                    <div onclick="setBakingPreset('Baguette Traditionnelle', 'pains', 150, 'Four 1 (Sole 240°C)', this)" class="preset-chip-btn active">
+                        <span class="preset-chip-icon">🥖</span>
+                        <span class="preset-chip-title">Baguette</span>
+                        <span class="preset-chip-qty">150 pcs</span>
+                    </div>
+                    <div onclick="setBakingPreset('Croissants Pur Beurre', 'viennoiseries', 100, 'Four 2 (Ventilé 180°C)', this)" class="preset-chip-btn">
+                        <span class="preset-chip-icon">🥐</span>
+                        <span class="preset-chip-title">Croissant</span>
+                        <span class="preset-chip-qty">100 pcs</span>
+                    </div>
+                    <div onclick="setBakingPreset('Pains au Chocolat', 'viennoiseries', 100, 'Four 2 (Ventilé 180°C)', this)" class="preset-chip-btn">
+                        <span class="preset-chip-icon">🍫</span>
+                        <span class="preset-chip-title">Pain Choc</span>
+                        <span class="preset-chip-qty">100 pcs</span>
+                    </div>
+                    <div onclick="setBakingPreset('Pain Complet & Mie', 'pains', 80, 'Four 1 (Sole 240°C)', this)" class="preset-chip-btn">
+                        <span class="preset-chip-icon">🍞</span>
+                        <span class="preset-chip-title">Pain Mie</span>
+                        <span class="preset-chip-qty">80 pcs</span>
+                    </div>
+                    <div onclick="setBakingPreset('Brioche Tressée', 'viennoiseries', 50, 'Four 3 (Vapeur 210°C)', this)" class="preset-chip-btn">
+                        <span class="preset-chip-icon">🧁</span>
+                        <span class="preset-chip-title">Brioche</span>
+                        <span class="preset-chip-qty">50 pcs</span>
                     </div>
                 </div>
             </div>
-            <div class="flex gap-2">
-                <button onclick="closeBakingModal()" class="flex-1 py-2.5 rounded-xl bg-surface-container text-on-surface text-xs font-bold">Annuler</button>
-                <button onclick="closeBakingModal(); alert('Fournée ajoutée au planning avec succès !');" class="flex-1 py-2.5 rounded-xl bg-primary text-on-primary text-xs font-bold">Valider</button>
+
+            <!-- Champs de Formulaire Haute Définition -->
+            <div class="flex flex-col gap-3">
+                <div class="prestige-form-group">
+                    <label class="prestige-form-label">Nom du Produit & Variété :</label>
+                    <input type="text" id="manual-product-name" class="prestige-form-input" placeholder="Ex: Baguette Tradition, Croissant Beurre..." value="Baguette Traditionnelle"/>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="prestige-form-group">
+                        <label class="prestige-form-label">Catégorie :</label>
+                        <select id="manual-category" class="prestige-form-input">
+                            <option value="pains">Pains Tradition</option>
+                            <option value="viennoiseries">Viennoiseries</option>
+                            <option value="patisseries">Pâtisseries</option>
+                        </select>
+                    </div>
+
+                    <div class="prestige-form-group">
+                        <label class="prestige-form-label">Quantité (Unités) :</label>
+                        <div class="stepper-pill-wrapper">
+                            <div class="stepper-unified-pill">
+                                <button type="button" onclick="adjustManualQty(-10)" class="stepper-btn">−</button>
+                                <input type="number" id="manual-quantity" class="stepper-input" value="150"/>
+                                <button type="button" onclick="adjustManualQty(10)" class="stepper-btn">+</button>
+                            </div>
+                            <button type="button" onclick="adjustManualQty(50)" class="stepper-quick-add" title="Ajouter 50">+50</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="prestige-form-group">
+                        <label class="prestige-form-label">Heure Sortie Four :</label>
+                        <input type="time" id="manual-time" class="prestige-form-input" value="17:00"/>
+                    </div>
+                    <div class="prestige-form-group">
+                        <label class="prestige-form-label">Four & Température :</label>
+                        <select id="manual-oven" class="prestige-form-input">
+                            <option value="Four 1 (Sole 240°C)">Four 1 — Sole (240°C)</option>
+                            <option value="Four 2 (Ventilé 180°C)">Four 2 — Ventilé (180°C)</option>
+                            <option value="Four 3 (Vapeur 210°C)">Four 3 — Vapeur (210°C)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="prestige-form-group">
+                    <label class="prestige-form-label">Responsable Fournil :</label>
+                    <input type="text" id="manual-baker" class="prestige-form-input" value="Mamadou Koné"/>
+                </div>
+            </div>
+
+            <!-- Actions Modal -->
+            <div class="prestige-modal-actions">
+                <button type="button" onclick="closeBakingModal()" class="btn-modal-cancel">Annuler</button>
+                <button type="button" onclick="submitManualBakingBatch()" class="btn-modal-submit-gold">
+                    <span class="material-symbols-outlined text-base">check_circle</span> Valider la Fournée
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. VALIDER ENTRÉE EN RAYON MODAL PRESTIGE -->
+    <div id="rayonModal" class="prestige-modal-backdrop hidden">
+        <div class="prestige-modal-card">
+            <div class="prestige-modal-header">
+                <div class="flex items-center gap-2.5">
+                    <div class="action-icon-badge emerald" style="width: 36px; height: 36px; min-width: 36px; border-radius: 10px;">
+                        <span class="material-symbols-outlined text-xl">check_circle</span>
+                    </div>
+                    <div>
+                        <h3 class="prestige-modal-title">Entrée en Rayon Boutique</h3>
+                        <span class="text-xs text-[#786558] font-bold">Transfert Fournil ➔ Boutique</span>
+                    </div>
+                </div>
+                <button onclick="closeRayonModal()" class="text-[#786558] hover:text-[#ba1a1a] text-2xl font-bold transition-colors">✕</button>
+            </div>
+
+            <div class="flex flex-col gap-3.5 my-2">
+                <div class="prestige-form-group">
+                    <label class="prestige-form-label">Produit Transféré :</label>
+                    <input type="text" id="rayon-product-name" class="prestige-form-input" placeholder="Ex: Baguette Tradition" value="Baguette Tradition"/>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="prestige-form-group">
+                        <label class="prestige-form-label">Quantité Livrée :</label>
+                        <input type="number" id="rayon-quantity" class="prestige-form-input" value="50"/>
+                    </div>
+                    <div class="prestige-form-group">
+                        <label class="prestige-form-label">Emplacement :</label>
+                        <select id="rayon-location" class="prestige-form-input">
+                            <option>Comptoir Pains Frais</option>
+                            <option>Vitrine Viennoiseries</option>
+                            <option>Armoire Pâtisserie</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="prestige-modal-actions">
+                <button type="button" onclick="closeRayonModal()" class="btn-modal-cancel">Annuler</button>
+                <button type="button" onclick="submitManualRayonEntry()" class="btn-modal-submit-green">
+                    <span class="material-symbols-outlined text-base">storefront</span> Valider Mise en Rayon
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. DÉCLARER INVENDUS & PERTES MODAL PRESTIGE -->
+    <div id="wasteModal" class="prestige-modal-backdrop hidden">
+        <div class="prestige-modal-card">
+            <div class="prestige-modal-header">
+                <div class="flex items-center gap-2.5">
+                    <div class="action-icon-badge rose" style="width: 36px; height: 36px; min-width: 36px; border-radius: 10px;">
+                        <span class="material-symbols-outlined text-xl">delete_sweep</span>
+                    </div>
+                    <div>
+                        <h3 class="prestige-modal-title">Déclarer Invendus / Pertes</h3>
+                        <span class="text-xs text-[#786558] font-bold">Registre Sanitaire & Traçabilité</span>
+                    </div>
+                </div>
+                <button onclick="closeWasteModal()" class="text-[#786558] hover:text-[#ba1a1a] text-2xl font-bold transition-colors">✕</button>
+            </div>
+
+            <div class="flex flex-col gap-3.5 my-2">
+                <div class="prestige-form-group">
+                    <label class="prestige-form-label">Produit concerné :</label>
+                    <input type="text" id="waste-product-name" class="prestige-form-input" placeholder="Ex: Croissant Pur Beurre" value="Croissant Pur Beurre"/>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="prestige-form-group">
+                        <label class="prestige-form-label">Quantité (Pièces) :</label>
+                        <input type="number" id="waste-quantity" class="prestige-form-input" value="4"/>
+                    </div>
+                    <div class="prestige-form-group">
+                        <label class="prestige-form-label">Motif :</label>
+                        <select id="waste-reason" class="prestige-form-input">
+                            <option value="Invendu Fin de Journée">Invendu Fin de Journée</option>
+                            <option value="Casse / Déformation">Casse / Déformation</option>
+                            <option value="Trop Cuit / Brûlé">Trop Cuit / Brûlé</option>
+                            <option value="Don Association / Personnel">Don Association / Personnel</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="prestige-modal-actions">
+                <button type="button" onclick="closeWasteModal()" class="btn-modal-cancel">Annuler</button>
+                <button type="button" onclick="submitManualWaste()" class="btn-modal-submit-gold">
+                    <span class="material-symbols-outlined text-base">save</span> Enregistrer au Registre
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 4. CONTRÔLE FRIGOS & TEMPÉRATURES MODAL PRESTIGE -->
+    <div id="tempModal" class="prestige-modal-backdrop hidden">
+        <div class="prestige-modal-card">
+            <div class="prestige-modal-header">
+                <div class="flex items-center gap-2.5">
+                    <div class="action-icon-badge cyan" style="width: 36px; height: 36px; min-width: 36px; border-radius: 10px;">
+                        <span class="material-symbols-outlined text-xl">ac_unit</span>
+                    </div>
+                    <div>
+                        <h3 class="prestige-modal-title">Relevé Températures (°C)</h3>
+                        <span class="text-xs text-[#786558] font-bold">Chambre Froide & Pousse</span>
+                    </div>
+                </div>
+                <button onclick="closeTempModal()" class="text-[#786558] hover:text-[#ba1a1a] text-2xl font-bold transition-colors">✕</button>
+            </div>
+
+            <div class="flex flex-col gap-3.5 my-2">
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="prestige-form-group">
+                        <label class="prestige-form-label">Frigo Positif (+3°C à +5°C) :</label>
+                        <input type="text" id="temp-positif" class="prestige-form-input" value="+3.8°C"/>
+                    </div>
+                    <div class="prestige-form-group">
+                        <label class="prestige-form-label">Surgélateur (-18°C) :</label>
+                        <input type="text" id="temp-negatif" class="prestige-form-input" value="-18.5°C"/>
+                    </div>
+                </div>
+                <div class="prestige-form-group">
+                    <label class="prestige-form-label">Chambre de Pousse (+24°C) :</label>
+                    <input type="text" id="temp-pousse" class="prestige-form-input" value="+24.2°C"/>
+                </div>
+            </div>
+
+            <div class="prestige-modal-actions">
+                <button type="button" onclick="closeTempModal()" class="btn-modal-cancel">Annuler</button>
+                <button type="button" onclick="submitManualTemp()" class="btn-modal-submit-green">
+                    <span class="material-symbols-outlined text-base">verified</span> Valider Relevé Conforme
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 5. RÉASSORT MATIÈRES PREMIÈRES MODAL PRESTIGE -->
+    <div id="reassortModal" class="prestige-modal-backdrop hidden">
+        <div class="prestige-modal-card">
+            <div class="prestige-modal-header">
+                <div class="flex items-center gap-2.5">
+                    <div class="action-icon-badge gold" style="width: 36px; height: 36px; min-width: 36px; border-radius: 10px;">
+                        <span class="material-symbols-outlined text-xl">local_shipping</span>
+                    </div>
+                    <div>
+                        <h3 class="prestige-modal-title">Commande Réassort</h3>
+                        <span class="text-xs text-[#786558] font-bold">Fournisseurs Matières Premières</span>
+                    </div>
+                </div>
+                <button onclick="closeReassortModal()" class="text-[#786558] hover:text-[#ba1a1a] text-2xl font-bold transition-colors">✕</button>
+            </div>
+
+            <div class="flex flex-col gap-3.5 my-2">
+                <div class="prestige-form-group">
+                    <label class="prestige-form-label">Matière Première :</label>
+                    <select id="reassort-item" class="prestige-form-input">
+                        <option value="Farine Grand Moulins T55 (Sacs 50kg)">Farine Grand Moulins T55 (Sacs 50kg)</option>
+                        <option value="Beurre AOP Tourage 84% (Cartons 10kg)">Beurre AOP Tourage 84% (Cartons 10kg)</option>
+                        <option value="Levure Fraîche Boulangère (Cartons 5kg)">Levure Fraîche Boulangère (Cartons 5kg)</option>
+                        <option value="Bâtons de Chocolat Pur Beurre Cacao">Bâtons de Chocolat Pur Beurre Cacao</option>
+                    </select>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="prestige-form-group">
+                        <label class="prestige-form-label">Quantité Commandée :</label>
+                        <input type="number" id="reassort-qty" class="prestige-form-input" value="10"/>
+                    </div>
+                    <div class="prestige-form-group">
+                        <label class="prestige-form-label">Unité :</label>
+                        <input type="text" id="reassort-unit" class="prestige-form-input" value="Sacs (50kg)"/>
+                    </div>
+                </div>
+            </div>
+
+            <div class="prestige-modal-actions">
+                <button type="button" onclick="closeReassortModal()" class="btn-modal-cancel">Annuler</button>
+                <button type="button" onclick="submitManualReassort()" class="btn-modal-submit-gold">
+                    <span class="material-symbols-outlined text-base">send</span> Envoyer Bon de Commande
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 6. GUIDE D'UTILISATION EXPRESS & MODE D'EMPLOI PAS-À-PAS -->
+    <div id="helpGuideModal" class="prestige-modal-backdrop hidden">
+        <div class="prestige-modal-card" style="max-width: 580px;">
+            <div class="prestige-modal-header">
+                <div class="flex items-center gap-3">
+                    <div class="action-icon-badge gold" style="width: 44px; height: 44px; min-width: 44px; border-radius: 14px; box-shadow: 0 4px 14px rgba(245, 184, 0, 0.35);">
+                        <span class="material-symbols-outlined text-2xl">menu_book</span>
+                    </div>
+                    <div>
+                        <h3 class="prestige-modal-title">Mode d'Emploi Fournil en 3 Étapes</h3>
+                        <span style="font-size: 11.5px; font-weight: 700; color: #765b00;">Simple, Rapide et Tactile pour toute l'équipe</span>
+                    </div>
+                </div>
+                <button type="button" onclick="closeHelpGuideModal()" class="prestige-modal-close-btn" title="Fermer">✕</button>
+            </div>
+
+            <!-- Étapes Visuelles Illustrées -->
+            <div class="flex flex-col gap-3 my-2">
+                <!-- Étape 1 -->
+                <div class="guide-step-card">
+                    <div class="guide-step-number">1</div>
+                    <div class="flex flex-col">
+                        <h4 class="text-sm font-extrabold text-[#2b160c]">Programmer une Fournée (1 Clic)</h4>
+                        <p class="text-xs text-[#786558] mt-0.5">
+                            Cliquez sur le bouton doré <strong>« + Ajouter Fournée »</strong> puis touchez la recette voulue (<em>🥖 Baguette, 🥐 Croissant, 🍫 Pain Choc</em>). La quantité et le four se remplissent immédiatement !
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Étape 2 -->
+                <div class="guide-step-card">
+                    <div class="guide-step-number">2</div>
+                    <div class="flex flex-col">
+                        <h4 class="text-sm font-extrabold text-[#2b160c]">Gérer la Cuisson & Sortie</h4>
+                        <p class="text-xs text-[#786558] mt-0.5">
+                            Sur le planning : cliquez sur <strong>« ⏳ Enfourner »</strong> quand le pain entre au four, puis sur <strong>« ✅ Mettre en Rayon »</strong> dès que la fournée est cuite et disponible pour la caisse.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Étape 3 -->
+                <div class="guide-step-card">
+                    <div class="guide-step-number">3</div>
+                    <div class="flex flex-col">
+                        <h4 class="text-sm font-extrabold text-[#2b160c]">Fiche A4 & Relevés Frigos</h4>
+                        <p class="text-xs text-[#786558] mt-0.5">
+                            Touchez <strong>🖨️ Imprimer</strong> pour sortir la grande fiche A4 avec le logo BABI, ou cliquez sur <strong>« Relevé Sanitaire Frigos »</strong> pour enregistrer les températures du jour en 2 secondes.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="prestige-modal-actions">
+                <button type="button" onclick="closeHelpGuideModal()" class="btn-modal-submit-gold w-full">
+                    <span class="material-symbols-outlined text-base">check_circle</span> J'ai compris, c'est super simple !
+                </button>
             </div>
         </div>
     </div>
 
     <!-- SCRIPTS -->
-    <script>
-        function openBakingModal() {
-            document.getElementById('bakingModal').classList.remove('hidden');
-        }
-        function closeBakingModal() {
-            document.getElementById('bakingModal').classList.add('hidden');
-        }
-        function showGeranteTab(tab) {
-            document.querySelectorAll('.prestige-nav-item').forEach(b => {
-                b.classList.remove('active');
-            });
-            const btn = document.getElementById(`nav-gerante-${tab}`);
-            if (btn) {
-                btn.classList.add('active');
-            }
-        }
-    </script>
+    <script src="js/gerante.js"></script>
     <script src="js/store_schedule.js"></script>
     <script src="js/anti_hacker_client.js"></script>
 </body>

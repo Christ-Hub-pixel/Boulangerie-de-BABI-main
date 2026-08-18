@@ -5,8 +5,12 @@ let allProducts = [];
 let allUsers = [];
 let revenueChart = null;
 let categoryChart = null;
+let resEvolutionChartInstance = null;
+let statusDonutChartInstance = null;
+let paymentsDonutChartInstance = null;
 
 document.addEventListener('DOMContentLoaded', () => {
+    initSaasCharts();
     fetchAdminData();
 
     // Auto refresh orders every 10 seconds
@@ -19,23 +23,201 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-// Tab navigation switcher
-function showTab(tabName) {
-    document.querySelectorAll('.tab-section').forEach(el => el.classList.add('hidden'));
-    document.querySelectorAll('.prestige-nav-item, .nav-item').forEach(el => {
-        el.classList.remove('active', 'bg-primary-container', 'text-on-primary-container', 'font-bold');
-    });
+// =============================================================
+// SAAS CHARTS ENGINE (CHART.JS AREA & DONUTS)
+// =============================================================
+function initSaasCharts() {
+    // 1. Évolution des réservations (Area Chart)
+    const evoCanvas = document.getElementById('reservationsEvolutionChart');
+    if (evoCanvas && typeof Chart !== 'undefined') {
+        const ctx = evoCanvas.getContext('2d');
+        if (resEvolutionChartInstance) resEvolutionChartInstance.destroy();
 
-    const activeTab = document.getElementById(`tab-${tabName}`);
-    if (activeTab) activeTab.classList.remove('hidden');
+        // Gradient for Orange Curve (Reservations)
+        const orangeGrad = ctx.createLinearGradient(0, 0, 0, 200);
+        orangeGrad.addColorStop(0, 'rgba(234, 88, 12, 0.28)');
+        orangeGrad.addColorStop(1, 'rgba(234, 88, 12, 0.0)');
 
-    const activeLink = document.querySelector(`.prestige-nav-item[data-tab="${tabName}"], .nav-item[data-tab="${tabName}"]`);
-    if (activeLink) {
-        activeLink.classList.add('active');
+        // Gradient for Green Curve (Recuperees)
+        const greenGrad = ctx.createLinearGradient(0, 0, 0, 200);
+        greenGrad.addColorStop(0, 'rgba(22, 163, 74, 0.22)');
+        greenGrad.addColorStop(1, 'rgba(22, 163, 74, 0.0)');
+
+        resEvolutionChartInstance = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['14 Août', '15 Août', '16 Août', '17 Août', '18 Août', '19 Août', '20 Août'],
+                datasets: [
+                    {
+                        label: 'Réservations',
+                        data: [28, 42, 36, 54, 68, 85, 78],
+                        borderColor: '#ea580c',
+                        backgroundColor: orangeGrad,
+                        borderWidth: 2.5,
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 3,
+                        pointBackgroundColor: '#ea580c',
+                        pointBorderColor: '#ffffff',
+                        pointBorderWidth: 1.5
+                    },
+                    {
+                        label: 'Récupérées',
+                        data: [20, 32, 28, 45, 52, 70, 62],
+                        borderColor: '#16a34a',
+                        backgroundColor: greenGrad,
+                        borderWidth: 2.5,
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 3,
+                        pointBackgroundColor: '#16a34a',
+                        pointBorderColor: '#ffffff',
+                        pointBorderWidth: 1.5
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: '#0f172a',
+                        padding: 8,
+                        titleFont: { family: 'Plus Jakarta Sans', size: 11, weight: 'bold' },
+                        bodyFont: { family: 'Plus Jakarta Sans', size: 11 },
+                        cornerRadius: 8
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: { display: false },
+                        ticks: { font: { family: 'Plus Jakarta Sans', size: 10 }, color: '#94a3b8' }
+                    },
+                    y: {
+                        grid: { color: '#f1f5f9', borderDash: [4, 4] },
+                        ticks: { font: { family: 'Plus Jakarta Sans', size: 10 }, color: '#94a3b8', stepSize: 20 }
+                    }
+                }
+            }
+        });
     }
 
+    // 2. Réservations par statut (Donut Chart)
+    const statusCanvas = document.getElementById('statusDonutChart');
+    if (statusCanvas && typeof Chart !== 'undefined') {
+        const ctx = statusCanvas.getContext('2d');
+        if (statusDonutChartInstance) statusDonutChartInstance.destroy();
+
+        statusDonutChartInstance = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Nouvelles', 'Confirmées', 'En préparation', 'Prêtes', 'Récupérées'],
+                datasets: [{
+                    data: [62, 74, 68, 79, 43],
+                    backgroundColor: ['#3b82f6', '#eab308', '#a855f7', '#22c55e', '#06b6d4'],
+                    borderWidth: 2,
+                    borderColor: '#ffffff',
+                    hoverOffset: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '72%',
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: '#0f172a',
+                        padding: 8,
+                        cornerRadius: 8,
+                        bodyFont: { family: 'Plus Jakarta Sans', size: 11 }
+                    }
+                }
+            }
+        });
+    }
+
+    // 3. Répartition des paiements (Donut Chart)
+    const payCanvas = document.getElementById('paymentsDonutChart');
+    if (payCanvas && typeof Chart !== 'undefined') {
+        const ctx = payCanvas.getContext('2d');
+        if (paymentsDonutChartInstance) paymentsDonutChartInstance.destroy();
+
+        paymentsDonutChartInstance = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Payés', 'En attente', 'Échecs'],
+                datasets: [{
+                    data: [2450, 250, 150],
+                    backgroundColor: ['#22c55e', '#eab308', '#ef4444'],
+                    borderWidth: 2,
+                    borderColor: '#ffffff',
+                    hoverOffset: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '70%',
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: '#0f172a',
+                        padding: 8,
+                        cornerRadius: 8,
+                        bodyFont: { family: 'Plus Jakarta Sans', size: 11 }
+                    }
+                }
+            }
+        });
+    }
+}
+
+// Submenu toggle for Utilisateurs
+function toggleUsersMenu() {
+    const submenu = document.getElementById('usersSubmenu');
+    const arrow = document.getElementById('usersMenuArrow');
+    if (submenu) {
+        submenu.classList.toggle('open');
+        if (arrow) {
+            arrow.style.transform = submenu.classList.contains('open') ? 'rotate(180deg)' : 'rotate(0deg)';
+        }
+    }
+}
+
+// Profile dropdown toggle
+function toggleProfileDropdown(e) {
+    if (e) e.stopPropagation();
+    const dropdown = document.getElementById('profileDropdownMenu');
+    if (dropdown) {
+        dropdown.classList.toggle('hidden');
+    }
+}
+
+// Close dropdown on click outside
+document.addEventListener('click', (e) => {
+    const dropdown = document.getElementById('profileDropdownMenu');
+    if (dropdown && !dropdown.classList.contains('hidden') && !e.target.closest('#profileDropdownMenu') && !e.target.closest('.saas-profile-card') && !e.target.closest('#profileDropdownWrapper')) {
+        dropdown.classList.add('hidden');
+    }
+});
+
+// Logout handler
+function handleAdminLogout() {
+    if (confirm("Êtes-vous sûr de vouloir vous déconnecter de la plateforme administrateur ?")) {
+        localStorage.removeItem('babi_admin_auth');
+        window.location.href = 'index.html';
+    }
+}
+// Show tab switcher
+function showTab(tabName) {
+    document.querySelectorAll('.tab-section').forEach(el => el.classList.add('hidden'));
+    const activeTab = document.getElementById(`tab-${tabName}`);
+    if (activeTab) activeTab.classList.remove('hidden');
     if (tabName === 'security') fetchSecurityAuditLogs();
 }
+
 
 // Fetch all required data from backend APIs
 async function fetchAdminData() {
@@ -1539,6 +1721,80 @@ function closeChangePasswordModal() {
     if (modal) modal.classList.add('hidden');
 }
 
+// =============================================================
+// TOAST NOTIFICATIONS PRESTIGE (SANS POPUPS BLOQUANTES)
+// =============================================================
+function showAdminToast(message, type = 'success') {
+    let container = document.getElementById('babi-toast-container');
+    if (!container) {
+        container = document.createElement('div');
+        container.id = 'babi-toast-container';
+        container.style.cssText = `
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 99999;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            pointer-events: none;
+        `;
+        document.body.appendChild(container);
+    }
+
+    const toast = document.createElement('div');
+    let bg = 'linear-gradient(135deg, #2b160c 0%, #1c0e07 100%)';
+    let border = '1px solid #f5b800';
+    let icon = 'check_circle';
+    let iconColor = '#f5b800';
+
+    if (type === 'info') {
+        icon = 'info';
+        iconColor = '#60a5fa';
+    } else if (type === 'error') {
+        icon = 'warning';
+        iconColor = '#f87171';
+        border = '1px solid #ef4444';
+    }
+
+    toast.style.cssText = `
+        background: ${bg};
+        border: ${border};
+        color: #ffffff;
+        padding: 12px 22px;
+        border-radius: 9999px;
+        box-shadow: 0 12px 30px rgba(0,0,0,0.4);
+        font-family: 'Manrope', sans-serif;
+        font-size: 13.5px;
+        font-weight: 800;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        pointer-events: auto;
+        transform: translateY(20px);
+        opacity: 0;
+        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    `;
+
+    toast.innerHTML = `
+        <span class="material-symbols-outlined" style="color: ${iconColor}; font-size: 20px;">${icon}</span>
+        <span>${message}</span>
+    `;
+
+    container.appendChild(toast);
+
+    setTimeout(() => {
+        toast.style.transform = 'translateY(0)';
+        toast.style.opacity = '1';
+    }, 10);
+
+    setTimeout(() => {
+        toast.style.transform = 'translateY(20px)';
+        toast.style.opacity = '0';
+        setTimeout(() => toast.remove(), 300);
+    }, 3500);
+}
+
 function handlePasswordChange(e) {
     e.preventDefault();
     const oldP = document.getElementById('old-password')?.value;
@@ -1546,12 +1802,11 @@ function handlePasswordChange(e) {
     const confP = document.getElementById('confirm-password')?.value;
 
     if (newP !== confP) {
-        alert('⚠️ Erreur : Les nouveaux mots de passe ne correspondent pas.');
+        showAdminToast('Les nouveaux mots de passe ne correspondent pas', 'error');
         return;
     }
 
-    // In a real API, call backend endpoint
-    alert('✅ Mot de passe Super Admin mis à jour avec succès !\nVos prochains accès sont scellés par signature Merkle.');
+    showAdminToast('✅ Mot de passe Super Admin mis à jour avec succès !', 'success');
     closeChangePasswordModal();
 }
 
@@ -1559,7 +1814,6 @@ function handleAdminLogout() {
     if (confirm('🔒 Voulez-vous fermer votre session sécurisée de Direction ?')) {
         sessionStorage.clear();
         localStorage.removeItem('babi_admin_auth');
-        alert('Au revoir M. Jean-Marc Konan. Session clôturée en toute sécurité.');
         window.location.href = 'index.html';
     }
 }
@@ -1619,7 +1873,7 @@ function handleAvatarFileSelect(e) {
     if (!file) return;
 
     if (file.size > 5 * 1024 * 1024) {
-        alert('⚠️ Fichier trop volumineux. La taille maximale est de 5 Mo.');
+        showAdminToast('⚠️ Fichier trop volumineux (max 5 Mo)', 'error');
         return;
     }
 
@@ -1646,8 +1900,8 @@ function saveProfileAvatar() {
     applySavedAvatar();
     closeAvatarModal();
 
-    // Show luxury feedback toast/alert
-    alert('👑 Photo de profil mise à jour avec succès ! Votre avatar officiel est désormais visible sur tout le tableau de bord.');
+    // Show luxury feedback toast
+    showAdminToast('👑 Photo de profil mise à jour avec succès !', 'success');
 }
 
 // =============================================================
@@ -1668,7 +1922,7 @@ function resetAllToZeroDayOne() {
         filterProductsGrid();
         updateStockSummaryKpis();
         
-        alert("🎁 Remise à zéro effectuée ! Votre tableau de bord est vierge, neuf et 100% opérationnel pour vos premières ventes réelles.");
+        showAdminToast("🎁 Remise à zéro effectuée ! Tableau de bord prêt pour le Jour 1.", "success");
     }
 }
 

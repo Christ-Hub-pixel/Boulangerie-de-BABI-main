@@ -1,6 +1,608 @@
 /* =============================================================
-   BABI ADMIN — PRESTIGE LUXURY DESIGN SYSTEM (DARK CHOCOLATE & GOLD)
+   BABI ADMIN — SAAS PRO MULTI-STORE DESIGN SYSTEM (HAUTE FIDÉLITÉ)
    ============================================================= */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200');
+
+:root {
+    /* Palette SaaS Dark Slate & Clean Light Workspace */
+    --saas-sidebar-bg: #0f172a;
+    --saas-sidebar-hover: #1e293b;
+    --saas-sidebar-active: linear-gradient(135deg, #c2850c 0%, #a16207 100%);
+    --saas-sidebar-text: #94a3b8;
+    --saas-sidebar-text-active: #ffffff;
+    
+    --saas-bg: #f8fafc;
+    --saas-card-bg: #ffffff;
+    --saas-border: #e2e8f0;
+    --saas-text-main: #0f172a;
+    --saas-text-muted: #64748b;
+    --saas-text-sub: #94a3b8;
+    
+    --saas-primary: #c2850c;
+    --saas-success: #16a34a;
+    --saas-danger: #ef4444;
+    --saas-warning: #f59e0b;
+    --saas-info: #3b82f6;
+    --saas-purple: #9333ea;
+    --saas-pink: #db2777;
+
+    --brand-chocolate: #2b160c;
+    --brand-gold: #f5b800;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: var(--saas-bg) !important;
+    color: var(--saas-text-main) !important;
+    font-family: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
+    font-size: 13.5px;
+    line-height: 1.5;
+    overflow-x: hidden;
+}
+
+/* =============================================================
+   SAAS SIDEBAR NAVIGATION (DARK SLATE)
+   ============================================================= */
+.saas-layout-wrapper {
+    display: flex;
+    min-height: 100vh;
+    width: 100%;
+}
+
+.saas-sidebar {
+    width: 250px;
+    min-width: 250px;
+    background-color: var(--saas-sidebar-bg);
+    color: var(--saas-sidebar-text);
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 50;
+    border-right: 1px solid rgba(255, 255, 255, 0.05);
+    overflow-y: auto;
+    scrollbar-width: thin;
+}
+
+.saas-sidebar::-webkit-scrollbar {
+    width: 4px;
+}
+.saas-sidebar::-webkit-scrollbar-thumb {
+    background: #334155;
+    border-radius: 4px;
+}
+
+.saas-sidebar-brand {
+    padding: 20px 20px 16px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.saas-brand-logo {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    object-fit: cover;
+}
+
+.saas-brand-title {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-weight: 800;
+    font-size: 14px;
+    color: #ffffff;
+    line-height: 1.2;
+}
+
+.saas-brand-badge {
+    font-size: 10px;
+    font-weight: 800;
+    color: #94a3b8;
+    letter-spacing: 0.8px;
+}
+
+.saas-nav-list {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    padding: 14px 12px;
+    flex: 1;
+    list-style: none;
+}
+
+.saas-nav-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 14px;
+    border-radius: 10px;
+    color: #94a3b8;
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.18s ease;
+    cursor: pointer;
+    position: relative;
+}
+
+.saas-nav-item:hover {
+    background-color: var(--saas-sidebar-hover);
+    color: #ffffff;
+}
+
+.saas-nav-item.active {
+    background: var(--saas-sidebar-active);
+    color: #ffffff !important;
+    font-weight: 700;
+    box-shadow: 0 4px 14px rgba(194, 133, 12, 0.35);
+}
+
+.saas-nav-icon {
+    font-size: 18px !important;
+    line-height: 1;
+}
+
+.saas-nav-submenu {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding-left: 36px;
+    margin-top: 2px;
+    list-style: none;
+}
+
+.saas-subnav-item {
+    padding: 6px 12px;
+    border-radius: 8px;
+    color: #64748b;
+    font-size: 12px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.15s ease;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+}
+
+.saas-subnav-item:hover {
+    color: #cbd5e1;
+    background-color: rgba(255, 255, 255, 0.03);
+}
+
+.saas-subnav-item.active {
+    color: #f5b800;
+    font-weight: 700;
+}
+
+.saas-sidebar-footer {
+    padding: 16px;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    background: #090e1a;
+}
+
+.saas-profile-card {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+}
+
+.saas-profile-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 9999px;
+    object-fit: cover;
+    border: 1.5px solid #475569;
+}
+
+.saas-profile-name {
+    font-size: 12.5px;
+    font-weight: 700;
+    color: #ffffff;
+    line-height: 1.2;
+}
+
+.saas-profile-email {
+    font-size: 11px;
+    color: #64748b;
+}
+
+.saas-status-indicator {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 10.5px;
+    color: #10b981;
+    font-weight: 600;
+    margin-top: 2px;
+}
+
+.saas-dot-online {
+    width: 6px;
+    height: 6px;
+    border-radius: 9999px;
+    background-color: #10b981;
+}
+
+/* =============================================================
+   MAIN WORKSPACE & TOPBAR
+   ============================================================= */
+.saas-main-area {
+    margin-left: 250px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    background-color: var(--saas-bg);
+}
+
+.saas-topbar {
+    height: 64px;
+    background-color: #ffffff;
+    border-bottom: 1px solid var(--saas-border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 28px;
+    position: sticky;
+    top: 0;
+    z-index: 40;
+}
+
+.saas-topbar-title {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 17px;
+    font-weight: 800;
+    color: #0f172a;
+    line-height: 1.2;
+}
+
+.saas-topbar-subtitle {
+    font-size: 12px;
+    color: #64748b;
+    font-weight: 500;
+}
+
+.saas-date-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 14px;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #334155;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.saas-date-pill:hover {
+    border-color: #cbd5e1;
+    background: #f8fafc;
+}
+
+.saas-notif-btn {
+    width: 38px;
+    height: 38px;
+    border-radius: 8px;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    cursor: pointer;
+    color: #475569;
+    transition: all 0.15s ease;
+}
+
+.saas-notif-btn:hover {
+    background: #f8fafc;
+    color: #0f172a;
+}
+
+.saas-notif-badge {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    background-color: #ef4444;
+    color: #ffffff;
+    font-size: 10px;
+    font-weight: 800;
+    width: 17px;
+    height: 17px;
+    border-radius: 9999px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #ffffff;
+}
+
+/* =============================================================
+   6 TOP KPI MICRO-CARDS GRID
+   ============================================================= */
+.saas-kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 16px;
+    padding: 24px 28px 12px 28px;
+}
+
+@media (max-width: 1280px) {
+    .saas-kpi-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+@media (max-width: 768px) {
+    .saas-kpi-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+.saas-kpi-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+    transition: all 0.2s ease;
+}
+
+.saas-kpi-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    transform: translateY(-1.5px);
+}
+
+.saas-kpi-icon-box {
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.saas-kpi-icon-box.orange { background: #ffedd5; color: #ea580c; }
+.saas-kpi-icon-box.purple { background: #f3e8ff; color: #9333ea; }
+.saas-kpi-icon-box.blue { background: #dbeafe; color: #2563eb; }
+.saas-kpi-icon-box.green { background: #dcfce7; color: #16a34a; }
+.saas-kpi-icon-box.yellow { background: #fef3c7; color: #d97706; }
+.saas-kpi-icon-box.pink { background: #fce7f3; color: #db2777; }
+
+.saas-kpi-label {
+    font-size: 10.5px;
+    font-weight: 800;
+    color: #64748b;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+.saas-kpi-value {
+    font-size: 18px;
+    font-weight: 800;
+    color: #0f172a;
+    line-height: 1.2;
+    margin: 2px 0 1px 0;
+}
+
+.saas-kpi-badge {
+    font-size: 11px;
+    font-weight: 700;
+    color: #16a34a;
+}
+
+/* =============================================================
+   DASHBOARD 3-COLUMNS SECTIONS (CHARTS, FEEDS, TABLES)
+   ============================================================= */
+.saas-dashboard-row {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr 1fr;
+    gap: 20px;
+    padding: 12px 28px;
+}
+
+@media (max-width: 1200px) {
+    .saas-dashboard-row {
+        grid-template-columns: 1fr;
+    }
+}
+
+.saas-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.saas-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+}
+
+.saas-card-title {
+    font-size: 14px;
+    font-weight: 800;
+    color: #0f172a;
+}
+
+.saas-chart-legend {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 11.5px;
+    font-weight: 600;
+    color: #64748b;
+}
+
+.saas-legend-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 9999px;
+    display: inline-block;
+    margin-right: 4px;
+}
+
+/* Activity Feed */
+.saas-activity-list {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.saas-activity-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+.saas-activity-icon {
+    width: 32px;
+    height: 32px;
+    min-width: 32px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+}
+
+.saas-activity-title {
+    font-size: 12.5px;
+    font-weight: 700;
+    color: #1e293b;
+    line-height: 1.2;
+}
+
+.saas-activity-sub {
+    font-size: 11.5px;
+    color: #64748b;
+}
+
+.saas-activity-time {
+    font-size: 11px;
+    color: #94a3b8;
+    margin-left: auto;
+    white-space: nowrap;
+}
+
+/* Tables */
+.saas-table-wrapper {
+    overflow-x: auto;
+    width: 100%;
+}
+
+.saas-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+}
+
+.saas-table th {
+    color: #64748b;
+    font-weight: 700;
+    font-size: 11px;
+    text-align: left;
+    padding: 8px 10px;
+    border-bottom: 1px solid #f1f5f9;
+    white-space: nowrap;
+}
+
+.saas-table td {
+    padding: 10px 10px;
+    border-bottom: 1px solid #f8fafc;
+    color: #334155;
+    font-weight: 600;
+    vertical-align: middle;
+}
+
+.saas-badge-pill {
+    padding: 2px 8px;
+    border-radius: 9999px;
+    font-size: 10.5px;
+    font-weight: 700;
+    display: inline-block;
+}
+
+.saas-badge-pill.active {
+    background: #dcfce7;
+    color: #15803d;
+}
+
+.saas-badge-pill.danger {
+    background: #fee2e2;
+    color: #b91c1c;
+}
+
+.saas-badge-wave {
+    background: #e0f2fe;
+    color: #0284c7;
+    padding: 2px 8px;
+    border-radius: 6px;
+    font-weight: 800;
+    font-size: 10.5px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+/* Card Action Button */
+.saas-btn-card-footer {
+    width: 100%;
+    padding: 8px;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 700;
+    color: #475569;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    margin-top: 14px;
+    text-align: center;
+}
+
+.saas-btn-card-footer:hover {
+    background: #f8fafc;
+    border-color: #cbd5e1;
+    color: #0f172a;
+}
+
+/* Footer */
+.saas-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 28px;
+    font-size: 11.5px;
+    color: #94a3b8;
+    border-top: 1px solid #e2e8f0;
+    margin-top: auto;
+}
+
 
 @import url('https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800;900&family=Great+Vibes&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200');
@@ -1448,4 +2050,843 @@ img.profile-avatar, .profile-avatar, img.logo-avatar, .logo-avatar {
 .prestige-sidebar ::-webkit-scrollbar-thumb {
     background: rgba(245, 184, 0, 0.2);
     border-radius: 4px;
+}
+
+/* =============================================================
+   PRESTIGE ACTION CARDS (ACTIONS RAPIDES FOURNIL WAOU)
+   ============================================================= */
+.prestige-action-card {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    width: 100% !important;
+    padding: 12px 14px !important;
+    border-radius: 16px !important;
+    background: linear-gradient(135deg, #ffffff 0%, #fdfbf7 100%) !important;
+    border: 1px solid rgba(245, 184, 0, 0.3) !important;
+    box-shadow: 0 4px 16px -2px rgba(43, 22, 12, 0.06), 0 2px 4px rgba(0, 0, 0, 0.02) !important;
+    cursor: pointer !important;
+    text-align: left !important;
+    transition: all 0.28s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    position: relative !important;
+    overflow: hidden !important;
+    text-decoration: none !important;
+    margin-bottom: 8px !important;
+}
+
+.prestige-action-card::before {
+    content: '' !important;
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 4px !important;
+    height: 100% !important;
+    background: var(--brand-gold) !important;
+    opacity: 0 !important;
+    transition: opacity 0.25s ease !important;
+}
+
+.prestige-action-card:hover {
+    transform: translateY(-2px) !important;
+    border-color: rgba(245, 184, 0, 0.65) !important;
+    box-shadow: 0 10px 24px -3px rgba(43, 22, 12, 0.12), 0 0 16px rgba(245, 184, 0, 0.2) !important;
+    background: #ffffff !important;
+}
+
+.prestige-action-card:hover::before {
+    opacity: 1 !important;
+}
+
+.prestige-action-card:hover .action-chevron {
+    transform: translateX(4px) !important;
+    color: var(--brand-gold-dark) !important;
+}
+
+.action-icon-badge {
+    width: 38px !important;
+    height: 38px !important;
+    min-width: 38px !important;
+    border-radius: 12px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    color: #ffffff !important;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15) !important;
+}
+
+.action-icon-badge.emerald {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+}
+.action-icon-badge.rose {
+    background: linear-gradient(135deg, #f43f5e 0%, #e11d48 100%) !important;
+}
+.action-icon-badge.cyan {
+    background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%) !important;
+}
+.action-icon-badge.gold {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%) !important;
+}
+
+.action-title {
+    font-family: 'Manrope', sans-serif !important;
+    font-weight: 800 !important;
+    font-size: 13px !important;
+    color: #2b160c !important;
+    display: block !important;
+    line-height: 1.25 !important;
+}
+
+.action-subtitle {
+    font-size: 10.5px !important;
+    color: #786558 !important;
+    font-weight: 600 !important;
+    display: block !important;
+    margin-top: 2px !important;
+}
+
+.action-chevron {
+    color: #c4a98b !important;
+    transition: transform 0.25s ease, color 0.25s ease !important;
+    font-size: 20px !important;
+}
+
+/* =============================================================
+   PRESTIGE MODALS & FORM INPUTS (HAUTE JOAILLERIE)
+   ============================================================= */
+.prestige-modal-backdrop {
+    position: fixed !important;
+    inset: 0 !important;
+    background: rgba(20, 9, 4, 0.78) !important;
+    backdrop-filter: blur(8px) !important;
+    -webkit-backdrop-filter: blur(8px) !important;
+    z-index: 9999 !important;
+    display: none !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 16px !important;
+    animation: prestigeFadeIn 0.25s ease-out !important;
+}
+
+.prestige-modal-backdrop.active,
+.prestige-modal-backdrop:not(.hidden) {
+    display: flex !important;
+}
+
+@keyframes prestigeFadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes prestigeCardZoom {
+    from { opacity: 0; transform: scale(0.94) translateY(12px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.prestige-modal-card {
+    background: #ffffff !important;
+    border: 1px solid rgba(245, 184, 0, 0.45) !important;
+    box-shadow: 0 25px 60px -15px rgba(20, 9, 4, 0.45), 0 0 30px rgba(245, 184, 0, 0.15) !important;
+    border-radius: 24px !important;
+    width: 100% !important;
+    max-width: 480px !important;
+    padding: 28px !important;
+    animation: prestigeCardZoom 0.28s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    position: relative !important;
+}
+
+.prestige-modal-header {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    padding-bottom: 16px !important;
+    margin-bottom: 20px !important;
+    border-bottom: 1px solid #ebe4d5 !important;
+}
+
+.prestige-modal-title {
+    font-family: 'Libre Caslon Text', serif !important;
+    font-size: 20px !important;
+    font-weight: 700 !important;
+    color: #2b160c !important;
+}
+
+.prestige-form-group {
+    margin-bottom: 16px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 6px !important;
+}
+
+.prestige-form-label {
+    font-size: 12px !important;
+    font-weight: 800 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.04em !important;
+    color: #5a4030 !important;
+}
+
+.prestige-form-input {
+    width: 100% !important;
+    padding: 12px 16px !important;
+    border-radius: 14px !important;
+    background: #fbf8f1 !important;
+    border: 1.5px solid #dfd3c0 !important;
+    color: #2b160c !important;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    font-family: 'Manrope', sans-serif !important;
+    outline: none !important;
+    transition: all 0.2s ease !important;
+}
+
+.prestige-form-input:focus {
+    background: #ffffff !important;
+    border-color: #f5b800 !important;
+    box-shadow: 0 0 0 3px rgba(245, 184, 0, 0.25) !important;
+}
+
+.prestige-modal-actions {
+    display: flex !important;
+    gap: 12px !important;
+    margin-top: 24px !important;
+}
+
+.btn-modal-cancel {
+    flex: 1 !important;
+    padding: 12px 18px !important;
+    border-radius: 14px !important;
+    background: #f5eee2 !important;
+    color: #4a2f1c !important;
+    font-weight: 800 !important;
+    font-size: 13px !important;
+    border: 1px solid #d8caa0 !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+.btn-modal-cancel:hover {
+    background: #ebe0cf !important;
+    border-color: #c4b080 !important;
+}
+
+.btn-modal-submit-gold {
+    flex: 1 !important;
+    padding: 12px 18px !important;
+    border-radius: 14px !important;
+    background: linear-gradient(135deg, #f5b800 0%, #dfa500 100%) !important;
+    color: #1c0e07 !important;
+    font-weight: 900 !important;
+    font-size: 13px !important;
+    border: none !important;
+    box-shadow: 0 4px 14px rgba(245, 184, 0, 0.35) !important;
+    cursor: pointer !important;
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 6px !important;
+}
+
+.btn-modal-submit-gold:hover {
+    transform: translateY(-1px) !important;
+    box-shadow: 0 6px 18px rgba(245, 184, 0, 0.5) !important;
+    background: linear-gradient(135deg, #ffc928 0%, #e5a800 100%) !important;
+}
+
+.btn-modal-submit-gold:active {
+    transform: translateY(0) !important;
+}
+
+.btn-modal-submit-green {
+    flex: 1 !important;
+    padding: 12px 18px !important;
+    border-radius: 14px !important;
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+    color: #ffffff !important;
+    font-weight: 900 !important;
+    font-size: 13px !important;
+    border: none !important;
+    box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35) !important;
+    cursor: pointer !important;
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 6px !important;
+}
+
+.btn-modal-submit-green:hover {
+    transform: translateY(-1px) !important;
+    box-shadow: 0 6px 18px rgba(16, 185, 129, 0.5) !important;
+}
+
+/* =============================================================
+   SENIOR PRINCIPAL LUXURY MODAL & PRESETS SYSTEM (WAOU MASTER)
+   ============================================================= */
+.prestige-modal-backdrop {
+    position: fixed !important;
+    inset: 0 !important;
+    background: rgba(28, 14, 7, 0.65) !important;
+    backdrop-filter: blur(12px) !important;
+    -webkit-backdrop-filter: blur(12px) !important;
+    z-index: 9999 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 1.25rem !important;
+    animation: modalFadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+}
+
+.prestige-modal-backdrop.hidden {
+    display: none !important;
+}
+
+.prestige-modal-card {
+    background: #ffffff !important;
+    border: 1.5px solid rgba(245, 184, 0, 0.35) !important;
+    border-radius: 28px !important;
+    box-shadow: 0 25px 60px -15px rgba(43, 22, 12, 0.35), 0 0 0 1px rgba(255, 255, 255, 0.8) inset !important;
+    width: 100% !important;
+    max-width: 540px !important;
+    padding: 28px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 16px !important;
+    animation: modalSlideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+    position: relative !important;
+    overflow: hidden !important;
+}
+
+.prestige-modal-card::before {
+    content: '' !important;
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    height: 6px !important;
+    background: linear-gradient(90deg, #f5b800 0%, #ffdf94 50%, #f5b800 100%) !important;
+}
+
+@keyframes modalFadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes modalSlideUp {
+    from { opacity: 0; transform: translateY(24px) scale(0.96); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.prestige-modal-header {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    padding-bottom: 14px !important;
+    border-bottom: 1px solid rgba(245, 184, 0, 0.18) !important;
+}
+
+.prestige-modal-title {
+    font-family: 'Libre Caslon Text', serif !important;
+    font-size: 21px !important;
+    font-weight: 700 !important;
+    color: #2b160c !important;
+    line-height: 1.2 !important;
+    margin: 0 !important;
+}
+
+.prestige-modal-close-btn {
+    width: 36px !important;
+    height: 36px !important;
+    border-radius: 9999px !important;
+    background: #fbf8f1 !important;
+    border: 1px solid rgba(245, 184, 0, 0.25) !important;
+    color: #786558 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    cursor: pointer !important;
+    font-size: 16px !important;
+    font-weight: bold !important;
+    transition: all 0.2s ease !important;
+}
+
+.prestige-modal-close-btn:hover {
+    background: #fee2e2 !important;
+    color: #dc2626 !important;
+    border-color: #fca5a5 !important;
+    transform: rotate(90deg) scale(1.05) !important;
+}
+
+/* Grille de Presets Horizontale Ultra-Sleek */
+.preset-grid-5 {
+    display: grid !important;
+    grid-template-columns: repeat(5, 1fr) !important;
+    gap: 8px !important;
+    width: 100% !important;
+}
+
+.preset-chip-btn {
+    background: #fdfaf3 !important;
+    border: 1.5px solid rgba(245, 184, 0, 0.25) !important;
+    border-radius: 16px !important;
+    padding: 10px 4px !important;
+    text-align: center !important;
+    cursor: pointer !important;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 2px !important;
+}
+
+.preset-chip-btn:hover {
+    background: #ffffff !important;
+    border-color: #f5b800 !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 6px 16px rgba(245, 184, 0, 0.25) !important;
+}
+
+.preset-chip-btn.active {
+    background: linear-gradient(135deg, #f5b800 0%, #dfa500 100%) !important;
+    border-color: #f5b800 !important;
+    box-shadow: 0 8px 20px rgba(245, 184, 0, 0.4) !important;
+    transform: translateY(-2px) scale(1.02) !important;
+}
+
+.preset-chip-btn.active .preset-chip-title {
+    color: #000000 !important;
+}
+
+.preset-chip-btn.active .preset-chip-qty {
+    color: rgba(0, 0, 0, 0.75) !important;
+}
+
+/* =============================================================
+   GUIDE D'UTILISATION EXPRESS & AIDE TACTILE (POUR TOUS)
+   ============================================================= */
+.prestige-help-pill-btn {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    padding: 8px 16px !important;
+    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%) !important;
+    border: 1.5px solid rgba(245, 184, 0, 0.45) !important;
+    border-radius: 9999px !important;
+    font-family: 'Manrope', sans-serif !important;
+    font-size: 12.5px !important;
+    font-weight: 800 !important;
+    color: #854d0e !important;
+    cursor: pointer !important;
+    box-shadow: 0 2px 8px rgba(245, 184, 0, 0.2) !important;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    white-space: nowrap !important;
+}
+
+.prestige-help-pill-btn:hover {
+    background: #f5b800 !important;
+    color: #000000 !important;
+    transform: translateY(-1.5px) !important;
+    box-shadow: 0 4px 14px rgba(245, 184, 0, 0.35) !important;
+}
+
+.guide-step-card {
+    background: #fdfaf3 !important;
+    border: 1.5px solid rgba(245, 184, 0, 0.25) !important;
+    border-radius: 20px !important;
+    padding: 16px 18px !important;
+    display: flex !important;
+    align-items: flex-start !important;
+    gap: 14px !important;
+    transition: all 0.2s ease !important;
+}
+
+.guide-step-card:hover {
+    background: #ffffff !important;
+    border-color: #f5b800 !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 6px 18px rgba(245, 184, 0, 0.15) !important;
+}
+
+.guide-step-number {
+    width: 34px !important;
+    height: 34px !important;
+    min-width: 34px !important;
+    border-radius: 12px !important;
+    background: linear-gradient(135deg, #f5b800 0%, #dfa500 100%) !important;
+    color: #000000 !important;
+    font-family: 'Manrope', sans-serif !important;
+    font-weight: 900 !important;
+    font-size: 15px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    box-shadow: 0 3px 10px rgba(245, 184, 0, 0.3) !important;
+}
+
+
+.preset-chip-title {
+    font-family: 'Manrope', sans-serif !important;
+    font-size: 11.5px !important;
+    font-weight: 800 !important;
+    color: #2b160c !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    max-width: 100% !important;
+}
+
+.preset-chip-qty {
+    font-family: 'Manrope', sans-serif !important;
+    font-size: 9.5px !important;
+    font-weight: 700 !important;
+    color: #765b00 !important;
+}
+
+/* Form Styles */
+.prestige-form-group {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 5px !important;
+    width: 100% !important;
+}
+
+.prestige-form-label {
+    font-family: 'Manrope', sans-serif !important;
+    font-size: 10.5px !important;
+    font-weight: 800 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.6px !important;
+    color: #765b00 !important;
+}
+
+.prestige-form-input {
+    width: 100% !important;
+    height: 46px !important;
+    background: #fdfaf3 !important;
+    border: 1.5px solid rgba(245, 184, 0, 0.25) !important;
+    border-radius: 14px !important;
+    padding: 0 16px !important;
+    font-family: 'Manrope', sans-serif !important;
+    font-size: 13.5px !important;
+    font-weight: 600 !important;
+    color: #2b160c !important;
+    outline: none !important;
+    transition: all 0.2s ease !important;
+    box-sizing: border-box !important;
+}
+
+.prestige-form-input:focus {
+    background: #ffffff !important;
+    border-color: #f5b800 !important;
+    box-shadow: 0 0 0 3.5px rgba(245, 184, 0, 0.2) !important;
+}
+
+/* Stepper Tactile Haute Précision */
+.stepper-pill-wrapper {
+    display: flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    width: 100% !important;
+}
+
+.stepper-unified-pill {
+    display: flex !important;
+    align-items: center !important;
+    background: #fdfaf3 !important;
+    border: 1.5px solid rgba(245, 184, 0, 0.25) !important;
+    border-radius: 14px !important;
+    height: 46px !important;
+    flex: 1 !important;
+    overflow: hidden !important;
+}
+
+.stepper-unified-pill:focus-within {
+    border-color: #f5b800 !important;
+    box-shadow: 0 0 0 3.5px rgba(245, 184, 0, 0.2) !important;
+    background: #ffffff !important;
+}
+
+.stepper-btn {
+    width: 44px !important;
+    height: 100% !important;
+    background: transparent !important;
+    border: none !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 18px !important;
+    font-weight: 900 !important;
+    color: #765b00 !important;
+    cursor: pointer !important;
+    transition: background 0.15s ease !important;
+    user-select: none !important;
+}
+
+.stepper-btn:hover {
+    background: rgba(245, 184, 0, 0.15) !important;
+    color: #000000 !important;
+}
+
+.stepper-btn:active {
+    background: rgba(245, 184, 0, 0.3) !important;
+}
+
+.stepper-input {
+    flex: 1 !important;
+    height: 100% !important;
+    background: transparent !important;
+    border: none !important;
+    text-align: center !important;
+    font-family: 'Manrope', monospace !important;
+    font-size: 16px !important;
+    font-weight: 800 !important;
+    color: #2b160c !important;
+    outline: none !important;
+    padding: 0 !important;
+}
+
+.stepper-quick-add {
+    height: 46px !important;
+    padding: 0 14px !important;
+    background: linear-gradient(135deg, #f5b800 0%, #dfa500 100%) !important;
+    border: none !important;
+    border-radius: 14px !important;
+    color: #000000 !important;
+    font-family: 'Manrope', sans-serif !important;
+    font-size: 12px !important;
+    font-weight: 800 !important;
+    cursor: pointer !important;
+    box-shadow: 0 4px 12px rgba(245, 184, 0, 0.25) !important;
+    transition: all 0.2s ease !important;
+    white-space: nowrap !important;
+}
+
+.stepper-quick-add:hover {
+    transform: translateY(-1px) !important;
+    box-shadow: 0 6px 16px rgba(245, 184, 0, 0.4) !important;
+}
+
+/* Modal Actions */
+.prestige-modal-actions {
+    display: flex !important;
+    align-items: center !important;
+    gap: 12px !important;
+    margin-top: 8px !important;
+    padding-top: 14px !important;
+    border-top: 1px solid rgba(245, 184, 0, 0.18) !important;
+}
+
+.btn-modal-cancel {
+    flex: 1 !important;
+    height: 48px !important;
+    background: #fbf8f1 !important;
+    border: 1.5px solid #dfd3c0 !important;
+    border-radius: 9999px !important;
+    font-family: 'Manrope', sans-serif !important;
+    font-size: 13px !important;
+    font-weight: 800 !important;
+    color: #786558 !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
+}
+
+.btn-modal-cancel:hover {
+    background: #f3ece0 !important;
+    color: #2b160c !important;
+}
+
+.btn-modal-submit-gold {
+    flex: 1.6 !important;
+    height: 48px !important;
+    background: linear-gradient(135deg, #f5b800 0%, #dfa500 100%) !important;
+    border: none !important;
+    border-radius: 9999px !important;
+    font-family: 'Manrope', sans-serif !important;
+    font-size: 13.5px !important;
+    font-weight: 800 !important;
+    color: #000000 !important;
+    box-shadow: 0 6px 18px rgba(245, 184, 0, 0.35) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 8px !important;
+    cursor: pointer !important;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.btn-modal-submit-gold:hover {
+    transform: translateY(-1.5px) !important;
+    box-shadow: 0 8px 24px rgba(245, 184, 0, 0.45) !important;
+}
+
+.btn-modal-submit-gold:active {
+    transform: translateY(0) !important;
+}
+
+.prestige-topbar {
+    position: fixed !important;
+    top: 0 !important;
+    right: 0 !important;
+    left: 18rem !important; /* 72 = 18rem width of sidebar */
+    height: 76px !important;
+    background: rgba(251, 248, 241, 0.94) !important;
+    backdrop-filter: blur(14px) !important;
+    -webkit-backdrop-filter: blur(14px) !important;
+    border-bottom: 1px solid rgba(245, 184, 0, 0.3) !important;
+    box-shadow: 0 4px 20px -2px rgba(43, 22, 12, 0.05) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    padding: 0 32px !important;
+    z-index: 40 !important;
+}
+
+.magazine-search-pill, .prestige-search-box {
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+    background: #ffffff !important;
+    border: 1.5px solid rgba(245, 184, 0, 0.38) !important;
+    border-radius: 9999px !important;
+    padding: 10px 18px !important;
+    width: 100% !important;
+    max-width: 440px !important;
+    box-shadow: 0 3px 12px rgba(43, 22, 12, 0.04), inset 0 1px 2px rgba(0, 0, 0, 0.02) !important;
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.magazine-search-pill:focus-within, .prestige-search-box:focus-within {
+    border-color: #f5b800 !important;
+    box-shadow: 0 6px 20px rgba(245, 184, 0, 0.25), 0 0 0 3px rgba(245, 184, 0, 0.15) !important;
+    transform: translateY(-1px) !important;
+}
+
+.magazine-search-pill input, .prestige-search-box input {
+    border: none !important;
+    outline: none !important;
+    background: transparent !important;
+    font-family: 'Manrope', sans-serif !important;
+    font-size: 13.5px !important;
+    font-weight: 600 !important;
+    color: #2b160c !important;
+    width: 100% !important;
+}
+
+.magazine-search-pill input::placeholder, .prestige-search-box input::placeholder {
+    color: #9a8576 !important;
+    font-weight: 500 !important;
+}
+
+.prestige-status-badge {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    padding: 7px 16px !important;
+    border-radius: 9999px !important;
+    font-family: 'Manrope', sans-serif !important;
+    font-size: 12px !important;
+    font-weight: 800 !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04) !important;
+    white-space: nowrap !important;
+}
+
+.prestige-status-badge.amber {
+    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%) !important;
+    color: #854d0e !important;
+    border: 1px solid rgba(245, 184, 0, 0.45) !important;
+}
+
+.prestige-status-badge.emerald {
+    background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%) !important;
+    color: #166534 !important;
+    border: 1px solid rgba(34, 197, 94, 0.4) !important;
+}
+
+.status-pulse-dot {
+    width: 8px !important;
+    height: 8px !important;
+    border-radius: 9999px !important;
+    display: inline-block !important;
+    animation: pulseGlow 1.8s infinite !important;
+}
+
+.status-pulse-dot.amber {
+    background: #f59e0b !important;
+    box-shadow: 0 0 8px #f59e0b !important;
+}
+
+.status-pulse-dot.emerald {
+    background: #16a34a !important;
+    box-shadow: 0 0 8px #16a34a !important;
+}
+
+@keyframes pulseGlow {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.25); opacity: 0.65; }
+}
+
+.prestige-user-card {
+    display: flex !important;
+    align-items: center !important;
+    gap: 12px !important;
+    padding: 6px 16px 6px 8px !important;
+    background: #ffffff !important;
+    border: 1.5px solid rgba(245, 184, 0, 0.35) !important;
+    border-radius: 9999px !important;
+    box-shadow: 0 4px 14px rgba(43, 22, 12, 0.06) !important;
+    cursor: pointer !important;
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    user-select: none !important;
+}
+
+.prestige-user-card:hover {
+    border-color: #f5b800 !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 6px 20px rgba(245, 184, 0, 0.3) !important;
+}
+
+.prestige-user-info {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    text-align: left !important;
+    line-height: 1.25 !important;
+}
+
+.prestige-user-name {
+    font-family: 'Manrope', sans-serif !important;
+    font-weight: 800 !important;
+    font-size: 13.5px !important;
+    color: #2b160c !important;
+    white-space: nowrap !important;
+}
+
+.prestige-user-role {
+    font-size: 11px !important;
+    font-weight: 700 !important;
+    color: #765b00 !important;
+    white-space: nowrap !important;
+}
+
+.profile-avatar {
+    width: 38px !important;
+    height: 38px !important;
+    border-radius: 9999px !important;
+    object-fit: cover !important;
+    border: 2px solid #f5b800 !important;
+    box-shadow: 0 2px 8px rgba(245, 184, 0, 0.25) !important;
+}
+
+.online-status-dot {
+    position: absolute !important;
+    bottom: -1px !important;
+    right: -1px !important;
+    width: 10px !important;
+    height: 10px !important;
+    background: #16a34a !important;
+    border: 2px solid #ffffff !important;
+    border-radius: 9999px !important;
 }

@@ -38,25 +38,38 @@ const DEMO_MOVEMENTS = [
 ];
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Check authentication
-    const user = JSON.parse(localStorage.getItem('babi_user'));
-    if (user && document.getElementById('gerante-name-badge')) {
-        document.getElementById('gerante-name-badge').innerText = (user.prenom || 'Mariam') + ' ' + (user.nom || 'Traoré');
+    // 1. Initialiser immédiatement le planning manuel et les compteurs
+    try {
+        renderManualPlanning();
+        calculateManualKPIs();
+    } catch(err) {
+        console.error("Erreur init planning:", err);
     }
 
+    // 2. Check authentication
+    try {
+        const user = JSON.parse(localStorage.getItem('babi_user'));
+        if (user && document.getElementById('gerante-name-badge')) {
+            document.getElementById('gerante-name-badge').innerText = (user.prenom || 'Mamadou') + ' ' + (user.nom || 'Koné');
+        }
+    } catch(e) {}
+
+    // 3. Charger les données complémentaires en arrière-plan
     loadDashboardData();
-    setInterval(loadDashboardData, 12000); // Auto-refresh every 12s
+    setInterval(loadDashboardData, 15000);
 });
 
 async function loadDashboardData() {
-    await Promise.all([
-        loadKpis(),
-        loadStocks(),
-        loadFournilOrders(),
-        renderGeranteEventOrders(),
-        loadEmployees(),
-        loadMovements()
-    ]);
+    try {
+        await Promise.allSettled([
+            loadKpis(),
+            loadStocks(),
+            loadFournilOrders(),
+            renderGeranteEventOrders(),
+            loadEmployees(),
+            loadMovements()
+        ]);
+    } catch(e) {}
 }
 
 // 1. Load KPIs
@@ -66,18 +79,26 @@ async function loadKpis() {
         if (!res.ok) throw new Error("API Offline");
         const data = await res.json();
 
-        document.getElementById('kpi-revenue-today').innerText = (data.todayRevenue || 0).toLocaleString() + ' F';
-        document.getElementById('kpi-orders-fournil').innerText = data.ordersEnAttenteFournil || 0;
-        document.getElementById('kpi-low-stocks').innerText = data.lowStocksCount || 0;
-        document.getElementById('kpi-employees-present').innerText = `${data.employeesPresent || 0} / ${data.employeesTotal || 0}`;
+        const elRev = document.getElementById('kpi-revenue-today');
+        if (elRev) elRev.innerText = (data.todayRevenue || 0).toLocaleString() + ' F';
+        const elOrd = document.getElementById('kpi-orders-fournil');
+        if (elOrd) elOrd.innerText = data.ordersEnAttenteFournil || 0;
+        const elLow = document.getElementById('kpi-low-stocks');
+        if (elLow) elLow.innerText = data.lowStocksCount || 0;
+        const elEmp = document.getElementById('kpi-employees-present');
+        if (elEmp) elEmp.innerText = `${data.employeesPresent || 0} / ${data.employeesTotal || 0}`;
 
         updateAlertBanner(data.lowStocksCount || 0);
     } catch (err) {
         // Fallback demo KPIs
-        document.getElementById('kpi-revenue-today').innerText = '145 000 F';
-        document.getElementById('kpi-orders-fournil').innerText = '2';
-        document.getElementById('kpi-low-stocks').innerText = '2';
-        document.getElementById('kpi-employees-present').innerText = '4 / 6';
+        const elRev = document.getElementById('kpi-revenue-today');
+        if (elRev) elRev.innerText = '145 000 F';
+        const elOrd = document.getElementById('kpi-orders-fournil');
+        if (elOrd) elOrd.innerText = '2';
+        const elLow = document.getElementById('kpi-low-stocks');
+        if (elLow) elLow.innerText = '2';
+        const elEmp = document.getElementById('kpi-employees-present');
+        if (elEmp) elEmp.innerText = '4 / 6';
         updateAlertBanner(2);
     }
 }
@@ -87,7 +108,8 @@ function updateAlertBanner(count) {
     if (alertBanner) {
         if (count > 0) {
             alertBanner.style.display = 'flex';
-            document.getElementById('alert-count-text').innerText = `${count} produit(s) en alerte de stock faible !`;
+            const alertText = document.getElementById('alert-count-text');
+            if (alertText) alertText.innerText = `${count} produit(s) en alerte de stock faible !`;
         } else {
             alertBanner.style.display = 'none';
         }
@@ -438,85 +460,847 @@ function playFournilChime() {
 }
 
 // =============================================================
-// IMPRESSION TICKET DE PRÉPARATION FOURNIL (FORMAT 80MM)
+// IMPRESSION FICHE DE PRODUCTION & BONS DE FOURNIL (GRAND FORMAT LISIBLE)
 // =============================================================
-function printBakingTicket(orderId) {
-    const orders = JSON.parse(localStorage.getItem('babi_orders') || '[]');
-    const order = orders.find(o => String(o.id) === String(orderId)) || {
-        id: orderId || 'BAB-001',
-        customer_name: 'Client BABI',
-        customer_phone: '07 04 38 92 01',
-        items_summary: '2x Baguette Tradition, 3x Croissants Pur Beurre',
-        pickup_slot: '16h00 - 17h00',
-        total_price: 3500
-    };
+function printBakingTicket(targetId) {
+    const batches = getManualBatches();
+    const isAll = (targetId === 'TOUTES' || !targetId);
 
-    const printWindow = window.open('', '_blank', 'width=380,height=600');
+    const printWindow = window.open('', '_blank', 'width=900,height=800');
     if (!printWindow) {
-        alert("Veuillez autoriser les fenêtres contextuelles pour imprimer le ticket.");
+        alert("Veuillez autoriser les fenêtres contextuelles pour ouvrir la fiche d'impression.");
         return;
+    }
+
+    const todayStr = new Date().toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+    const timeStr = new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+
+    let contentHtml = '';
+
+    if (isAll) {
+        // Grand Planning de Production du Jour (Format A4 Pleine Page)
+        const totalPcs = batches.reduce((sum, b) => sum + (parseInt(b.quantity) || 0), 0);
+        contentHtml = `
+            <div class="header">
+                <img src="assets/logo.png" alt="Boulangerie de BABI" class="print-logo"/>
+                <div class="header-text">
+                    <div class="brand">BOULANGERIE DE BABI</div>
+                    <div class="subtitle">👑 FOURNIL PRINCIPAL • FICHE DE PRODUCTION DU JOUR</div>
+                    <div class="meta-date">Date : ${todayStr} • Éditée à ${timeStr}</div>
+                </div>
+            </div>
+
+            <div class="kpi-summary">
+                <div class="kpi-box">
+                    <span class="kpi-title">TOTAL PRODUCTION</span>
+                    <span class="kpi-val">${totalPcs} Pièces</span>
+                </div>
+                <div class="kpi-box">
+                    <span class="kpi-title">FOURNÉES PRÉVUES</span>
+                    <span class="kpi-val">${batches.length} Fournées</span>
+                </div>
+                <div class="kpi-box">
+                    <span class="kpi-title">CHEF FOURNIL</span>
+                    <span class="kpi-val">Mamadou Koné</span>
+                </div>
+            </div>
+
+            <table class="production-table">
+                <thead>
+                    <tr>
+                        <th style="width: 12%;">HEURE</th>
+                        <th style="width: 32%;">PRODUIT & VARIÉTÉ</th>
+                        <th style="width: 14%;">QUANTITÉ</th>
+                        <th style="width: 22%;">FOUR & TEMPÉRATURE</th>
+                        <th style="width: 20%;">RESPONSABLE</th>
+                        <th style="width: 10%;">SORTI</th>
+                        <th style="width: 10%;">RAYON</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${batches.map(b => `
+                        <tr>
+                            <td class="time-cell">${b.time}</td>
+                            <td class="product-cell"><strong>${b.name}</strong></td>
+                            <td class="qty-cell"><strong>${b.quantity} pcs</strong></td>
+                            <td>${b.oven}</td>
+                            <td>${b.baker}</td>
+                            <td class="check-cell">[ &nbsp; ]</td>
+                            <td class="check-cell">[ &nbsp; ]</td>
+                        </tr>
+                    `).join('')}
+                </tbody>
+            </table>
+
+            <div class="footer-signatures">
+                <div class="signature-box">
+                    <div class="sig-title">Visa Chef Fournil / Boulanger :</div>
+                    <div class="sig-line"></div>
+                </div>
+                <div class="signature-box">
+                    <div class="sig-title">Visa Gérante / Contrôle Rayon :</div>
+                    <div class="sig-line"></div>
+                </div>
+            </div>
+
+            <div class="footer-note">
+                Fournil Artisanal Boulangerie de BABI • Respect strict de la chaîne de température & hygiène HACCP
+            </div>
+        `;
+    } else {
+        // Bon individuel de fournée (Grande Fiche de Cuisson)
+        const batch = batches.find(b => `FOUR-${b.id}` === targetId || String(b.id) === String(targetId)) || batches[0] || {
+            name: 'Baguette Traditionnelle',
+            quantity: 150,
+            time: '17:00',
+            oven: 'Four 1 (Sole 240°C)',
+            baker: 'Mamadou Koné',
+            category: 'Pains'
+        };
+
+        contentHtml = `
+            <div class="header">
+                <img src="assets/logo.png" alt="Boulangerie de BABI" class="print-logo"/>
+                <div class="header-text">
+                    <div class="brand">BOULANGERIE DE BABI</div>
+                    <div class="subtitle">👑 BON DE CUISSON FOURNIL</div>
+                    <div class="meta-date">Date : ${todayStr} à ${timeStr}</div>
+                </div>
+            </div>
+
+            <div class="single-card">
+                <div class="single-row">
+                    <span class="label">PRODUIT :</span>
+                    <span class="val highlight">${batch.name}</span>
+                </div>
+                <div class="single-row">
+                    <span class="label">QUANTITÉ À SORTIR :</span>
+                    <span class="val highlight">${batch.quantity} UNITÉS</span>
+                </div>
+                <div class="single-row">
+                    <span class="label">HEURE DE SORTIE FOUR :</span>
+                    <span class="val">${batch.time}</span>
+                </div>
+                <div class="single-row">
+                    <span class="label">FOUR D'AFFECTATION :</span>
+                    <span class="val">${batch.oven}</span>
+                </div>
+                <div class="single-row">
+                    <span class="label">RESPONSABLE CUISSON :</span>
+                    <span class="val">${batch.baker}</span>
+                </div>
+            </div>
+
+            <div class="checklist">
+                <div class="check-item">[ &nbsp; ] Pousse & Façonnage vérifiés</div>
+                <div class="check-item">[ &nbsp; ] Buée / Injection de vapeur injectée</div>
+                <div class="check-item">[ &nbsp; ] Contrôle croustillant & alvéolage à la sortie</div>
+                <div class="check-item">[ &nbsp; ] Mise en sacherie kraft / Transfert boutique</div>
+            </div>
+
+            <div class="footer-note" style="margin-top: 30px;">
+                Boulangerie de BABI • Fiche de Traçabilité Fournil
+            </div>
+        `;
     }
 
     printWindow.document.write(`
         <!DOCTYPE html>
-        <html>
+        <html lang="fr">
         <head>
-            <title>Bon de Fournil #${order.id}</title>
+            <meta charset="utf-8">
+            <title>Fiche de Production Fournil - BABI</title>
             <style>
-                @page { size: 80mm auto; margin: 4mm; }
-                body {
-                    font-family: 'Courier New', monospace;
-                    width: 72mm;
-                    margin: 0 auto;
-                    color: #000;
-                    font-size: 12px;
-                    line-height: 1.3;
+                @page {
+                    size: A4 portrait;
+                    margin: 15mm;
                 }
-                .text-center { text-align: center; }
-                .text-right { text-align: right; }
-                .bold { font-weight: bold; }
-                .border-top { border-top: 1px dashed #000; padding-top: 5px; margin-top: 5px; }
-                .border-bottom { border-bottom: 1px dashed #000; padding-bottom: 5px; margin-bottom: 5px; }
-                .title { font-size: 16px; font-weight: bold; text-transform: uppercase; }
-                .large { font-size: 14px; font-weight: bold; }
-                .qr-placeholder { margin: 8px auto; text-align: center; border: 1px solid #000; padding: 4px; width: 60px; font-size: 9px; }
+                * {
+                    box-sizing: border-box;
+                }
+                body {
+                    font-family: Arial, -apple-system, sans-serif;
+                    margin: 0;
+                    padding: 20px;
+                    color: #111;
+                    font-size: 15px;
+                    line-height: 1.5;
+                }
+                .header {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    gap: 20px;
+                    border-bottom: 3px solid #2b160c;
+                    padding-bottom: 16px;
+                    margin-bottom: 24px;
+                }
+                .print-logo {
+                    width: 76px;
+                    height: 76px;
+                    object-fit: contain;
+                    border-radius: 12px;
+                    border: 2px solid #dfd3c0;
+                    padding: 4px;
+                    background: #ffffff;
+                }
+                .header-text {
+                    text-align: left;
+                }
+                .brand {
+                    font-size: 26px;
+                    font-weight: 900;
+                    letter-spacing: 2px;
+                    color: #2b160c;
+                }
+                .subtitle {
+                    font-size: 16px;
+                    font-weight: bold;
+                    color: #765b00;
+                    margin-top: 4px;
+                }
+                .meta-date {
+                    font-size: 13px;
+                    color: #555;
+                    margin-top: 4px;
+                }
+                .kpi-summary {
+                    display: flex;
+                    gap: 15px;
+                    margin-bottom: 25px;
+                }
+                .kpi-box {
+                    flex: 1;
+                    background: #fdfaf3;
+                    border: 2px solid #dfd3c0;
+                    border-radius: 10px;
+                    padding: 12px 16px;
+                    text-align: center;
+                }
+                .kpi-title {
+                    display: block;
+                    font-size: 12px;
+                    font-weight: 800;
+                    color: #765b00;
+                    margin-bottom: 4px;
+                }
+                .kpi-val {
+                    font-size: 22px;
+                    font-weight: 900;
+                    color: #2b160c;
+                }
+                .production-table {
+                    width: 100%;
+                    border-collapse: collapse;
+                    margin-bottom: 30px;
+                    font-size: 14.5px;
+                }
+                .production-table th {
+                    background: #2b160c;
+                    color: #ffffff;
+                    text-align: left;
+                    padding: 10px 12px;
+                    font-size: 13px;
+                    font-weight: 800;
+                    letter-spacing: 0.5px;
+                }
+                .production-table td {
+                    padding: 12px;
+                    border-bottom: 1.5px solid #e0d8cc;
+                }
+                .production-table tr:nth-child(even) {
+                    background: #faf8f5;
+                }
+                .time-cell {
+                    font-size: 17px;
+                    font-weight: 900;
+                    color: #765b00;
+                }
+                .qty-cell {
+                    font-size: 16px;
+                    color: #166534;
+                }
+                .check-cell {
+                    font-size: 18px;
+                    font-weight: bold;
+                    text-align: center;
+                }
+                .footer-signatures {
+                    display: flex;
+                    justify-content: space-between;
+                    gap: 40px;
+                    margin-top: 40px;
+                    margin-bottom: 30px;
+                }
+                .signature-box {
+                    flex: 1;
+                    border: 1.5px dashed #999;
+                    border-radius: 8px;
+                    padding: 14px;
+                    height: 110px;
+                }
+                .sig-title {
+                    font-weight: bold;
+                    font-size: 13px;
+                }
+                .footer-note {
+                    text-align: center;
+                    font-size: 12px;
+                    color: #777;
+                    border-top: 1px solid #ddd;
+                    padding-top: 10px;
+                }
+                .single-card {
+                    background: #fdfaf3;
+                    border: 2px solid #2b160c;
+                    border-radius: 12px;
+                    padding: 24px;
+                    margin-bottom: 24px;
+                }
+                .single-row {
+                    display: flex;
+                    justify-content: space-between;
+                    padding: 10px 0;
+                    border-bottom: 1px solid #e5dcce;
+                    font-size: 16px;
+                }
+                .single-row .label {
+                    font-weight: bold;
+                    color: #555;
+                }
+                .single-row .val {
+                    font-weight: 800;
+                    color: #2b160c;
+                }
+                .single-row .val.highlight {
+                    font-size: 22px;
+                    color: #765b00;
+                }
+                .checklist {
+                    background: #ffffff;
+                    border: 1.5px solid #dfd3c0;
+                    border-radius: 10px;
+                    padding: 18px;
+                    display: flex;
+                    flex-direction: column;
+                    gap: 12px;
+                    font-size: 15px;
+                    font-weight: 600;
+                }
             </style>
         </head>
-        <body onload="window.print(); window.close();">
-            <div class="text-center">
-                <div class="title">BOULANGERIE DE BABI</div>
-                <div>*** BON DE PRÉPARATION FOURNIL ***</div>
-                <div class="border-bottom">Abidjan - Côte d'Ivoire</div>
-            </div>
-
-            <div style="margin: 6px 0;">
-                <div><strong>COMMANDE :</strong> #${order.id}</div>
-                <div><strong>CLIENT :</strong> ${order.customer_name}</div>
-                <div><strong>TÉLÉPHONE :</strong> ${order.customer_phone}</div>
-                <div><strong>CRÉNEAU RETRAIT :</strong> <span class="large">${order.pickup_slot || '16h00 - 17h00'}</span></div>
-                <div><strong>DATE :</strong> ${new Date().toLocaleDateString('fr-FR')} à ${new Date().toLocaleTimeString('fr-FR', {hour:'2-digit', minute:'2-digit'})}</div>
-            </div>
-
-            <div class="border-top border-bottom">
-                <div class="bold" style="margin-bottom: 4px;">ARTICLES À PRÉPARER :</div>
-                <div style="font-size: 13px; font-weight: bold;">
-                    ${order.items_summary.split(',').map(i => `<div>[ ] ${i.trim()}</div>`).join('')}
-                </div>
-            </div>
-
-            <div style="margin: 6px 0;" class="text-right">
-                <div>TOTAL RÉGLÉ : <strong>${(order.total_price || 0).toLocaleString()} FCFA</strong></div>
-                <div>STATUT PAIEMENT : <strong>PAYÉ (WAVE / OM)</strong></div>
-            </div>
-
-            <div class="text-center border-top" style="margin-top: 10px; font-size: 10px;">
-                <div>Emballer avec sachet kraft BABI</div>
-                <div>Apposer le sticker de scellé doré</div>
-                <div>Fournil de BABI 👑 - Qualité Artisanale</div>
-            </div>
+        <body onload="window.print();">
+            ${contentHtml}
         </body>
         </html>
     `);
     printWindow.document.close();
 }
+
+// =============================================================
+// GESTION MANUELLE DES FOURNÉES, STOCKS ET REGISTRES (100% MANUEL)
+// =============================================================
+
+let currentCategoryFilter = 'all';
+
+function getManualBatches() {
+    const saved = localStorage.getItem('babi_manual_batches');
+    if (saved) {
+        return JSON.parse(saved);
+    }
+    // Default initial batches for immediate usability
+    const defaults = [
+        { id: 1, name: 'Baguette Traditionnelle', category: 'pains', quantity: 150, time: '17:00', baker: 'Mamadou Koné', oven: 'Four 1 (Sole 240°C)', status: 'en_cuisson' },
+        { id: 2, name: 'Croissants Pur Beurre & Pains Choc', category: 'viennoiseries', quantity: 100, time: '18:00', baker: 'Aïcha', oven: 'Four 2 (Ventilé 180°C)', status: 'en_pousse' },
+        { id: 3, name: 'Pain Complet & Pain de Mie', category: 'pains', quantity: 80, time: '14:00', baker: 'Bakary', oven: 'Four 1 (Sole 240°C)', status: 'en_rayon' }
+    ];
+    localStorage.setItem('babi_manual_batches', JSON.stringify(defaults));
+    return defaults;
+}
+
+function saveManualBatches(batches) {
+    localStorage.setItem('babi_manual_batches', JSON.stringify(batches));
+    renderManualPlanning();
+    calculateManualKPIs();
+}
+
+function getManualWastes() {
+    return JSON.parse(localStorage.getItem('babi_manual_wastes') || '[]');
+}
+
+// Modal Controllers
+function openBakingModal() {
+    const el = document.getElementById('bakingModal');
+    if (el) el.classList.remove('hidden');
+}
+function closeBakingModal() {
+    const el = document.getElementById('bakingModal');
+    if (el) el.classList.add('hidden');
+}
+
+function openRayonModal() {
+    const el = document.getElementById('rayonModal');
+    if (el) el.classList.remove('hidden');
+}
+function closeRayonModal() {
+    const el = document.getElementById('rayonModal');
+    if (el) el.classList.add('hidden');
+}
+
+function openWasteModal() {
+    const el = document.getElementById('wasteModal');
+    if (el) el.classList.remove('hidden');
+}
+function closeWasteModal() {
+    const el = document.getElementById('wasteModal');
+    if (el) el.classList.add('hidden');
+}
+
+function openTempModal() {
+    const el = document.getElementById('tempModal');
+    if (el) el.classList.remove('hidden');
+}
+function closeTempModal() {
+    const el = document.getElementById('tempModal');
+    if (el) el.classList.add('hidden');
+}
+
+function openReassortModal() {
+    const el = document.getElementById('reassortModal');
+    if (el) el.classList.remove('hidden');
+}
+function closeReassortModal() {
+    const el = document.getElementById('reassortModal');
+    if (el) el.classList.add('hidden');
+}
+
+function openHelpGuideModal() {
+    const el = document.getElementById('helpGuideModal');
+    if (el) el.classList.remove('hidden');
+}
+function closeHelpGuideModal() {
+    const el = document.getElementById('helpGuideModal');
+    if (el) el.classList.add('hidden');
+}
+
+// =============================================================
+// ERGONOMIE & SAISIE RAPIDE EN 1 CLIC (PRESETS & QUANTITÉS)
+// =============================================================
+
+function setBakingPreset(name, category, qty, oven, el) {
+    const inputName = document.getElementById('manual-product-name');
+    const selectCat = document.getElementById('manual-category');
+    const inputQty = document.getElementById('manual-quantity');
+    const selectOven = document.getElementById('manual-oven');
+
+    if (inputName) inputName.value = name;
+    if (selectCat) selectCat.value = category;
+    if (inputQty) inputQty.value = qty;
+    if (selectOven) selectOven.value = oven;
+
+    document.querySelectorAll('.preset-chip-btn').forEach(btn => btn.classList.remove('active'));
+    if (el) {
+        el.classList.add('active');
+    }
+
+    showBabiToast(`⚡ Recette : ${name} (${qty} pcs)`, 'info');
+}
+
+function adjustManualQty(delta) {
+    const inputQty = document.getElementById('manual-quantity');
+    if (inputQty) {
+        let current = parseInt(inputQty.value) || 0;
+        current = Math.max(10, current + delta);
+        inputQty.value = current;
+    }
+}
+
+// Système de Toast Notification Doré Non-Bloquant
+function showBabiToast(message, type = 'success') {
+    let container = document.getElementById('babi-toast-container');
+    if (!container) {
+        container = document.createElement('div');
+        container.id = 'babi-toast-container';
+        container.style.cssText = `
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            pointer-events: none;
+        `;
+        document.body.appendChild(container);
+    }
+
+    const toast = document.createElement('div');
+    let bg = 'linear-gradient(135deg, #2b160c 0%, #1c0e07 100%)';
+    let border = '1px solid #f5b800';
+    let icon = 'check_circle';
+    let iconColor = '#f5b800';
+
+    if (type === 'info') {
+        icon = 'info';
+        iconColor = '#60a5fa';
+    } else if (type === 'error') {
+        icon = 'warning';
+        iconColor = '#f87171';
+    }
+
+    toast.style.cssText = `
+        background: ${bg};
+        border: ${border};
+        color: #ffffff;
+        padding: 12px 20px;
+        border-radius: 9999px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.35);
+        font-family: 'Manrope', sans-serif;
+        font-size: 13.5px;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        pointer-events: auto;
+        transform: translateY(20px);
+        opacity: 0;
+        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    `;
+
+    toast.innerHTML = `
+        <span class="material-symbols-outlined" style="color: ${iconColor}; font-size: 20px;">${icon}</span>
+        <span>${message}</span>
+    `;
+
+    container.appendChild(toast);
+
+    setTimeout(() => {
+        toast.style.transform = 'translateY(0)';
+        toast.style.opacity = '1';
+    }, 10);
+
+    setTimeout(() => {
+        toast.style.transform = 'translateY(20px)';
+        toast.style.opacity = '0';
+        setTimeout(() => toast.remove(), 300);
+    }, 3200);
+}
+
+// 1. Submit Manual Baking Batch
+function submitManualBakingBatch() {
+    const name = document.getElementById('manual-product-name')?.value.trim();
+    const category = document.getElementById('manual-category')?.value || 'pains';
+    const quantity = parseInt(document.getElementById('manual-quantity')?.value) || 100;
+    const time = document.getElementById('manual-time')?.value || '17:00';
+    const baker = document.getElementById('manual-baker')?.value.trim() || 'Chef Boulanger';
+    const oven = document.getElementById('manual-oven')?.value || 'Four 1';
+
+    if (!name) {
+        showBabiToast("Veuillez saisir le nom du produit", "error");
+        return;
+    }
+
+    const batches = getManualBatches();
+    const newBatch = {
+        id: Date.now(),
+        name: name,
+        category: category,
+        quantity: quantity,
+        time: time,
+        baker: baker,
+        oven: oven,
+        status: 'en_cuisson'
+    };
+
+    batches.unshift(newBatch);
+    saveManualBatches(batches);
+    closeBakingModal();
+    playFournilChime();
+    showBabiToast(`✅ Fournée ajoutée : ${quantity}x ${name} (${time}) !`, 'success');
+}
+
+// 2. Submit Manual Rayon Entry
+function submitManualRayonEntry() {
+    const product = document.getElementById('rayon-product-name')?.value.trim();
+    const qty = parseInt(document.getElementById('rayon-quantity')?.value) || 0;
+    const loc = document.getElementById('rayon-location')?.value;
+
+    if (!product || qty <= 0) {
+        showBabiToast("Veuillez renseigner un produit et une quantité", "error");
+        return;
+    }
+
+    const entries = JSON.parse(localStorage.getItem('babi_rayon_entries') || '[]');
+    entries.unshift({ id: Date.now(), product, qty, loc, time: new Date().toLocaleTimeString() });
+    localStorage.setItem('babi_rayon_entries', JSON.stringify(entries));
+
+    closeRayonModal();
+    showBabiToast(`✅ ${qty}x ${product} transférés en rayon (${loc}) !`, 'success');
+}
+
+// 3. Submit Manual Waste
+function submitManualWaste() {
+    const product = document.getElementById('waste-product-name')?.value.trim();
+    const qty = parseInt(document.getElementById('waste-quantity')?.value) || 0;
+    const reason = document.getElementById('waste-reason')?.value;
+
+    if (!product || qty <= 0) {
+        showBabiToast("Veuillez renseigner le produit et la quantité", "error");
+        return;
+    }
+
+    const wastes = getManualWastes();
+    wastes.unshift({ id: Date.now(), product, qty, reason, date: new Date().toLocaleDateString() });
+    localStorage.setItem('babi_manual_wastes', JSON.stringify(wastes));
+
+    closeWasteModal();
+    calculateManualKPIs();
+    showBabiToast(`📋 Pertes enregistrées : ${qty}x ${product} (${reason})`, 'info');
+}
+
+// 4. Submit Manual Temp
+function submitManualTemp() {
+    const pos = document.getElementById('temp-positif')?.value;
+    const neg = document.getElementById('temp-negatif')?.value;
+    const pousse = document.getElementById('temp-pousse')?.value;
+
+    localStorage.setItem('babi_last_temp', JSON.stringify({ pos, neg, pousse, date: new Date().toLocaleString() }));
+    closeTempModal();
+    showBabiToast(`❄️ Températures conformes : Frigo (${pos}), Surgélateur (${neg})`, 'success');
+}
+
+// 5. Submit Manual Reassort
+function submitManualReassort() {
+    const item = document.getElementById('reassort-item')?.value;
+    const qty = document.getElementById('reassort-qty')?.value;
+    const unit = document.getElementById('reassort-unit')?.value;
+
+    closeReassortModal();
+    showBabiToast(`📦 Bon de commande envoyé : ${qty} ${unit} de ${item} !`, 'success');
+}
+
+// Filter Category
+function filterFourneesCategory(cat, btn) {
+    currentCategoryFilter = cat;
+    document.querySelectorAll('.magazine-period-btn').forEach(b => b.classList.remove('active'));
+    if (btn) btn.classList.add('active');
+    renderManualPlanning();
+}
+
+// Toggle Batch Status en 1 Clic
+function changeBatchStatus(id, newStatus) {
+    const batches = getManualBatches();
+    const batch = batches.find(b => b.id === id);
+    if (batch) {
+        batch.status = newStatus;
+        saveManualBatches(batches);
+        if (newStatus === 'en_rayon') {
+            showBabiToast(`🥖 ${batch.quantity}x ${batch.name} sont maintenant disponibles en rayon !`, 'success');
+        } else if (newStatus === 'en_cuisson') {
+            showBabiToast(`🔥 ${batch.name} est au four (${batch.oven}) !`, 'info');
+        }
+    }
+}
+
+// Delete Batch
+function deleteBatch(id) {
+    let batches = getManualBatches();
+    batches = batches.filter(b => b.id !== id);
+    saveManualBatches(batches);
+    showBabiToast("🗑️ Fournée retirée du planning", 'info');
+}
+
+// Render Planning Ultra-Tactile & Facile
+function renderManualPlanning() {
+    const container = document.getElementById('fournees-list-container');
+    if (!container) return;
+
+    const batches = getManualBatches();
+    const filtered = currentCategoryFilter === 'all' 
+        ? batches 
+        : batches.filter(b => b.category === currentCategoryFilter);
+
+    if (filtered.length === 0) {
+        container.innerHTML = `
+            <div class="p-8 text-center bg-white/60 rounded-2xl border border-dashed border-[#d2c5ac] flex flex-col items-center gap-3">
+                <span class="material-symbols-outlined text-4xl text-[#765b00]">skillet</span>
+                <p class="font-bold text-sm text-[#2b160c]">Aucune fournée dans cette catégorie.</p>
+                <button onclick="openBakingModal()" class="magazine-btn-primary mt-2">
+                    <span class="material-symbols-outlined text-sm">add</span> Ajouter en 1 Clic
+                </button>
+            </div>
+        `;
+        return;
+    }
+
+    container.innerHTML = filtered.map(b => {
+        let badgeStyle = '';
+        let badgeText = '';
+        let actionButtons = '';
+
+        if (b.status === 'en_pousse') {
+            badgeStyle = 'background: #fef08a; color: #854d0e; border: 1px solid #fde047;';
+            badgeText = 'En Pousse';
+            actionButtons = `
+                <button onclick="changeBatchStatus(${b.id}, 'en_cuisson')" class="px-3 py-1.5 rounded-xl bg-[#f5b800] text-black font-extrabold text-xs hover:bg-[#dfa500] shadow-sm flex items-center gap-1 transition-all">
+                    <span class="material-symbols-outlined text-sm">local_fire_department</span> Enfourner
+                </button>
+            `;
+        } else if (b.status === 'en_cuisson') {
+            badgeStyle = 'background: #fed7aa; color: #9a3412; border: 1px solid #fdba74;';
+            badgeText = 'En Cuisson';
+            actionButtons = `
+                <button onclick="changeBatchStatus(${b.id}, 'en_rayon')" class="px-3 py-1.5 rounded-xl bg-[#16a34a] text-white font-extrabold text-xs hover:bg-[#15803d] shadow-sm flex items-center gap-1 transition-all">
+                    <span class="material-symbols-outlined text-sm">check_circle</span> Mettre en Rayon
+                </button>
+            `;
+        } else {
+            badgeStyle = 'background: #dcfce7; color: #166534; border: 1px solid #86efac;';
+            badgeText = 'Terminé & En Rayon';
+            actionButtons = `
+                <span class="text-xs font-extrabold text-emerald-800 flex items-center gap-1">
+                    <span class="material-symbols-outlined text-sm">verified</span> En Rayon
+                </span>
+            `;
+        }
+
+        return `
+            <div class="p-4 rounded-2xl flex items-center justify-between group hover:shadow-lg transition-all border border-[rgba(245,184,0,0.28)] bg-white/90">
+                <div class="flex items-center gap-4">
+                    <div class="w-14 h-14 rounded-2xl flex items-center justify-center font-headline-md font-extrabold text-amber-950 text-base shadow-sm" style="background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); border: 1px solid rgba(245,184,0,0.4);">
+                        ${b.time}
+                    </div>
+                    <div>
+                        <h3 class="font-body-lg font-black text-base text-[#2b160c]">${b.name} <span class="text-[#765b00] font-mono font-bold">x${b.quantity}</span></h3>
+                        <p class="font-body-md text-xs text-[#786558]">${b.oven} • Resp: <strong>${b.baker}</strong></p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2.5">
+                    <span class="px-3 py-1 rounded-full font-label-sm text-xs font-extrabold uppercase" style="${badgeStyle}">${badgeText}</span>
+                    ${actionButtons}
+                    <button onclick="printBakingTicket('FOUR-${b.id}')" title="Imprimer Fiche A4" class="w-9 h-9 rounded-xl flex items-center justify-center text-amber-900 hover:bg-amber-100 transition-colors shadow-sm" style="background: #fef3c7; border: 1px solid #fcd34d;">
+                        <span class="material-symbols-outlined text-base">print</span>
+                    </button>
+                    <button onclick="deleteBatch(${b.id})" title="Supprimer" class="w-8 h-8 rounded-xl flex items-center justify-center text-rose-700 hover:bg-rose-100 transition-colors">
+                        <span class="material-symbols-outlined text-base">close</span>
+                    </button>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+// Calculate Dynamic KPIs
+function calculateManualKPIs() {
+    const batches = getManualBatches();
+    const wastes = getManualWastes();
+
+    // 1. Total Production
+    const totalProd = batches.reduce((sum, b) => sum + (parseInt(b.quantity) || 0), 0);
+    const kpiProd = document.getElementById('kpi-production-count');
+    if (kpiProd) kpiProd.innerText = totalProd.toLocaleString('fr-FR');
+
+    // 2. En Cuisson
+    const enCuissonCount = batches
+        .filter(b => b.status === 'en_cuisson')
+        .reduce((sum, b) => sum + (parseInt(b.quantity) || 0), 0);
+    const kpiCuisson = document.getElementById('kpi-cuisson-count');
+    if (kpiCuisson) kpiCuisson.innerText = enCuissonCount.toLocaleString('fr-FR');
+    const cuissonBar = document.getElementById('kpi-cuisson-bar');
+    if (cuissonBar) {
+        const pct = totalProd > 0 ? Math.min(100, Math.round((enCuissonCount / totalProd) * 100)) : 0;
+        cuissonBar.style.width = `${pct}%`;
+    }
+
+    // 3. Pertes
+    const totalWastes = wastes.reduce((sum, w) => sum + (parseInt(w.qty) || 0), 0);
+    const kpiPertes = document.getElementById('kpi-pertes-count');
+    if (kpiPertes) kpiPertes.innerText = totalWastes.toLocaleString('fr-FR');
+    const kpiPertesSub = document.getElementById('kpi-pertes-sub');
+    if (kpiPertesSub) {
+        if (totalProd > 0 && totalWastes > 0) {
+            const pctWaste = ((totalWastes / totalProd) * 100).toFixed(1);
+            kpiPertesSub.innerHTML = `<span>Soit <strong>${pctWaste}%</strong> de la production</span>`;
+        } else if (totalWastes > 0) {
+            kpiPertesSub.innerHTML = `<span>${totalWastes} pièce(s) perdue(s)</span>`;
+        } else {
+            kpiPertesSub.innerHTML = `<span>Aucune perte enregistrée</span>`;
+        }
+    }
+
+    // 4. Prochaine Fournée
+    const upcoming = batches.find(b => b.status !== 'en_rayon');
+    const kpiNextName = document.getElementById('kpi-next-batch-name');
+    const kpiNextTime = document.getElementById('kpi-next-batch-time');
+    if (kpiNextName && kpiNextTime) {
+        if (upcoming) {
+            kpiNextName.innerText = `${upcoming.name} (${upcoming.quantity}p)`;
+            kpiNextTime.innerHTML = `<span class="material-symbols-outlined text-sm">alarm</span><span>Sortie prévue à ${upcoming.time}</span>`;
+        } else {
+            kpiNextName.innerText = 'Aucune en cours';
+            kpiNextTime.innerHTML = `<span class="material-symbols-outlined text-sm">check_circle</span><span>Toutes les fournées sont terminées</span>`;
+        }
+    }
+}
+
+// Tab Navigation
+function showGeranteTab(tab) {
+    document.querySelectorAll('.prestige-nav-item').forEach(b => {
+        b.classList.remove('active');
+    });
+    const btn = document.getElementById(`nav-gerante-${tab}`);
+    if (btn) {
+        btn.classList.add('active');
+    }
+    if (tab === 'schedule') {
+        renderManualPlanning();
+    } else if (tab === 'waste') {
+        openWasteModal();
+    } else if (tab === 'inventory') {
+        openRayonModal();
+    }
+}
+
+// =============================================================
+// PRESTIGE USER PROFILE & QUICK SWITCHER FUNCTIONS
+// =============================================================
+function toggleProfileDropdown(event) {
+    if (event) event.stopPropagation();
+    const menu = document.getElementById('profileDropdownMenu');
+    const chevron = document.getElementById('profileChevron');
+    if (!menu) return;
+
+    const isHidden = menu.classList.contains('hidden');
+    if (isHidden) {
+        menu.classList.remove('hidden');
+        if (chevron) chevron.style.transform = 'rotate(180deg)';
+    } else {
+        menu.classList.add('hidden');
+        if (chevron) chevron.style.transform = 'rotate(0deg)';
+    }
+}
+
+// Close dropdown on outside click
+document.addEventListener('click', (e) => {
+    const wrapper = document.getElementById('profileDropdownWrapper');
+    const menu = document.getElementById('profileDropdownMenu');
+    const chevron = document.getElementById('profileChevron');
+    if (wrapper && !wrapper.contains(e.target) && menu && !menu.classList.contains('hidden')) {
+        menu.classList.add('hidden');
+        if (chevron) chevron.style.transform = 'rotate(0deg)';
+    }
+});
+
+function lockCurrentSession() {
+    showBabiToast("🔒 Session Fournil verrouillée", "info");
+    const menu = document.getElementById('profileDropdownMenu');
+    if (menu) menu.classList.add('hidden');
+}
+
+function handleLogout() {
+    if (confirm("Voulez-vous vous déconnecter du portail Fournil ?")) {
+        window.location.href = "index.html";
+    }
+}
+
 

@@ -3,1096 +3,632 @@
 <head>
     <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-    <title>Babi Admin - Finance 360 & Direction | Boulangerie de BABI</title>
+    <title>Boulangerie de Babi - Tableau de bord Administrateur</title>
     
-    <style>
-        @layer base {
-            html, body { margin: 0; padding: 0; }
-            body { overscroll-behavior: none; }
-            main > :first-child { margin-top: 0 !important; }
-            main > :last-child { margin-bottom: 0 !important; }
-        }
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-thumb { background: #d2c5ac; border-radius: 4px; }
-        @font-face {
-            font-family: 'Libre Caslon Text';
-            src: url('https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:wght@400;700&display=swap');
-        }
-        @font-face {
-            font-family: 'Manrope';
-            src: url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&display=swap');
-        }
-    </style>
-
     <!-- Google Fonts & Material Symbols -->
-    <link href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:wght@400;700&family=Manrope:wght@400;500;600;700;800&family=Great+Vibes&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
-    <!-- CSS Custom Stylesheets -->
+    
+    <!-- Stylesheets -->
     <link rel="stylesheet" href="css/admin.css"/>
-
-    <!-- Tailwind Configuration & CDN -->
-    <script>
-        window.tailwind = {
-            config: {
-                theme: {
-                    extend: {
-                        colors: {
-                            "on-primary": "#ffffff",
-                            "surface-tint": "#765b00",
-                            "background": "#fcf9ef",
-                            "error-container": "#ffdad6",
-                            "outline": "#807661",
-                            "inverse-surface": "#31312a",
-                            "primary-fixed-dim": "#f3c020",
-                            "surface-bright": "#fcf9ef",
-                            "tertiary-fixed-dim": "#f1bf4c",
-                            "tertiary-fixed": "#ffdf9e",
-                            "inverse-on-surface": "#f4f1e7",
-                            "on-tertiary": "#ffffff",
-                            "on-error": "#ffffff",
-                            "error": "#ba1a1a",
-                            "tertiary": "#795900",
-                            "surface-container-lowest": "#ffffff",
-                            "on-background": "#1c1c16",
-                            "on-primary-container": "#6a5100",
-                            "surface-container-highest": "#e5e2d9",
-                            "surface-variant": "#e5e2d9",
-                            "surface-container-low": "#f6f4ea",
-                            "outline-variant": "#d2c5ac",
-                            "primary-fixed": "#ffdf94",
-                            "on-secondary": "#ffffff",
-                            "on-surface": "#1c1c16",
-                            "on-surface-variant": "#4e4633",
-                            "primary": "#765b00",
-                            "primary-container": "#f7c325",
-                            "surface-container": "#f1eee4",
-                            "surface-dim": "#dddad0",
-                            "secondary": "#5f5e5e",
-                            "surface": "#fcf9ef",
-                            "surface-container-high": "#ebe8de"
-                        },
-                        borderRadius: { DEFAULT: "0.25rem", lg: "0.5rem", xl: "0.75rem", '2xl': '1rem', full: "9999px" },
-                        spacing: { "container-padding": "28px", "stack-sm": "8px", "gutter": "20px", "stack-md": "16px", "unit": "8px", "stack-lg": "32px" },
-                        fontFamily: {
-                            "headline-lg": ["Libre Caslon Text", "serif"],
-                            "display-lg": ["Libre Caslon Text", "serif"],
-                            "headline-md": ["Libre Caslon Text", "serif"],
-                            "body-md": ["Manrope", "sans-serif"],
-                            "body-lg": ["Manrope", "sans-serif"],
-                            "label-md": ["Manrope", "sans-serif"],
-                            "label-sm": ["Manrope", "sans-serif"]
-                        }
-                    }
-                }
-            }
-        };
-    </script>
-    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Chart.js for High-Fidelity Charts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="icon" type="image/png" href="assets/logo.png"/>
 </head>
-<body class="bg-background font-body-md text-on-surface antialiased">
+<body>
 
-    <!-- SIDEBAR (PRESTIGE DARK CHOCOLATE & GOLD) -->
-    <aside class="fixed left-0 top-0 h-full w-72 prestige-sidebar z-50 flex flex-col p-5">
-        <!-- Official Brand Banner -->
-        <a href="index.html" class="babi-brand-banner-prestige mb-4">
-            <div class="babi-logo-badge">
-                <img src="assets/logo.png" alt="Logo BB"/>
-            </div>
-            <div class="babi-brand-texts">
-                <span class="babi-brand-title">Boulangerie</span>
-                <span class="babi-brand-subtitle">
-                    de Babi
-                    <span class="babi-ci-flag">
-                        <span class="c1"></span><span class="c2"></span><span class="c3"></span>
-                    </span>
-                </span>
-            </div>
-        </a>
-
-        <!-- Navigation Links with Section Groups -->
-        <nav class="flex-1 flex flex-col gap-1 overflow-y-auto pr-1" id="admin-nav">
-            <div class="sidebar-section-title">PILOTAGE GÉNÉRAL</div>
-            <a href="#" onclick="showTab('overview'); return false;" class="prestige-nav-item active" data-tab="overview">
-                <span class="material-symbols-outlined text-xl">query_stats</span>
-                <span class="flex-1">Finance 360</span>
-            </a>
-            <a href="#" onclick="showTab('orders'); return false;" class="prestige-nav-item" data-tab="orders">
-                <span class="material-symbols-outlined text-xl">shopping_bag</span>
-                <span class="flex-1">Commandes</span>
-                <span id="nav-orders-badge" class="prestige-badge prestige-badge-error">4</span>
-            </a>
-            <a href="#" onclick="showTab('events'); return false;" class="prestige-nav-item" data-tab="events">
-                <span class="material-symbols-outlined text-xl">cake</span>
-                <span class="flex-1">Gâteaux & Événements</span>
-                <span class="prestige-badge prestige-badge-amber">2</span>
-            </a>
-
-            <div class="sidebar-section-title mt-2">GESTION & BOUTIQUE</div>
-            <a href="#" onclick="showTab('products'); return false;" class="prestige-nav-item" data-tab="products">
-                <span class="material-symbols-outlined text-xl">bakery_dining</span>
-                <span class="flex-1">Catalogue & Stocks</span>
-            </a>
-            <a href="#" onclick="showTab('team'); return false;" class="prestige-nav-item" data-tab="team">
-                <span class="material-symbols-outlined text-xl">badge</span>
-                <span class="flex-1">Personnel Fournil</span>
-            </a>
-            <a href="#" onclick="showTab('users'); return false;" class="prestige-nav-item" data-tab="users">
-                <span class="material-symbols-outlined text-xl">group</span>
-                <span class="flex-1">Clients Fidélité</span>
-            </a>
-            <a href="#" onclick="showTab('security'); return false;" class="prestige-nav-item" data-tab="security">
-                <span class="material-symbols-outlined text-xl">shield</span>
-                <span class="flex-1">Sécurité & Audit IA</span>
-            </a>
-
-            <!-- Bottom shortcuts styled as refined luxury buttons -->
-            <div class="mt-auto pt-4 border-t border-[rgba(245,184,0,0.15)] flex flex-col gap-2">
-                <div class="sidebar-section-title p-0 mb-1">ACCÈS DIRECTS</div>
-                <a href="caissiere.html" class="prestige-shortcut-btn btn-pos">
-                    <span class="material-symbols-outlined text-lg">point_of_sale</span>
-                    <span>Caisse Tactile POS</span>
-                </a>
-                <a href="gerante.html" class="prestige-shortcut-btn btn-gerante">
-                    <span class="material-symbols-outlined text-lg">table_restaurant</span>
-                    <span>Portail Gérante Fournil</span>
-                </a>
-                <a href="index.html" class="prestige-shortcut-btn btn-boutique">
-                    <span class="material-symbols-outlined text-lg">storefront</span>
-                    <span>Boutique en Ligne</span>
-                </a>
-            </div>
-        </nav>
-    </aside>
-
-    <!-- MAIN WRAPPER -->
-    <div class="pl-72">
-        <!-- TOPBAR PRESTIGE LUXURY -->
-        <header class="prestige-topbar">
-            <!-- Search bar with gold focus ring -->
-            <div class="prestige-search-box">
-                <span class="material-symbols-outlined text-lg" style="color: #765b00;">search</span>
-                <input placeholder="Rechercher une commande, client, produit..." type="text" id="topbar-search" onkeyup="globalSearch(this.value)"/>
+    <div class="saas-layout-wrapper">
+        <!-- =============================================================
+             SAAS DARK SLATE SIDEBAR NAVIGATION
+             ============================================================= -->
+        <aside class="saas-sidebar">
+            <!-- Brand Header -->
+            <div class="saas-sidebar-brand">
+                <img src="assets/logo.png" alt="Logo BABI" class="saas-brand-logo"/>
+                <div style="display: flex; flex-direction: column;">
+                    <span class="saas-brand-title">Boulangerie de Babi</span>
+                    <span class="saas-brand-badge">ADMIN</span>
+                </div>
             </div>
 
-            <!-- Profile & Quick Info Actions -->
-            <div class="flex items-center gap-4">
-                <button onclick="fetchAdminData()" class="prestige-refresh-btn">
-                    <span class="material-symbols-outlined text-base" style="color: #765b00;">refresh</span>
-                    <span>Actualiser</span>
-                </button>
-                <!-- Interactive Profile Card & Dropdown -->
-                <div class="relative" id="profileDropdownWrapper">
-                    <div class="prestige-user-card" onclick="toggleProfileDropdown(event)" id="profileTriggerBtn" title="Cliquez pour afficher les options de compte et changer de portail">
-                        <div class="prestige-user-info">
-                            <span class="prestige-user-name">Jean-Marc Konan</span>
-                            <span class="prestige-user-role">Directeur Général • BABI 👑</span>
+            <!-- Navigation Links -->
+            <ul class="saas-nav-list" id="saasSidebarNav">
+                <li>
+                    <a href="admin.html" class="saas-nav-item active">
+                        <span class="material-symbols-outlined saas-nav-icon">dashboard</span>
+                        <span>Tableau de bord</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#boulangeries" onclick="showAdminToast('Section Boulangeries (12 établissements)', 'info')" class="saas-nav-item">
+                        <span class="material-symbols-outlined saas-nav-icon">store</span>
+                        <span>Boulangeries</span>
+                    </a>
+                </li>
+                <li>
+                    <div class="saas-nav-item" style="display: flex; justify-content: space-between; align-items: center;" onclick="toggleUsersMenu()">
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <span class="material-symbols-outlined saas-nav-icon">group</span>
+                            <span>Utilisateurs</span>
                         </div>
-                        <div class="relative flex items-center">
-                            <img alt="Profile" id="topbar-user-avatar" class="profile-avatar" src="assets/chef_profile.png"/>
-                            <span class="online-status-dot"></span>
-                        </div>
-                        <span class="material-symbols-outlined text-sm font-bold transition-transform" id="profileChevron" style="color: #765b00;">expand_more</span>
+                        <span class="material-symbols-outlined text-xs" id="usersMenuArrow">expand_more</span>
                     </div>
+                    <ul class="saas-nav-submenu" id="usersSubmenu">
+                        <li><a href="#clients" onclick="showAdminToast('4 852 Clients enregistrés', 'info')" class="saas-subnav-item">• Clients</a></li>
+                        <li><a href="#gerantes" onclick="showAdminToast('12 Gérantes Fournil actives', 'info')" class="saas-subnav-item">• Gérantes</a></li>
+                        <li><a href="#caissieres" onclick="showAdminToast('24 Caissières POS actives', 'info')" class="saas-subnav-item">• Caissières</a></li>
+                    </ul>
+                </li>
+                <li>
+                    <a href="#reservations" onclick="showAdminToast('326 Réservations ce mois', 'info')" class="saas-nav-item">
+                        <span class="material-symbols-outlined saas-nav-icon">event_available</span>
+                        <span>Réservations</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#transactions" onclick="showAdminToast('2 850 Transactions comptabilisées', 'info')" class="saas-nav-item">
+                        <span class="material-symbols-outlined saas-nav-icon">sync_alt</span>
+                        <span>Transactions</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#paiements" onclick="showAdminToast('Rapprochements des paiements Wave & Espèces', 'info')" class="saas-nav-item">
+                        <span class="material-symbols-outlined saas-nav-icon">credit_card</span>
+                        <span>Paiements</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#commissions" onclick="showAdminToast('Commissions cumulées : 696 000 FCFA', 'info')" class="saas-nav-item">
+                        <span class="material-symbols-outlined saas-nav-icon">percent</span>
+                        <span>Commissions</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#produits" onclick="showAdminToast('Catalogue central de 48 produits', 'info')" class="saas-nav-item">
+                        <span class="material-symbols-outlined saas-nav-icon">bakery_dining</span>
+                        <span>Produits</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#categories" onclick="showAdminToast('Catégories : Pains, Viennoiseries, Pâtisseries', 'info')" class="saas-nav-item">
+                        <span class="material-symbols-outlined saas-nav-icon">category</span>
+                        <span>Catégories</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#statistiques" onclick="showAdminToast('Rapports analytiques et prévisions', 'info')" class="saas-nav-item">
+                        <span class="material-symbols-outlined saas-nav-icon">bar_chart</span>
+                        <span>Statistiques</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#notifications" onclick="showAdminToast('5 nouvelles notifications non lues', 'info')" class="saas-nav-item">
+                        <span class="material-symbols-outlined saas-nav-icon">notifications</span>
+                        <span>Notifications</span>
+                        <span style="background: #ef4444; color: #fff; font-size: 10px; font-weight: 800; padding: 1px 6px; border-radius: 9999px; margin-left: auto;">5</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#parametres" onclick="openChangePasswordModal()" class="saas-nav-item">
+                        <span class="material-symbols-outlined saas-nav-icon">settings</span>
+                        <span>Paramètres</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#audit" onclick="showAdminToast('Journaux d\'audit et sécurité conformes', 'info')" class="saas-nav-item">
+                        <span class="material-symbols-outlined saas-nav-icon">history_edu</span>
+                        <span>Audit Logs</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#support" onclick="showAdminToast('Support BABI disponible 24/7 au +225 01 61 40 70 64', 'info')" class="saas-nav-item">
+                        <span class="material-symbols-outlined saas-nav-icon">chat</span>
+                        <span>Support</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" onclick="handleAdminLogout(); return false;" class="saas-nav-item" style="color: #f87171;">
+                        <span class="material-symbols-outlined saas-nav-icon">logout</span>
+                        <span>Déconnexion</span>
+                    </a>
+                </li>
+            </ul>
 
-                    <!-- Luxury Profile Dropdown Menu -->
-                    <div id="profileDropdownMenu" class="prestige-profile-dropdown hidden">
-                        <!-- Header Info -->
-                        <div class="profile-dropdown-header">
-                            <div class="flex items-center gap-3">
-                                <div class="relative cursor-pointer" onclick="openAvatarModal()" title="Cliquer pour changer de photo">
-                                    <img src="assets/chef_profile.png" id="dropdown-user-avatar" class="profile-avatar-lg" alt="Jean-Marc Konan"/>
-                                    <div class="avatar-edit-overlay-btn">
-                                        <span class="material-symbols-outlined text-[12px]">photo_camera</span>
-                                    </div>
-                                </div>
-                                <div>
-                                    <h4 class="font-bold text-sm text-on-surface">Jean-Marc Konan</h4>
-                                    <span class="text-xs text-amber-700 font-extrabold">Directeur Général & Fondateur</span>
-                                    <div class="text-[11px] text-on-surface-variant font-mono mt-0.5">direction@boulangeriedebabi.ci</div>
-                                </div>
-                            </div>
-                            <div class="mt-3 py-1.5 px-3 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-[11px] font-extrabold flex items-center justify-between">
-                                <span>Accréditation : Super Admin (Niveau 5)</span>
-                                <span class="material-symbols-outlined text-sm text-emerald-600">verified</span>
-                            </div>
-                        </div>
-
-                        <!-- Section: Bascule Rapide de Rôle / Portail -->
-                        <div class="profile-dropdown-section">
-                            <div class="profile-dropdown-section-title">COMMUTATEUR DE PORTAILS</div>
-                            <a href="admin.html" class="profile-dropdown-item active">
-                                <span class="material-symbols-outlined text-amber-600">admin_panel_settings</span>
-                                <div class="flex flex-col">
-                                    <span class="font-bold text-xs">Direction & Finance 360</span>
-                                    <span class="text-[10px] text-on-surface-variant">Vue consolidée d'ensemble</span>
-                                </div>
-                                <span class="badge-active-pill">Actif</span>
-                            </a>
-                            <a href="gerante.html" class="profile-dropdown-item">
-                                <span class="material-symbols-outlined text-amber-600">oven_gen</span>
-                                <div class="flex flex-col">
-                                    <span class="font-bold text-xs">Fournil & Production</span>
-                                    <span class="text-[10px] text-on-surface-variant">Portail Chef Mamadou Koné</span>
-                                </div>
-                                <span class="material-symbols-outlined text-xs text-on-surface-variant">arrow_forward</span>
-                            </a>
-                            <a href="caissiere.html" class="profile-dropdown-item">
-                                <span class="material-symbols-outlined text-amber-600">point_of_sale</span>
-                                <div class="flex flex-col">
-                                    <span class="font-bold text-xs">Caisse & Vente Tactile POS</span>
-                                    <span class="text-[10px] text-on-surface-variant">Comptoir Awa Kouassi</span>
-                                </div>
-                                <span class="material-symbols-outlined text-xs text-on-surface-variant">arrow_forward</span>
-                            </a>
-                            <a href="index.html" class="profile-dropdown-item">
-                                <span class="material-symbols-outlined text-amber-600">storefront</span>
-                                <div class="flex flex-col">
-                                    <span class="font-bold text-xs">Boutique en Ligne</span>
-                                    <span class="text-[10px] text-on-surface-variant">Expérience client & commandes</span>
-                                </div>
-                                <span class="material-symbols-outlined text-xs text-on-surface-variant">arrow_forward</span>
-                            </a>
-                        </div>
-
-                        <!-- Section: Actions du Compte -->
-                        <div class="profile-dropdown-section border-t border-outline-variant/40">
-                            <button onclick="openAvatarModal()" class="profile-dropdown-item w-full text-left">
-                                <span class="material-symbols-outlined text-amber-600">photo_camera</span>
-                                <span class="font-bold text-xs">Changer ma Photo de Profil</span>
-                            </button>
-                            <button onclick="openChangePasswordModal()" class="profile-dropdown-item w-full text-left">
-                                <span class="material-symbols-outlined text-amber-600">lock_reset</span>
-                                <span class="font-bold text-xs">Modifier Mot de Passe</span>
-                            </button>
-                            <button onclick="resetAllToZeroDayOne()" class="profile-dropdown-item w-full text-left" style="color: #765b00 !important;">
-                                <span class="material-symbols-outlined" style="color: #765b00 !important;">restart_alt</span>
-                                <span class="font-bold text-xs">Nouveau Départ (Remise à Zéro)</span>
-                            </button>
-                            <button onclick="handleAdminLogout()" class="profile-dropdown-item w-full text-left" style="color: #dc2626 !important;">
-                                <span class="material-symbols-outlined" style="color: #dc2626 !important;">logout</span>
-                                <span class="font-extrabold text-xs">Déconnexion Sécurisée</span>
-                            </button>
+            <!-- Bottom Profile Card -->
+            <div class="saas-sidebar-footer">
+                <div class="saas-profile-card" onclick="toggleProfileDropdown(event)">
+                    <img src="assets/chef_profile.png" id="topbar-user-avatar" class="saas-profile-avatar" alt="Admin Principal"/>
+                    <div style="display: flex; flex-direction: column;">
+                        <span class="saas-profile-name">Admin Principal</span>
+                        <span class="saas-profile-email">admin@babi.com</span>
+                        <div class="saas-status-indicator">
+                            <span class="saas-dot-online"></span>
+                            <span>En ligne</span>
                         </div>
                     </div>
                 </div>
             </div>
-        </header>
+        </aside>
 
-        <!-- MAIN BODY CONTENT -->
-        <main class="relative bg-background min-h-screen" style="padding-top: 6.5rem;">
-            <div class="flex flex-col w-full p-container-padding gap-stack-lg">
+        <!-- =============================================================
+             MAIN CONTENT WORKSPACE AREA
+             ============================================================= -->
+        <main class="saas-main-area">
+            <!-- Topbar Header -->
+            <header class="saas-topbar">
+                <div style="display: flex; align-items: center; gap: 16px;">
+                    <button style="background: none; border: none; cursor: pointer; color: #475569; display: flex; align-items: center;">
+                        <span class="material-symbols-outlined text-xl">menu</span>
+                    </button>
+                    <div>
+                        <h1 class="saas-topbar-title">Tableau de bord</h1>
+                        <span class="saas-topbar-subtitle">Vue d'ensemble de la plateforme</span>
+                    </div>
+                </div>
 
-                <!-- ========================================================= -->
-                <!-- TAB 1: FINANCE 360 / VUE D'ENSEMBLE (MODE MAGAZINE) -->
-                <!-- ========================================================= -->
-                <section id="tab-overview" class="tab-section">
-                    <div class="magazine-container">
-                        <!-- Magazine Header Bar -->
-                        <div class="magazine-header-bar">
-                            <div class="flex flex-col gap-1.5">
-                                <div class="flex items-center gap-3">
-                                    <span class="text-xs font-extrabold uppercase tracking-widest" style="color: #765b00; letter-spacing: 0.12em;">ÉDITION QUOTIDIENNE • DIRECTION</span>
-                                    <span style="background: #dcfce7; color: #166534; border: 1px solid #86efac; border-radius: 9999px; padding: 3px 12px; font-weight: 800; font-size: 11px; display: inline-flex; align-items: center; gap: 6px;">
-                                        <span style="width: 7px; height: 7px; border-radius: 9999px; background: #16a34a; display: inline-block;"></span> Fournil En Direct
-                                    </span>
-                                </div>
-                                <h1 class="font-display-lg text-3xl md:text-4xl text-primary font-bold tracking-tight" style="color: #2b160c;">Finance 360 & Pilotage</h1>
-                                <p class="font-body-md text-on-surface-variant max-w-2xl text-xs" style="color: #5f493b;">Revue consolidée des encaissements, volumes de production et indicateurs de performance.</p>
-                            </div>
-                            <div class="flex items-center gap-3">
-                                <div class="magazine-date-badge">
-                                    <span class="material-symbols-outlined text-amber-600 text-sm" style="color: #765b00;">calendar_month</span>
-                                    <span>17 Août 2026</span>
-                                </div>
-                                <button onclick="exportAccountingCSV()" class="magazine-btn-secondary" title="Exporter le journal des ventes en format Excel / CSV">
-                                    <span class="material-symbols-outlined text-sm font-bold" style="color: #765b00;">table_view</span> Export Excel / CSV
-                                </button>
-                                <button onclick="window.print()" class="magazine-btn-primary">
-                                    <span class="material-symbols-outlined text-sm font-bold">download</span> Télécharger Bilan
-                                </button>
+                <div style="display: flex; align-items: center; gap: 14px;">
+                    <!-- Date Picker Filter Pill -->
+                    <div class="saas-date-pill" onclick="showAdminToast('Période sélectionnée : 20 Août 2026', 'info')">
+                        <span class="material-symbols-outlined text-sm" style="color: #64748b;">calendar_today</span>
+                        <span>20 Août 2026 - 20 Août 2026</span>
+                        <span class="material-symbols-outlined text-xs" style="color: #94a3b8;">expand_more</span>
+                    </div>
+
+                    <!-- Notification Button with Red Badge -->
+                    <div class="saas-notif-btn" onclick="showAdminToast('Vous avez 5 notifications en attente', 'info')">
+                        <span class="material-symbols-outlined text-lg">notifications</span>
+                        <span class="saas-notif-badge">5</span>
+                    </div>
+
+                    <!-- Topbar Profile Headshot -->
+                    <div style="position: relative; cursor: pointer;" onclick="toggleProfileDropdown(event)">
+                        <img src="assets/chef_profile.png" style="width: 36px; height: 36px; border-radius: 9999px; object-fit: cover; border: 1.5px solid #cbd5e1;" alt="Admin Headshot"/>
+                    </div>
+                </div>
+            </header>
+
+            <!-- =============================================================
+                 6 TOP KPI MICRO-CARDS
+                 ============================================================= -->
+            <section class="saas-kpi-grid">
+                <!-- 1. BOULANGERIES -->
+                <div class="saas-kpi-card">
+                    <div class="saas-kpi-icon-box orange">
+                        <span class="material-symbols-outlined text-2xl">store</span>
+                    </div>
+                    <div>
+                        <span class="saas-kpi-label">Boulangeries</span>
+                        <div class="saas-kpi-value" id="kpi-boulangeries-count">12</div>
+                        <span class="saas-kpi-badge">+2 ce mois</span>
+                    </div>
+                </div>
+
+                <!-- 2. CLIENTS -->
+                <div class="saas-kpi-card">
+                    <div class="saas-kpi-icon-box purple">
+                        <span class="material-symbols-outlined text-2xl">group</span>
+                    </div>
+                    <div>
+                        <span class="saas-kpi-label">Clients</span>
+                        <div class="saas-kpi-value" id="kpi-clients-count">4 852</div>
+                        <span class="saas-kpi-badge">+235 ce mois</span>
+                    </div>
+                </div>
+
+                <!-- 3. RÉSERVATIONS -->
+                <div class="saas-kpi-card">
+                    <div class="saas-kpi-icon-box blue">
+                        <span class="material-symbols-outlined text-2xl">event_available</span>
+                    </div>
+                    <div>
+                        <span class="saas-kpi-label">Réservations</span>
+                        <div class="saas-kpi-value" id="kpi-reservations-count">326</div>
+                        <span class="saas-kpi-badge">+18% ce mois</span>
+                    </div>
+                </div>
+
+                <!-- 4. TRANSACTIONS -->
+                <div class="saas-kpi-card">
+                    <div class="saas-kpi-icon-box green">
+                        <span class="material-symbols-outlined text-2xl">credit_card</span>
+                    </div>
+                    <div>
+                        <span class="saas-kpi-label">Transactions</span>
+                        <div class="saas-kpi-value" id="kpi-transactions-count">2 850</div>
+                        <span class="saas-kpi-badge">+22% ce mois</span>
+                    </div>
+                </div>
+
+                <!-- 5. CA GLOBAL -->
+                <div class="saas-kpi-card">
+                    <div class="saas-kpi-icon-box yellow">
+                        <span class="material-symbols-outlined text-2xl">bar_chart</span>
+                    </div>
+                    <div>
+                        <span class="saas-kpi-label">CA Global</span>
+                        <div class="saas-kpi-value" id="kpi-ca-global">5 800 000 FCFA</div>
+                        <span class="saas-kpi-badge">+15% ce mois</span>
+                    </div>
+                </div>
+
+                <!-- 6. COMMISSIONS -->
+                <div class="saas-kpi-card">
+                    <div class="saas-kpi-icon-box pink">
+                        <span class="material-symbols-outlined text-2xl">percent</span>
+                    </div>
+                    <div>
+                        <span class="saas-kpi-label">Commissions</span>
+                        <div class="saas-kpi-value" id="kpi-commissions-val">696 000 FCFA</div>
+                        <span class="saas-kpi-badge">+15% ce mois</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- =============================================================
+                 MIDDLE ROW (AREA CHART, DONUT STATUTS, ACTIVITY FEED)
+                 ============================================================= -->
+            <section class="saas-dashboard-row">
+                <!-- Col 1: Évolution des réservations -->
+                <div class="saas-card">
+                    <div class="saas-card-header">
+                        <h3 class="saas-card-title">Évolution des réservations</h3>
+                        <div class="saas-chart-legend">
+                            <div style="display: flex; align-items: center;"><span class="saas-legend-dot" style="background: #ea580c;"></span> Réservations</div>
+                            <div style="display: flex; align-items: center;"><span class="saas-legend-dot" style="background: #16a34a;"></span> Récupérées</div>
+                        </div>
+                    </div>
+                    <div style="position: relative; height: 230px; width: 100%;">
+                        <canvas id="reservationsEvolutionChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Col 2: Réservations par statut -->
+                <div class="saas-card">
+                    <div class="saas-card-header">
+                        <h3 class="saas-card-title">Réservations par statut</h3>
+                    </div>
+                    <div style="display: flex; align-items: center; justify-content: space-between; height: 230px;">
+                        <!-- Donut Canvas with Center Hole -->
+                        <div style="position: relative; width: 150px; height: 150px;">
+                            <canvas id="statusDonutChart"></canvas>
+                            <div style="position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; pointer-events: none;">
+                                <span style="font-size: 20px; font-weight: 800; color: #0f172a; line-height: 1;">326</span>
+                                <span style="font-size: 10.5px; font-weight: 600; color: #64748b;">Total</span>
                             </div>
                         </div>
-
-                        <!-- 3 Magazine Metric Cards -->
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                            <!-- Total Revenue Hero Card -->
-                            <div class="magazine-card-hero flex flex-col justify-between" style="min-height: 190px;">
-                                <div class="flex items-center justify-between">
-                                    <span class="uppercase tracking-widest text-xs font-extrabold text-amber-300">Chiffre d'Affaires</span>
-                                    <div class="kpi-icon-medallion gold">
-                                        <span class="material-symbols-outlined text-2xl">account_balance_wallet</span>
-                                    </div>
-                                </div>
-                                <div class="my-2">
-                                    <span class="font-display-lg text-3xl md:text-4xl font-bold tracking-tight" style="color: #ffc928; text-shadow: 0 2px 10px rgba(245, 184, 0, 0.35);" id="stat-revenue">0 FCFA</span>
-                                </div>
-                                <div class="flex items-center gap-2 text-xs font-bold text-emerald-300">
-                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full bg-emerald-950/90 border border-emerald-500/50 text-emerald-300 font-bold">
-                                        <span class="material-symbols-outlined text-xs mr-1">bolt</span> Service Démarré
-                                    </span>
-                                    <span class="text-amber-100/70 font-medium">Prêt pour les encaissements</span>
-                                </div>
+                        <!-- Legend on Right -->
+                        <div style="display: flex; flex-direction: column; gap: 7px; font-size: 11.5px; font-weight: 600; color: #475569; padding-left: 10px; width: 55%;">
+                            <div style="display: flex; align-items: center; justify-content: space-between;">
+                                <span><span class="saas-legend-dot" style="background: #3b82f6;"></span> Nouvelles</span>
+                                <span style="font-weight: 700; color: #0f172a;">62 (19%)</span>
                             </div>
-
-                            <!-- Commandes Remises -->
-                            <div class="magazine-card flex flex-col justify-between" style="min-height: 190px;">
-                                <div class="flex items-center justify-between">
-                                    <span class="uppercase tracking-widest text-xs font-extrabold text-on-surface-variant">Commandes Remises</span>
-                                    <div class="kpi-icon-medallion emerald">
-                                        <span class="material-symbols-outlined text-2xl">verified</span>
-                                    </div>
-                                </div>
-                                <div class="my-2">
-                                    <span class="font-display-lg text-3xl md:text-4xl font-bold text-on-surface"><span id="stat-delivered-orders">0</span> <span class="text-xl font-normal text-on-surface-variant">/ <span id="stat-total-orders">0</span></span></span>
-                                </div>
-                                <div class="flex items-center gap-1.5 text-emerald-700 text-xs font-bold">
-                                    <span class="material-symbols-outlined text-sm">check_circle</span>
-                                    <span>Sécurisé par Code PIN</span>
-                                </div>
+                            <div style="display: flex; align-items: center; justify-content: space-between;">
+                                <span><span class="saas-legend-dot" style="background: #eab308;"></span> Confirmées</span>
+                                <span style="font-weight: 700; color: #0f172a;">74 (23%)</span>
                             </div>
-
-                            <!-- Panier Moyen -->
-                            <div class="magazine-card flex flex-col justify-between" style="min-height: 190px;">
-                                <div class="flex items-center justify-between">
-                                    <span class="uppercase tracking-widest text-xs font-extrabold text-on-surface-variant">Panier Moyen</span>
-                                    <div class="kpi-icon-medallion amber">
-                                        <span class="material-symbols-outlined text-2xl">receipt_long</span>
-                                    </div>
-                                </div>
-                                <div class="my-2">
-                                    <span class="font-display-lg text-3xl md:text-4xl font-bold text-on-surface" id="stat-avg-basket">0 FCFA</span>
-                                </div>
-                                <div class="flex items-center gap-1.5 text-primary text-xs font-bold" style="color: #765b00;">
-                                    <span class="material-symbols-outlined text-sm">point_of_sale</span>
-                                    <span>Caisse & En ligne prêts</span>
-                                </div>
+                            <div style="display: flex; align-items: center; justify-content: space-between;">
+                                <span><span class="saas-legend-dot" style="background: #a855f7;"></span> En préparation</span>
+                                <span style="font-weight: 700; color: #0f172a;">68 (21%)</span>
                             </div>
-                        </div>
-
-                        <!-- Revenue Trend & Top Categories (Magazine Style) -->
-                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                            <!-- Revenue Trend Column -->
-                            <div class="lg:col-span-2 magazine-card flex flex-col gap-5">
-                                <div class="flex items-center justify-between pb-3 border-b border-outline-variant/30">
-                                    <div>
-                                        <h2 class="font-headline-md text-xl text-on-surface font-bold">Évolution des Ventes</h2>
-                                        <p class="text-xs text-on-surface-variant">Recettes quotidiennes enregistrées en boutique et Click & Collect</p>
-                                    </div>
-                                    <div class="flex gap-2">
-                                        <button class="magazine-period-btn active" onclick="switchPeriod('7d', this)">7 Jours</button>
-                                        <button class="magazine-period-btn" onclick="switchPeriod('30d', this)">30 Jours</button>
-                                        <button class="magazine-period-btn" onclick="switchPeriod('1y', this)">Annuel</button>
-                                    </div>
-                                </div>
-
-                                <!-- Interactive Bar Chart Display -->
-                                <div class="h-64 w-full relative flex items-end gap-3 px-2 pt-8" id="revenue-bars-container" style="height: 220px; display: flex; align-items: flex-end;">
-                                    <!-- Background dashed gridlines -->
-                                    <div class="w-full h-full absolute inset-0 flex flex-col justify-between py-6 pointer-events-none opacity-20">
-                                        <div class="w-full border-t border-outline-variant border-dashed"></div>
-                                        <div class="w-full border-t border-outline-variant border-dashed"></div>
-                                        <div class="w-full border-t border-outline-variant border-dashed"></div>
-                                    </div>
-                                    <!-- 7 Days Bars with explicit heights -->
-                                    <div class="revenue-bar relative group" style="height: 48%;">
-                                        <div class="revenue-tooltip">45 000 F</div>
-                                    </div>
-                                    <div class="revenue-bar relative group" style="height: 55%;">
-                                        <div class="revenue-tooltip">52 000 F</div>
-                                    </div>
-                                    <div class="revenue-bar relative group" style="height: 51%;">
-                                        <div class="revenue-tooltip">48 000 F</div>
-                                    </div>
-                                    <div class="revenue-bar relative group" style="height: 64%;">
-                                        <div class="revenue-tooltip">61 000 F</div>
-                                    </div>
-                                    <div class="revenue-bar relative group" style="height: 78%;">
-                                        <div class="revenue-tooltip">74 000 F</div>
-                                    </div>
-                                    <div class="revenue-bar relative group peak-bar" style="height: 100%;">
-                                        <div class="revenue-tooltip">95 000 F 👑</div>
-                                    </div>
-                                    <div class="revenue-bar relative group" style="height: 92%;">
-                                        <div class="revenue-tooltip">88 500 F</div>
-                                    </div>
-                                </div>
-                                <div class="flex justify-between px-2 font-label-sm text-xs text-on-surface-variant font-bold">
-                                    <span class="flex-1 text-center">Lun</span><span class="flex-1 text-center">Mar</span><span class="flex-1 text-center">Mer</span><span class="flex-1 text-center">Jeu</span><span class="flex-1 text-center">Ven</span><span class="flex-1 text-center font-bold" style="color: #765b00;">Sam 👑</span><span class="flex-1 text-center">Dim</span>
-                                </div>
+                            <div style="display: flex; align-items: center; justify-content: space-between;">
+                                <span><span class="saas-legend-dot" style="background: #22c55e;"></span> Prêtes</span>
+                                <span style="font-weight: 700; color: #0f172a;">79 (24%)</span>
                             </div>
-
-                            <!-- Top Categories Breakdown -->
-                            <div class="magazine-card flex flex-col gap-4 justify-between">
-                                <div class="pb-3 border-b border-outline-variant/30">
-                                    <h2 class="font-headline-md text-xl text-on-surface font-bold">Mix Produits</h2>
-                                    <p class="text-xs text-on-surface-variant">Répartition des ventes par catégorie</p>
-                                </div>
-                                <div class="flex-1 flex flex-col justify-center gap-4 py-2">
-                                    <div class="flex flex-col gap-1.5">
-                                        <div class="flex justify-between items-center text-xs">
-                                            <span class="font-bold text-on-surface">🥐 Viennoiseries</span>
-                                            <span class="font-bold text-on-surface-variant whitespace-nowrap">45% <small style="color: #8d776a; font-weight: normal;">(173k F)</small></span>
-                                        </div>
-                                        <div class="progress-bar-track">
-                                            <div class="progress-bar-fill" style="width: 45%;"></div>
-                                        </div>
-                                    </div>
-                                    <div class="flex flex-col gap-1.5">
-                                        <div class="flex justify-between items-center text-xs">
-                                            <span class="font-bold text-on-surface">🥖 Pains & Baguettes</span>
-                                            <span class="font-bold text-on-surface-variant whitespace-nowrap">30% <small style="color: #8d776a; font-weight: normal;">(115k F)</small></span>
-                                        </div>
-                                        <div class="progress-bar-track">
-                                            <div class="progress-bar-fill" style="width: 30%;"></div>
-                                        </div>
-                                    </div>
-                                    <div class="flex flex-col gap-1.5">
-                                        <div class="flex justify-between items-center text-xs">
-                                            <span class="font-bold text-on-surface">🎂 Pâtisseries</span>
-                                            <span class="font-bold text-on-surface-variant whitespace-nowrap">15% <small style="color: #8d776a; font-weight: normal;">(58k F)</small></span>
-                                        </div>
-                                        <div class="progress-bar-track">
-                                            <div class="progress-bar-fill" style="width: 15%;"></div>
-                                        </div>
-                                    </div>
-                                    <div class="flex flex-col gap-1.5">
-                                        <div class="flex justify-between items-center text-xs">
-                                            <span class="font-bold text-on-surface">🥤 Jus & Boissons</span>
-                                            <span class="font-bold text-on-surface-variant whitespace-nowrap">10% <small style="color: #8d776a; font-weight: normal;">(38k F)</small></span>
-                                        </div>
-                                        <div class="progress-bar-track">
-                                            <div class="progress-bar-fill" style="width: 10%;"></div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Recent Transactions Table (Magazine Table Container) -->
-                        <div class="magazine-table-container">
-                            <div class="magazine-table-header">
-                                <div>
-                                    <h2 class="font-headline-md text-xl text-white font-bold tracking-wide">Dernières Commandes</h2>
-                                    <p class="text-xs text-amber-200/80">Flux des encaissements en direct et retraits au comptoir</p>
-                                </div>
-                                <button onclick="showTab('orders')" class="magazine-gold-pill-btn">
-                                    <span>Toutes les commandes</span> <span class="material-symbols-outlined text-sm font-bold">arrow_forward</span>
-                                </button>
-                            </div>
-                            <div class="overflow-x-auto">
-                                <table class="magazine-table w-full text-left border-collapse">
-                                    <thead>
-                                        <tr>
-                                            <th>ID</th>
-                                            <th>Client / Téléphone</th>
-                                            <th>Articles Commandés</th>
-                                            <th>Montant Total</th>
-                                            <th>Mode Paiement</th>
-                                            <th>Statut Commande</th>
-                                            <th class="text-center">Action</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="orders-tbody">
-                                        <!-- Injected via js/admin.js -->
-                                    </tbody>
-                                </table>
+                            <div style="display: flex; align-items: center; justify-content: space-between;">
+                                <span><span class="saas-legend-dot" style="background: #06b6d4;"></span> Récupérées</span>
+                                <span style="font-weight: 700; color: #0f172a;">43 (13%)</span>
                             </div>
                         </div>
                     </div>
-                </section>
+                </div>
 
-                <!-- ========================================================= -->
-                <!-- TAB 2: COMMANDES EN DIRECT (MAGAZINE) -->
-                <!-- ========================================================= -->
-                <section id="tab-orders" class="tab-section hidden">
-                    <div class="magazine-container">
-                        <div class="magazine-header-bar">
-                            <div class="flex flex-col gap-1.5">
-                                <div class="flex items-center gap-3">
-                                    <span class="text-xs font-extrabold uppercase tracking-widest" style="color: #765b00;">FOURNIL & COMPTOIR</span>
-                                    <span style="background: #dcfce7; color: #166534; border: 1px solid #86efac; border-radius: 9999px; padding: 3px 12px; font-weight: 800; font-size: 11px; display: inline-flex; align-items: center; gap: 6px;">
-                                        <span style="width: 7px; height: 7px; border-radius: 9999px; background: #16a34a; display: inline-block;"></span> Retraits Ouverts
-                                    </span>
-                                </div>
-                                <h1 class="font-display-lg text-3xl text-primary font-bold">Gestion des Commandes</h1>
-                                <p class="text-xs text-on-surface-variant">Suivi du flux de préparation fournil et remise Click & Collect</p>
-                            </div>
-                            <div class="flex items-center gap-3">
-                                <div class="magazine-search-pill">
-                                    <span class="material-symbols-outlined">search</span>
-                                    <input type="text" id="order-search" placeholder="Chercher par nom ou tél..." onkeyup="filterOrdersTable()"/>
-                                </div>
-                                <select id="order-filter-status" class="magazine-select-pill" onchange="filterOrdersTable()">
-                                    <option value="">Tous les statuts</option>
-                                    <option value="nouveau">Nouveau</option>
-                                    <option value="en preparation">En préparation</option>
-                                    <option value="pret">Prêt au comptoir</option>
-                                    <option value="recupere">Colis Récupéré</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="magazine-table-container">
-                            <div class="overflow-x-auto">
-                                <table class="magazine-table w-full text-left border-collapse">
-                                    <thead>
-                                        <tr>
-                                            <th>ID Commande</th>
-                                            <th>Client</th>
-                                            <th>Adresse / Tél</th>
-                                            <th>Articles</th>
-                                            <th>Total</th>
-                                            <th>Méthode</th>
-                                            <th>Statut</th>
-                                            <th class="text-center">Action</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="full-orders-tbody">
-                                        <!-- Injected via JS -->
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
+                <!-- Col 3: Activités récentes -->
+                <div class="saas-card">
+                    <div class="saas-card-header">
+                        <h3 class="saas-card-title">Activités récentes</h3>
                     </div>
-                </section>
-
-                <!-- ========================================================= -->
-                <!-- TAB 3: GÂTEAUX D'ÉVÉNEMENTS (MAGAZINE) -->
-                <!-- ========================================================= -->
-                <section id="tab-events" class="tab-section hidden">
-                    <div class="magazine-container">
-                        <div class="magazine-header-bar">
+                    <div class="saas-activity-list">
+                        <div class="saas-activity-item">
+                            <div class="saas-activity-icon" style="background: #dcfce7; color: #16a34a;">
+                                <span class="material-symbols-outlined text-base">store</span>
+                            </div>
                             <div>
-                                <span class="text-xs font-extrabold uppercase tracking-widest" style="color: #765b00;">SUR-MESURE & TRAITEUR</span>
-                                <h1 class="font-display-lg text-3xl text-primary font-bold">Gâteaux d'Événements & Mariages</h1>
-                                <p class="text-xs text-on-surface-variant">Commandes de pièces montées, anniversaires et devis traiteur</p>
+                                <div class="saas-activity-title">Nouvelle boulangerie ajoutée</div>
+                                <div class="saas-activity-sub">Boulangerie Le Délice</div>
                             </div>
-                        </div>
-                        <div class="magazine-table-container">
-                            <div class="overflow-x-auto">
-                                <table class="magazine-table w-full text-left border-collapse">
-                                    <thead>
-                                        <tr>
-                                            <th>ID</th>
-                                            <th>Client</th>
-                                            <th>Événement & Thème</th>
-                                            <th>Portions</th>
-                                            <th>Budget (FCFA)</th>
-                                            <th>Date de Livraison</th>
-                                            <th>Statut</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="events-tbody">
-                                        <!-- Injected via JS -->
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- ========================================================= -->
-                <!-- TAB 4: CATALOGUE PRODUITS & GESTION DES STOCKS (MAGAZINE) -->
-                <!-- ========================================================= -->
-                <section id="tab-products" class="tab-section hidden">
-                    <div class="magazine-container">
-                        <!-- Header Bar -->
-                        <div class="magazine-header-bar">
-                            <div class="flex flex-col gap-1">
-                                <div class="flex items-center gap-3">
-                                    <span class="text-xs font-extrabold uppercase tracking-widest" style="color: #765b00;">CARTE & INVENTAIRE HAUTE PRÉCISION</span>
-                                    <span style="background: #dcfce7; color: #166534; border: 1px solid #86efac; border-radius: 9999px; padding: 2px 10px; font-weight: 800; font-size: 11px; display: inline-flex; align-items: center; gap: 5px;">
-                                        <span style="width: 6px; height: 6px; border-radius: 9999px; background: #16a34a;"></span> Inventaire en Direct
-                                    </span>
-                                </div>
-                                <h1 class="font-display-lg text-3xl text-primary font-bold">Catalogue Produits & Stocks</h1>
-                                <p class="font-body-md text-on-surface-variant max-w-2xl text-xs">Ajustez les stocks en 1 clic, fixez les seuils d'alerte et gérez la disponibilité en boutique.</p>
-                            </div>
-                            <div class="flex items-center gap-3 flex-wrap">
-                                <button onclick="openBatchRestockModal()" class="magazine-btn-secondary">
-                                    <span class="material-symbols-outlined text-sm font-bold">inventory</span> Réassort Fournil
-                                </button>
-                                <button onclick="openNewProductModal()" class="magazine-btn-primary">
-                                    <span class="material-symbols-outlined text-sm font-bold">add</span> Nouveau Produit
-                                </button>
-                            </div>
+                            <div class="saas-activity-time">10 min</div>
                         </div>
 
-                        <!-- 4 Mini Metric Badges -->
-                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                            <div class="magazine-card p-4 flex items-center justify-between" style="padding: 1.25rem !important;">
-                                <div>
-                                    <span class="text-xs uppercase font-extrabold text-on-surface-variant">Total Produits</span>
-                                    <div class="text-2xl font-black text-on-surface mt-1" id="stock-stat-total">12</div>
-                                </div>
-                                <div class="kpi-icon-medallion amber" style="width: 38px; height: 38px;">
-                                    <span class="material-symbols-outlined text-xl">bakery_dining</span>
-                                </div>
+                        <div class="saas-activity-item">
+                            <div class="saas-activity-icon" style="background: #dcfce7; color: #16a34a;">
+                                <span class="material-symbols-outlined text-base">credit_card</span>
                             </div>
-                            <div class="magazine-card p-4 flex items-center justify-between" style="padding: 1.25rem !important;">
-                                <div>
-                                    <span class="text-xs uppercase font-extrabold text-emerald-800">En Rayon</span>
-                                    <div class="text-2xl font-black text-emerald-700 mt-1" id="stock-stat-available">10</div>
-                                </div>
-                                <div class="kpi-icon-medallion emerald" style="width: 38px; height: 38px;">
-                                    <span class="material-symbols-outlined text-xl">check_circle</span>
-                                </div>
-                            </div>
-                            <div class="magazine-card p-4 flex items-center justify-between" style="padding: 1.25rem !important;">
-                                <div>
-                                    <span class="text-xs uppercase font-extrabold text-amber-800">Stock Critique</span>
-                                    <div class="text-2xl font-black text-amber-600 mt-1" id="stock-stat-warning">2</div>
-                                </div>
-                                <div class="kpi-icon-medallion gold" style="width: 38px; height: 38px;">
-                                    <span class="material-symbols-outlined text-xl">warning</span>
-                                </div>
-                            </div>
-                            <div class="magazine-card p-4 flex items-center justify-between" style="padding: 1.25rem !important;">
-                                <div>
-                                    <span class="text-xs uppercase font-extrabold text-rose-800">En Rupture</span>
-                                    <div class="text-2xl font-black text-rose-600 mt-1" id="stock-stat-out">0</div>
-                                </div>
-                                <div class="kpi-icon-medallion" style="width: 38px; height: 38px; background: #fee2e2; border: 1.5px solid #fca5a5; color: #dc2626;">
-                                    <span class="material-symbols-outlined text-xl">block</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Filter Controls Bar -->
-                        <div class="magazine-card p-4 flex flex-col md:flex-row md:items-center justify-between gap-4" style="padding: 1rem 1.5rem !important;">
-                            <!-- Category Filter Pills -->
-                            <div class="flex items-center gap-2 overflow-x-auto pb-1" id="product-category-pills">
-                                <button class="magazine-period-btn active" onclick="filterProductCategory('all', this)">Tous</button>
-                                <button class="magazine-period-btn" onclick="filterProductCategory('pains', this)">🥖 Pains</button>
-                                <button class="magazine-period-btn" onclick="filterProductCategory('viennoiseries', this)">🥐 Viennoiseries</button>
-                                <button class="magazine-period-btn" onclick="filterProductCategory('patisseries', this)">🎂 Pâtisseries</button>
-                                <button class="magazine-period-btn" onclick="filterProductCategory('boissons', this)">🥤 Jus & Boissons</button>
-                            </div>
-
-                            <!-- Search and Stock Filter -->
-                            <div class="flex items-center gap-3">
-                                <div class="magazine-search-pill" style="width: 230px !important;">
-                                    <span class="material-symbols-outlined">search</span>
-                                    <input type="text" id="product-search-input" placeholder="Chercher un produit..." onkeyup="filterProductsGrid()"/>
-                                </div>
-                                <select id="product-stock-filter" class="magazine-select-pill" onchange="filterProductsGrid()">
-                                    <option value="all">Tous les stocks</option>
-                                    <option value="available">En rayon uniquement</option>
-                                    <option value="warning">Stock faible (&lt; 10)</option>
-                                    <option value="out">En rupture (0)</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <!-- Products Grid -->
-                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" id="products-grid">
-                            <!-- Injected via JS -->
-                        </div>
-                    </div>
-                </section>
-
-                <!-- ========================================================= -->
-                <!-- TAB 5: PERSONNEL (MAGAZINE) -->
-                <!-- ========================================================= -->
-                <section id="tab-team" class="tab-section hidden">
-                    <div class="magazine-container">
-                        <div class="magazine-header-bar">
                             <div>
-                                <span class="text-xs font-extrabold uppercase tracking-widest" style="color: #765b00;">BRIGADE DU FOURNIL</span>
-                                <h1 class="font-display-lg text-3xl text-primary font-bold">Équipe & Personnel Fournil</h1>
-                                <p class="text-xs text-on-surface-variant">Planning et responsabilités de l'équipe de production</p>
+                                <div class="saas-activity-title">Paiement réussi</div>
+                                <div class="saas-activity-sub">Réservation #BAB-00482</div>
                             </div>
+                            <div class="saas-activity-time">15 min</div>
                         </div>
-                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6" id="team-grid">
-                            <!-- Injected via JS -->
-                        </div>
-                    </div>
-                </section>
 
-                <!-- ========================================================= -->
-                <!-- TAB 6: CLIENTS FIDÉLITÉ (MAGAZINE) -->
-                <!-- ========================================================= -->
-                <section id="tab-users" class="tab-section hidden">
-                    <div class="magazine-container">
-                        <div class="magazine-header-bar">
+                        <div class="saas-activity-item">
+                            <div class="saas-activity-icon" style="background: #ffedd5; color: #ea580c;">
+                                <span class="material-symbols-outlined text-base">calendar_month</span>
+                            </div>
                             <div>
-                                <span class="text-xs font-extrabold uppercase tracking-widest" style="color: #765b00;">COMMUNAUTÉ GOURMANDE</span>
-                                <h1 class="font-display-lg text-3xl text-primary font-bold">Clients & Club Fidélité</h1>
-                                <p class="text-xs text-on-surface-variant">Base clients et cagnotte de points fidélité</p>
+                                <div class="saas-activity-title">Réservation confirmée</div>
+                                <div class="saas-activity-sub">Boulangerie de Babi</div>
+                            </div>
+                            <div class="saas-activity-time">28 min</div>
+                        </div>
+
+                        <div class="saas-activity-item">
+                            <div class="saas-activity-icon" style="background: #f3e8ff; color: #9333ea;">
+                                <span class="material-symbols-outlined text-base">person_add</span>
+                            </div>
+                            <div>
+                                <div class="saas-activity-title">Caissière ajoutée</div>
+                                <div class="saas-activity-sub">Marie N'Guessan</div>
+                            </div>
+                            <div class="saas-activity-time">1 h</div>
+                        </div>
+
+                        <div class="saas-activity-item">
+                            <div class="saas-activity-icon" style="background: #fef3c7; color: #d97706;">
+                                <span class="material-symbols-outlined text-base">account_balance_wallet</span>
+                            </div>
+                            <div>
+                                <div class="saas-activity-title">Commission versée</div>
+                                <div class="saas-activity-sub">Boulangerie de Babi</div>
+                            </div>
+                            <div class="saas-activity-time">2 h</div>
+                        </div>
+                    </div>
+                    <button class="saas-btn-card-footer" onclick="showAdminToast('Affichage de toutes les activités de la plateforme...', 'info')">
+                        Voir toutes les activités
+                    </button>
+                </div>
+            </section>
+
+            <!-- =============================================================
+                 BOTTOM ROW (TOP BOULANGERIES, TRANSACTIONS, DONUT PAIEMENTS)
+                 ============================================================= -->
+            <section class="saas-dashboard-row">
+                <!-- Col 1: Top boulangeries -->
+                <div class="saas-card">
+                    <div class="saas-card-header">
+                        <h3 class="saas-card-title">Top boulangeries</h3>
+                    </div>
+                    <div class="saas-table-wrapper">
+                        <table class="saas-table">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Boulangerie</th>
+                                    <th>Réservations</th>
+                                    <th>CA (FCFA)</th>
+                                    <th>Commissions (FCFA)</th>
+                                    <th>Statut</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>1</td>
+                                    <td><strong>Boulangerie de Babi</strong></td>
+                                    <td>128</td>
+                                    <td>2 450 000</td>
+                                    <td>294 000</td>
+                                    <td><span class="saas-badge-pill active">Active</span></td>
+                                </tr>
+                                <tr>
+                                    <td>2</td>
+                                    <td><strong>Le Délice</strong></td>
+                                    <td>87</td>
+                                    <td>1 560 000</td>
+                                    <td>187 200</td>
+                                    <td><span class="saas-badge-pill active">Active</span></td>
+                                </tr>
+                                <tr>
+                                    <td>3</td>
+                                    <td><strong>Saveurs d'Abidjan</strong></td>
+                                    <td>76</td>
+                                    <td>1 280 000</td>
+                                    <td>153 600</td>
+                                    <td><span class="saas-badge-pill active">Active</span></td>
+                                </tr>
+                                <tr>
+                                    <td>4</td>
+                                    <td><strong>Pain d'Or</strong></td>
+                                    <td>55</td>
+                                    <td>950 000</td>
+                                    <td>114 000</td>
+                                    <td><span class="saas-badge-pill active">Active</span></td>
+                                </tr>
+                                <tr>
+                                    <td>5</td>
+                                    <td><strong>Boulangerie du Plateau</strong></td>
+                                    <td>43</td>
+                                    <td>720 000</td>
+                                    <td>86 400</td>
+                                    <td><span class="saas-badge-pill active">Active</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <button class="saas-btn-card-footer" onclick="showAdminToast('Redirection vers le répertoire complet des 12 boulangeries...', 'info')">
+                        Voir toutes les boulangeries
+                    </button>
+                </div>
+
+                <!-- Col 2: Transactions récentes -->
+                <div class="saas-card">
+                    <div class="saas-card-header">
+                        <h3 class="saas-card-title">Transactions récentes</h3>
+                    </div>
+                    <div class="saas-table-wrapper">
+                        <table class="saas-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Client</th>
+                                    <th>Montant</th>
+                                    <th>Méthode</th>
+                                    <th>Statut</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td style="font-family: monospace; color: #64748b;">#TRX-85421</td>
+                                    <td><strong>Koffi A.</strong></td>
+                                    <td>4 500 FCFA</td>
+                                    <td><span class="saas-badge-wave">🌊 Wave</span></td>
+                                    <td><span class="saas-badge-pill active">Payé</span></td>
+                                </tr>
+                                <tr>
+                                    <td style="font-family: monospace; color: #64748b;">#TRX-85420</td>
+                                    <td><strong>Aya K.</strong></td>
+                                    <td>7 000 FCFA</td>
+                                    <td><span class="saas-badge-wave">🌊 Wave</span></td>
+                                    <td><span class="saas-badge-pill active">Payé</span></td>
+                                </tr>
+                                <tr>
+                                    <td style="font-family: monospace; color: #64748b;">#TRX-85419</td>
+                                    <td><strong>Jean M.</strong></td>
+                                    <td>3 200 FCFA</td>
+                                    <td><span class="saas-badge-wave">🌊 Wave</span></td>
+                                    <td><span class="saas-badge-pill active">Payé</span></td>
+                                </tr>
+                                <tr>
+                                    <td style="font-family: monospace; color: #64748b;">#TRX-85418</td>
+                                    <td><strong>Fatou B.</strong></td>
+                                    <td>2 800 FCFA</td>
+                                    <td><span class="saas-badge-wave">🌊 Wave</span></td>
+                                    <td><span class="saas-badge-pill danger">Échec</span></td>
+                                </tr>
+                                <tr>
+                                    <td style="font-family: monospace; color: #64748b;">#TRX-85417</td>
+                                    <td><strong>Konan L.</strong></td>
+                                    <td>5 600 FCFA</td>
+                                    <td><span class="saas-badge-wave">🌊 Wave</span></td>
+                                    <td><span class="saas-badge-pill active">Payé</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <button class="saas-btn-card-footer" onclick="showAdminToast('Affichage du grand livre des transactions...', 'info')">
+                        Voir toutes les transactions
+                    </button>
+                </div>
+
+                <!-- Col 3: Répartition des paiements -->
+                <div class="saas-card">
+                    <div class="saas-card-header">
+                        <h3 class="saas-card-title">Répartition des paiements</h3>
+                    </div>
+                    <div style="display: flex; align-items: center; justify-content: space-between; height: 180px;">
+                        <!-- Donut Canvas with Center Hole -->
+                        <div style="position: relative; width: 140px; height: 140px;">
+                            <canvas id="paymentsDonutChart"></canvas>
+                            <div style="position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; pointer-events: none;">
+                                <span style="font-size: 18px; font-weight: 800; color: #0f172a; line-height: 1;">2 850</span>
+                                <span style="font-size: 10px; font-weight: 600; color: #64748b;">Total</span>
                             </div>
                         </div>
-                        <div class="magazine-table-container">
-                            <div class="overflow-x-auto">
-                                <table class="magazine-table w-full text-left border-collapse">
-                                    <thead>
-                                        <tr>
-                                            <th>Client</th>
-                                            <th>Téléphone / Email</th>
-                                            <th>Points Fidélité</th>
-                                            <th>Commandes Passées</th>
-                                            <th>Dépenses Cumulées</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="users-tbody">
-                                        <!-- Injected via JS -->
-                                    </tbody>
-                                </table>
+                        <!-- Legend on Right -->
+                        <div style="display: flex; flex-direction: column; gap: 8px; font-size: 11.5px; font-weight: 600; color: #475569; padding-left: 10px; width: 55%;">
+                            <div style="display: flex; align-items: center; justify-content: space-between;">
+                                <span><span class="saas-legend-dot" style="background: #22c55e;"></span> Payés</span>
+                                <span style="font-weight: 700; color: #0f172a;">2 450 (86%)</span>
+                            </div>
+                            <div style="display: flex; align-items: center; justify-content: space-between;">
+                                <span><span class="saas-legend-dot" style="background: #eab308;"></span> En attente</span>
+                                <span style="font-weight: 700; color: #0f172a;">250 (9%)</span>
+                            </div>
+                            <div style="display: flex; align-items: center; justify-content: space-between;">
+                                <span><span class="saas-legend-dot" style="background: #ef4444;"></span> Échecs</span>
+                                <span style="font-weight: 700; color: #0f172a;">150 (5%)</span>
                             </div>
                         </div>
                     </div>
-                </section>
+                    <button class="saas-btn-card-footer" onclick="showAdminToast('Affichage du rapport détaillé des flux de paiements...', 'info')">
+                        Voir tous les paiements
+                    </button>
+                </div>
+            </section>
 
-                <!-- ========================================================= -->
-                <!-- TAB 7: SÉCURITÉ & AUDIT (MAGAZINE) -->
-                <!-- ========================================================= -->
-                <section id="tab-security" class="tab-section hidden">
-                    <div class="magazine-container">
-                        <!-- Header Bar -->
-                        <div class="magazine-header-bar">
-                            <div class="flex flex-col gap-1.5">
-                                <div class="flex items-center gap-3">
-                                    <span class="text-xs font-extrabold uppercase tracking-widest" style="color: #765b00;">CYBERSÉCURITÉ & AUDIT IMMEUBLE</span>
-                                    <span style="background: #dcfce7; color: #166534; border: 1px solid #86efac; border-radius: 9999px; padding: 3px 12px; font-weight: 800; font-size: 11px; display: inline-flex; align-items: center; gap: 6px;">
-                                        <span style="width: 7px; height: 7px; border-radius: 9999px; background: #16a34a; display: inline-block;"></span> Quantum Shield v2.4 Actif
-                                    </span>
-                                </div>
-                                <h1 class="font-display-lg text-3xl text-primary font-bold">Sécurité, Traçabilité & Audit IA</h1>
-                                <p class="text-xs text-on-surface-variant">Journal cryptographique immuable des validations par code PIN et intégrité de caisse</p>
-                            </div>
-                            <div class="flex items-center gap-3">
-                                <button onclick="window.print()" class="magazine-btn-primary">
-                                    <span class="material-symbols-outlined text-sm font-bold">verified_user</span> Certificat d'Audit
-                                </button>
-                            </div>
-                        </div>
-
-                        <!-- 4 Cyber Metrics Cards -->
-                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                            <div class="magazine-card p-4 flex items-center justify-between" style="padding: 1.25rem !important;">
-                                <div>
-                                    <span class="text-xs uppercase font-extrabold text-on-surface-variant">Protection Bouclier</span>
-                                    <div class="text-2xl font-black text-emerald-600 mt-1">100% ACTIF</div>
-                                </div>
-                                <div class="kpi-icon-medallion emerald" style="width: 38px; height: 38px;">
-                                    <span class="material-symbols-outlined text-xl">shield</span>
-                                </div>
-                            </div>
-                            <div class="magazine-card p-4 flex items-center justify-between" style="padding: 1.25rem !important;">
-                                <div>
-                                    <span class="text-xs uppercase font-extrabold text-on-surface-variant">Validation PIN Client</span>
-                                    <div class="text-2xl font-black text-on-surface mt-1">28 / 28 <span class="text-xs text-emerald-600 font-bold">(100%)</span></div>
-                                </div>
-                                <div class="kpi-icon-medallion gold" style="width: 38px; height: 38px;">
-                                    <span class="material-symbols-outlined text-xl">pin</span>
-                                </div>
-                            </div>
-                            <div class="magazine-card p-4 flex items-center justify-between" style="padding: 1.25rem !important;">
-                                <div>
-                                    <span class="text-xs uppercase font-extrabold text-on-surface-variant">Merkle Root Seal</span>
-                                    <div class="text-xl font-black text-amber-700 mt-1 font-mono">#8491 <span class="text-xs text-emerald-600 font-bold">✓ Scellé</span></div>
-                                </div>
-                                <div class="kpi-icon-medallion amber" style="width: 38px; height: 38px;">
-                                    <span class="material-symbols-outlined text-xl">token</span>
-                                </div>
-                            </div>
-                            <div class="magazine-card p-4 flex items-center justify-between" style="padding: 1.25rem !important;">
-                                <div>
-                                    <span class="text-xs uppercase font-extrabold text-on-surface-variant">Menaces Détectées</span>
-                                    <div class="text-2xl font-black text-emerald-700 mt-1">0 <span class="text-xs text-emerald-600 font-bold">Sécurisé</span></div>
-                                </div>
-                                <div class="kpi-icon-medallion emerald" style="width: 38px; height: 38px;">
-                                    <span class="material-symbols-outlined text-xl">gpp_good</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- High Luxury Terminal Window -->
-                        <div class="cyber-terminal-card mt-2">
-                            <!-- Terminal Bar -->
-                            <div class="cyber-terminal-header">
-                                <div class="flex items-center gap-3">
-                                    <div class="terminal-dots">
-                                        <div class="terminal-dot" style="background: #ef4444;"></div>
-                                        <div class="terminal-dot" style="background: #f59e0b;"></div>
-                                        <div class="terminal-dot" style="background: #10b981;"></div>
-                                    </div>
-                                    <span class="text-xs font-mono text-amber-200/80 font-bold">babi-crypto-shield@abidjan-fournil:~# audit --stream --live</span>
-                                </div>
-                                <div class="flex items-center gap-2">
-                                    <span style="background: rgba(16, 185, 129, 0.2); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.4); border-radius: 9999px; padding: 2px 10px; font-size: 11px; font-weight: 800; display: inline-flex; align-items: center; gap: 5px;">
-                                        <span style="width: 6px; height: 6px; border-radius: 9999px; background: #10b981;"></span> FLUX TEMPS RÉEL
-                                    </span>
-                                </div>
-                            </div>
-
-                            <!-- Terminal Content -->
-                            <div class="p-5 overflow-x-auto flex flex-col gap-1.5" id="security-logs">
-                                <div class="cyber-log-item">
-                                    <span class="cyber-log-time">[2026-08-17 17:15:22]</span>
-                                    <span class="cyber-log-tag tag-shield">RATE_LIMITER</span>
-                                    <span class="text-amber-100/90 font-mono">Passerelle Wave & Orange Money : 0 anomalie détectée sur les signatures webhook HMAC.</span>
-                                </div>
-                                <div class="cyber-log-item">
-                                    <span class="cyber-log-time">[2026-08-17 16:40:12]</span>
-                                    <span class="cyber-log-tag tag-success">PIN_AUTH_SUCCESS</span>
-                                    <span class="text-amber-100/90 font-mono">Commande #CMD-8488 remise avec succès au client (Empreinte SHA-256 : <span class="text-amber-400 font-bold">0x9a4f...b712</span>).</span>
-                                </div>
-                                <div class="cyber-log-item">
-                                    <span class="cyber-log-time">[2026-08-17 16:32:05]</span>
-                                    <span class="cyber-log-tag tag-merkle">MERKLE_SEAL</span>
-                                    <span class="text-amber-100/90 font-mono">Bloc transactionnel #8491 scellé avec racine cryptographique valide. ZK-Proof certifiée.</span>
-                                </div>
-                                <div class="cyber-log-item">
-                                    <span class="cyber-log-time">[2026-08-17 16:15:22]</span>
-                                    <span class="cyber-log-tag tag-shield">INTEGRITY_CHECK</span>
-                                    <span class="text-amber-100/90 font-mono">Audit automatique d'intégrité de caisse : Conformité 100%, 0 écart détecté.</span>
-                                </div>
-                                <div class="cyber-log-item" style="border-bottom: none;">
-                                    <span class="cyber-log-time">[2026-08-17 15:58:40]</span>
-                                    <span class="cyber-log-tag tag-success">ZK_PIN_VERIFIED</span>
-                                    <span class="text-amber-100/90 font-mono">Commande #CMD-8487 validée au comptoir boutique Cocody avec succès.</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-            </div>
+            <!-- =============================================================
+                 SAAS CLEAN FOOTER
+                 ============================================================= -->
+            <footer class="saas-footer">
+                <div>© 2026 Boulangerie de Babi. Tous droits réservés.</div>
+                <div style="font-family: monospace; font-weight: 600;">Version 1.0.0</div>
+            </footer>
         </main>
     </div>
 
-    <!-- RECEIPT MODAL -->
-    <div id="receiptModal" class="prestige-modal-backdrop hidden">
-        <div class="prestige-modal-card max-w-md">
-            <button onclick="closeReceiptModal()" class="prestige-modal-close-btn">✕</button>
-            <div id="receiptModalBody"></div>
-            <div class="mt-6 flex gap-2">
-                <button onclick="closeReceiptModal()" class="flex-1 py-2.5 rounded-xl bg-surface-container text-on-surface font-label-md text-xs font-bold">Fermer</button>
-                <button onclick="window.print()" class="flex-1 py-2.5 rounded-xl bg-primary text-on-primary font-label-md text-xs font-bold flex items-center justify-center gap-1">
-                    <span class="material-symbols-outlined text-sm">print</span> Imprimer
-                </button>
+    <!-- Interactive Profile Dropdown Menu (Hidden by default) -->
+    <div id="profileDropdownMenu" class="prestige-profile-dropdown hidden" style="position: fixed; bottom: 70px; left: 16px; z-index: 9999; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 14px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); width: 280px; padding: 14px;">
+        <div style="display: flex; align-items: center; gap: 10px; padding-bottom: 12px; border-bottom: 1px solid #f1f5f9;">
+            <img src="assets/chef_profile.png" style="width: 40px; height: 40px; border-radius: 9999px; object-fit: cover;" alt="Admin Principal"/>
+            <div>
+                <h4 style="font-weight: 800; font-size: 13px; color: #0f172a; margin: 0;">Jean-Marc Konan</h4>
+                <span style="font-size: 11px; color: #d97706; font-weight: 700;">Super Administrateur</span>
+                <div style="font-size: 10.5px; color: #64748b; font-family: monospace;">admin@babi.com</div>
             </div>
+        </div>
+        <div style="padding: 10px 0; display: flex; flex-direction: column; gap: 6px; border-bottom: 1px solid #f1f5f9;">
+            <div style="font-size: 10px; font-weight: 800; color: #94a3b8; letter-spacing: 0.5px;">COMMUTATEUR DE PORTAILS</div>
+            <a href="gerante.html" style="display: flex; align-items: center; gap: 8px; color: #334155; text-decoration: none; font-size: 12px; font-weight: 600; padding: 6px 8px; border-radius: 8px;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='transparent'">
+                <span class="material-symbols-outlined text-sm" style="color: #d97706;">oven_gen</span>
+                <span>Portail Fournil & Planning</span>
+            </a>
+            <a href="caissiere.html" style="display: flex; align-items: center; gap: 8px; color: #334155; text-decoration: none; font-size: 12px; font-weight: 600; padding: 6px 8px; border-radius: 8px;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='transparent'">
+                <span class="material-symbols-outlined text-sm" style="color: #16a34a;">point_of_sale</span>
+                <span>Caisse Tactile POS</span>
+            </a>
+            <a href="index.html" style="display: flex; align-items: center; gap: 8px; color: #334155; text-decoration: none; font-size: 12px; font-weight: 600; padding: 6px 8px; border-radius: 8px;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='transparent'">
+                <span class="material-symbols-outlined text-sm" style="color: #2563eb;">storefront</span>
+                <span>Boutique en Ligne</span>
+            </a>
+        </div>
+        <div style="padding-top: 8px;">
+            <button type="button" onclick="handleAdminLogout()" style="width: 100%; border: none; background: #fef2f2; color: #dc2626; border-radius: 8px; padding: 8px; font-size: 12px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;">
+                <span class="material-symbols-outlined text-sm">logout</span>
+                <span>Déconnexion sécurisée</span>
+            </button>
         </div>
     </div>
 
-    <!-- PRODUCT ADD / EDIT MODAL -->
-    <div id="productModal" class="prestige-modal-backdrop hidden">
-        <div class="prestige-modal-card">
-            <button onclick="closeProductModal()" class="prestige-modal-close-btn">✕</button>
-            <div class="flex items-center gap-3 mb-5 pb-3 border-b border-outline-variant/40">
-                <div class="kpi-icon-medallion gold" style="width: 42px; height: 42px;">
-                    <span class="material-symbols-outlined text-2xl">bakery_dining</span>
-                </div>
-                <div>
-                    <h3 class="font-headline-md text-xl font-bold text-on-surface" id="productModalTitle">Nouveau Produit</h3>
-                    <p class="text-xs text-on-surface-variant">Ajoutez une création artisanale au catalogue de la boulangerie</p>
-                </div>
-            </div>
-
-            <form id="productForm" onsubmit="saveProduct(event)">
-                <input type="hidden" id="product-form-id"/>
-                
-                <div class="modal-form-group">
-                    <label class="modal-form-label">Nom du Produit *</label>
-                    <input type="text" id="product-form-name" required placeholder="ex: Baguette Céréales Complètes" class="modal-form-input"/>
-                </div>
-
-                <div class="grid grid-cols-2 gap-3">
-                    <div class="modal-form-group">
-                        <label class="modal-form-label">Catégorie *</label>
-                        <select id="product-form-category" required class="modal-form-select">
-                            <option value="pains">🥖 Pains</option>
-                            <option value="viennoiseries">🥐 Viennoiseries</option>
-                            <option value="patisseries">🎂 Pâtisseries</option>
-                            <option value="boissons">🥤 Jus & Boissons</option>
-                        </select>
-                    </div>
-                    <div class="modal-form-group">
-                        <label class="modal-form-label">Prix Unitaire (FCFA) *</label>
-                        <input type="number" id="product-form-price" required min="50" step="25" placeholder="ex: 350" class="modal-form-input font-bold text-amber-700"/>
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-2 gap-3">
-                    <div class="modal-form-group">
-                        <label class="modal-form-label">Stock Initial *</label>
-                        <input type="number" id="product-form-stock" required min="0" placeholder="ex: 35" class="modal-form-input font-bold"/>
-                    </div>
-                    <div class="modal-form-group">
-                        <label class="modal-form-label">Seuil d'Alerte Critique</label>
-                        <input type="number" id="product-form-threshold" min="1" value="10" placeholder="ex: 10" class="modal-form-input"/>
-                    </div>
-                </div>
-
-                <div class="modal-form-group">
-                    <label class="modal-form-label">Illustration / Photo</label>
-                    <select id="product-form-image" class="modal-form-select">
-                        <option value="assets/baguette 200.png">🥖 Baguette Tradition dorée</option>
-                        <option value="assets/Croissant.png">🥐 Croissant Pur Beurre</option>
-                        <option value="assets/pain au chocolat.png">🍫 Pain au Chocolat</option>
-                    </select>
-                </div>
-
-                <div class="modal-form-group">
-                    <label class="modal-form-label">Description & Ingrédients</label>
-                    <input type="text" id="product-form-desc" placeholder="ex: Farine Label Rouge, levain naturel 24h, cuisson sole" class="modal-form-input"/>
-                </div>
-
-                <div class="flex items-center gap-2 my-4 p-3 bg-surface-container rounded-xl border border-outline-variant/30">
-                    <input type="checkbox" id="product-form-available" checked class="w-4 h-4 accent-amber-600 rounded cursor-pointer"/>
-                    <label for="product-form-available" class="text-xs font-bold text-on-surface cursor-pointer">Rendre immédiatement disponible en boutique et en caisse</label>
-                </div>
-
-                <div class="flex gap-3 mt-6">
-                    <button type="button" onclick="closeProductModal()" class="btn-modal-cancel">Annuler</button>
-                    <button type="submit" class="btn-modal-submit-gold">
-                        <span class="material-symbols-outlined text-sm font-bold">save</span> Enregistrer Produit
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- BATCH RESTOCK MODAL -->
-    <div id="batchRestockModal" class="prestige-modal-backdrop hidden">
-        <div class="prestige-modal-card">
-            <button onclick="closeBatchRestockModal()" class="prestige-modal-close-btn">✕</button>
-            <div class="flex items-center gap-3 mb-5 pb-3 border-b border-outline-variant/40">
-                <div class="kpi-icon-medallion emerald" style="width: 42px; height: 42px;">
-                    <span class="material-symbols-outlined text-2xl">oven_gen</span>
-                </div>
-                <div>
-                    <h3 class="font-headline-md text-xl font-bold text-on-surface">Sortie Fournil & Réassort Rapide</h3>
-                    <p class="text-xs text-on-surface-variant">Ajoutez les pièces sorties du fournil pour réapprovisionner les rayons</p>
-                </div>
-            </div>
-
-            <form onsubmit="applyBatchRestock(event)">
-                <div class="modal-form-group">
-                    <label class="modal-form-label">Sélectionner le Produit à Réapprovisionner *</label>
-                    <select id="restock-product-select" required class="modal-form-select font-bold">
-                        <!-- Injected via JS -->
-                    </select>
-                </div>
-
-                <div class="modal-form-group">
-                    <label class="modal-form-label">Quantité Sortie Fournil (Pièces) *</label>
-                    <div class="flex items-center gap-2">
-                        <input type="number" id="restock-quantity" min="1" max="500" value="30" required class="modal-form-input font-black text-xl text-center text-emerald-800" style="width: 100px !important;"/>
-                        <div class="flex gap-2 flex-1">
-                            <button type="button" onclick="document.getElementById('restock-quantity').value=20" class="preset-qty-btn">+20</button>
-                            <button type="button" onclick="document.getElementById('restock-quantity').value=30" class="preset-qty-btn">+30</button>
-                            <button type="button" onclick="document.getElementById('restock-quantity').value=50" class="preset-qty-btn">+50</button>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="modal-form-group">
-                    <label class="modal-form-label">Motif / Numéro de Fournée</label>
-                    <input type="text" id="restock-batch-note" placeholder="ex: Fournée de 16h30 - Chef Mamadou" class="modal-form-input"/>
-                </div>
-
-                <div class="flex gap-3 mt-6">
-                    <button type="button" onclick="closeBatchRestockModal()" class="btn-modal-cancel">Annuler</button>
-                    <button type="submit" class="btn-modal-submit-green">
-                        <span class="material-symbols-outlined text-sm font-bold">add_shopping_cart</span> Valider Réassort
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- PASSWORD CHANGE MODAL -->
+    <!-- Modals for settings -->
     <div id="passwordModal" class="prestige-modal-backdrop hidden">
         <div class="prestige-modal-card">
-            <button onclick="closeChangePasswordModal()" class="prestige-modal-close-btn">✕</button>
-            <div class="flex items-center gap-3 mb-5 pb-3 border-b border-outline-variant/40">
-                <div class="kpi-icon-medallion gold" style="width: 42px; height: 42px;">
-                    <span class="material-symbols-outlined text-2xl">lock_reset</span>
-                </div>
-                <div>
-                    <h3 class="font-headline-md text-xl font-bold text-on-surface">Sécurité des Accès Direction</h3>
-                    <p class="text-xs text-on-surface-variant">Mettez à jour vos identifiants d'accès Super Admin</p>
-                </div>
+            <div class="prestige-modal-header">
+                <h3 class="prestige-modal-title">Changer le mot de passe</h3>
+                <button type="button" onclick="closeChangePasswordModal()" class="prestige-modal-close-btn">✕</button>
             </div>
-
-            <form onsubmit="handlePasswordChange(event)">
-                <div class="modal-form-group">
-                    <label class="modal-form-label">Mot de Passe Actuel *</label>
-                    <input type="password" id="old-password" required placeholder="••••••••••••" class="modal-form-input"/>
+            <form onsubmit="handlePasswordChange(event)" style="display: flex; flex-direction: column; gap: 12px; margin: 8px 0;">
+                <div class="prestige-form-group">
+                    <label class="prestige-form-label">Ancien mot de passe :</label>
+                    <input type="password" id="old-password" class="prestige-form-input" required/>
                 </div>
-
-                <div class="modal-form-group">
-                    <label class="modal-form-label">Nouveau Mot de Passe (Min. 8 caractères) *</label>
-                    <input type="password" id="new-password" required minlength="8" placeholder="••••••••••••" class="modal-form-input"/>
+                <div class="prestige-form-group">
+                    <label class="prestige-form-label">Nouveau mot de passe :</label>
+                    <input type="password" id="new-password" class="prestige-form-input" required/>
                 </div>
-
-                <div class="modal-form-group">
-                    <label class="modal-form-label">Confirmer le Nouveau Mot de Passe *</label>
-                    <input type="password" id="confirm-password" required minlength="8" placeholder="••••••••••••" class="modal-form-input"/>
+                <div class="prestige-form-group">
+                    <label class="prestige-form-label">Confirmer le nouveau mot de passe :</label>
+                    <input type="password" id="confirm-password" class="prestige-form-input" required/>
                 </div>
-
-                <div class="flex gap-3 mt-6">
+                <div class="prestige-modal-actions">
                     <button type="button" onclick="closeChangePasswordModal()" class="btn-modal-cancel">Annuler</button>
-                    <button type="submit" class="btn-modal-submit-gold">
-                        <span class="material-symbols-outlined text-sm font-bold">check_circle</span> Mettre à Jour
-                    </button>
+                    <button type="submit" class="btn-modal-submit-gold">Enregistrer</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- AVATAR UPLOAD & SELECTION MODAL -->
-    <div id="avatarModal" class="prestige-modal-backdrop hidden">
-        <div class="prestige-modal-card" style="max-width: 480px !important;">
-            <button onclick="closeAvatarModal()" class="prestige-modal-close-btn">✕</button>
-            <div class="flex items-center gap-3 mb-5 pb-3 border-b border-outline-variant/40">
-                <div class="kpi-icon-medallion gold" style="width: 42px; height: 42px;">
-                    <span class="material-symbols-outlined text-2xl">account_circle</span>
-                </div>
-                <div>
-                    <h3 class="font-headline-md text-xl font-bold text-on-surface">Photo de Profil Direction</h3>
-                    <p class="text-xs text-on-surface-variant">Téléversez votre portrait ou choisissez un avatar prestige</p>
-                </div>
-            </div>
-
-            <!-- Preview Circle -->
-            <div class="my-4 text-center">
-                <img id="avatar-preview-img" src="assets/chef_profile.png" class="avatar-preview-box" alt="Aperçu"/>
-                <span class="text-xs font-bold text-on-surface-variant mt-2 inline-block">Aperçu en direct</span>
-            </div>
-
-            <!-- Upload File Area -->
-            <input type="file" id="avatarFileInput" accept="image/*" class="hidden" onchange="handleAvatarFileSelect(event)"/>
-            <div class="avatar-upload-dropzone" onclick="document.getElementById('avatarFileInput').click()">
-                <span class="material-symbols-outlined text-3xl" style="color: #765b00;">cloud_upload</span>
-                <div class="text-xs font-extrabold text-on-surface mt-1">Importer une photo depuis votre appareil</div>
-                <div class="text-[11px] text-on-surface-variant">JPG, PNG ou WEBP (Max 5 Mo)</div>
-            </div>
-
-            <!-- Preset Avatars -->
-            <div class="mt-4">
-                <label class="modal-form-label mb-1.5 block">Ou choisir un avatar prédéfini :</label>
-                <div class="avatar-preset-grid">
-                    <img src="assets/chef_profile.png" class="avatar-preset-item selected" onclick="selectPresetAvatar(this, 'assets/chef_profile.png')" title="Directeur Général"/>
-                    <img src="assets/baker_profile.png" class="avatar-preset-item" onclick="selectPresetAvatar(this, 'assets/baker_profile.png')" title="Maître Boulanger"/>
-                    <img src="assets/caissiere.png" class="avatar-preset-item" onclick="selectPresetAvatar(this, 'assets/caissiere.png')" title="Responsable Accueil"/>
-                    <img src="assets/kouassi.png" class="avatar-preset-item" onclick="selectPresetAvatar(this, 'assets/kouassi.png')" title="Artisan Tourier"/>
-                </div>
-            </div>
-
-            <div class="flex gap-3 mt-6">
-                <button type="button" onclick="closeAvatarModal()" class="btn-modal-cancel">Annuler</button>
-                <button type="button" onclick="saveProfileAvatar()" class="btn-modal-submit-gold">
-                    <span class="material-symbols-outlined text-sm font-bold">check_circle</span> Appliquer la Photo
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- SCRIPTS -->
+    <!-- Scripts -->
     <script src="js/admin.js"></script>
-    <script src="js/store_schedule.js"></script>
     <script src="js/anti_hacker_client.js"></script>
 </body>
 </html>
