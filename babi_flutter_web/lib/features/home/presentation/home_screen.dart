@@ -15,6 +15,7 @@ import '../../roles/gerante/presentation/manager_dashboard_screen.dart';
 import '../../roles/admin/presentation/admin_dashboard_screen.dart';
 import '../../roles/presentation/role_switcher_sheet.dart';
 import '../../events/presentation/event_cake_booking_screen.dart';
+import 'widgets/live_oven_baking_widget.dart';
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
@@ -133,6 +134,10 @@ class HomeScreen extends ConsumerWidget {
                     ),
                   ),
                   const SizedBox(height: 24),
+
+                  // --- LIVE OVEN BAKING COUNTDOWN BANNER ---
+                  const LiveOvenBakingWidget(),
+                  const SizedBox(height: 16),
 
                   // --- HERO BANNER CAROUSEL ---
                   const HeroBannerCarousel(),

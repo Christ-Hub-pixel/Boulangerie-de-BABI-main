@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'core/theme/app_theme.dart';
 import 'features/auth/presentation/login_screen.dart';
+
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   runApp(const ProviderScope(child: MyApp()));
@@ -13,23 +14,9 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Boulangerie de BABI',
+      title: 'Boulangerie de Babi',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        textTheme: GoogleFonts.poppinsTextTheme(),
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFFFACC15),
-          primary: const Color(0xFFFACC15),
-          secondary: Colors.black,
-        ),
-        scaffoldBackgroundColor: Colors.white,
-        appBarTheme: const AppBarTheme(
-          backgroundColor: Color(0xFFFACC15),
-          foregroundColor: Colors.black,
-          elevation: 0,
-        ),
-        useMaterial3: true,
-      ),
+      theme: AppTheme.lightTheme,
       builder: (context, child) {
         return child!;
       },
