@@ -181,7 +181,7 @@ const itemsPerPage = 12;
 
 async function loadProducts() {
     try {
-        const response = await fetch('/api/products');
+        const response = await fetch(API_BASE_URL + '/products');
         if (response.ok) {
             allProducts = await response.json();
         } else {
@@ -514,3 +514,4 @@ window.clearCatalogSearch = function() {
 document.addEventListener('DOMContentLoaded', () => {
     loadProducts();
 });
+

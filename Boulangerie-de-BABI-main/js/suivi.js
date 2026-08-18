@@ -113,7 +113,7 @@ async function fetchOrderStatus() {
 
     // 1. Try backend API
     try {
-        const res = await fetch('/api/orders/track/' + encodeURIComponent(cleanPhone));
+        const res = await fetch(API_BASE_URL + '/orders/track/' + encodeURIComponent(cleanPhone));
         if (res.ok) {
             const data = await res.json();
             if (data && data.success && data.order) {
@@ -497,7 +497,7 @@ window.triggerCustomerAutoCancel = function() {
     const orderId = order ? order.id : 'BABI-CMD-100';
 
     if (confirm("Voulez-vous vraiment annuler votre commande ?\nLe remboursement sera effectué immédiatement sur votre compte Mobile Money.")) {
-        fetch('/api/payments/refund', {
+        fetch(API_BASE_URL + '/payments/refund', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -517,3 +517,4 @@ window.triggerCustomerAutoCancel = function() {
         });
     }
 };
+

@@ -431,7 +431,7 @@ const FALLBACK_POS_PRODUCTS = [
 ];
 
 let posProducts = [];
-let posCart = [];
+posCart = [];
 let currentCategory = 'all';
 let currentReceiptData = null;
 
@@ -478,7 +478,7 @@ function resolveProductImage(p) {
 // Load products
 async function loadPosProducts() {
     try {
-        const res = await fetch('/api/products');
+        const res = await fetch(API_BASE_URL + '/products');
         if (res.ok) {
             posProducts = await res.json();
         } else {
@@ -713,7 +713,7 @@ async function processSale(paymentMethod) {
     };
 
     try {
-        const res = await fetch('/api/orders/pos', {
+        const res = await fetch(API_BASE_URL + '/orders/pos', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(orderData)
@@ -814,7 +814,7 @@ async function verifyPickupPin() {
     }
 
     try {
-        const res = await fetch('/api/orders/verify-pin', {
+        const res = await fetch(API_BASE_URL + '/orders/verify-pin', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ order_id: orderInput, code_pin: pinInput })
@@ -857,3 +857,4 @@ function setupEventListeners() {
         cashInput.addEventListener('input', calculateChange);
     }
 }
+

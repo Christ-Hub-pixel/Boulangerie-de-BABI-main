@@ -277,7 +277,7 @@ async function loadOrders() {
         if (localSaved) {
             allOrders = JSON.parse(localSaved);
         } else {
-            const res = await fetch('/api/orders');
+            const res = await fetch(API_BASE_URL + '/orders');
             if (res.ok) {
                 const data = await res.json();
                 allOrders = Array.isArray(data) ? data : (data.data || []);
@@ -361,7 +361,7 @@ async function loadProducts() {
         if (localSaved) {
             allProducts = JSON.parse(localSaved);
         } else {
-            const res = await fetch('/api/products');
+            const res = await fetch(API_BASE_URL + '/products');
             if (res.ok) {
                 const prods = await res.json();
                 allProducts = Array.isArray(prods) && prods.length ? prods : DEFAULT_PRODUCTS;
@@ -748,7 +748,7 @@ async function loadUsers() {
     if (!tbody) return;
 
     try {
-        const res = await fetch('/api/users');
+        const res = await fetch(API_BASE_URL + '/users');
         const users = await res.json();
         allUsers = Array.isArray(users) ? users : (users.data || []);
 
@@ -1005,7 +1005,7 @@ function filterOrdersTable() {
 // Load products catalog table
 async function loadProducts() {
     try {
-        const res = await fetch('/api/products');
+        const res = await fetch(API_BASE_URL + '/products');
         allProducts = await res.json();
         renderProductsTable(allProducts);
     } catch (err) {
@@ -1050,7 +1050,7 @@ async function handleAddProduct(e) {
     const image = document.getElementById('prod-img').value || 'assets/product_baguette.png';
 
     try {
-        await fetch('/api/products', {
+        await fetch(API_BASE_URL + '/products', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ nom, prix, categorie, image })
@@ -1084,7 +1084,7 @@ async function deleteProduct(id) {
 // Load registered users
 async function loadUsers() {
     try {
-        const res = await fetch('/api/users');
+        const res = await fetch(API_BASE_URL + '/users');
         allUsers = await res.json();
 
         const tbody = document.getElementById('users-tbody');
@@ -1330,7 +1330,7 @@ async function triggerAdminRefund(orderId) {
     const reason = prompt("Indiquez la raison du remboursement (ex: Rupture de stock, Problème de livraison) :", "Rupture de stock / Annulation admin");
     if (reason !== null) {
         try {
-            const res = await fetch('/api/payments/refund', {
+            const res = await fetch(API_BASE_URL + '/payments/refund', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ order_id: orderId, reason: reason })
@@ -1571,7 +1571,7 @@ async function fetchSecurityAuditLogs() {
     
     // 1. Fetch SOC Metrics
     try {
-        const socRes = await fetch('/api/v1/security/soc-metrics');
+        const socRes = await fetch(API_BASE_URL + '/v1/security/soc-metrics');
         if (socRes.ok) {
             const socData = await socRes.json();
             const merkleBlocksEl = document.getElementById('soc-merkle-blocks');
@@ -1607,7 +1607,7 @@ async function fetchSecurityAuditLogs() {
     const logContainer = document.getElementById('security-logs');
     if (logContainer) {
         try {
-            const res = await fetch('/api/security/audit-logs');
+            const res = await fetch(API_BASE_URL + '/security/audit-logs');
             const data = await res.json();
             if (data.logs && data.logs.length > 0) {
                 logContainer.innerHTML = data.logs.map(log => {
@@ -1630,7 +1630,7 @@ async function fetchSecurityAuditLogs() {
     if (!tbody) return;
 
     try {
-        const res = await fetch('/api/security/audit-logs');
+        const res = await fetch(API_BASE_URL + '/security/audit-logs');
         const data = await res.json();
 
         if (!data.logs || data.logs.length === 0) {
@@ -2004,6 +2004,7 @@ function exportAccountingCSV() {
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
 }
+
 
 
 

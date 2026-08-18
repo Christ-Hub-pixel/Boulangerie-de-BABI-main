@@ -257,7 +257,7 @@ function submitBabiOrder(isAlreadyValidated = false) {
 
     // Helper to finish order and save
     const finalizeOrder = () => {
-        fetch('/api/orders', {
+        fetch(API_BASE_URL + '/orders', {
             method: 'POST',
             headers: { 
                 'Content-Type': 'application/json',
@@ -630,3 +630,4 @@ window.selectCashChange = selectCashChange;
 window.openOperatorPaymentModal = openOperatorPaymentModal;
 window.triggerModalPaymentSuccess = triggerModalPaymentSuccess;
 window.updateDeliveryHighlight = updateDeliveryHighlight;
+

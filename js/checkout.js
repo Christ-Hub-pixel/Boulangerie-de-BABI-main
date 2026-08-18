@@ -257,7 +257,7 @@ function submitBabiOrder(isAlreadyValidated = false) {
 
     // Helper to finish order and save
     const finalizeOrder = () => {
-        fetch('/api/orders', {
+        fetch('http://localhost:5000/api/orders', {
             method: 'POST',
             headers: { 
                 'Content-Type': 'application/json',

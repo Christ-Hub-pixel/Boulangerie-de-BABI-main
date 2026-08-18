@@ -113,7 +113,7 @@ async function fetchOrderStatus() {
 
     // 1. Try backend API
     try {
-        const res = await fetch('/api/orders/track/' + encodeURIComponent(cleanPhone));
+        const res = await fetch('http://localhost:5000/api/orders/track/' + encodeURIComponent(cleanPhone));
         if (res.ok) {
             const data = await res.json();
             if (data && data.success && data.order) {
@@ -470,7 +470,7 @@ window.submitClientRating = function() {
     const orderId = order ? order.id : 'BABI-100';
     const comment = document.getElementById('clientCommentText') ? document.getElementById('clientCommentText').value : '';
 
-    fetch(`/api/orders/${orderId}/rate`, {
+    fetch(`http://localhost:5000/api/orders/${orderId}/rate`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -497,7 +497,7 @@ window.triggerCustomerAutoCancel = function() {
     const orderId = order ? order.id : 'BABI-CMD-100';
 
     if (confirm("Voulez-vous vraiment annuler votre commande ?\nLe remboursement sera effectué immédiatement sur votre compte Mobile Money.")) {
-        fetch('/api/payments/refund', {
+        fetch('http://localhost:5000/api/payments/refund', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({

@@ -75,7 +75,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 // Essai de connexion via l'API Backend
                 try {
-                    const res = await fetch('/api/auth/login', {
+                    const res = await fetch('http://localhost:5000/api/auth/login', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ email: identifiant, mot_de_passe: password })
@@ -152,7 +152,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const password = inputs[4] ? inputs[4].value : 'client123';
                 
                 try {
-                    const res = await fetch('/api/auth/register', {
+                    const res = await fetch('http://localhost:5000/api/auth/register', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ nom, prenom, email, telephone: phone, mot_de_passe: password })
