@@ -1,13 +1,14 @@
 {
   "name": "boulangerie-de-babi",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "version": "2.0.0",
+  "description": "Boulangerie de BABI - Plateforme Web & SaaS",
+  "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node server.js",
+    "build": "echo 'Build OK'"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": ["boulangerie", "babi", "abidjan", "saas", "pos"],
+  "author": "Christ-Hub-pixel",
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
@@ -15,7 +16,6 @@
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
-    "jsonwebtoken": "^9.0.3",
-    "mongoose": "^9.7.4"
+    "jsonwebtoken": "^9.0.3"
   }
 }
