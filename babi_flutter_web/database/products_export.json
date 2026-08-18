@@ -1,0 +1,803 @@
+[
+  {
+    "id": "v1",
+    "name": "Croissant Pur Beurre",
+    "price": 500,
+    "category": "Viennoiseries",
+    "image": "assets/Croissant.webp",
+    "isPopular": true,
+    "description": "Feuilletage croustillant et fondant au pur beurre de baratte, préparé chaque matin par nos artisans."
+  },
+  {
+    "id": "v2",
+    "name": "Pain au Chocolat",
+    "price": 500,
+    "category": "Viennoiseries",
+    "image": "assets/pain au chocolat.webp",
+    "isPopular": true,
+    "description": "Délicieuse viennoiserie garnie de deux barres de chocolat noir intense."
+  },
+  {
+    "id": "v3",
+    "name": "Pain au Raisin",
+    "price": 700,
+    "category": "Viennoiseries",
+    "image": "assets/pain au raisin.webp",
+    "isPopular": false,
+    "description": "Pâte feuilletée briochée roulée avec crème pâtissière onctueuse et raisins secs moelleux."
+  },
+  {
+    "id": "v4",
+    "name": "Chausson aux Pommes",
+    "price": 1000,
+    "category": "Viennoiseries",
+    "image": "assets/chausson aux pommes.webp",
+    "isPopular": true,
+    "description": "Feuilletage doré garni d'une compotée de pommes fraîches caramélisées."
+  },
+  {
+    "id": "v5",
+    "name": "Choco Suisse",
+    "price": 800,
+    "category": "Viennoiseries",
+    "image": "assets/choco suisse.webp",
+    "isPopular": false,
+    "description": "Pâte briochée généreusement fourrée de crème pâtissière et pépites de chocolat."
+  },
+  {
+    "id": "v6",
+    "name": "Charaphe au Raisin",
+    "price": 700,
+    "category": "Viennoiseries",
+    "image": "assets/charaphe au raisin.webp",
+    "isPopular": false,
+    "description": "Spécialité viennoise torsadée avec raisins blonds parfumés."
+  },
+  {
+    "id": "v7",
+    "name": "Pain au Lait Sucré",
+    "price": 200,
+    "category": "Viennoiseries",
+    "image": "assets/pain au lait sucre.webp",
+    "isPopular": false,
+    "description": "Petit pain moelleux au lait entier et perles de sucre croquantes."
+  },
+  {
+    "id": "v8",
+    "name": "Palmier Croustillant",
+    "price": 200,
+    "category": "Viennoiseries",
+    "image": "assets/palmier.webp",
+    "isPopular": false,
+    "description": "Feuilletage caramélisé au sucre roux, croustillant à souhait."
+  },
+  {
+    "id": "v9",
+    "name": "Palmier Doré Feuilleté",
+    "price": 250,
+    "category": "Viennoiseries",
+    "image": "assets/palmier2.webp",
+    "isPopular": false,
+    "description": "Grand palmier généreusement beurré et croustillant."
+  },
+  {
+    "id": "v10",
+    "name": "Torsade au Chocolat",
+    "price": 800,
+    "category": "Viennoiseries",
+    "image": "assets/pain torsade au chocolat .webp",
+    "isPopular": false,
+    "description": "Torsade croustillante et fondante garnie de crème et pépites de chocolat."
+  },
+  {
+    "id": "v11",
+    "name": "Torsade Sucrée",
+    "price": 600,
+    "category": "Viennoiseries",
+    "image": "assets/torsade.webp",
+    "isPopular": false,
+    "description": "Torsade croustillante dorée au four."
+  },
+  {
+    "id": "v12",
+    "name": "Flan Pâtissier",
+    "price": 1000,
+    "category": "Viennoiseries",
+    "image": "assets/Flan.webp",
+    "isPopular": false,
+    "description": "Flan traditionnel onctueux à la vanille de Madagascar sur pâte brisée dorée."
+  },
+  {
+    "id": "v13",
+    "name": "Biscottes Artisanales",
+    "price": 1000,
+    "category": "Viennoiseries",
+    "image": "assets/biscottes.webp",
+    "isPopular": false,
+    "description": "Sachet de biscottes croustillantes faites maison pour le petit-déjeuner."
+  },
+  {
+    "id": "v14",
+    "name": "Madeleine à l'unité",
+    "price": 100,
+    "category": "Viennoiseries",
+    "image": "assets/madeleine unite.webp",
+    "isPopular": false,
+    "description": "Madeleine moelleuse au beurre frais et zeste de citron."
+  },
+  {
+    "id": "v15",
+    "name": "Lot de Madeleines (x6)",
+    "price": 500,
+    "category": "Viennoiseries",
+    "image": "assets/lots de madeleine.webp",
+    "isPopular": false,
+    "description": "Pack de 6 madeleines traditionnelles moelleuses."
+  },
+  {
+    "id": "v16",
+    "name": "Cookies Pépites Chocolat",
+    "price": 200,
+    "category": "Viennoiseries",
+    "image": "assets/Cookies (l'unité).webp",
+    "isPopular": false,
+    "description": "Cookie américain croquant à l'extérieur et fondant à l'intérieur."
+  },
+  {
+    "id": "v17",
+    "name": "Lot de Cookies Gourmands",
+    "price": 1000,
+    "category": "Viennoiseries",
+    "image": "assets/cookies.webp",
+    "isPopular": false,
+    "description": "Assortiment de 6 cookies artisanaux aux éclats de chocolat."
+  },
+  {
+    "id": "v18",
+    "name": "Brioche Pur Beurre",
+    "price": 800,
+    "category": "Viennoiseries",
+    "image": "assets/product_brioche.webp",
+    "isPopular": false,
+    "description": "Brioche dorée moelleuse à la mie aérée et filante."
+  },
+  {
+    "id": "v19",
+    "name": "Sandwich Américain",
+    "price": 700,
+    "category": "Viennoiseries",
+    "image": "assets/product_sandwich.webp",
+    "isPopular": false,
+    "description": "Pain baguette frais garni de crudités, œuf, jambon et sauce maison."
+  },
+  {
+    "id": "v20",
+    "name": "Croque-Monsieur Chaud",
+    "price": 1000,
+    "category": "Viennoiseries",
+    "image": "assets/product_sandwich.webp",
+    "isPopular": false,
+    "description": "Pain de mie toasté avec jambon, béchamel et fromage gratiné."
+  },
+  {
+    "id": "g1",
+    "name": "Gâteau Anniversaire (Petit 4-6 pers)",
+    "price": 10000,
+    "category": "Gâteaux & Cakes",
+    "image": "assets/Gateau1.webp",
+    "isPopular": false,
+    "description": "Gâteau festif personnalisé génoise vanille et crème légère aux fruits."
+  },
+  {
+    "id": "g2",
+    "name": "Gâteau Festif (Moyen 8-10 pers)",
+    "price": 15000,
+    "category": "Gâteaux & Cakes",
+    "image": "assets/Gateau1.1.webp",
+    "isPopular": false,
+    "description": "Création pâtissière élégante au chocolat ou vanille pour célébrations."
+  },
+  {
+    "id": "g3",
+    "name": "Gâteau d'Événement (Grand 12-15 pers)",
+    "price": 20000,
+    "category": "Gâteaux & Cakes",
+    "image": "assets/Gateau1.2.webp",
+    "isPopular": false,
+    "description": "Grand gâteau prestige avec finition soignée et décor raffiné."
+  },
+  {
+    "id": "g4",
+    "name": "Gâteau Géant Prestige (20+ pers)",
+    "price": 25000,
+    "category": "Gâteaux & Cakes",
+    "image": "assets/gateau evenement.webp",
+    "isPopular": false,
+    "description": "Gâteau monumental pour grands événements d'entreprise et cérémonies."
+  },
+  {
+    "id": "g5",
+    "name": "Pièce Montée & Mariage",
+    "price": 45000,
+    "category": "Gâteaux & Cakes",
+    "image": "assets/gateau de mariiage.webp",
+    "isPopular": false,
+    "description": "Gâteau de mariage à étages avec fleurs et finitions haute pâtisserie."
+  },
+  {
+    "id": "g6",
+    "name": "Forêt Noire Pâtissière",
+    "price": 2500,
+    "category": "Gâteaux & Cakes",
+    "image": "assets/product_foret_noire.webp",
+    "isPopular": true,
+    "description": "Génoise cacao imbibée, chantilly gourmande et cerises griottes."
+  },
+  {
+    "id": "g7",
+    "name": "Entremet Royal Chocolat",
+    "price": 2500,
+    "category": "Gâteaux & Cakes",
+    "image": "assets/product_entremet.webp",
+    "isPopular": false,
+    "description": "Mousse chocolat noir pure origine sur biscuit croustillant praliné."
+  },
+  {
+    "id": "g8",
+    "name": "Tarte aux Fraises Fraîches",
+    "price": 2000,
+    "category": "Gâteaux & Cakes",
+    "image": "assets/product_tarte_fraises.webp",
+    "isPopular": true,
+    "description": "Pâte sablée pur beurre, crème pâtissière vanillée et fraises fraîches."
+  },
+  {
+    "id": "g9",
+    "name": "Mille-Feuille Croustillant",
+    "price": 1500,
+    "category": "Gâteaux & Cakes",
+    "image": "assets/product_mille_feuille.webp",
+    "isPopular": false,
+    "description": "Trois couches de pâte feuilletée caramélisée et crème diplomate vanille."
+  },
+  {
+    "id": "g10",
+    "name": "Éclair au Chocolat Pur Cacao",
+    "price": 1000,
+    "category": "Gâteaux & Cakes",
+    "image": "assets/product_eclair_chocolat.webp",
+    "isPopular": false,
+    "description": "Pâte à choux fraîche garnie d'une crème chocolat et glaçage brillant."
+  },
+  {
+    "id": "g11",
+    "name": "Gâteau Moka Traditionnel",
+    "price": 1500,
+    "category": "Gâteaux & Cakes",
+    "image": "assets/moka1.webp",
+    "isPopular": false,
+    "description": "Biscuit génoise moelleux et crème au beurre café Arabica."
+  },
+  {
+    "id": "g12",
+    "name": "Moka Pâtissier Amandes",
+    "price": 2000,
+    "category": "Gâteaux & Cakes",
+    "image": "assets/moka1.1.webp",
+    "isPopular": false,
+    "description": "Moka généreux garni d'amandes effilées torréfiées."
+  },
+  {
+    "id": "g13",
+    "name": "Bûche Gourmande (Petite)",
+    "price": 5000,
+    "category": "Gâteaux & Cakes",
+    "image": "assets/buche de noel.webp",
+    "isPopular": false,
+    "description": "Bûche roulée au chocolat et crème onctueuse."
+  },
+  {
+    "id": "g14",
+    "name": "Bûche Festive (Grande)",
+    "price": 7000,
+    "category": "Gâteaux & Cakes",
+    "image": "assets/buche de noel.webp",
+    "isPopular": false,
+    "description": "Bûche de fête grand format pour toute la famille."
+  },
+  {
+    "id": "g15",
+    "name": "Cake Maison (Portion)",
+    "price": 300,
+    "category": "Gâteaux & Cakes",
+    "image": "assets/cake.webp",
+    "isPopular": false,
+    "description": "Tranche de cake moelleux aux pépites de chocolat."
+  },
+  {
+    "id": "g16",
+    "name": "Cake Entier Gourmand",
+    "price": 1500,
+    "category": "Gâteaux & Cakes",
+    "image": "assets/cake1.webp",
+    "isPopular": false,
+    "description": "Cake familial fondant aux fruits confits et vanille."
+  },
+  {
+    "id": "g17",
+    "name": "Cup Cake Décoré",
+    "price": 500,
+    "category": "Gâteaux & Cakes",
+    "image": "assets/gateau2.webp",
+    "isPopular": false,
+    "description": "Petit gâteau individuel avec topping crème onctueuse et confiserie."
+  },
+  {
+    "id": "d1",
+    "name": "Crêpe au Nutella",
+    "price": 2000,
+    "category": "Desserts",
+    "image": "assets/crepe au nutella.webp",
+    "isPopular": false,
+    "description": "Grande crêpe fine préparée à la minute, généreusement nappée de Nutella."
+  },
+  {
+    "id": "d2",
+    "name": "Crêpe à la Vanille & Sucre",
+    "price": 2000,
+    "category": "Desserts",
+    "image": "assets/crepe a la vanille.webp",
+    "isPopular": false,
+    "description": "Crêpe dorée parfumée à la vanille bourbon et beurre doux."
+  },
+  {
+    "id": "d3",
+    "name": "Crêpe Suzette aux Agrumes",
+    "price": 2000,
+    "category": "Desserts",
+    "image": "assets/Crêpe Suzette.webp",
+    "isPopular": false,
+    "description": "Crêpe classique au caramel d'oranges et zeste frais."
+  },
+  {
+    "id": "d4",
+    "name": "Fondant au Chocolat Coeur Coulant",
+    "price": 1000,
+    "category": "Desserts",
+    "image": "assets/Fondant au Chocolat.webp",
+    "isPopular": false,
+    "description": "Gâteau au chocolat noir avec son cœur fondant chaud."
+  },
+  {
+    "id": "d5",
+    "name": "Glace Artisanale (Pot)",
+    "price": 1000,
+    "category": "Desserts",
+    "image": "assets/glace.webp",
+    "isPopular": false,
+    "description": "Glace maison aux saveurs vanille, chocolat ou fraise."
+  },
+  {
+    "id": "d6",
+    "name": "Coupe Glacée Gourmande",
+    "price": 1500,
+    "category": "Desserts",
+    "image": "assets/product_glace.webp",
+    "isPopular": false,
+    "description": "Glace onctueuse servie avec coulis de fruits et chantilly."
+  },
+  {
+    "id": "bl1",
+    "name": "Baguette Tradition 150g",
+    "price": 150,
+    "category": "Boulangerie",
+    "image": "assets/baguette 150.webp",
+    "isPopular": false,
+    "description": "Baguette ivoirienne croustillante à la croûte dorée et mie légère."
+  },
+  {
+    "id": "bl2",
+    "name": "Baguette Dorée 200g",
+    "price": 200,
+    "category": "Boulangerie",
+    "image": "assets/baguette 200.webp",
+    "isPopular": true,
+    "description": "Baguette de maître boulanger 200g, longue fermentation."
+  },
+  {
+    "id": "bl3",
+    "name": "Pain Complet Artisanal (Petit)",
+    "price": 500,
+    "category": "Boulangerie",
+    "image": "assets/pain complet.webp",
+    "isPopular": false,
+    "description": "Pain riche en fibres à la farine complète de meule."
+  },
+  {
+    "id": "bl4",
+    "name": "Pain Complet (Grand Format)",
+    "price": 1000,
+    "category": "Boulangerie",
+    "image": "assets/Pain Complet (Grand).webp",
+    "isPopular": false,
+    "description": "Grand pain complet tranché ou entier, parfait pour une digestion saine."
+  },
+  {
+    "id": "bl5",
+    "name": "Pain Complet Multi-Céréales",
+    "price": 800,
+    "category": "Boulangerie",
+    "image": "assets/pain complet 2.webp",
+    "isPopular": false,
+    "description": "Pain complet garni de graines de lin, sésame, tournesol et pavot."
+  },
+  {
+    "id": "bl6",
+    "name": "Pain Sans Sel Diététique",
+    "price": 150,
+    "category": "Boulangerie",
+    "image": "assets/pain sans sel.webp",
+    "isPopular": false,
+    "description": "Pain léger sans ajout de sel, idéal pour régimes spécifiques."
+  },
+  {
+    "id": "bl7",
+    "name": "Pain de Mie Frais Tranché",
+    "price": 2000,
+    "category": "Boulangerie",
+    "image": "assets/pain de mie.webp",
+    "isPopular": false,
+    "description": "Grand pain de mie extra moelleux pour toasts et sandwiches."
+  },
+  {
+    "id": "bl8",
+    "name": "Pain Parisien Moelleux",
+    "price": 300,
+    "category": "Boulangerie",
+    "image": "assets/pain  parisien.webp",
+    "isPopular": false,
+    "description": "Pain moelleux parisien à la croûte souple et dorée."
+  },
+  {
+    "id": "bl9",
+    "name": "Pain Marbré Tradition",
+    "price": 500,
+    "category": "Boulangerie",
+    "image": "assets/marbre1.webp",
+    "isPopular": false,
+    "description": "Pain spécial marbré au feuilletage beurré et savoureux."
+  },
+  {
+    "id": "bl10",
+    "name": "Pain Marbré Chocolaté",
+    "price": 700,
+    "category": "Boulangerie",
+    "image": "assets/marbre1.1.webp",
+    "isPopular": false,
+    "description": "Pain marbré avec tourbillon de chocolat fondant."
+  },
+  {
+    "id": "bl11",
+    "name": "Pain Cabre Spécial",
+    "price": 700,
+    "category": "Boulangerie",
+    "image": "assets/cabre.webp",
+    "isPopular": false,
+    "description": "Pain rustique traditionnel à la mie dense et alvéolée."
+  },
+  {
+    "id": "bl12",
+    "name": "Pain de Campagne Levain",
+    "price": 1000,
+    "category": "Boulangerie",
+    "image": "assets/product_campagne.webp",
+    "isPopular": false,
+    "description": "Pain de campagne authentique au levain naturel cuit sur sole."
+  },
+  {
+    "id": "bl13",
+    "name": "Pain Bâtard Tradition",
+    "price": 500,
+    "category": "Boulangerie",
+    "image": "assets/product_batard.webp",
+    "isPopular": false,
+    "description": "Pain bâtard rustique à la forme généreuse et mie aérée."
+  },
+  {
+    "id": "bl14",
+    "name": "Pain aux Graines & Céréales",
+    "price": 700,
+    "category": "Boulangerie",
+    "image": "assets/product_cereal.webp",
+    "isPopular": false,
+    "description": "Mélange harmonieux de 6 céréales et graines torréfiées."
+  },
+  {
+    "id": "bl15",
+    "name": "Ficelle Apéritive Croustillante",
+    "price": 500,
+    "category": "Boulangerie",
+    "image": "assets/product_baguette.webp",
+    "isPopular": false,
+    "description": "Fine baguette très croustillante, parfaite pour l'apéritif."
+  },
+  {
+    "id": "bl16",
+    "name": "Pain Individuel de Table",
+    "price": 100,
+    "category": "Boulangerie",
+    "image": "assets/pain individuel.webp",
+    "isPopular": false,
+    "description": "Petit pain rond individuel pour accompagner vos repas."
+  },
+  {
+    "id": "bl17",
+    "name": "Petit Pain 50F",
+    "price": 50,
+    "category": "Boulangerie",
+    "image": "assets/pain individuel.webp",
+    "isPopular": false,
+    "description": "Petit pain chaud économique idéal pour le goûter des enfants."
+  },
+  {
+    "id": "b1",
+    "name": "Jus de Bissap Artisanal",
+    "price": 2000,
+    "category": "Boissons",
+    "image": "assets/jus de bissap.webp",
+    "isPopular": true,
+    "description": "Pur jus de fleurs d'hibiscus avec une touche de menthe fraîche et vanille."
+  },
+  {
+    "id": "b2",
+    "name": "Jus de Baobab Onctueux",
+    "price": 2000,
+    "category": "Boissons",
+    "image": "assets/jus de baobab.webp",
+    "isPopular": true,
+    "description": "Jus naturel de pain de singe (baobab) riche en vitamine C et calcium."
+  },
+  {
+    "id": "b3",
+    "name": "Jus de Baobab (Petit Format)",
+    "price": 500,
+    "category": "Boissons",
+    "image": "assets/jus de baobab petit.webp",
+    "isPopular": false,
+    "description": "Bouteille individuelle de jus de baobab bien frais."
+  },
+  {
+    "id": "b4",
+    "name": "Jus de Fruit de la Passion (Grand)",
+    "price": 3000,
+    "category": "Boissons",
+    "image": "assets/jus de passion.webp",
+    "isPopular": false,
+    "description": "Jus pur de fruits de la passion de Côte d'Ivoire, acidulé et rafraîchissant."
+  },
+  {
+    "id": "b5",
+    "name": "Jus de Passion (Petit Format)",
+    "price": 700,
+    "category": "Boissons",
+    "image": "assets/jus de passion.webp",
+    "isPopular": false,
+    "description": "Petit format pratique de pur jus de passion."
+  },
+  {
+    "id": "b6",
+    "name": "Jus de Gingembre Tonique (Gnamakoudji)",
+    "price": 3000,
+    "category": "Boissons",
+    "image": "assets/jus de gingembre.webp",
+    "isPopular": false,
+    "description": "Jus de gingembre frais pressé relevé d'ananas et citron."
+  },
+  {
+    "id": "b7",
+    "name": "Jus de Citron Vert Pressé",
+    "price": 2000,
+    "category": "Boissons",
+    "image": "assets/jus de citron.webp",
+    "isPopular": false,
+    "description": "Citronnade maison désaltérante 100% naturelle."
+  },
+  {
+    "id": "b8",
+    "name": "Jus de Tomi (Tamarin Doux)",
+    "price": 2000,
+    "category": "Boissons",
+    "image": "assets/jus de tomi.webp",
+    "isPopular": false,
+    "description": "Jus de tamarin naturel sucré au miel et arôme cannelle."
+  },
+  {
+    "id": "b9",
+    "name": "Jus de Tamarin Tonus",
+    "price": 2000,
+    "category": "Boissons",
+    "image": "assets/jus de tamari.webp",
+    "isPopular": false,
+    "description": "Tamarin pressé avec pulpe naturelle bien fraîche."
+  },
+  {
+    "id": "b10",
+    "name": "Cocktail de Fruits Exotiques",
+    "price": 3000,
+    "category": "Boissons",
+    "image": "assets/cocktail.webp",
+    "isPopular": false,
+    "description": "Mélange équilibré de bissap, ananas, passion et mangue."
+  },
+  {
+    "id": "b11",
+    "name": "Jus d'Ananas Pressé",
+    "price": 1000,
+    "category": "Boissons",
+    "image": "assets/product_jus_ananas.webp",
+    "isPopular": false,
+    "description": "Pur jus d'ananas de Bonoua, sans sucre ajouté."
+  },
+  {
+    "id": "b12",
+    "name": "Jus d'Orange Frais Pressé",
+    "price": 1500,
+    "category": "Boissons",
+    "image": "assets/product_jus_orange.webp",
+    "isPopular": false,
+    "description": "Oranges fraîches pressées à la commande."
+  },
+  {
+    "id": "b13",
+    "name": "Jus Naturel Maison (Petit)",
+    "price": 300,
+    "category": "Boissons",
+    "image": "assets/Jus Naturel (Petit).webp",
+    "isPopular": false,
+    "description": "Petit format économique de jus local."
+  },
+  {
+    "id": "b14",
+    "name": "Jus Naturel Maison (Moyen)",
+    "price": 500,
+    "category": "Boissons",
+    "image": "assets/Jus Naturel (Moyen).webp",
+    "isPopular": false,
+    "description": "Format 50cl de jus naturel de fruits locaux."
+  },
+  {
+    "id": "b15",
+    "name": "Jus Naturel Maison (Grand 1.5L)",
+    "price": 2000,
+    "category": "Boissons",
+    "image": "assets/Jus Naturel (Grand).webp",
+    "isPopular": false,
+    "description": "Grande bouteille familiale 1.5 litre de jus naturel."
+  },
+  {
+    "id": "b16",
+    "name": "Chocolat Chaud Gourmand",
+    "price": 3000,
+    "category": "Boissons",
+    "image": "assets/Chocolat Chaud.webp",
+    "isPopular": false,
+    "description": "Véritable chocolat ivoirien cuisiné au lait entier et crème."
+  },
+  {
+    "id": "b17",
+    "name": "Café Expresso Pur Arabica",
+    "price": 700,
+    "category": "Boissons",
+    "image": "assets/product_cafe_expresso.webp",
+    "isPopular": false,
+    "description": "Café serré italien aux arômes intenses et crème onctueuse."
+  },
+  {
+    "id": "b18",
+    "name": "Cappuccino Mousseux",
+    "price": 1000,
+    "category": "Boissons",
+    "image": "assets/product_cappuccino.webp",
+    "isPopular": false,
+    "description": "Espresso surmonté d'une généreuse mousse de lait saupoudrée de cacao."
+  },
+  {
+    "id": "b19",
+    "name": "Orangina Bouteille 33cl",
+    "price": 500,
+    "category": "Boissons",
+    "image": "assets/Orangina.webp",
+    "isPopular": false,
+    "description": "Boisson gazeuse rafraîchissante à la pulpe d'orange."
+  },
+  {
+    "id": "b20",
+    "name": "Sprite Frais 33cl",
+    "price": 500,
+    "category": "Boissons",
+    "image": "assets/sprite.webp",
+    "isPopular": false,
+    "description": "Soda gazeux citron-lime bien frais."
+  },
+  {
+    "id": "b21",
+    "name": "World Cola Frais",
+    "price": 500,
+    "category": "Boissons",
+    "image": "assets/world cola.webp",
+    "isPopular": false,
+    "description": "Cola pétillant servi bien glacé."
+  },
+  {
+    "id": "b22",
+    "name": "Youki Pomme Pétillant",
+    "price": 500,
+    "category": "Boissons",
+    "image": "assets/youki pomme.webp",
+    "isPopular": false,
+    "description": "Boisson gazeuse ivoirienne aromatisée à la pomme."
+  },
+  {
+    "id": "b23",
+    "name": "Youki Moka Café",
+    "price": 500,
+    "category": "Boissons",
+    "image": "assets/youki moka cafe.webp",
+    "isPopular": false,
+    "description": "Boisson gazeuse pétillante au goût café moka."
+  },
+  {
+    "id": "b24",
+    "name": "Youzou Limonade",
+    "price": 500,
+    "category": "Boissons",
+    "image": "assets/youzou.webp",
+    "isPopular": false,
+    "description": "Limonade locale rafraîchissante au citron vert."
+  },
+  {
+    "id": "b25",
+    "name": "Énergie Malt",
+    "price": 700,
+    "category": "Boissons",
+    "image": "assets/energie malt .webp",
+    "isPopular": false,
+    "description": "Boisson maltée fortifiante et nutritive sans alcool."
+  },
+  {
+    "id": "b26",
+    "name": "Énergie Malt en Bouteille",
+    "price": 700,
+    "category": "Boissons",
+    "image": "assets/energie malt en bouteille.webp",
+    "isPopular": false,
+    "description": "Bouteille en verre d'Énergie Malt bien fraîche."
+  },
+  {
+    "id": "b27",
+    "name": "Eau Minérale Céleste (Petite 0.5L)",
+    "price": 200,
+    "category": "Boissons",
+    "image": "assets/bouteille celeste.webp",
+    "isPopular": false,
+    "description": "Eau minérale naturelle pure et fraîche."
+  },
+  {
+    "id": "b28",
+    "name": "Eau Minérale Céleste (Grande 1.5L)",
+    "price": 500,
+    "category": "Boissons",
+    "image": "assets/bouteille celeste.webp",
+    "isPopular": false,
+    "description": "Grande bouteille d'eau minérale 1.5 litre."
+  },
+  {
+    "id": "b29",
+    "name": "Boisson Chill Glacée",
+    "price": 700,
+    "category": "Boissons",
+    "image": "assets/chill.webp",
+    "isPopular": false,
+    "description": "Boisson rafraîchissante fruitée servie glacée."
+  }
+]

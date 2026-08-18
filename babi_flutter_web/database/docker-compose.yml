@@ -1,0 +1,54 @@
+version: '3.8'
+
+services:
+  postgres_babi:
+    image: postgres:16-alpine
+    container_name: babi_postgres_db
+    restart: always
+    environment:
+      POSTGRES_DB: boulangerie_de_babi
+      POSTGRES_USER: babi_admin
+      POSTGRES_PASSWORD: BabiPassword2026!
+      PGDATA: /var/lib/postgresql/data/pgdata
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata_babi:/var/lib/postgresql/data
+      - ./schema.sql:/docker-entrypoint-initdb.d/01_schema.sql
+      - ./seed.sql:/docker-entrypoint-initdb.d/02_seed.sql
+
+  pgadmin_babi:
+    image: dpage/pgadmin4:latest
+    container_name: babi_pgadmin
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@boulangeriedebabi.ci
+      PGADMIN_DEFAULT_PASSWORD: BabiAdmin2026!
+    ports:
+      - "5050:80"
+    depends_on:
+      - postgres_babi
+
+  backend_api:
+    build:
+      context: ../../babi_backend_api
+      dockerfile: Dockerfile
+    container_name: babi_backend_api
+    restart: always
+    environment:
+      PORT: 8000
+      DB_HOST: postgres_babi
+      DB_PORT: 5432
+      DB_NAME: boulangerie_de_babi
+      DB_USER: babi_admin
+      DB_PASSWORD: BabiPassword2026!
+      JWT_SECRET: BabiSuperSecretJWTKey2026!
+      NODE_ENV: production
+    ports:
+      - "8000:8000"
+    depends_on:
+      - postgres_babi
+
+volumes:
+  pgdata_babi:
+    driver: local
