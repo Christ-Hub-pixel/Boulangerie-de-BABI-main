@@ -3,8 +3,11 @@
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('/sw.js')
-      .then(reg => console.log('Service Worker PWA enregistré avec succès !', reg.scope))
-      .catch(err => console.log('Erreur enregistrement Service Worker:', err));
+      .then(reg => {
+        reg.update();
+        console.log('Service Worker PWA à jour !', reg.scope);
+      })
+      .catch(err => console.log('Erreur Service Worker:', err));
   });
 }
 
