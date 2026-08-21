@@ -85,7 +85,7 @@ async function loginWithGoogleFirebase() {
             } catch (_) {}
 
             alert(`🎉 Connexion Google réussie ! Bienvenue ${prenom}. Vos 50 points de fidélité sont crédités.`);
-            window.location.href = 'index.html';
+            window.location.href = 'compte.html';
         }
     } catch (error) {
         console.error("Firebase Google Auth Error:", error);
@@ -126,7 +126,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (path.includes('admin.html')) {
             if (!user || user.role !== 'admin') {
                 console.warn("⛔ Redirection : Privilèges Administrateur requis.");
-                // Optionnel : ne pas bloquer si en mode demo preview local
             }
         } else if (path.includes('gerante.html')) {
             if (!user || (user.role !== 'gerante' && user.role !== 'admin')) {
@@ -143,7 +142,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- 1. GESTION DU HEADER ET DU RÔLE ACTIF ---
     function updateHeader() {
         const user = JSON.parse(localStorage.getItem('babi_user'));
-        const accountBtns = document.querySelectorAll('a[href="connexion.html"]');
+        const accountBtns = document.querySelectorAll('a[href="connexion.html"], .logged-in-btn');
         
         if (user) {
             let roleBadge = '';
@@ -161,7 +160,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             accountBtns.forEach(btn => {
-                const displayName = (user.prenom || user.nom || 'UTILISATEUR').toUpperCase();
+                const displayName = (user.prenom || user.nom || 'MON COMPTE').toUpperCase();
                 btn.innerHTML = `<i class="fa-regular fa-user"></i> <span>${displayName}${roleBadge}</span>`;
                 btn.href = targetUrl;
                 btn.classList.add('logged-in-btn');
@@ -199,7 +198,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         const data = await res.json();
                         localStorage.setItem('babi_user', JSON.stringify(data.user));
                         alert(data.message || `Connexion réussie ! Bienvenue ${data.user.prenom}.`);
-                        window.location.href = data.redirectUrl || 'index.html';
+                        window.location.href = data.redirectUrl || (data.user.role === 'client' ? 'compte.html' : 'index.html');
                         return;
                     }
                 } catch (err) {
@@ -210,7 +209,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 let role = 'client';
                 let prenom = "Client";
                 let nom = "BABI";
-                let redirect = 'index.html';
+                let redirect = 'compte.html';
 
                 const idLower = identifiant.toLowerCase();
                 if (idLower.includes('caisse')) {
@@ -235,7 +234,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                 }
 
-                const user = { prenom, nom, email: identifiant, role };
+                const user = { prenom, nom, email: identifiant, role, points: 50 };
                 localStorage.setItem('babi_user', JSON.stringify(user));
                 
                 alert(`Connexion réussie en tant que ${role.toUpperCase()} (${prenom}) !`);
@@ -275,15 +274,15 @@ document.addEventListener('DOMContentLoaded', () => {
                         const data = await res.json();
                         localStorage.setItem('babi_user', JSON.stringify(data.user));
                         alert("Compte créé avec succès !");
-                        window.location.href = data.redirectUrl || 'index.html';
+                        window.location.href = data.redirectUrl || 'compte.html';
                         return;
                     }
                 } catch(err) {}
 
-                const user = { prenom, nom, email, phone, role: 'client' };
+                const user = { prenom, nom, email, phone, role: 'client', points: 50 };
                 localStorage.setItem('babi_user', JSON.stringify(user));
                 alert("Compte créé avec succès ! Bienvenue " + (prenom || 'chez nous') + ".");
-                window.location.href = 'index.html';
+                window.location.href = 'compte.html';
             });
         }
     }

@@ -11,6 +11,9 @@
     <link href="css/global.css" rel="stylesheet">
     <link href="css/index.css" rel="stylesheet">
     <link href="css/wow.css" rel="stylesheet">
+    <link rel="icon" type="image/png" href="assets/logo.png">
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+    <link rel="apple-touch-icon" href="assets/logo.png">
 </head>
 <body>
     <nav class="navbar navbar-expand-lg sticky-top bg-white border-bottom py-3">
@@ -94,34 +97,78 @@
     
     <script>
         document.addEventListener('DOMContentLoaded', async () => {
-            const token = localStorage.getItem('babi_token');
-            if(!token) {
+            const rawUser = localStorage.getItem('babi_user');
+            const token = localStorage.getItem('babi_token') || localStorage.getItem('auth_token');
+
+            if (!rawUser && !token) {
                 window.location.href = 'connexion.html';
                 return;
             }
             
+            let user = {};
             try {
-                const res = await fetch('/api/me', {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-                const data = await res.json();
-                
-                if(data.success) {
-                    document.getElementById('userNameDisplay').innerText = data.user.nom;
-                    document.getElementById('userEmailDisplay').innerText = data.user.email;
-                    document.getElementById('userPhoneDisplay').innerText = data.user.telephone;
-                    document.getElementById('userPointsDisplay').innerText = data.user.points || 0;
-                    document.getElementById('pointsProgressBar').style.width = Math.min((data.user.points / 500) * 100, 100) + '%';
-                } else {
-                    logout();
+                if (rawUser) user = JSON.parse(rawUser);
+            } catch (_) {}
+
+            // Populate User Data immediately from Local/Google Session
+            const fullName = (user.prenom ? (user.prenom + ' ' + (user.nom || '')) : (user.nom || user.email || 'Client VIP')).trim();
+            const points = user.points || 50;
+            const email = user.email || 'Non renseigné';
+            const phone = user.phone || user.telephone || '+225 -- -- -- --';
+
+            if (document.getElementById('userNameDisplay')) {
+                document.getElementById('userNameDisplay').innerText = fullName;
+            }
+            if (document.getElementById('userEmailDisplay')) {
+                document.getElementById('userEmailDisplay').innerText = email;
+            }
+            if (document.getElementById('userPhoneDisplay')) {
+                document.getElementById('userPhoneDisplay').innerText = phone;
+            }
+            if (document.getElementById('userPointsDisplay')) {
+                document.getElementById('userPointsDisplay').innerText = points;
+            }
+            if (document.getElementById('pointsProgressBar')) {
+                document.getElementById('pointsProgressBar').style.width = Math.min((points / 500) * 100, 100) + '%';
+            }
+
+            // If user has a Google avatar photo
+            if (user.photoURL) {
+                const avatarIcon = document.querySelector('.bg-primary.text-white.rounded-circle');
+                if (avatarIcon) {
+                    avatarIcon.innerHTML = `<img src="${user.photoURL}" alt="${fullName}" class="rounded-circle" style="width:80px;height:80px;object-fit:cover;">`;
+                    avatarIcon.className = "rounded-circle d-inline-flex align-items-center justify-content-center mb-3 shadow-sm";
                 }
-            } catch(e) {
-                console.error(e);
+            }
+
+            // Sync with backend /api/me if available
+            if (token) {
+                try {
+                    const res = await fetch('/api/me', {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    if (res.ok) {
+                        const data = await res.json();
+                        if (data.success && data.user) {
+                            localStorage.setItem('babi_user', JSON.stringify(data.user));
+                            document.getElementById('userNameDisplay').innerText = data.user.nom || fullName;
+                            document.getElementById('userPointsDisplay').innerText = data.user.points || points;
+                            document.getElementById('pointsProgressBar').style.width = Math.min(((data.user.points || points) / 500) * 100, 100) + '%';
+                        }
+                    }
+                } catch(e) {
+                    console.log("Mode session locale actif:", e);
+                }
             }
         });
         
         function logout() {
             localStorage.removeItem('babi_token');
+            localStorage.removeItem('auth_token');
+            localStorage.removeItem('babi_user');
+            if (typeof firebase !== 'undefined' && firebase.auth) {
+                try { firebase.auth().signOut(); } catch(_) {}
+            }
             window.location.href = 'connexion.html';
         }
     </script>
@@ -181,7 +228,6 @@
         </div>
     </footer>
 
-    <script src="js/api_config.js"></script>
     <script src="js/store_schedule.js"></script>
 </body>
 </html>
