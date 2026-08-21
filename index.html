@@ -16,7 +16,7 @@
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Great+Vibes&family=Inter:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;0,800;0,900;1,700&family=Poppins:wght@700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Inter:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;0,800;0,900;1,700&display=swap" rel="stylesheet">
     <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Bootstrap 5 CSS -->
@@ -44,9 +44,16 @@
                 <i class="fa-solid fa-bars fs-2"></i>
             </button>
 
-            <!-- Exact Logo Image -->
-            <a class="navbar-brand d-flex align-items-center text-decoration-none me-auto me-lg-3 py-1" href="index.html">
-                <img src="assets/brand_logo.png" alt="Boulangerie de Babi 🇨🇮" class="babi-main-brand-logo">
+            <!-- Logo -->
+            <a class="navbar-brand d-flex align-items-center text-decoration-none me-auto me-lg-3" href="index.html"
+               style="border: 1.5px solid #EAB308; border-radius: 20px; padding: 8px 12px; background-color: #2A140A;">
+                <div style="background-color: #FACC15; border-radius: 12px; width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; overflow: hidden;">
+                    <img src="assets/logo.png" alt="Logo" style="width: 100%; height: 100%; object-fit: cover;">
+                </div>
+                <div class="d-flex flex-column lh-1 me-2 ms-3">
+                    <span style="color: white; font-weight: 900; font-size: 1rem; font-family: 'Poppins', sans-serif; letter-spacing: -0.5px;">Boulangerie</span>
+                    <span class="d-flex align-items-center" style="color: #FACC15; font-family: 'Caveat', cursive; font-size: 1.25rem; font-weight: 700; margin-top: 2px;">de Babi <span style="font-size: 0.9rem; margin-left: 4px;">🇨🇮</span></span>
+                </div>
             </a>
 
             <!-- Search Bar (Desktop) -->
@@ -164,8 +171,8 @@
 
     <!-- Offcanvas Mobile Sidebar -->
     <div class="offcanvas offcanvas-start" tabindex="-1" id="mobileSidebar">
-        <div class="offcanvas-header bg-dark text-white d-flex align-items-center justify-content-between">
-            <img src="assets/brand_logo.png" alt="Boulangerie de Babi 🇨🇮" style="height: 42px; width: auto; object-fit: contain;">
+        <div class="offcanvas-header bg-dark text-white">
+            <h5 class="offcanvas-title"><i class="fa-solid fa-wheat-awn text-primary"></i> Boulangerie de Babi</h5>
             <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
         </div>
         <div class="offcanvas-body p-0">
@@ -1112,7 +1119,11 @@
             <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-5 g-4">
                 <div class="col footer-col">
                     <div class="logo mb-3 d-flex align-items-center">
-                        <img src="assets/brand_logo.png" alt="Boulangerie de Babi 🇨🇮" style="height: 52px; width: auto; object-fit: contain; border-radius: 6px; filter: drop-shadow(0 2px 6px rgba(0,0,0,0.3));">
+                        <img src="assets/logo.png" alt="Logo" class="footer-brand-logo">
+                        <div class="d-flex flex-column lh-1">
+                            <span class="footer-brand-title">Boulangerie</span>
+                            <span class="footer-brand-subtitle d-flex align-items-center">de Babi <span class="flag-ci flag-ci-sm ms-1"></span></span>
+                        </div>
                     </div>
                     <p class="footer-desc">Le goût authentique, la fraîcheur au quotidien. Pains, viennoiseries,
                         pâtisseries et boissons. Faits avec amour et passion à Abidjan.</p>
