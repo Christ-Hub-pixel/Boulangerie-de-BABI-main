@@ -21,7 +21,7 @@ function initCheckoutPage() {
 
 // ================================================================
 // ALGORITHME DE CALCUL KILOMÉTRIQUE DES FRAIS DE LIVRAISON
-// (Cocody Riviera 2 -> Abidjan)
+// (Riviera -> Abidjan)
 // ================================================================
 function calculateDeliveryFeeByKm(km) {
     const dist = parseFloat(km) || 2.5;
@@ -209,8 +209,8 @@ function submitBabiOrder(isAlreadyValidated = false) {
         if (clientPhoneInput) clientPhoneInput.value = phone;
     }
 
-    const commune = 'Cocody Riviera 2';
-    const address = 'Boulangerie de BABI (Fournil Riviera 2)';
+    const commune = 'Riviera';
+    const address = 'Boulangerie de BABI (Fournil Riviera)';
     const deliveryMethod = 'Retrait en Boutique (Click & Collect)';
     const deliveryCost = 0;
 
@@ -319,7 +319,7 @@ window.generateWhatsAppOrderUrl = function(order) {
     msg += `👤 *Client :* ${order.clientName || 'Client'}\n`;
     msg += `📞 *Téléphone :* ${order.phone || ''}\n`;
     msg += `⚡ *Mode :* Retrait en Boutique (Click & Collect)\n`;
-    msg += `📍 *Lieu de Retrait :* Cocody Riviera 2 (Fournil BABI)\n`;
+    msg += `📍 *Lieu de Retrait :* Riviera (Fournil BABI)\n`;
     msg += `⏰ *Créneau :* ${order.pickupSlot || 'Dès que possible (~15-20 min)'}\n`;
     msg += `💳 *Paiement :* ${order.payment_method || 'Mobile Money'} (${order.payment_status === 'paye' ? '✅ PAYÉ' : '⏳ À régler au comptoir'})\n`;
     if (order.confCode) {
@@ -336,7 +336,7 @@ window.generateWhatsAppOrderUrl = function(order) {
     }
     msg += `━━━━━━━━━━━━━━━━━━━━━\n`;
     msg += `📱 *SUIVRE L'ÉTAT DE PRÉPARATION :*\n${trackingUrl}\n\n`;
-    msg += `_Boulangerie de BABI — Cocody Riviera 2, Abidjan_ 🥖✨`;
+    msg += `_Boulangerie de BABI — Riviera, Abidjan_ 🥖✨`;
 
     return `https://api.whatsapp.com/send?phone=${bakeryWhatsApp}&text=${encodeURIComponent(msg)}`;
 };

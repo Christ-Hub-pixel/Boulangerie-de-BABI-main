@@ -10,7 +10,7 @@ let currentPhone = null;
 let currentStatus = null;
 
 // Abidjan coordinates
-const bakeryCoords = [5.3772845, -3.9272566]; // Cocody Riviera 2 (Fournil BABI)
+const bakeryCoords = [5.3772845, -3.9272566]; // Riviera (Fournil BABI)
 
 function initMap() {
     map = L.map('map').setView(bakeryCoords, 15);
@@ -288,7 +288,7 @@ window.openThermalReceiptModal = function() {
             id: 'BABI-CMD-2512',
             clientName: 'Client Passant',
             phone: '0704389201',
-            commune: 'Cocody Riviera 2',
+            commune: 'Riviera',
             address: 'Près de l’Église Sainte Famille',
             delivery_method: 'standard',
             subtotal: 2500,

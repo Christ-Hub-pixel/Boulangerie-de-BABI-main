@@ -2,7 +2,7 @@
 
 > **Document de Référence :** Parcours Client Click & Collect, Gestion Fournil & Comptoir  
 > **Modèle Économique :** Commande en ligne, Préparation artisanale au Fournil & Retrait Express en Boutique (0 FCFA)  
-> **Localisation Officielle :** Cocody Riviera 2, Boulevard Sainte Famille, Abidjan - Côte d'Ivoire  
+> **Localisation Officielle :** Riviera, Boulevard Sainte Famille, Abidjan - Côte d'Ivoire  
 
 ---
 
@@ -25,7 +25,7 @@ flowchart TD
     
     E --> F["🎫 GÉNÉRATION DU N° DE RETRAIT & CODE SECRET\n(Ex: Commande #BABI-CMD-884920 | Code Guichet: 6005)"]
     
-    F --> G["🏪 PASSAGE À LA BOULANGERIE\n(Cocody Riviera 2 - Église Sainte Famille)"]
+    F --> G["🏪 PASSAGE À LA BOULANGERIE\n(Riviera - Église Sainte Famille)"]
     
     G --> H["🛍️ 6️⃣ COLIS RÉCUPÉRÉ AU COMPTOIR\n(Présentation du N° de retrait sans faire la queue !)"]
 ```
@@ -56,4 +56,4 @@ flowchart TD
 | **3. Payer & Réserver** | Sélectionne Wave ou Espèces au comptoir et choisit l'heure de retrait | [checkout.html](file:///c:/Users/ezemi/Downloads/Boulangerie-de-BABI-main/Boulangerie-de-BABI-main/checkout.html) | Créneau réservé au fournil |
 | **4. Préparation (Prêt)** | Suit l'état d'avancement de la cuisson | [suivi.html](file:///c:/Users/ezemi/Downloads/Boulangerie-de-BABI-main/Boulangerie-de-BABI-main/suivi.html) | Notification : *« Prête au comptoir ! »* |
 | **5. N° de Retrait** | Récupère son N° de commande & Code PIN | [suivi.html](file:///c:/Users/ezemi/Downloads/Boulangerie-de-BABI-main/Boulangerie-de-BABI-main/suivi.html) & WhatsApp | Ticket & QR Code de retrait généré |
-| **6. Colis Récupéré** | Vient à la boutique de Cocody Riviera 2 | Comptoir Boulangerie de BABI | Colis tout chaud remis en mains propres |
+| **6. Colis Récupéré** | Vient à la boutique de Riviera | Comptoir Boulangerie de BABI | Colis tout chaud remis en mains propres |

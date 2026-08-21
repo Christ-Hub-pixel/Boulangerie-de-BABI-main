@@ -1132,7 +1132,7 @@ function openReceiptModal(orderId) {
             <div class="mb-3 fs-sm">
                 <div><strong>Client :</strong> ${order.customer_name || 'Client'}</div>
                 <div><strong>Téléphone :</strong> ${order.phone || 'N/A'}</div>
-                <div><strong>Mode de Retrait :</strong> ${order.address || 'Retrait en Boutique (Cocody Riviera 2)'}</div>
+                <div><strong>Mode de Retrait :</strong> ${order.address || 'Retrait en Boutique (Riviera)'}</div>
             </div>
             <table class="table table-sm text-start mb-3">
                 <thead><tr><th>Articles</th><th class="text-end">Montant</th></tr></thead>
@@ -1560,7 +1560,7 @@ function printEventTicket(ref) {
             ${evt.notes ? `<div class="section"><strong>CONSIGNES / THÈME :</strong> ${evt.notes}</div>` : ''}
             <div class="footer">
                 <div>MONTANT TOTAL : ${evt.price.toLocaleString()} FCFA</div>
-                <div>Fournil Cocody Riviera 2 — Abidjan</div>
+                <div>Fournil Riviera — Abidjan</div>
             </div>
         </body>
         </html>

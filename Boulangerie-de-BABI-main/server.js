@@ -472,7 +472,7 @@ app.post('/api/pos/sale', async (req, res) => {
         const result = await db.run(
             `INSERT INTO orders (customer_name, phone, address, items, total_price, payment_method, payment_status, status, type_retrait, code_pin)
              VALUES (?, ?, 'Vente Comptoir Direct (Boutique)', ?, ?, ?, 'paye', 'livre', 'click_collect', ?)`,
-            [client_name || 'Client Comptoir', 'Boutique Riviera 2', typeof items === 'string' ? items : JSON.stringify(items), total_price, payment_method, pin]
+            [client_name || 'Client Comptoir', 'Boutique Riviera', typeof items === 'string' ? items : JSON.stringify(items), total_price, payment_method, pin]
         );
 
         // 2. Decrement stock for purchased items
@@ -690,7 +690,7 @@ app.post('/api/orders', async (req, res) => {
         const result = await db.run(
             `INSERT INTO orders (customer_name, phone, address, items, total_price, payment_method, status, type_retrait, code_pin)
              VALUES (?, ?, ?, ?, ?, ?, 'nouveau', ?, ?)`,
-            [customer_name || 'Client Passant', phone.trim(), address || 'Cocody Riviera 2', typeof items === 'string' ? items : JSON.stringify(items), cleanPrice, payment_method || 'Wave Mobile Money', type_retrait || 'livraison', pin]
+            [customer_name || 'Client Passant', phone.trim(), address || 'Riviera', typeof items === 'string' ? items : JSON.stringify(items), cleanPrice, payment_method || 'Wave Mobile Money', type_retrait || 'livraison', pin]
         );
 
         // Decrement stock for products

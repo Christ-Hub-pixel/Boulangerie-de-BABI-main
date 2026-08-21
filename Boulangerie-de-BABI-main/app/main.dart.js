@@ -55009,7 +55009,7 @@ d=n}return A.dl(B.aA,A.a([e,A.ef(f,A.eU(!0,new A.EL(A.aey(d,B.a8,B.co,r),q,B.l1,
 A.b_g.prototype={
 $0(){var s,r=this.a
 if(r.c!=null){r=r.gbA()
-s=r.b6($.mH().gbx(),t.Qm).zK("D\xe9couvrir \ud83e\udd56","catalogue","Messages",B.pR,B.vK,B.q,"Fournil ouvert 7j/7 de 5h45 \xe0 23h00 \xe0 la Riviera 2. Pains & viennoiseries pur beurre chauds.","\u2728 Bienvenue \xe0 la Boulangerie de Babi !")
+s=r.b6($.mH().gbx(),t.Qm).zK("D\xe9couvrir \ud83e\udd56","catalogue","Messages",B.pR,B.vK,B.q,"Fournil ouvert 7j/7 de 5h45 \xe0 23h00 \xe0 la Riviera. Pains & viennoiseries pur beurre chauds.","\u2728 Bienvenue \xe0 la Boulangerie de Babi !")
 r.b6($.u5().gbx(),t.xs).JN(s)}},
 $S:0}
 A.b_h.prototype={
@@ -55021,7 +55021,7 @@ $S:0}
 A.b_i.prototype={
 $0(){var s,r=this.a
 if(r.c!=null){r=r.gbA()
-s=r.b6($.mH().gbx(),t.Qm).zK("Mes points \ud83c\udf81","profile","Club",B.xO,B.kK,B.cm,"Cumulez 10 points par tranche de 1 000 FCFA au retrait comptoir Riviera 2.","\ud83d\udc51 Babi Club Privil\xe8ge")
+s=r.b6($.mH().gbx(),t.Qm).zK("Mes points \ud83c\udf81","profile","Club",B.xO,B.kK,B.cm,"Cumulez 10 points par tranche de 1 000 FCFA au retrait comptoir Riviera.","\ud83d\udc51 Babi Club Privil\xe8ge")
 r.b6($.u5().gbx(),t.xs).JN(s)}},
 $S:0}
 A.b_k.prototype={
@@ -55788,7 +55788,7 @@ A.aEe.prototype={
 $1(a){var s,r=this.b
 r.b6($.f0().gbx(),t.Q).a6S()
 s=this.a
-r.b6($.mH().gbx(),t.Qm).zK("Suivre la commande \ud83e\uddfe","orders","Commandes",B.xE,B.o5,B.b0,"Votre commande de "+B.d.ci(s.e)+" FCFA est confirm\xe9e et sera pr\xeate au comptoir Riviera 2.","\ud83e\udd56 Commande valid\xe9e \u2022 #"+s.f)},
+r.b6($.mH().gbx(),t.Qm).zK("Suivre la commande \ud83e\uddfe","orders","Commandes",B.xE,B.o5,B.b0,"Votre commande de "+B.d.ci(s.e)+" FCFA est confirm\xe9e et sera pr\xeate au comptoir Riviera.","\ud83e\udd56 Commande valid\xe9e \u2022 #"+s.f)},
 $S:6}
 A.aEf.prototype={
 $0(){A.IE(this.b,A.dk(new A.aEd(this.a,this.c),null,t.z))},
@@ -57116,7 +57116,7 @@ n=q?B.c8:B.df
 m=q?B.c8.N(0.8):B.df.N(0.8)
 l=q?B.vS.N(0.4):B.SA.N(0.4)
 l=A.L(j,j,B.i,j,j,new A.P(n,j,j,j,A.a([new A.ag(2,B.v,m,B.o,8),new A.ag(4,B.v,l,B.o,14)],t.V),j,B.a3),j,10,j,j,j,j,10)
-n=q?"OUVERT ACTUELLEMENT (05h45 - 23h00) \u2022 Retrait Express Riviera 2 \ud83e\udd56":"FERM\xc9 ACTUELLEMENT \u2022 R\xe9ouverture \xe0 05h45 au comptoir Riviera 2 \ud83e\udd56"
+n=q?"OUVERT ACTUELLEMENT (05h45 - 23h00) \u2022 Retrait Express Riviera \ud83e\udd56":"FERM\xc9 ACTUELLEMENT \u2022 R\xe9ouverture \xe0 05h45 au comptoir Riviera \ud83e\udd56"
 g.push(A.L(j,A.X(A.a([l,B.cf,new A.hc(1,B.cp,A.q(n,j,j,j,j,j,A.ba(j,j,q?B.c7:B.T9,j,j,j,j,j,j,j,j,11.5,j,j,B.y,j,j,!0,j,0.2,j,j,j,j,j,j),B.ae,j,j),j)],h),B.j,B.ak,B.e,0,j,j),B.i,j,j,new A.P(p,j,new A.dw(B.r,B.r,new A.aF(o,1,B.C,-1),B.r),j,j,j,B.n),j,j,j,B.Wf,j,j,1/0))
 if(k.gEA())g.push(k.amk(i))
 g.push(B.ar)
@@ -57851,7 +57851,7 @@ A.aQe.prototype={
 $0(){var s,r=this.a
 r.H(new A.aQb(r))
 s=this.b
-if(r.x)A.b5o(s,r.gbA(),"Voir le Fournil \ud83d\udd25","home","Rappels",B.pT,B.hj,B.bE,"Vous recevrez une alerte prioritaire d\xe8s que le pain chaud et les viennoiseries sortent du fournil Riviera 2.","\ud83d\udd14 Rappel Fourn\xe9e "+this.c+" Activ\xe9")
+if(r.x)A.b5o(s,r.gbA(),"Voir le Fournil \ud83d\udd25","home","Rappels",B.pT,B.hj,B.bE,"Vous recevrez une alerte prioritaire d\xe8s que le pain chaud et les viennoiseries sortent du fournil Riviera.","\ud83d\udd14 Rappel Fourn\xe9e "+this.c+" Activ\xe9")
 else s.V(t.q).f.cm(B.aeI)},
 $S:0}
 A.aQb.prototype={
@@ -58178,7 +58178,7 @@ $S:0}
 A.aRg.prototype={
 $0(){var s=this.a,r=s.c
 r.toString
-A.b5o(r,s.gbA(),"Commander \ud83e\udd56","catalogue","Fournil",B.lG,B.o8,B.A,"Vos baguettes croustillantes et croissants chauds sortent du fournil Riviera 2.","\ud83d\udd25 Sortie de Fourn\xe9e 09h00 !")},
+A.b5o(r,s.gbA(),"Commander \ud83e\udd56","catalogue","Fournil",B.lG,B.o8,B.A,"Vos baguettes croustillantes et croissants chauds sortent du fournil Riviera.","\ud83d\udd25 Sortie de Fourn\xe9e 09h00 !")},
 $S:0}
 A.aRh.prototype={
 $0(){var s=this.a,r=s.c
@@ -58481,7 +58481,7 @@ bE(){this.cn()
 this.cb()
 this.h_()}}
 A.we.prototype={
-a2(){var s="Comptoir Riviera 2 \u2022 Fournil Principal",r="assets/product_croissant.webp",q="R\xe9cup\xe9r\xe9e au comptoir",p=t.N,o=t.K,n=t.Mq,m=t.z
+a2(){var s="Comptoir Riviera \u2022 Fournil Principal",r="assets/product_croissant.webp",q="R\xe9cup\xe9r\xe9e au comptoir",p=t.N,o=t.K,n=t.Mq,m=t.z
 return new A.a72(new A.dm(B.aW,$.aj()),A.a([A.O(["id","BAB-9842","date","Aujourd'hui \xe0 16:45","pickupTime","17h15 - 17h30","status","En pr\xe9paration au fournil","statusCode","in_prep","total",8500,"location",s,"items",A.a([A.O(["name","Croissant au Beurre Pur","qty",2,"price",500,"image",r],p,o),A.O(["name","Baguette Traditionnelle","qty",1,"price",300,"image","assets/product_baguette.webp"],p,o),A.O(["name","G\xe2teau For\xeat Noire Prestige","qty",1,"price",7200,"image","assets/product_foret_noire.webp"],p,o)],n)],p,m),A.O(["id","BAB-9412","date","Hier \xe0 14:15","pickupTime","R\xe9cup\xe9r\xe9e \xe0 14h40","status",q,"statusCode","delivered","total",4500,"location",s,"items",A.a([A.O(["name","Jus de Bissap Royal \xe0 la Menthe","qty",2,"price",1000,"image","assets/product_jus_bissap.webp"],p,o),A.O(["name","Pain au Chocolat Feuillet\xe9","qty",5,"price",500,"image","assets/product_pain_chocolat.webp"],p,o)],n)],p,m),A.O(["id","BAB-8920","date","10 Ao\xfbt \xe0 09:30","pickupTime","R\xe9cup\xe9r\xe9e \xe0 10h00","status",q,"statusCode","delivered","total",2400,"location",s,"items",A.a([A.O(["name","Croissant Pur Beurre de Baratte","qty",4,"price",600,"image",r],p,o)],n)],p,m)],t.H7),null,null)}}
 A.a72.prototype={
 an(){this.aJ()
@@ -59086,7 +59086,7 @@ A.Jd.prototype={
 a2(){return new A.a7X()}}
 A.a7X.prototype={
 I(a){var s=this,r=null,q=s.gbA().dF($.b3S(),t.S),p=t.p
-return A.L(r,A.eh(r,B.D,A.eU(!0,A.bN(new A.dq(B.nA,A.es(A.a3(A.a([A.L(r,B.qH,B.i,r,r,B.kp,r,r,r,B.cZ,r,r,r),s.an3(),B.c1,s.amK(q),B.Z,new A.a2(B.oH,A.q("MON COMPTE FOURNIL",r,r,r,r,r,B.rK,r,r,r),r),s.Ls(A.a([s.uG(B.xH,B.A,new A.aUN(a),"Nom, pr\xe9nom, num\xe9ro de t\xe9l\xe9phone, email","Informations personnelles"),s.yn(),s.Lx("PAR D\xc9FAUT",B.pO,B.bE,new A.aUO(a),"Fournil Principal Riviera 2 (Abidjan)","Point de Retrait Favori"),s.yn(),s.uG(B.xw,B.Tm,new A.aUP(a),"Wave C\xf4te d'Ivoire \u2022 Esp\xe8ces au comptoir","Moyens de Paiement & Wave"),s.yn(),s.Lx("OR \ud83d\udc51",B.YS,B.bD,new A.aUQ(a),"7 750 points disponibles \u2022 Rang Or","Babi Club & Points Fid\xe9lit\xe9")],p)),B.Z,new A.a2(B.oH,A.q("PARAM\xc8TRES & PR\xc9F\xc9RENCES",r,r,r,r,r,B.rK,r,r,r),r),s.Ls(A.a([s.uG(B.pU,B.SS,new A.aUR(a),"Alertes pain chaud au four, r\xe9ductions","Notifications & Fourn\xe9es en Direct"),s.yn(),s.uG(B.YK,B.Sj,new A.aUS(a),"Mot de passe, authentification","S\xe9curit\xe9 du compte & Code PIN")],p)),B.Z,new A.a2(B.oH,A.q("AIDE & SERVICE CLIENT",r,r,r,r,r,B.rK,r,r,r),r),s.Ls(A.a([s.uG(B.Y5,B.Ss,new A.aUT(a),"Joignable 7j/7 de 05h45 \xe0 23h00","Service Client & WhatsApp Fournil"),s.yn(),s.uG(B.Yw,B.TE,new A.aUU(a),"Version 2.4.0 \u2022 Artisans Boulangers d'Abidjan","\xc0 propos de La Boulangerie de Babi")],p)),B.b8,new A.a2(B.aP,A.AJ(B.a04,B.aq5,new A.aUV(s,a),A.ni(r,r,B.h,r,r,r,r,r,r,r,r,r,B.fk,r,new A.b0(A.x(12),B.r),B.N3,r,r,r,r)),r)],p),B.aH,r,B.f,B.e,0,B.m),r,B.H,B.Vv,r,r,B.a0),r),r,r),B.a1,!0),r,r,!1,r,r),B.i,r,r,B.et,r,r,r,r,r,r,r)},
+return A.L(r,A.eh(r,B.D,A.eU(!0,A.bN(new A.dq(B.nA,A.es(A.a3(A.a([A.L(r,B.qH,B.i,r,r,B.kp,r,r,r,B.cZ,r,r,r),s.an3(),B.c1,s.amK(q),B.Z,new A.a2(B.oH,A.q("MON COMPTE FOURNIL",r,r,r,r,r,B.rK,r,r,r),r),s.Ls(A.a([s.uG(B.xH,B.A,new A.aUN(a),"Nom, pr\xe9nom, num\xe9ro de t\xe9l\xe9phone, email","Informations personnelles"),s.yn(),s.Lx("PAR D\xc9FAUT",B.pO,B.bE,new A.aUO(a),"Fournil Principal Riviera (Abidjan)","Point de Retrait Favori"),s.yn(),s.uG(B.xw,B.Tm,new A.aUP(a),"Wave C\xf4te d'Ivoire \u2022 Esp\xe8ces au comptoir","Moyens de Paiement & Wave"),s.yn(),s.Lx("OR \ud83d\udc51",B.YS,B.bD,new A.aUQ(a),"7 750 points disponibles \u2022 Rang Or","Babi Club & Points Fid\xe9lit\xe9")],p)),B.Z,new A.a2(B.oH,A.q("PARAM\xc8TRES & PR\xc9F\xc9RENCES",r,r,r,r,r,B.rK,r,r,r),r),s.Ls(A.a([s.uG(B.pU,B.SS,new A.aUR(a),"Alertes pain chaud au four, r\xe9ductions","Notifications & Fourn\xe9es en Direct"),s.yn(),s.uG(B.YK,B.Sj,new A.aUS(a),"Mot de passe, authentification","S\xe9curit\xe9 du compte & Code PIN")],p)),B.Z,new A.a2(B.oH,A.q("AIDE & SERVICE CLIENT",r,r,r,r,r,B.rK,r,r,r),r),s.Ls(A.a([s.uG(B.Y5,B.Ss,new A.aUT(a),"Joignable 7j/7 de 05h45 \xe0 23h00","Service Client & WhatsApp Fournil"),s.yn(),s.uG(B.Yw,B.TE,new A.aUU(a),"Version 2.4.0 \u2022 Artisans Boulangers d'Abidjan","\xc0 propos de La Boulangerie de Babi")],p)),B.b8,new A.a2(B.aP,A.AJ(B.a04,B.aq5,new A.aUV(s,a),A.ni(r,r,B.h,r,r,r,r,r,r,r,r,r,B.fk,r,new A.b0(A.x(12),B.r),B.N3,r,r,r,r)),r)],p),B.aH,r,B.f,B.e,0,B.m),r,B.H,B.Vv,r,r,B.a0),r),r,r),B.a1,!0),r,r,!1,r,r),B.i,r,r,B.et,r,r,r,r,r,r,r)},
 an3(){var s=null,r=A.x(16),q=A.aS(B.p.N(0.08),1),p=A.a([new A.ag(0,B.v,B.p.N(0.05),B.bQ,10)],t.V),o=t.p
 return new A.a2(B.W7,A.L(s,A.a3(A.a([new A.a2(B.bm,A.X(A.a([A.dl(B.aA,A.a([A.L(s,B.PT,B.i,s,s,new A.P(B.aB,s,A.aS(B.q,2),s,s,s,B.a3),s,68,s,s,s,s,68),A.ef(0,A.L(s,B.a_Z,B.i,s,s,new A.P(B.A,s,A.aS(B.h,1.5),s,s,s,B.a3),s,s,s,B.wz,s,s,s),s,s,s,0,s,s)],o),B.x,B.ax,s),B.eK,A.aT(A.a3(A.a([A.q(A.baB("Kouassi Yao"),s,s,s,s,s,A.cQ().$3$color$fontSize$fontWeight(B.B,17,B.y),s,s,s),B.aM,A.X(A.a([B.ZW,B.bu,A.q("07 01 23 45 67",s,s,s,s,s,A.ba(s,s,B.p.N(0.7),s,s,s,s,s,s,s,s,12,s,s,s,s,s,!0,s,s,s,s,s,s,s,s),s,s,s)],o),B.j,B.f,B.e,0,s,s),B.bI,A.X(A.a([B.a06,B.bu,A.q("kouassi.yao@gmail.com",s,s,s,s,s,A.ba(s,s,B.p.N(0.7),s,s,s,s,s,s,s,s,12,s,s,s,s,s,!0,s,s,s,s,s,s,s,s),s,s,s)],o),B.j,B.f,B.e,0,s,s)],o),B.w,s,B.f,B.e,0,B.m),1),B.Zk],o),B.j,B.f,B.e,0,s,s),s),A.L(s,A.X(A.a([A.L(s,B.abA,B.i,s,s,new A.P(B.q,s,s,A.x(6),s,s,B.n),s,s,s,B.e8,s,s,s),B.cf,B.X0,A.c1(!1,s,!0,B.abF,s,!0,s,s,s,s,s,s,s,s,s,s,s,new A.aUy(this),s,s,s,s,s,s,s)],o),B.j,B.f,B.e,0,s,s),B.i,s,s,B.Nw,s,s,s,B.j6,s,s,s)],o),B.j,s,B.f,B.e,0,B.m),B.i,s,s,new A.P(B.h,s,q,r,p,s,B.n),s,s,s,s,s,s,s),s)},
 amK(a){var s=this,r=null,q=A.x(16),p=A.aS(B.p.N(0.08),1),o=A.a([new A.ag(0,B.v,B.p.N(0.04),B.bx,8)],t.V),n=s.DP("1",B.A,B.Y6,"Commandes",new A.aUt(s)),m=a>0?""+a:r
@@ -59281,7 +59281,7 @@ return null},
 $S:0}
 A.ub.prototype={
 a2(){var s=t.N,r=t.z
-return new A.a2k(A.a([A.O(["id","babi_riviera","name","Fournil Principal Riviera 2","address","Carrefour Alpha, Riviera 2, Abidjan","distance","1.2 km","hours","06:00 - 22:00","isOpen",!0],s,r),A.O(["id","babi_zone4","name","Boulangerie Zone 4","address","Rue du Dr Fleming, Zone 4, Abidjan","distance","5.5 km","hours","06:00 - 23:00","isOpen",!0],s,r),A.O(["id","babi_cocody","name","Fournil Cocody Centre","address","Avenue Jean Mermoz, Cocody, Abidjan","distance","8.0 km","hours","05:30 - 21:00","isOpen",!1],s,r)],t.H7))}}
+return new A.a2k(A.a([A.O(["id","babi_riviera","name","Fournil Principal Riviera","address","Carrefour Alpha, Riviera, Abidjan","distance","1.2 km","hours","06:00 - 22:00","isOpen",!0],s,r),A.O(["id","babi_zone4","name","Boulangerie Zone 4","address","Rue du Dr Fleming, Zone 4, Abidjan","distance","5.5 km","hours","06:00 - 23:00","isOpen",!0],s,r),A.O(["id","babi_cocody","name","Fournil Cocody Centre","address","Avenue Jean Mermoz, Cocody, Abidjan","distance","8.0 km","hours","05:30 - 21:00","isOpen",!1],s,r)],t.H7))}}
 A.a2k.prototype={
 aBD(a){this.H(new A.aFa(this,a))
 this.c.V(t.q).f.cm(B.aeB)},
@@ -128791,7 +128791,7 @@ B.a5u=s([B.anR,B.aqA],t.p)
 B.TN=new A.kD(B.a0,B.f,B.e,B.w,null,B.m,null,0,B.a5u,null)
 B.X1=new A.fr(1,B.bF,B.TN,null)
 B.ajX=new A.j(!0,B.c7,null,null,null,null,12.5,B.y,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null)
-B.anI=new A.J("Cuisson artisanale au fournil Riviera 2",null,B.ajX,null,null,null,null,null,null,null,null)
+B.anI=new A.J("Cuisson artisanale au fournil Riviera",null,B.ajX,null,null,null,null,null,null,null,null)
 B.akr=new A.j(!0,B.fd,null,null,null,null,11,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null)
 B.apc=new A.J("Fourn\xe9es chaudes : 06h00 \u2022 09h00 \u2022 14h00 \u2022 17h00 \u2022 18h00",null,B.akr,null,null,null,null,null,null,null,null)
 B.a3m=s([B.anI,B.apc],t.p)
@@ -131162,7 +131162,7 @@ B.abg=new A.cY(B.Q,B.f,B.U,B.j,null,B.m,null,0,B.a5C,null)
 B.a_e=new A.a7(B.pJ,12,null,null,null,null,B.ad,null,null,null,null,null,null,null)
 B.Jk=new A.bP(3,null,null,null)
 B.aj7=new A.j(!0,B.ad,null,null,null,null,10,B.aj,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null)
-B.anl=new A.J("Fournil Riviera 2 \u2022 Heure d'Abidjan (GMT)",null,B.aj7,null,null,null,null,null,null,null,null)
+B.anl=new A.J("Fournil Riviera \u2022 Heure d'Abidjan (GMT)",null,B.aj7,null,null,null,null,null,null,null,null)
 B.a4Q=s([B.a_e,B.Jk,B.anl],t.p)
 B.abh=new A.cY(B.Q,B.f,B.e,B.j,null,B.m,null,0,B.a4Q,null)
 B.Y0=new A.ac(59033,"MaterialIcons",null,!1)
@@ -131177,7 +131177,7 @@ B.a2J=s([B.Z0,B.aw,B.aov],t.p)
 B.Id=new A.cY(B.Q,B.f,B.e,B.j,null,B.m,null,0,B.a2J,null)
 B.Yh=new A.ac(62589,"MaterialIcons",null,!1)
 B.avh=new A.E5(B.Yh,"100% Artisanal\nFait maison",null)
-B.avi=new A.E5(B.lH,"Retrait Express\nComptoir Riviera 2",null)
+B.avi=new A.E5(B.lH,"Retrait Express\nComptoir Riviera",null)
 B.avj=new A.E5(B.xw,"Paiement S\xe9curis\xe9\nWave / Orange / Cash",null)
 B.a55=s([B.avh,B.avi,B.avj],t.p)
 B.abj=new A.cY(B.Q,B.jv,B.e,B.j,null,B.m,null,0,B.a55,null)
@@ -133196,7 +133196,7 @@ s($,"bGV","f0",()=>A.a0J(new A.b23(),t.Q,t.sq))
 s($,"bH7","mF",()=>A.a0J(new A.b2k(),t.oG,t.F5))
 s($,"bH6","b3S",()=>A.B6(new A.b2j(),t.S))
 s($,"bH9","b3T",()=>B.P9.$2$1(new A.b2I(),t.y,t.N))
-s($,"bCZ","biu",()=>A.a([A.afs("Commander chaud \ud83e\udd56","catalogue","Fournil",B.lG,B.o8,B.A,"notif_1",!1,"Les baguettes tradition et croissants au pur beurre viennent de sortir du fournil \xe0 la Riviera 2.",A.ahS().p8(B.V6),"\ud83d\udd25 Sortie de Fourn\xe9e en direct !"),A.afs("Voir le ticket \ud83e\uddfe","orders","Commandes",B.xE,B.o5,B.b0,"notif_2",!1,"Votre commande vous attend au comptoir express de la Riviera 2.",A.ahS().p8(B.V2),"\ud83d\udce6 Commande #BB-2045 Pr\xeate !"),A.afs("Voir les fourn\xe9es \ud83d\udd25","home","Rappels",B.pT,B.hj,B.bE,"notif_3",!0,"Rappel programm\xe9 : la prochaine fourn\xe9e d'apr\xe8s-midi sortira \xe0 14h00 pr\xe9cises.",A.ahS().p8(B.Vc),"\ud83d\udd14 Rappel Fourn\xe9e de 14h00"),A.afs("Mes Avantages \ud83c\udf81","profile","Club",B.xO,B.kK,B.cm,"notif_4",!0,"Vous avez d\xe9bloqu\xe9 150 points de fid\xe9lit\xe9. Prochain cadeau : 1 croissant offert \xe0 200 pts.",A.ahS().p8(B.UW),"\ud83d\udc51 Bienvenue au Babi Club !")],t.Cj))
+s($,"bCZ","biu",()=>A.a([A.afs("Commander chaud \ud83e\udd56","catalogue","Fournil",B.lG,B.o8,B.A,"notif_1",!1,"Les baguettes tradition et croissants au pur beurre viennent de sortir du fournil \xe0 la Riviera.",A.ahS().p8(B.V6),"\ud83d\udd25 Sortie de Fourn\xe9e en direct !"),A.afs("Voir le ticket \ud83e\uddfe","orders","Commandes",B.xE,B.o5,B.b0,"notif_2",!1,"Votre commande vous attend au comptoir express de la Riviera.",A.ahS().p8(B.V2),"\ud83d\udce6 Commande #BB-2045 Pr\xeate !"),A.afs("Voir les fourn\xe9es \ud83d\udd25","home","Rappels",B.pT,B.hj,B.bE,"notif_3",!0,"Rappel programm\xe9 : la prochaine fourn\xe9e d'apr\xe8s-midi sortira \xe0 14h00 pr\xe9cises.",A.ahS().p8(B.Vc),"\ud83d\udd14 Rappel Fourn\xe9e de 14h00"),A.afs("Mes Avantages \ud83c\udf81","profile","Club",B.xO,B.kK,B.cm,"notif_4",!0,"Vous avez d\xe9bloqu\xe9 150 points de fid\xe9lit\xe9. Prochain cadeau : 1 croissant offert \xe0 200 pts.",A.ahS().p8(B.UW),"\ud83d\udc51 Bienvenue au Babi Club !")],t.Cj))
 s($,"bHm","mH",()=>A.a0J(new A.b2V(),t.Qm,t.TO))
 s($,"bHE","b8w",()=>A.B6(new A.b3u(),t.S))
 s($,"bHD","u5",()=>A.a0J(new A.b3s(),t.xs,t.rY))

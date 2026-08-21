@@ -111,7 +111,7 @@
                                     Baguettes Chaudes & Croustillantes en Rayon !
                                 </h4>
                                 <p class="text-warning-emphasis small mb-0 opacity-90">
-                                    Le pain sort du fournil à Cocody Riviera 2. Fumant, doré et prêt à déguster.
+                                    Le pain sort du fournil à Riviera. Fumant, doré et prêt à déguster.
                                 </p>
                             </div>
                         </div>
@@ -137,7 +137,7 @@
                             <i class="fa-solid fa-fire me-1 text-danger"></i> FOURNÉE DE ${info.timeStr} — ${info.name.toUpperCase()}
                         </span>
                         <span class="badge bg-dark bg-opacity-75 text-warning border border-warning border-opacity-30 rounded-pill px-2 py-1 small">
-                            <i class="fa-solid fa-location-dot me-1 text-warning"></i> Fournil Riviera 2
+                            <i class="fa-solid fa-location-dot me-1 text-warning"></i> Fournil Riviera
                         </span>
                     </div>
 
@@ -211,7 +211,7 @@
             osc.stop(ctx.currentTime + 0.5);
         } catch (e) { }
 
-        alert("🔔 Alerte Fournée Activée !\nVous serez notifié dès la prochaine sortie de pain chaud à la Boulangerie de BABI (Cocody Riviera 2).");
+        alert("🔔 Alerte Fournée Activée !\nVous serez notifié dès la prochaine sortie de pain chaud à la Boulangerie de BABI (Riviera).");
     };
 
     document.addEventListener('DOMContentLoaded', () => {

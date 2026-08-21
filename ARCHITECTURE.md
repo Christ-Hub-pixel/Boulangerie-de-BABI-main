@@ -1,7 +1,7 @@
 # 🥖 Architecture Technique du Projet — Boulangerie de BABI
 
 > **Plateforme E-Commerce & Suivi de Livraison GPS en Temps Réel**  
-> **Localisation Officielle :** Cocody Riviera 2, Abidjan, Côte d'Ivoire  
+> **Localisation Officielle :** Riviera, Abidjan, Côte d'Ivoire  
 > **Téléphones Officiels :** Fixe `27 22 56 41 23` | Mobiles `07 04 38 92 01` / `07 06 81 79 77`  
 
 ---
@@ -49,7 +49,7 @@ flowchart TB
 
     subgraph EXTERNAL["🌍 SERVICES EXTERNES & GPS"]
         OSM["🗺️ OpenStreetMap / Leaflet Maps Engine"]
-        GMAPS["📍 Google Maps API Embed (Cocody Riviera 2)"]
+        GMAPS["📍 Google Maps API Embed (Riviera)"]
         MOMO["💳 Passerelles Mobile Money (Wave & Orange Money)"]
     end
 
@@ -100,7 +100,7 @@ sequenceDiagram
 ```mermaid
 flowchart LR
     subgraph DEPART["🥐 POINT DE DEPART"]
-        BAKERY["Boulangerie de BABI\nCocody Riviera 2\n(5.3772845, -3.9272566)"]
+        BAKERY["Boulangerie de BABI\nRiviera\n(5.3772845, -3.9272566)"]
     end
 
     subgraph TRAJET["🛵 DEPLACEMENT GPS COMPASS"]
@@ -108,7 +108,7 @@ flowchart LR
     end
 
     subgraph ARRIVEE["📍 DESTINATION CLIENT"]
-        CLIENT_HOME["Adresse Client Abidjan\nEx: Riviera 2 / Angré / Marcory"]
+        CLIENT_HOME["Adresse Client Abidjan\nEx: Riviera / Angré / Marcory"]
         PIN["Code Confidentiel (ex: 6005)\nCommunique uniquement à la livraison"]
     end
 
@@ -163,7 +163,7 @@ Boulangerie de BABI/
 ├── 📄 favoris.html             # Galerie des produits coups de cœur enregistrés
 ├── 📄 livreur.html             # Cockpit GPS du livreur (Style Uber Eats) avec validation par code PIN
 ├── 📄 fidelite.html            # Espace Club Fidélité (Cumul de points & Niveaux VIP)
-├── 📄 contact.html             # Formulaire de contact & Carte Google Maps officielle (Riviera 2)
+├── 📄 contact.html             # Formulaire de contact & Carte Google Maps officielle (Riviera)
 ├── 📄 apropos.html             # Histoire & Savoir-faire artisanal de la boulangerie
 ├── 📄 connexion.html           # Page de connexion avec fond intérieur boulangerie sombre
 ├── 📄 inscription.html         # Page de création de compte client
@@ -228,7 +228,7 @@ Boulangerie de BABI/
 - **Restriction Automatique :** En dehors de cette plage, le passage de commande est bloqué et déclenche une fenêtre pop-up explicative (*"Les commandes réouvrent à 05h45"*).
 
 ### 🛵 E. Suivi GPS Livreur & Reçu Thermique (`suivi.html` & `js/suivi.js`)
-- **Animation de Scooter en Direct :** Déplacement du livreur de **Cocody Riviera 2** vers l'adresse du client sur carte OpenStreetMap.
+- **Animation de Scooter en Direct :** Déplacement du livreur de **Riviera** vers l'adresse du client sur carte OpenStreetMap.
 - **Code de Livraison Sécurisé :** Code PIN confidentiel à 4 chiffres généré pour la remise du colis.
 - **Impression du Ticket Thermique Officiel :** Génération du reçu au format caisse thermique **80mm** (Logo BB, numéro de reçu, caissier, détails des articles et montants).
 
@@ -236,8 +236,8 @@ Boulangerie de BABI/
 - **Interface Style Uber Driver :** Guidage d'itinéraire Leaflet Routing, affichage des coordonnées client, bouton d'appel direct et validation par code PIN.
 
 ### 📦 G. Algorithme Kilométrique de Livraison & Barème (`checkout.html` & `js/checkout.js`)
-- **Calculateur Kilométrique Officiel (`calculateDeliveryFeeByKm(km)`) :** Calcul automatique des kilomètres depuis la boulangerie (Cocody Riviera 2 : `5.37728, -3.92726`) à partir de 500 FCFA :
-  - `km <= 3.0 km` : **500 FCFA** (Tarif de base / proximité : Riviera 2, Palmeraie, Anono... — *"3 km est égal à 500"*)
+- **Calculateur Kilométrique Officiel (`calculateDeliveryFeeByKm(km)`) :** Calcul automatique des kilomètres depuis la boulangerie (Riviera : `5.37728, -3.92726`) à partir de 500 FCFA :
+  - `km <= 3.0 km` : **500 FCFA** (Tarif de base / proximité : Riviera, Palmeraie, Anono... — *"3 km est égal à 500"*)
   - `3.0 km < km <= 5.0 km` : **1 000 FCFA** (Cocody étendu : Deux-Plateaux, Angré...)
   - `5.0 km < km <= 8.0 km` : **1 500 FCFA** (Plateau, Adjamé, Marcory Zone 4...)
   - `8.0 km < km <= 12.0 km` : **2 000 FCFA** (Koumassi, Treichville, Bingerville, Attécoubé...)
@@ -249,7 +249,7 @@ Boulangerie de BABI/
 ## 📞 5. Coordonnées & Données Métier Officielles
 
 - **Raison Sociale :** Boulangerie de BABI
-- **Adresse Physiques :** Cocody Riviera 2, Abidjan - Côte d'Ivoire (GPS : `5.3772845, -3.9272566`)
+- **Adresse Physiques :** Riviera, Abidjan - Côte d'Ivoire (GPS : `5.3772845, -3.9272566`)
 - **Numéros Téléphoniques Officiels :**
   - ☎️ **Fixe :** `27 22 56 41 23`
   - 📱 **Mobile 1 :** `07 04 38 92 01`
