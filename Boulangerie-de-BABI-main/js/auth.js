@@ -1,8 +1,99 @@
 // -------------------------------------------------------------
-// AUTHENTICATION & RBAC LOGIC (4 POSTES)
+// GESTION AUTHENTIFICATION & UTILISATEURS (FIREBASE + HYBRID API)
 // -------------------------------------------------------------
 
+const API_ROOT = (typeof window !== 'undefined' && (window.API_BASE_URL || (window.location.hostname.includes('boulangeriedebabi.com') ? 'https://api.boulangeriedebabi.com' : 'http://localhost:5000'))) || 'http://localhost:5000';
+
+// Configuration Firebase
+const firebaseConfig = {
+    apiKey: "AIzaSyD29RIoK7hYmKxm20L3ZLtOk2bic6vuOxQ",
+    authDomain: "boulangerie-babi-app.firebaseapp.com",
+    projectId: "boulangerie-babi-app",
+    storageBucket: "boulangerie-babi-app.firebasestorage.app",
+    messagingSenderId: "745132784695",
+    appId: "1:745132784695:web:d5e30df01010932f0ed3b2"
+};
+
+// Initialisation Firebase si disponible
+if (typeof firebase !== 'undefined' && !firebase.apps.length) {
+    try {
+        firebase.initializeApp(firebaseConfig);
+        console.log("🔥 Firebase Web Auth initialisé avec succès pour Boulangerie de Babi");
+    } catch (e) {
+        console.warn("Erreur d'initialisation Firebase:", e);
+    }
+}
+
+// Fonction globale de connexion avec Google
+async function loginWithGoogleFirebase() {
+    if (typeof firebase === 'undefined' || !firebase.auth) {
+        window.location.href = 'app/#/login';
+        return;
+    }
+
+    try {
+        const provider = new firebase.auth.GoogleAuthProvider();
+        provider.setCustomParameters({ prompt: 'select_account' });
+        
+        const result = await firebase.auth().signInWithPopup(provider);
+        const user = result.user;
+
+        if (user) {
+            const displayName = user.displayName || 'Client Google';
+            const parts = displayName.split(' ');
+            const prenom = parts[0] || 'Client';
+            const nom = parts.slice(1).join(' ') || 'Babi VIP';
+
+            const babiUser = {
+                id: user.uid,
+                prenom: prenom,
+                nom: nom,
+                email: user.email || '',
+                photoURL: user.photoURL || '',
+                role: 'client',
+                points: 50,
+                code_fidelite: 'BABI-' + Math.floor(1000 + Math.random() * 9000)
+            };
+
+            localStorage.setItem('babi_user', JSON.stringify(babiUser));
+            const token = await user.getIdToken();
+            localStorage.setItem('auth_token', token);
+
+            // Synchronisation optionnelle avec le backend
+            try {
+                await fetch(`${API_ROOT}/api/auth/google`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ user: babiUser, token: token })
+                });
+            } catch (_) {}
+
+            alert(`🎉 Connexion Google réussie ! Bienvenue ${prenom}. Vos 50 points de fidélité sont crédités.`);
+            window.location.href = 'index.html';
+        }
+    } catch (error) {
+        console.error("Firebase Google Auth Error:", error);
+        if (error.code === 'auth/popup-closed-by-user') {
+            console.log("Fenêtre Google fermée par l'utilisateur.");
+            return;
+        }
+        if (error.code === 'auth/unauthorized-domain') {
+            alert("Veuillez autoriser votre domaine dans Firebase Console > Authentication > Paramètres > Domaines autorisés.");
+            return;
+        }
+        alert("Erreur de connexion Google : " + (error.message || error));
+    }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
+    // Brancher les boutons Google sur le site web
+    const googleBtns = document.querySelectorAll('.btn-google, #btnGoogleLogin, #btnGoogleRegister');
+    googleBtns.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            loginWithGoogleFirebase();
+        });
+    });
     
     // --- 0. ROUTE GUARDS DE SÉCURITÉ RBAC (PROTECTION DES PAGES SENSIBLES) ---
     function enforceRouteGuard() {
@@ -75,7 +166,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 // Essai de connexion via l'API Backend
                 try {
-                    const res = await fetch(API_BASE_URL + '/auth/login', {
+                    const res = await fetch(`${API_ROOT}/api/auth/login`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ email: identifiant, mot_de_passe: password })
@@ -152,7 +243,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const password = inputs[4] ? inputs[4].value : 'client123';
                 
                 try {
-                    const res = await fetch(API_BASE_URL + '/auth/register', {
+                    const res = await fetch(`${API_ROOT}/api/auth/register`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ nom, prenom, email, telephone: phone, mot_de_passe: password })
@@ -204,4 +295,3 @@ function autoFillDemo(role) {
         pwdInput.classList.remove('border-warning');
     }, 800);
 }
-
