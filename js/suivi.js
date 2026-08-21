@@ -29,7 +29,7 @@ function initMap() {
                 <strong style="color:#2b160c; font-size:13px;">🥖 Boulangerie de BABI</strong><br>
                 <small class="text-muted">Fournil & Point de Retrait Click & Collect</small><br>
                 <div class="mt-2">
-                    <a href="https://maps.app.goo.gl/6JrQ1ryZj2KeD5zG7" target="_blank" class="btn btn-warning btn-sm fw-bold text-dark px-3 py-1" style="font-size:11px; border-radius:12px;">
+                    <a href="https://www.google.com/maps/place/5%C2%B022%2738.2%22N+3%C2%B055%2738.1%22W/@5.3772845,-3.9272566,17z" target="_blank" class="btn btn-warning btn-sm fw-bold text-dark px-3 py-1" style="font-size:11px; border-radius:12px;">
                         <i class="fa-solid fa-diamond-turn-right me-1"></i> Ouvrir Itinéraire GPS
                     </a>
                 </div>
