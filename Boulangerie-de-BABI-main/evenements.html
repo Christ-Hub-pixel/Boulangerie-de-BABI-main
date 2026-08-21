@@ -123,7 +123,7 @@
 
             <!-- Search Bar (Desktop) -->
             <div class="d-none d-lg-flex flex-grow-1 header-search-container mx-3">
-                <form class="babi-search-form w-100 m-0" role="search" onsubmit="event.preventDefault();">
+                <form class="babi-search-form w-100 m-0" role="search" onsubmit="event.preventDefault(); const q = this.querySelector('input').value.trim(); if(q) window.location.href='produits.html?search=' + encodeURIComponent(q);">
                     <div class="babi-search-wrapper">
                         <i class="fa-solid fa-magnifying-glass babi-search-icon"></i>
                         <input type="text" class="babi-search-input"
@@ -152,6 +152,22 @@
                     <span class="badge rounded-pill bg-danger cart-badge" style="font-size:0.75rem;">0</span>
                 </a>
             </div>
+        </div>
+
+        <!-- Search Bar (Mobile) -->
+        <div class="container d-lg-none mt-2 pb-1 header-search-mobile">
+            <form class="babi-search-form w-100 m-0" role="search" onsubmit="event.preventDefault(); const q = this.querySelector('input').value.trim(); if(q) window.location.href='produits.html?search=' + encodeURIComponent(q);">
+                <div class="babi-search-wrapper">
+                    <i class="fa-solid fa-magnifying-glass babi-search-icon"></i>
+                    <input type="text" class="babi-search-input" 
+                        placeholder="Gâteau, anniversaire, mariage..." 
+                        aria-label="Rechercher"
+                        autocomplete="off">
+                    <button type="submit" class="babi-search-btn">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </button>
+                </div>
+            </form>
         </div>
     </nav>
 
@@ -580,8 +596,9 @@
                 <div class="col-lg-3 col-md-6">
                     <h5 class="fw-bold text-warning mb-3">CONTACT FOURNIL</h5>
                     <p class="text-white small mb-1"><i class="fa-solid fa-location-dot text-warning me-2"></i> Cocody Riviera 2, Abidjan - CI</p>
-                    <p class="text-white small mb-1"><i class="fa-solid fa-phone text-warning me-2"></i> <strong>Fixe :</strong> 27 22 56 41 23</p>
-                    <p class="text-white small mb-1"><i class="fa-solid fa-mobile-screen-button text-warning me-2"></i> <strong>Mobiles :</strong> 07 04 38 92 01 / 07 06 81 79 77</p>
+                    <p class="text-white small mb-1"><i class="fa-solid fa-phone text-warning me-2"></i> <strong>Fixe :</strong> <a href="tel:2722564123" class="text-white text-decoration-none">27 22 56 41 23</a></p>
+                    <p class="text-white small mb-2"><i class="fa-solid fa-mobile-screen-button text-warning me-2"></i> <strong>Mobiles :</strong> <a href="tel:0704389201" class="text-white text-decoration-none">07 04 38 92 01</a> / <a href="tel:0706817977" class="text-white text-decoration-none">07 06 81 79 77</a></p>
+                    <a href="https://api.whatsapp.com/send?phone=2250704389201&text=Bonjour%20Boulangerie%20de%20BABI,%20je%20souhaite%20commander%20un%20g%C3%A2teau." target="_blank" class="btn btn-success btn-sm w-100 fw-bold rounded-pill shadow-sm"><i class="fa-brands fa-whatsapp me-1"></i> WhatsApp Pâtisserie</a>
                 </div>
             </div>
         </div>
