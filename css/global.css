@@ -1226,21 +1226,21 @@ footer h4, footer h5, footer .text-warning, footer i.text-warning {
     transform: scale(1.05);
 }
 .navbar-brand-title {
-    font-size: 1.18rem !important;
-    font-family: 'Poppins', sans-serif !important;
+    font-size: 1.25rem !important;
+    font-family: 'Poppins', 'Montserrat', sans-serif !important;
     font-weight: 900 !important;
     letter-spacing: -0.4px;
     color: #ffffff !important;
-    line-height: 1.05 !important;
+    line-height: 1.02 !important;
 }
 .navbar-brand-subtitle {
-    font-size: 1.25rem !important;
-    font-family: 'Pacifico', 'Satisfy', cursive !important;
-    font-weight: 400 !important;
-    margin-top: 2px !important;
+    font-size: 1.4rem !important;
+    font-family: 'Satisfy', 'Grand Hotel', cursive !important;
+    font-weight: 700 !important;
+    margin-top: 1px !important;
     color: #F59E0B !important;
     line-height: 1 !important;
-    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
 }
 
 /* Compact & Refined Footer Brand Logo */
