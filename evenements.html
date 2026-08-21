@@ -123,7 +123,7 @@
 
             <!-- Search Bar (Desktop) -->
             <div class="d-none d-lg-flex flex-grow-1 header-search-container mx-3">
-                <form class="babi-search-form w-100 m-0" role="search" onsubmit="event.preventDefault(); const q = this.querySelector('input').value.trim(); if(q) window.location.href='produits.html?search=' + encodeURIComponent(q);">
+                <form class="babi-search-form w-100 m-0" role="search" onsubmit="handleHeaderSearch(this, event);">
                     <div class="babi-search-wrapper">
                         <i class="fa-solid fa-magnifying-glass babi-search-icon"></i>
                         <input type="text" class="babi-search-input"
@@ -156,7 +156,7 @@
 
         <!-- Search Bar (Mobile) -->
         <div class="container d-lg-none mt-2 pb-1 header-search-mobile">
-            <form class="babi-search-form w-100 m-0" role="search" onsubmit="event.preventDefault(); const q = this.querySelector('input').value.trim(); if(q) window.location.href='produits.html?search=' + encodeURIComponent(q);">
+            <form class="babi-search-form w-100 m-0" role="search" onsubmit="handleHeaderSearch(this, event);">
                 <div class="babi-search-wrapper">
                     <i class="fa-solid fa-magnifying-glass babi-search-icon"></i>
                     <input type="text" class="babi-search-input" 
@@ -614,6 +614,15 @@
     <!-- Custom JavaScript for Event Cake Calculator & Ordering -->
     <script>
         let selectedTiers = 1;
+
+        function handleHeaderSearch(form, event) {
+            if (event) event.preventDefault();
+            const input = form ? form.querySelector('input') : null;
+            const query = input ? input.value.trim() : '';
+            if (query) {
+                window.location.href = 'produits.html?search=' + encodeURIComponent(query);
+            }
+        }
 
         // Set default minimum date to tomorrow
         document.addEventListener('DOMContentLoaded', () => {
