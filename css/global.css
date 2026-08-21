@@ -1209,10 +1209,30 @@ footer h4, footer h5, footer .text-warning, footer i.text-warning {
     transition: all 0.3s ease;
 }
 
-/* Compact & Refined Navbar Brand Logo */
+/* Prominent & Crisp Brand Logo */
+.babi-main-brand-logo {
+    height: 58px !important;
+    max-height: 62px !important;
+    width: auto !important;
+    object-fit: contain;
+    border-radius: 10px;
+    display: block;
+    filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.35));
+    transition: transform 0.2s ease;
+}
+.babi-main-brand-logo:hover {
+    transform: scale(1.03);
+}
+@media (max-width: 991px) {
+    .babi-main-brand-logo {
+        height: 46px !important;
+        max-height: 48px !important;
+    }
+}
+
 .navbar-brand-logo {
-    height: 38px !important;
-    max-height: 38px !important;
+    height: 54px !important;
+    max-height: 58px !important;
     width: auto !important;
     border-radius: 8px !important;
     margin-right: 8px !important;
