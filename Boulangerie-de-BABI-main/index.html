@@ -5,23 +5,35 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Boulangerie de Babi</title>
+    <!-- Subdomain Instant Routing -->
+    <script>
+      (function() {
+        const host = window.location.hostname.toLowerCase();
+        if (host.startsWith('caisse.')) window.location.replace('/caissiere.html');
+        else if (host.startsWith('fournil.')) window.location.replace('/gerante.html');
+        else if (host.startsWith('admin.')) window.location.replace('/admin.html');
+      })();
+    </script>
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Inter:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;0,800;0,900;1,700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Great+Vibes&family=Inter:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;0,800;0,900;1,700&family=Poppins:wght@700;800;900&display=swap" rel="stylesheet">
     <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="css/global.css">
-    <link rel="stylesheet" href="css/animations.css">
-    <link rel="stylesheet" href="css/index.css">
+    <link rel="stylesheet" href="css/global.css?v=3.0">
+    <link rel="stylesheet" href="css/animations.css?v=3.0">
+    <link rel="stylesheet" href="css/index.css?v=3.0">
+    <!-- Favicon & App Icons -->
+    <link rel="icon" type="image/png" href="assets/logo.png">
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+    <link rel="apple-touch-icon" href="assets/logo.png">
     <!-- PWA Settings -->
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#2b160c">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="apple-touch-icon" href="assets/logo.png">
 </head>
 
 <body>
@@ -499,10 +511,10 @@
                                     <span class="fw-bold fs-5 text-dark">200 FCFA</span>
                                 </div>
                                 <div class="progress mb-2" style="height: 6px;">
-                                    <div class="progress-bar bg-primary" style="width: 80%;"></div>
+                                    <div class="progress-bar" style="width: 80%; background: #ea580c;"></div>
                                 </div>
                                 <small class="text-muted d-block text-center mb-2">Restant: 15</small>
-                                <button class="btn btn-outline-primary btn-sm w-100">AJOUTER</button>
+                                <button class="btn btn-sm w-100 fw-bold shadow-sm" style="background:#ea580c; color:white; border:none; border-radius: 8px;" onclick="addToCart('Baguette Tradition', 200, 'assets/baguette 200.png')"><i class="fa-solid fa-cart-plus me-1"></i> AJOUTER</button>
                             </div>
                         </div>
 
@@ -520,10 +532,10 @@
                                     <span class="fw-bold fs-5 text-dark">500 FCFA</span>
                                 </div>
                                 <div class="progress mb-2" style="height: 6px;">
-                                    <div class="progress-bar bg-primary" style="width: 40%;"></div>
+                                    <div class="progress-bar" style="width: 40%; background: #ea580c;"></div>
                                 </div>
                                 <small class="text-muted d-block text-center mb-2">Restant: 42</small>
-                                <button class="btn btn-outline-primary btn-sm w-100">AJOUTER</button>
+                                <button class="btn btn-sm w-100 fw-bold shadow-sm" style="background:#ea580c; color:white; border:none; border-radius: 8px;" onclick="addToCart('Croissant Pur Beurre', 500, 'assets/Croissant.png')"><i class="fa-solid fa-cart-plus me-1"></i> AJOUTER</button>
                             </div>
                         </div>
 
@@ -541,10 +553,10 @@
                                     <span class="fw-bold fs-5 text-dark">2700 FCFA</span>
                                 </div>
                                 <div class="progress mb-2" style="height: 6px;">
-                                    <div class="progress-bar bg-primary" style="width: 15%;"></div>
+                                    <div class="progress-bar" style="width: 15%; background: #ea580c;"></div>
                                 </div>
                                 <small class="text-muted d-block text-center mb-2">Restant: 3</small>
-                                <button class="btn btn-outline-primary btn-sm w-100">AJOUTER</button>
+                                <button class="btn btn-sm w-100 fw-bold shadow-sm" style="background:#ea580c; color:white; border:none; border-radius: 8px;" onclick="addToCart('Entremet Chocolat', 2700, 'assets/Fondant au Chocolat.png')"><i class="fa-solid fa-cart-plus me-1"></i> AJOUTER</button>
                             </div>
                         </div>
 
@@ -562,10 +574,10 @@
                                     <span class="fw-bold fs-5 text-dark">500 FCFA</span>
                                 </div>
                                 <div class="progress mb-2" style="height: 6px;">
-                                    <div class="progress-bar bg-primary" style="width: 60%;"></div>
+                                    <div class="progress-bar" style="width: 60%; background: #ea580c;"></div>
                                 </div>
                                 <small class="text-muted d-block text-center mb-2">Restant: 21</small>
-                                <button class="btn btn-outline-primary btn-sm w-100">AJOUTER</button>
+                                <button class="btn btn-sm w-100 fw-bold shadow-sm" style="background:#ea580c; color:white; border:none; border-radius: 8px;" onclick="addToCart('Pain au Chocolat', 500, 'assets/pain au chocolat.png')"><i class="fa-solid fa-cart-plus me-1"></i> AJOUTER</button>
                             </div>
                         </div>
 
@@ -583,10 +595,10 @@
                                     <span class="fw-bold fs-5 text-dark">1400 FCFA</span>
                                 </div>
                                 <div class="progress mb-2" style="height: 6px;">
-                                    <div class="progress-bar bg-primary" style="width: 90%;"></div>
+                                    <div class="progress-bar" style="width: 90%; background: #ea580c;"></div>
                                 </div>
                                 <small class="text-muted d-block text-center mb-2">Restant: 2</small>
-                                <button class="btn btn-outline-primary btn-sm w-100">AJOUTER</button>
+                                <button class="btn btn-sm w-100 fw-bold shadow-sm" style="background:#ea580c; color:white; border:none; border-radius: 8px;" onclick="addToCart('Brioche Tressée', 1400, 'assets/cake.png')"><i class="fa-solid fa-cart-plus me-1"></i> AJOUTER</button>
                             </div>
                         </div>
                     </div>
@@ -1176,7 +1188,6 @@
     <!-- Bootstrap 5 JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <!-- Custom JS -->
-    <script src="js/api_config.js"></script>
     <script src="js/cart.js"></script>
     <script src="js/store_schedule.js"></script>
     <script src="js/script.js"></script>
