@@ -146,8 +146,10 @@
                 <a href="produits.html" class="btn btn-outline-light btn-sm rounded-pill px-3 fw-bold d-none d-md-inline-flex">
                     <i class="fa-solid fa-store me-1 text-warning"></i> Boutique
                 </a>
-                <a href="cart.html" class="btn btn-warning btn-sm fw-bold text-dark rounded-pill px-3 shadow-sm" style="background:#fb923c; border:none;">
-                    <i class="fa-solid fa-cart-shopping me-1"></i> Panier
+                <a href="cart.html" class="btn btn-warning btn-sm fw-bold text-dark rounded-pill px-3 shadow-sm position-relative d-inline-flex align-items-center gap-2" style="background:#fb923c; border:none;">
+                    <i class="fa-solid fa-cart-shopping"></i>
+                    <span>Panier</span>
+                    <span class="badge rounded-pill bg-danger cart-badge" style="font-size:0.75rem;">0</span>
                 </a>
             </div>
         </div>
@@ -224,8 +226,9 @@
                                     <button type="button" class="btn btn-sm btn-outline-dark fw-bold rounded-pill flex-grow-1" onclick="selectModelPreset('Mariage', 'Pièce Montée Royale', 30, 2)">
                                         <i class="fa-solid fa-sliders me-1"></i> Personnaliser
                                     </button>
-                                    <button type="button" class="btn btn-sm text-white fw-bold rounded-pill px-3 shadow-sm" style="background:#ea580c;" onclick="addToCart('Pièce Montée Royale (Événement)', 35000, 'assets/gateau de mariiage.png')" title="Ajouter au Panier">
+                                    <button type="button" class="btn btn-sm text-white fw-bold rounded-pill px-3 shadow-sm d-flex align-items-center gap-1" style="background:#ea580c; border:none;" onclick="addEventCakeToCartDirect(this, 'Pièce Montée Royale (Événement)', 35000, 'assets/gateau de mariiage.png')" title="Ajouter au Panier">
                                         <i class="fa-solid fa-cart-plus"></i>
+                                        <span>Ajouter</span>
                                     </button>
                                 </div>
                             </div>
@@ -254,8 +257,9 @@
                                     <button type="button" class="btn btn-sm btn-outline-dark fw-bold rounded-pill flex-grow-1" onclick="selectModelPreset('Anniversaire', 'Gâteau Anniversaire Thématique', 15, 1)">
                                         <i class="fa-solid fa-sliders me-1"></i> Personnaliser
                                     </button>
-                                    <button type="button" class="btn btn-sm text-white fw-bold rounded-pill px-3 shadow-sm" style="background:#ea580c;" onclick="addToCart('Gâteau Anniversaire Thématique (Événement)', 20000, 'assets/gateau evenement.png')" title="Ajouter au Panier">
+                                    <button type="button" class="btn btn-sm text-white fw-bold rounded-pill px-3 shadow-sm d-flex align-items-center gap-1" style="background:#ea580c; border:none;" onclick="addEventCakeToCartDirect(this, 'Gâteau Anniversaire Thématique (Événement)', 20000, 'assets/gateau evenement.png')" title="Ajouter au Panier">
                                         <i class="fa-solid fa-cart-plus"></i>
+                                        <span>Ajouter</span>
                                     </button>
                                 </div>
                             </div>
@@ -284,8 +288,9 @@
                                     <button type="button" class="btn btn-sm btn-outline-dark fw-bold rounded-pill flex-grow-1" onclick="selectModelPreset('Baptême', 'Douceur Céleste', 20, 1)">
                                         <i class="fa-solid fa-sliders me-1"></i> Personnaliser
                                     </button>
-                                    <button type="button" class="btn btn-sm text-white fw-bold rounded-pill px-3 shadow-sm" style="background:#ea580c;" onclick="addToCart('Douceur Céleste (Événement)', 25000, 'assets/gateau  d evenement2.png')" title="Ajouter au Panier">
+                                    <button type="button" class="btn btn-sm text-white fw-bold rounded-pill px-3 shadow-sm d-flex align-items-center gap-1" style="background:#ea580c; border:none;" onclick="addEventCakeToCartDirect(this, 'Douceur Céleste (Événement)', 25000, 'assets/gateau  d evenement2.png')" title="Ajouter au Panier">
                                         <i class="fa-solid fa-cart-plus"></i>
+                                        <span>Ajouter</span>
                                     </button>
                                 </div>
                             </div>
@@ -314,8 +319,9 @@
                                     <button type="button" class="btn btn-sm btn-outline-dark fw-bold rounded-pill flex-grow-1" onclick="selectModelPreset('Entreprise', 'Prestige Corporate', 40, 2)">
                                         <i class="fa-solid fa-sliders me-1"></i> Personnaliser
                                     </button>
-                                    <button type="button" class="btn btn-sm text-white fw-bold rounded-pill px-3 shadow-sm" style="background:#ea580c;" onclick="addToCart('Prestige Corporate (Événement)', 45000, 'assets/gateau mariage.png')" title="Ajouter au Panier">
+                                    <button type="button" class="btn btn-sm text-white fw-bold rounded-pill px-3 shadow-sm d-flex align-items-center gap-1" style="background:#ea580c; border:none;" onclick="addEventCakeToCartDirect(this, 'Prestige Corporate (Événement)', 45000, 'assets/gateau mariage.png')" title="Ajouter au Panier">
                                         <i class="fa-solid fa-cart-plus"></i>
+                                        <span>Ajouter</span>
                                     </button>
                                 </div>
                             </div>
@@ -685,19 +691,112 @@
             };
         }
 
+        function addEventCakeToCartDirect(btn, name, price, image) {
+            console.log("Adding event cake directly to cart:", name, price, image);
+            const cleanPrice = typeof price === 'number' ? price : parseInt(price) || 0;
+            const pImg = image || 'assets/gateau de mariiage.png';
+
+            // 1. Add item to cart arrays
+            let cart = [];
+            try {
+                cart = JSON.parse(localStorage.getItem('babi_cart_items') || localStorage.getItem('babi_cart') || '[]');
+            } catch(e) {
+                cart = [];
+            }
+
+            const existing = cart.find(i => (i.name === name || i.title === name));
+            if (existing) {
+                existing.qty = (existing.qty || existing.quantity || 1) + 1;
+                existing.quantity = existing.qty;
+            } else {
+                cart.push({
+                    id: 'evt-' + Date.now(),
+                    name: name,
+                    title: name,
+                    price: cleanPrice,
+                    prix: cleanPrice,
+                    image: pImg,
+                    img: pImg,
+                    qty: 1,
+                    quantity: 1
+                });
+            }
+
+            try {
+                localStorage.setItem('babi_cart_items', JSON.stringify(cart));
+                localStorage.setItem('babi_cart', JSON.stringify(cart));
+            } catch(e) {}
+
+            // 2. Refresh Badges
+            const count = cart.reduce((s, i) => s + (i.qty || i.quantity || 1), 0);
+            document.querySelectorAll('.cart-badge').forEach(b => {
+                b.innerText = count;
+                b.style.display = count > 0 ? 'inline-block' : 'none';
+            });
+            if (typeof window.updateAllBadges === 'function') {
+                try { window.updateAllBadges(); } catch(e) {}
+            }
+
+            // 3. Visual Feedback on the Button
+            if (btn) {
+                const originalHtml = btn.innerHTML;
+                const originalBg = btn.style.background;
+                btn.innerHTML = `<i class="fa-solid fa-check me-1"></i> Ajouté !`;
+                btn.style.background = "#16a34a";
+                btn.style.color = "#ffffff";
+                setTimeout(() => {
+                    btn.innerHTML = originalHtml;
+                    btn.style.background = originalBg;
+                }, 1800);
+            }
+
+            // 4. Floating Toast Notification
+            showEventCakeToast(name, cleanPrice, pImg);
+        }
+
+        // Global alias for compatibility
+        window.addEventCakeToCartDirect = addEventCakeToCartDirect;
+        window.addToCart = function(product, price, image) {
+            if (typeof product === 'string') {
+                addEventCakeToCartDirect(null, product, price, image);
+            } else if (typeof product === 'object' && product !== null) {
+                addEventCakeToCartDirect(null, product.name || product.title, product.price || product.prix, product.image || product.img);
+            }
+        };
+
+        function showEventCakeToast(name, price, image) {
+            let tc = document.querySelector('.toast-container');
+            if (!tc) {
+                tc = document.createElement('div');
+                tc.className = 'toast-container position-fixed bottom-0 end-0 p-3';
+                tc.style.zIndex = '99999';
+                document.body.appendChild(tc);
+            }
+            const toast = document.createElement('div');
+            toast.className = 'toast align-items-center show shadow-lg mb-2 rounded-4 border-0';
+            toast.style.cssText = 'display:flex;align-items:center;padding:14px 18px;gap:14px;background:linear-gradient(135deg, #2b160c, #422212);color:#fff;border:1.5px solid #fb923c !important;box-shadow:0 12px 30px rgba(0,0,0,0.5);';
+            toast.innerHTML = `
+                <img src="${image}" style="width:48px;height:48px;object-fit:cover;border-radius:10px;flex-shrink:0;border:1.5px solid #ffc107;" onerror="this.src='assets/gateau de mariiage.png'" alt="">
+                <div style="flex:1;">
+                    <div style="font-size:0.88rem;font-weight:800;color:#ffc107;"><i class="fa-solid fa-circle-check me-1"></i> Ajouté au Panier !</div>
+                    <div style="font-size:0.8rem;color:#fed7aa;">${name} — <strong>${price.toLocaleString()} FCFA</strong></div>
+                </div>
+                <a href="cart.html" class="btn btn-sm btn-warning text-dark fw-bold px-3 py-2 rounded-pill shadow-sm" style="font-size:0.78rem;white-space:nowrap;background:linear-gradient(135deg, #fb923c, #f59e0b);border:none;">Voir mon panier →</a>
+            `;
+            tc.appendChild(toast);
+            setTimeout(() => {
+                toast.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateY(10px)';
+                setTimeout(() => toast.remove(), 400);
+            }, 4500);
+        }
+
         function addConfiguredCakeToCart() {
             const data = buildEventOrderData();
             const itemName = `Gâteau ${data.eventType} (${data.portions} parts, ${data.tiers} ét.) - ${data.flavor}`;
             const image = data.eventType === 'Mariage' ? 'assets/gateau de mariiage.png' : (data.eventType === 'Baptême' ? 'assets/gateau  d evenement2.png' : 'assets/gateau evenement.png');
-            
-            if (window.addToCart) {
-                window.addToCart(itemName, data.price, image);
-            } else {
-                let cart = JSON.parse(localStorage.getItem('babi_cart_items') || '[]');
-                cart.push({ id: 'evt-' + Date.now(), name: itemName, price: data.price, img: image, qty: 1 });
-                localStorage.setItem('babi_cart_items', JSON.stringify(cart));
-                if (window.updateAllBadges) window.updateAllBadges();
-            }
+            addEventCakeToCartDirect(null, itemName, data.price, image);
         }
 
         function submitEventCakeOrder() {
