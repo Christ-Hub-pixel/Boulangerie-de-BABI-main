@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Boulangerie de Babi</title>
+    <!-- Subdomain Instant Routing -->
     <script>
       (function() {
         const host = window.location.hostname.toLowerCase();
@@ -45,14 +46,11 @@
             </button>
 
             <!-- Logo -->
-            <a class="navbar-brand d-flex align-items-center text-decoration-none me-auto me-lg-3" href="index.html"
-               style="border: 1.5px solid #EAB308; border-radius: 20px; padding: 8px 12px; background-color: #2A140A;">
-                <div style="background-color: #FACC15; border-radius: 12px; width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; overflow: hidden;">
-                    <img src="assets/logo.png" alt="Logo" style="width: 100%; height: 100%; object-fit: cover;">
-                </div>
-                <div class="d-flex flex-column lh-1 me-2 ms-3">
-                    <span style="color: white; font-weight: 900; font-size: 1rem; font-family: 'Poppins', sans-serif; letter-spacing: -0.5px;">Boulangerie</span>
-                    <span class="d-flex align-items-center" style="color: #FACC15; font-family: 'Caveat', cursive; font-size: 1.25rem; font-weight: 700; margin-top: 2px;">de Babi <span style="font-size: 0.9rem; margin-left: 4px;">🇨🇮</span></span>
+            <a class="navbar-brand d-flex align-items-center text-decoration-none me-auto me-lg-3" href="index.html">
+                <img src="assets/logo.png" alt="Logo" class="navbar-brand-logo">
+                <div class="d-flex flex-column lh-1 me-2">
+                    <span class="navbar-brand-title">Boulangerie</span>
+                    <span class="navbar-brand-subtitle d-flex align-items-center">de Babi <span class="flag-ci flag-ci-sm ms-1"></span></span>
                 </div>
             </a>
 
