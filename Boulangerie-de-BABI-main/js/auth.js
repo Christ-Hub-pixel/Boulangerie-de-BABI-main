@@ -24,12 +24,28 @@ if (typeof firebase !== 'undefined' && !firebase.apps.length) {
     }
 }
 
+let isGoogleAuthInProgress = false;
+
 // Fonction globale de connexion avec Google
 async function loginWithGoogleFirebase() {
+    if (isGoogleAuthInProgress) {
+        console.warn("Connexion Google déjà en cours...");
+        return;
+    }
+
     if (typeof firebase === 'undefined' || !firebase.auth) {
         window.location.href = 'app/#/login';
         return;
     }
+
+    isGoogleAuthInProgress = true;
+
+    // Mise à jour visuelle des boutons
+    const googleBtns = document.querySelectorAll('.btn-google');
+    googleBtns.forEach(btn => {
+        btn.disabled = true;
+        btn.style.opacity = '0.7';
+    });
 
     try {
         const provider = new firebase.auth.GoogleAuthProvider();
@@ -73,8 +89,8 @@ async function loginWithGoogleFirebase() {
         }
     } catch (error) {
         console.error("Firebase Google Auth Error:", error);
-        if (error.code === 'auth/popup-closed-by-user') {
-            console.log("Fenêtre Google fermée par l'utilisateur.");
+        if (error.code === 'auth/popup-closed-by-user' || error.code === 'auth/cancelled-popup-request') {
+            console.log("Fenêtre Google fermée ou requête précédente annulée.");
             return;
         }
         if (error.code === 'auth/unauthorized-domain') {
@@ -82,17 +98,24 @@ async function loginWithGoogleFirebase() {
             return;
         }
         alert("Erreur de connexion Google : " + (error.message || error));
+    } finally {
+        isGoogleAuthInProgress = false;
+        googleBtns.forEach(btn => {
+            btn.disabled = false;
+            btn.style.opacity = '1';
+        });
     }
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Brancher les boutons Google sur le site web
-    const googleBtns = document.querySelectorAll('.btn-google, #btnGoogleLogin, #btnGoogleRegister');
+    // Brancher les boutons Google sur le site web sans duplication
+    const googleBtns = document.querySelectorAll('.btn-google');
     googleBtns.forEach(btn => {
-        btn.addEventListener('click', (e) => {
+        btn.onclick = (e) => {
             e.preventDefault();
+            e.stopPropagation();
             loginWithGoogleFirebase();
-        });
+        };
     });
     
     // --- 0. ROUTE GUARDS DE SÉCURITÉ RBAC (PROTECTION DES PAGES SENSIBLES) ---
