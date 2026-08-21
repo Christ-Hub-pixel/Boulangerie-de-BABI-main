@@ -1227,17 +1227,17 @@ footer h4, footer h5, footer .text-warning, footer i.text-warning {
 }
 .navbar-brand-title {
     font-size: 1.18rem !important;
-    font-family: 'Poppins', 'Inter', sans-serif !important;
+    font-family: 'Poppins', sans-serif !important;
     font-weight: 900 !important;
-    letter-spacing: -0.3px;
+    letter-spacing: -0.4px;
     color: #ffffff !important;
-    line-height: 1.1 !important;
+    line-height: 1.05 !important;
 }
 .navbar-brand-subtitle {
-    font-size: 1.38rem !important;
-    font-family: 'Caveat', 'Great Vibes', cursive !important;
-    font-weight: 700 !important;
-    margin-top: 1px !important;
+    font-size: 1.25rem !important;
+    font-family: 'Pacifico', 'Satisfy', cursive !important;
+    font-weight: 400 !important;
+    margin-top: 2px !important;
     color: #F59E0B !important;
     line-height: 1 !important;
     text-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
