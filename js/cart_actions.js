@@ -4,7 +4,11 @@
 var CART_KEY = typeof CART_KEY !== 'undefined' ? CART_KEY : 'babi_cart_items';
 var LEGACY_CART_KEY = typeof LEGACY_CART_KEY !== 'undefined' ? LEGACY_CART_KEY : 'babi_cart';
 
-function getCartItems() {
+// Global Direct Access
+if (typeof window !== 'undefined') {
+    window.CART_KEY = CART_KEY;
+    window.LEGACY_CART_KEY = LEGACY_CART_KEY;
+}
     try {
         const primary = JSON.parse(localStorage.getItem(CART_KEY));
         if (Array.isArray(primary) && primary.length > 0) {
@@ -248,4 +252,15 @@ function setupAddToCartGlobalDelegation() {
 
         addToCart(name, price, image);
     });
+}
+
+if (typeof window !== 'undefined') {
+    window.addToCart = addToCart;
+    window.removeFromCart = removeFromCart;
+    window.updateQtyInCart = updateQtyInCart;
+    window.getCartItems = getCartItems;
+    window.getCartCount = getCartCount;
+    window.getCartTotal = getCartTotal;
+    window.updateAllBadges = updateAllBadges;
+    window.showAddToCartToast = showAddToCartToast;
 }
