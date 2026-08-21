@@ -4,8 +4,7 @@
   "description": "Boulangerie de BABI - Plateforme Web & SaaS",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js",
-    "build": "echo 'Build OK'"
+    "start": "node server.js"
   },
   "keywords": ["boulangerie", "babi", "abidjan", "saas", "pos"],
   "author": "Christ-Hub-pixel",
