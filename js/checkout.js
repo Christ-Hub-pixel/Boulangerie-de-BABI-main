@@ -225,7 +225,7 @@ function submitBabiOrder(isAlreadyValidated = false) {
     const grandTotal = Math.max(0, subtotal + deliveryCost);
 
     const orderId = 'BABI-CMD-' + Math.floor(100000 + Math.random() * 900000);
-    const confCode = Math.floor(1000 + Math.random() * 9000);
+    const confCode = String(Math.floor(1000 + Math.random() * 9000));
 
     const notesInput = document.getElementById('orderNotesInput');
     const orderNotes = notesInput ? notesInput.value.trim() : '';
@@ -248,6 +248,8 @@ function submitBabiOrder(isAlreadyValidated = false) {
         notes: orderNotes,
         status: 'Nouveau',
         confCode: confCode,
+        code_pin: confCode,
+        pickup_pin: confCode,
         idempotency_key: 'IDEM_' + Date.now() + '_' + Math.random().toString(36).substring(2, 9),
         security_evaluated: true,
         createdAt: new Date().toISOString()
@@ -273,6 +275,7 @@ function submitBabiOrder(isAlreadyValidated = false) {
                 total_price: newOrder.total_price,
                 payment_method: newOrder.payment_method,
                 notes: newOrder.notes,
+                code_pin: newOrder.code_pin,
                 idempotency_key: newOrder.idempotency_key
             })
         }).catch(() => {});

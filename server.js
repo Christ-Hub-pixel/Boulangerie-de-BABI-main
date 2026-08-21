@@ -706,7 +706,10 @@ app.post('/api/orders', async (req, res) => {
             return res.status(400).json({ error: "Numéro de téléphone obligatoire pour la validation." });
         }
 
-        const pin = Math.floor(1000 + Math.random() * 9000).toString();
+        const rawPin = req.body.code_pin || req.body.pin;
+        const pin = (rawPin && /^\d{4}$/.test(String(rawPin)))
+            ? String(rawPin)
+            : Math.floor(1000 + Math.random() * 9000).toString();
         
         const result = await db.run(
             `INSERT INTO orders (customer_name, phone, address, items, total_price, payment_method, status, type_retrait, code_pin)
@@ -728,7 +731,7 @@ app.post('/api/orders', async (req, res) => {
             }
         } catch (e) {}
 
-        res.status(201).json({ success: true, order_id: result.lastID, pin });
+        res.status(201).json({ success: true, order_id: result.lastID, pin, code_pin: pin });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }

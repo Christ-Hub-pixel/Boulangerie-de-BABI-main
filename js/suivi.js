@@ -181,14 +181,13 @@ function displayOrderOnUI(order) {
     if (orderPaymentDisp) orderPaymentDisp.innerText = order.payment_method || 'Wave Mobile Money';
     if (orderItemsDisp) orderItemsDisp.innerText = order.items || order.itemsSummary || 'Produits de la Boulangerie BABI';
 
-    if (order.confirmation_code || order.confCode) {
-        const confBox = document.getElementById('confirmation-code-box');
-        const confCodeEl = document.getElementById('order-conf-code');
-        const pickupRefEl = document.getElementById('pickup-order-ref');
-        if (confBox) confBox.style.display = 'block';
-        if (confCodeEl) confCodeEl.innerText = order.confirmation_code || order.confCode;
-        if (pickupRefEl) pickupRefEl.innerText = '#' + (order.id || 'BABI-100');
-    }
+    const pin = order.code_pin || order.confirmation_code || order.confCode || order.pickup_pin || '7412';
+    const confBox = document.getElementById('confirmation-code-box');
+    const confCodeEl = document.getElementById('order-conf-code');
+    const pickupRefEl = document.getElementById('pickup-order-ref');
+    if (confBox) confBox.style.display = 'block';
+    if (confCodeEl) confCodeEl.innerText = pin;
+    if (pickupRefEl) pickupRefEl.innerText = '#' + (order.id || 'BABI-100');
 
     const sealEl = document.getElementById('quantum-certified-seal');
     if (sealEl) {
