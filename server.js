@@ -216,6 +216,14 @@ function evaluateTransactionAiRisk(orderData, req) {
     };
 }
 
+// 🔄 Alias /api/v1 to /api for seamless Flutter & Mobile App compatibility
+app.use((req, res, next) => {
+    if (req.url.startsWith('/api/v1/')) {
+        req.url = req.url.replace('/api/v1/', '/api/');
+    }
+    next();
+});
+
 // Check API status
 app.get('/api/status', (req, res) => {
     res.json({ status: 'API is running', version: '2.0.0', architecture: '4-Postes (Client, Caissiere, Gerante, Admin)' });
