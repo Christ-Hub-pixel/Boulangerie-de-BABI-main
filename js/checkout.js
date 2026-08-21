@@ -2,6 +2,8 @@
 // BABI CHECKOUT & ORDER SUBMISSION CONTROLLER
 // ================================================================
 
+const API_ROOT = (typeof window !== 'undefined' && (window.API_BASE_URL || (window.location.hostname.includes('boulangeriedebabi.com') ? 'https://api.boulangeriedebabi.com' : 'http://localhost:5000'))) || 'http://localhost:5000';
+
 document.addEventListener('DOMContentLoaded', () => {
     initCheckoutPage();
 });
@@ -257,7 +259,7 @@ function submitBabiOrder(isAlreadyValidated = false) {
 
     // Helper to finish order and save
     const finalizeOrder = () => {
-        fetch('http://localhost:5000/api/orders', {
+        fetch(`${API_ROOT}/api/orders`, {
             method: 'POST',
             headers: { 
                 'Content-Type': 'application/json',

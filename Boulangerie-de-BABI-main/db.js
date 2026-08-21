@@ -1,15 +1,51 @@
-const sqlite3 = require('sqlite3').verbose();
-const { open } = require('sqlite');
 const path = require('path');
 const fs = require('fs');
 
 const dbPath = path.resolve(__dirname, 'database.sqlite');
 
+class SqliteDbWrapper {
+    constructor(dbSync) {
+        this._db = dbSync;
+    }
+
+    async exec(sql) {
+        return this._db.exec(sql);
+    }
+
+    async run(sql, params = []) {
+        const stmt = this._db.prepare(sql);
+        const res = stmt.run(...params);
+        return {
+            lastID: Number(res.lastInsertRowid),
+            changes: res.changes
+        };
+    }
+
+    async get(sql, params = []) {
+        const stmt = this._db.prepare(sql);
+        return stmt.get(...params);
+    }
+
+    async all(sql, params = []) {
+        const stmt = this._db.prepare(sql);
+        return stmt.all(...params);
+    }
+}
+
 async function initDB() {
-    const db = await open({
-        filename: dbPath,
-        driver: sqlite3.Database
-    });
+    let db;
+    try {
+        const { DatabaseSync } = require('node:sqlite');
+        const dbSync = new DatabaseSync(dbPath);
+        db = new SqliteDbWrapper(dbSync);
+    } catch (e) {
+        const sqlite3 = require('sqlite3').verbose();
+        const { open } = require('sqlite');
+        db = await open({
+            filename: dbPath,
+            driver: sqlite3.Database
+        });
+    }
 
     // Create Tables
     await db.exec(`

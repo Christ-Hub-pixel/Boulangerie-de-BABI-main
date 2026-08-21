@@ -2,6 +2,8 @@
 // POS CAISSIÈRE — LOGIQUE POINT DE VENTE & ENCAISSEMENT
 // -------------------------------------------------------------
 
+const API_ROOT = (typeof window !== 'undefined' && (window.API_BASE_URL || (window.location.hostname.includes('boulangeriedebabi.com') ? 'https://api.boulangeriedebabi.com' : 'http://localhost:5000'))) || 'http://localhost:5000';
+
 let posCart = [
     { id: 'baguette', name: 'Baguette Tradition', price: 200, qty: 2 },
     { id: 'croissant', name: 'Croissant Pur Beurre', price: 350, qty: 1 }
@@ -431,7 +433,7 @@ const FALLBACK_POS_PRODUCTS = [
 ];
 
 let posProducts = [];
-let posCart = [];
+posCart = [];
 let currentCategory = 'all';
 let currentReceiptData = null;
 
@@ -478,7 +480,7 @@ function resolveProductImage(p) {
 // Load products
 async function loadPosProducts() {
     try {
-        const res = await fetch('http://localhost:5000/api/products');
+        const res = await fetch(`${API_ROOT}/api/products`);
         if (res.ok) {
             posProducts = await res.json();
         } else {
@@ -713,7 +715,7 @@ async function processSale(paymentMethod) {
     };
 
     try {
-        const res = await fetch('http://localhost:5000/api/orders/pos', {
+        const res = await fetch(`${API_ROOT}/api/orders/pos`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(orderData)
@@ -814,7 +816,7 @@ async function verifyPickupPin() {
     }
 
     try {
-        const res = await fetch('http://localhost:5000/api/orders/verify-pin', {
+        const res = await fetch(`${API_ROOT}/api/orders/verify-pin`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ order_id: orderInput, code_pin: pinInput })

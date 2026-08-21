@@ -1,6 +1,8 @@
 // -------------------------------------------------------------
-// AUTHENTICATION & RBAC LOGIC (4 POSTES)
+// GESTION AUTHENTIFICATION & UTILISATEURS
 // -------------------------------------------------------------
+
+const API_ROOT = (typeof window !== 'undefined' && (window.API_BASE_URL || (window.location.hostname.includes('boulangeriedebabi.com') ? 'https://api.boulangeriedebabi.com' : 'http://localhost:5000'))) || 'http://localhost:5000';
 
 document.addEventListener('DOMContentLoaded', () => {
     
@@ -75,7 +77,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 // Essai de connexion via l'API Backend
                 try {
-                    const res = await fetch('http://localhost:5000/api/auth/login', {
+                    const res = await fetch(`${API_ROOT}/api/auth/login`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ email: identifiant, mot_de_passe: password })
@@ -152,7 +154,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const password = inputs[4] ? inputs[4].value : 'client123';
                 
                 try {
-                    const res = await fetch('http://localhost:5000/api/auth/register', {
+                    const res = await fetch(`${API_ROOT}/api/auth/register`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ nom, prenom, email, telephone: phone, mot_de_passe: password })

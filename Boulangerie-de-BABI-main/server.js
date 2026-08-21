@@ -17,7 +17,7 @@ const secureAuthService = require('./services/secure_auth.service.js');
 const paymentGatewayService = require('./services/payment_gateway.service.js');
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 5000;
 
 app.use(cors());
 app.use(express.json({ limit: '1mb' }));
@@ -102,6 +102,17 @@ app.use((req, res, next) => {
 app.use(express.static(__dirname));
 
 let db;
+
+app.use(async (req, res, next) => {
+    if (!db) {
+        try {
+            db = await initDB();
+        } catch(e) {
+            console.error("DB init error:", e);
+        }
+    }
+    next();
+});
 
 // ==========================================
 // 🛡️ CYBERSECURITY & AI FRAUD SENTINEL
@@ -487,16 +498,21 @@ app.post('/api/pos/sale', async (req, res) => {
             await db.run(`UPDATE cash_registers SET total_ventes = total_ventes + ?, ${col} = ${col} + ? WHERE id = ?`, [total_price, total_price, openRegister.id]);
         }
 
-        res.status(201).json({
-            success: true,
+        const saleData = {
             order_id: result.lastID,
             receipt_number: receiptNumber,
             date: new Date().toISOString(),
             total_price,
             payment_method,
-            amount_received,
-            change_given,
+            amount_received: amount_received || req.body.montant_recu || total_price,
+            change_given: change_given || req.body.monnaie_rendue || 0,
             caissiere_nom: caissiere_nom || 'Caissière Awa'
+        };
+
+        res.status(201).json({
+            success: true,
+            ...saleData,
+            sale: saleData
         });
     } catch (err) {
         res.status(500).json({ error: err.message });
@@ -1171,13 +1187,14 @@ function startAutomatedRefundWorker(database) {
 
             for (const order of staleOrders) {
                 console.log(`[Auto-Refund Worker] Commande #${order.id} non confirmée depuis 15 min. Exécution du remboursement automatique...`);
+                const autoRefundMsg = "Remboursement automatique déclenché : délai d'acceptation boulangerie (15 min) dépassé. Vos fonds ont été recrédités sur votre compte Mobile Money.";
                 await database.run(
                     `UPDATE orders 
                      SET status = 'annule_rembourse', 
                          refund_status = 'rembourse', 
-                         support_message = 'Remboursement automatique déclenché : délai d\'acceptation boulangerie (15 min) dépassé. Vos fonds ont été recrédités sur votre compte Mobile Money.'
+                         support_message = ?
                      WHERE id = ?`,
-                    [order.id]
+                    [autoRefundMsg, order.id]
                 );
             }
         } catch (e) {

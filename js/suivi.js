@@ -1,3 +1,4 @@
+const API_ROOT = (typeof window !== 'undefined' && (window.API_BASE_URL || (window.location.hostname.includes('boulangeriedebabi.com') ? 'https://api.boulangeriedebabi.com' : 'http://localhost:5000'))) || 'http://localhost:5000';
 
 let map;
 let bakeryMarker;
@@ -113,7 +114,7 @@ async function fetchOrderStatus() {
 
     // 1. Try backend API
     try {
-        const res = await fetch('http://localhost:5000/api/orders/track/' + encodeURIComponent(cleanPhone));
+        const res = await fetch(`${API_ROOT}/api/orders/track/` + encodeURIComponent(cleanPhone));
         if (res.ok) {
             const data = await res.json();
             if (data && data.success && data.order) {
@@ -470,7 +471,7 @@ window.submitClientRating = function() {
     const orderId = order ? order.id : 'BABI-100';
     const comment = document.getElementById('clientCommentText') ? document.getElementById('clientCommentText').value : '';
 
-    fetch(`http://localhost:5000/api/orders/${orderId}/rate`, {
+    fetch(`${API_ROOT}/api/orders/${orderId}/rate`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -497,7 +498,7 @@ window.triggerCustomerAutoCancel = function() {
     const orderId = order ? order.id : 'BABI-CMD-100';
 
     if (confirm("Voulez-vous vraiment annuler votre commande ?\nLe remboursement sera effectué immédiatement sur votre compte Mobile Money.")) {
-        fetch('http://localhost:5000/api/payments/refund', {
+        fetch(`${API_ROOT}/api/payments/refund`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({

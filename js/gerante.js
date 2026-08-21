@@ -2,6 +2,8 @@
 // DASHBOARD GÉRANTE — LOGIQUE PILOTAGE & DIRECTION
 // -------------------------------------------------------------
 
+const API_ROOT = (typeof window !== 'undefined' && (window.API_BASE_URL || (window.location.hostname.includes('boulangeriedebabi.com') ? 'https://api.boulangeriedebabi.com' : 'http://localhost:5000'))) || 'http://localhost:5000';
+
 let allStocks = [];
 let allOrders = [];
 let allEmployees = [];
@@ -75,7 +77,7 @@ async function loadDashboardData() {
 // 1. Load KPIs
 async function loadKpis() {
     try {
-        const res = await fetch('http://localhost:5000/api/reports/manager-dashboard');
+        const res = await fetch(`${API_ROOT}/api/reports/manager-dashboard`);
         if (!res.ok) throw new Error("API Offline");
         const data = await res.json();
 
@@ -119,7 +121,7 @@ function updateAlertBanner(count) {
 // 2. Load Stocks & Fournil
 async function loadStocks() {
     try {
-        const res = await fetch('http://localhost:5000/api/stocks');
+        const res = await fetch(`${API_ROOT}/api/stocks`);
         if (!res.ok) throw new Error("API Offline");
         allStocks = await res.json();
     } catch (err) {
@@ -190,7 +192,7 @@ async function submitStockAdjustment() {
     const motif = document.getElementById('modal-stock-motif').value;
 
     try {
-        const res = await fetch('http://localhost:5000/api/stocks/adjust', {
+        const res = await fetch(`${API_ROOT}/api/stocks/adjust`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -224,7 +226,7 @@ async function submitStockAdjustment() {
 // 3. Load Fournil Orders
 async function loadFournilOrders() {
     try {
-        const res = await fetch('http://localhost:5000/api/orders');
+        const res = await fetch(`${API_ROOT}/api/orders`);
         if (!res.ok) throw new Error("API Offline");
         allOrders = await res.json();
     } catch (e) {
@@ -271,7 +273,7 @@ function renderFournilTable() {
 
 async function updateOrderStatus(orderId, newStatus) {
     try {
-        await fetch(`http://localhost:5000/api/orders/${orderId}/status`, {
+        await fetch(`${API_ROOT}/api/orders/${orderId}/status`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ statut: newStatus })
@@ -288,7 +290,7 @@ async function updateOrderStatus(orderId, newStatus) {
 // 4. Load Employees
 async function loadEmployees() {
     try {
-        const res = await fetch('http://localhost:5000/api/employees');
+        const res = await fetch(`${API_ROOT}/api/employees`);
         if (!res.ok) throw new Error("API Offline");
         allEmployees = await res.json();
     } catch (e) {
@@ -327,7 +329,7 @@ function renderEmployeesTable() {
 
 async function updateEmployeePresence(empId, status) {
     try {
-        await fetch(`http://localhost:5000/api/employees/${empId}/presence`, {
+        await fetch(`${API_ROOT}/api/employees/${empId}/status`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ statut_presence: status })
@@ -347,7 +349,7 @@ async function updateEmployeePresence(empId, status) {
 async function loadMovements() {
     let movements = [];
     try {
-        const res = await fetch('http://localhost:5000/api/stocks/movements');
+        const res = await fetch(`${API_ROOT}/api/stocks/movements`);
         if (!res.ok) throw new Error("API Offline");
         movements = await res.json();
     } catch (e) {
