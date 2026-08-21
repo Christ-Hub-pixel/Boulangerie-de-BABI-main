@@ -5,6 +5,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Boulangerie de Babi</title>
+    <script>
+      (function() {
+        const host = window.location.hostname.toLowerCase();
+        if (host.startsWith('caisse.')) window.location.replace('/caissiere.html');
+        else if (host.startsWith('fournil.')) window.location.replace('/gerante.html');
+        else if (host.startsWith('admin.')) window.location.replace('/admin.html');
+      })();
+    </script>
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
