@@ -30,6 +30,11 @@
       "has": [{ "type": "host", "value": "admin.boulangeriedebabi.com" }],
       "destination": "/admin.html"
     },
+    {
+      "source": "/(.*)",
+      "has": [{ "type": "host", "value": "api.boulangeriedebabi.com" }],
+      "destination": "/api/index.js"
+    },
     { "source": "/app", "destination": "/app.html" },
     { "source": "/app/", "destination": "/app.html" },
     { "source": "/api/(.*)", "destination": "/api/index.js" }
