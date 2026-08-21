@@ -1,4 +1,4 @@
-const CACHE_NAME = 'babi-bakery-v3';
+const CACHE_NAME = 'babi-bakery-v4';
 const ASSETS_TO_CACHE = [
   '/',
   '/index.html',
@@ -17,6 +17,7 @@ const ASSETS_TO_CACHE = [
   '/js/products.js',
   '/js/auth.js',
   '/assets/logo.png',
+  '/assets/brand_logo.png',
   '/assets/scooter_livraison.png'
 ];
 
