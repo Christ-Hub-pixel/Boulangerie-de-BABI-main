@@ -4,10 +4,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>À Propos - Boulangerie de Babi</title>
+    <title>Maison d'Excellence & Savoir-Faire — Boulangerie de Babi</title>
     <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
-        href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,500;0,600;0,700;0,800;1,400;1,600&display=swap"
         rel="stylesheet">
     <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -16,45 +18,49 @@
     <link rel="stylesheet" href="css/global.css">
     <link rel="stylesheet" href="css/animations.css">
     <link rel="stylesheet" href="css/apropos.css">
+    <link rel="icon" type="image/png" href="assets/logo.png">
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+    <link rel="apple-touch-icon" href="assets/logo.png">
 </head>
 
 <body>
 
     <!-- E-commerce Navbar -->
     <nav class="navbar navbar-expand-lg fixed-top py-2"
-        style="background: rgba(43, 22, 12, 0.95); backdrop-filter: blur(10px); box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+        style="background: rgba(43, 22, 12, 0.96); backdrop-filter: blur(12px); box-shadow: 0 4px 20px rgba(0,0,0,0.25); z-index: 1050;">
         <div class="container align-items-center">
             <!-- Toggler for Mobile Sidebar -->
             <button class="navbar-toggler border-0 px-1 me-2 text-white" type="button" data-bs-toggle="offcanvas"
-                data-bs-target="#mobileSidebar">
+                data-bs-target="#mobileSidebar" aria-label="Menu Mobile">
                 <i class="fa-solid fa-bars fs-2"></i>
             </button>
 
             <!-- Logo -->
             <a class="navbar-brand d-flex align-items-center text-decoration-none me-auto me-lg-4" href="index.html">
-                <img src="assets/logo.png" alt="Logo" class="navbar-brand-logo">
-                <div class="d-flex flex-column lh-1">
-                    <span class="navbar-brand-title">Boulangerie</span>
-                    <span class="navbar-brand-subtitle d-flex align-items-center">de Babi <span class="flag-ci flag-ci-sm ms-1"></span></span>
+                <img src="assets/logo.png" alt="Logo" class="navbar-brand-logo" style="height: 48px; width: auto;">
+                <div class="d-flex flex-column lh-1 ms-2">
+                    <span class="navbar-brand-title fw-bold text-white" style="font-size: 1.25rem; letter-spacing: 0.5px;">Boulangerie</span>
+                    <span class="navbar-brand-subtitle d-flex align-items-center text-warning" style="font-size: 0.85rem; font-weight: 600;">
+                        de Babi <span class="flag-ci flag-ci-sm ms-1"></span>
+                    </span>
                 </div>
             </a>
 
             <!-- Search Bar (Desktop) -->
-            <div class="d-none d-lg-flex flex-grow-1 header-search-container mx-3">
+            <div class="d-none d-lg-flex flex-grow-1 header-search-container mx-4">
                 <form class="babi-search-form w-100 m-0" role="search" onsubmit="event.preventDefault();">
-                    <div class="babi-search-wrapper">
-                        <i class="fa-solid fa-magnifying-glass babi-search-icon"></i>
-                        <input type="text" class="babi-search-input"
-                            placeholder="Pain chaud, croissant, gâteau, bissap..." 
+                    <div class="babi-search-wrapper" style="border-radius: 50px; background: rgba(255,255,255,0.1); border: 1px solid rgba(251,146,60,0.3);">
+                        <i class="fa-solid fa-magnifying-glass babi-search-icon text-warning"></i>
+                        <input type="text" class="babi-search-input text-white"
+                            placeholder="Baguette chaude, croissant au beurre, entremet..." 
                             aria-label="Rechercher un produit"
                             autocomplete="off"
                             spellcheck="false">
-                        <button type="button" class="search-clear-btn" title="Effacer la recherche" aria-label="Effacer">
+                        <button type="button" class="search-clear-btn text-white" title="Effacer la recherche" aria-label="Effacer">
                             <i class="fa-solid fa-xmark"></i>
                         </button>
-                        <kbd class="babi-search-kbd d-none d-xl-inline-flex" title="Raccourci clavier">Ctrl K</kbd>
-                        <button type="submit" class="babi-search-btn">
-                            <i class="fa-solid fa-magnifying-glass"></i>
+                        <button type="submit" class="babi-search-btn" style="background: #ea580c; color: #fff; border-radius: 50px; padding: 6px 18px;">
+                            <i class="fa-solid fa-magnifying-glass me-1"></i>
                             <span>Rechercher</span>
                         </button>
                     </div>
@@ -63,31 +69,29 @@
 
             <!-- Icons (Desktop & Mobile) -->
             <div class="d-flex align-items-center gap-3 gap-lg-4">
-                <a href="connexion.html" class="text-white text-decoration-none d-flex align-items-center gap-2">
-                    <i class="fa-regular fa-user fs-4"></i>
+                <a href="connexion.html" class="text-white text-decoration-none d-flex align-items-center gap-2 hover-warning">
+                    <i class="fa-regular fa-user fs-4 text-warning"></i>
                     <div class="d-none d-lg-flex flex-column lh-1">
-                        <span style="font-size: 0.75rem; color: #ccc;">Bonjour, Connectez-vous</span>
-                        <span class="fw-bold" style="font-size: 0.9rem;">Mon Compte <i
-                                class="fa-solid fa-chevron-down ms-1" style="font-size:0.7rem;"></i></span>
+                        <span style="font-size: 0.72rem; color: #cbd5e1;">Espace Client</span>
+                        <span class="fw-bold" style="font-size: 0.88rem;">Mon Compte</span>
                     </div>
                 </a>
 
                 <a href="apropos.html"
-                    class="text-white text-decoration-none d-none d-lg-flex align-items-center gap-2">
-                    <i class="fa-regular fa-circle-question fs-4"></i>
-                    <div class="d-flex flex-column lh-1">
-                        <span class="fw-bold mt-2" style="font-size: 0.9rem;">Aide <i
-                                class="fa-solid fa-chevron-down ms-1" style="font-size:0.7rem;"></i></span>
-                    </div>
+                    class="text-warning text-decoration-none d-none d-lg-flex align-items-center gap-2 fw-bold" style="border-bottom: 2px solid #fb923c; padding-bottom: 2px;">
+                    <i class="fa-solid fa-crown fs-5"></i>
+                    <span style="font-size: 0.88rem;">La Maison</span>
                 </a>
 
                 <a href="cart.html"
-                    class="position-relative text-white text-decoration-none d-flex align-items-center gap-2">
-                    <i class="fa-solid fa-cart-shopping fs-4"></i>
-                    <span
-                        class="position-absolute top-0 start-0 translate-middle badge rounded-pill bg-danger cart-badge ms-2 mt-1"
-                        style="font-size: 0.6em;display:none;">0</span>
-                    <span class="d-none d-lg-block fw-bold mt-1">Panier</span>
+                    class="position-relative text-white text-decoration-none d-flex align-items-center gap-2 hover-warning">
+                    <div class="position-relative">
+                        <i class="fa-solid fa-basket-shopping fs-4 text-warning"></i>
+                        <span
+                            class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger cart-badge"
+                            style="font-size: 0.65em; display:none;">0</span>
+                    </div>
+                    <span class="d-none d-lg-block fw-bold" style="font-size: 0.9rem;">Panier</span>
                 </a>
             </div>
         </div>
@@ -95,17 +99,14 @@
         <!-- Search Bar (Mobile) -->
         <div class="container d-lg-none mt-2 pb-1 header-search-mobile">
             <form class="babi-search-form w-100 m-0" role="search" onsubmit="event.preventDefault();">
-                <div class="babi-search-wrapper">
-                    <i class="fa-solid fa-magnifying-glass babi-search-icon"></i>
-                    <input type="text" class="babi-search-input" 
-                        placeholder="Pain, croissant, gâteau, jus..." 
+                <div class="babi-search-wrapper" style="border-radius: 50px; background: rgba(255,255,255,0.1); border: 1px solid rgba(251,146,60,0.3);">
+                    <i class="fa-solid fa-magnifying-glass babi-search-icon text-warning"></i>
+                    <input type="text" class="babi-search-input text-white" 
+                        placeholder="Pain, croissant, gâteau..." 
                         aria-label="Rechercher un produit"
                         autocomplete="off"
                         spellcheck="false">
-                    <button type="button" class="search-clear-btn" title="Effacer la recherche" aria-label="Effacer">
-                        <i class="fa-solid fa-xmark"></i>
-                    </button>
-                    <button type="submit" class="babi-search-btn px-2 py-1">
+                    <button type="submit" class="babi-search-btn px-3 py-1" style="background: #ea580c; color: #fff; border-radius: 50px;">
                         <i class="fa-solid fa-magnifying-glass"></i>
                     </button>
                 </div>
@@ -114,292 +115,442 @@
     </nav>
 
     <!-- Offcanvas Mobile Sidebar -->
-    <div class="offcanvas offcanvas-start" tabindex="-1" id="mobileSidebar">
-        <div class="offcanvas-header bg-dark text-white">
-            <h5 class="offcanvas-title"><i class="fa-solid fa-wheat-awn text-primary"></i> Boulangerie de Babi</h5>
+    <div class="offcanvas offcanvas-start" tabindex="-1" id="mobileSidebar" style="background: #2b160c; color: white;">
+        <div class="offcanvas-header border-bottom border-secondary">
+            <div class="d-flex align-items-center gap-2">
+                <img src="assets/logo.png" style="height: 36px;" alt="Logo">
+                <h5 class="offcanvas-title fw-bold text-warning mb-0">Boulangerie de Babi</h5>
+            </div>
             <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
         </div>
         <div class="offcanvas-body p-0">
             <div class="list-group list-group-flush">
-                <a href="index.html" class="list-group-item list-group-item-action fw-bold"><i
-                        class="fa-solid fa-house me-2"></i> Accueil</a>
-                <a href="produits.html" class="list-group-item list-group-item-action"><i
-                        class="fa-solid fa-bread-slice me-2"></i> Pains</a>
-                <a href="produits.html" class="list-group-item list-group-item-action"><i
-                        class="fa-solid fa-cookie me-2"></i> Viennoiseries</a>
-                <a href="produits.html" class="list-group-item list-group-item-action"><i
-                        class="fa-solid fa-cake-candles me-2"></i> Pâtisseries</a>
-                <a href="produits.html" class="list-group-item list-group-item-action"><i
-                        class="fa-solid fa-mug-hot me-2"></i> Boissons</a>
-                <a href="fidelite.html" class="list-group-item list-group-item-action"><i
-                        class="fa-solid fa-gift me-2"></i> Fidélité</a>
-                <a href="contact.html" class="list-group-item list-group-item-action"><i
-                        class="fa-solid fa-envelope me-2"></i> Contact</a>
+                <a href="index.html" class="list-group-item list-group-item-action bg-transparent text-white border-secondary py-3">
+                    <i class="fa-solid fa-house me-2 text-warning"></i> Accueil
+                </a>
+                <a href="produits.html" class="list-group-item list-group-item-action bg-transparent text-white border-secondary py-3">
+                    <i class="fa-solid fa-bread-slice me-2 text-warning"></i> Nos Produits & Pains Chauds
+                </a>
+                <a href="evenements.html" class="list-group-item list-group-item-action bg-transparent text-warning fw-bold border-secondary py-3">
+                    <i class="fa-solid fa-cake-candles me-2 text-warning"></i> Gâteaux d'Événements VIP
+                </a>
+                <a href="apropos.html" class="list-group-item list-group-item-action active text-dark fw-bold border-secondary py-3" style="background: #fb923c !important;">
+                    <i class="fa-solid fa-crown me-2 text-dark"></i> La Maison & Savoir-Faire
+                </a>
+                <a href="fidelite.html" class="list-group-item list-group-item-action bg-transparent text-white border-secondary py-3">
+                    <i class="fa-solid fa-gift me-2 text-warning"></i> Club Fidélité & Récompenses
+                </a>
+                <a href="suivi.html" class="list-group-item list-group-item-action bg-transparent text-white border-secondary py-3">
+                    <i class="fa-solid fa-truck-fast me-2 text-warning"></i> Suivi de Commande
+                </a>
+                <a href="contact.html" class="list-group-item list-group-item-action bg-transparent text-white border-secondary py-3">
+                    <i class="fa-solid fa-location-dot me-2 text-warning"></i> Nous Trouver / Contact
+                </a>
             </div>
         </div>
     </div>
 
-    <div class="bg-white py-2 shadow-sm" style="margin-top: 100px;">
-        <div class="container fs-sm text-muted">
-            <a href="index.html" class="text-decoration-none text-dark hover-primary"><i class="fa-solid fa-house"></i>
-                Accueil</a>
-            <i class="fa-solid fa-chevron-right mx-2" style="font-size:0.7em;"></i> <span>À Propos de Nous</span>
+    <!-- Breadcrumb Bar -->
+    <div class="vip-breadcrumb-bar">
+        <div class="container d-flex align-items-center gap-2">
+            <a href="index.html" class="text-decoration-none">
+                <i class="fa-solid fa-house me-1"></i> Accueil
+            </a>
+            <i class="fa-solid fa-chevron-right text-muted" style="font-size: 0.65rem;"></i>
+            <span>Maison d'Excellence & Savoir-Faire</span>
         </div>
     </div>
 
-    <div class="container my-4 mb-5 pb-3">
-        <div class="bg-white rounded shadow-sm p-4 p-lg-5 mb-5">
+    <!-- VIP Hero Section -->
+    <header class="vip-about-hero text-center position-relative">
+        <div class="vip-hero-sparkle"></div>
+        <div class="container position-relative" style="z-index: 2;">
+            <div class="vip-badge">
+                <i class="fa-solid fa-crown text-warning"></i> Maison d'Excellence & Artisanat d'Or
+            </div>
+            <h1 class="vip-hero-title">
+                L'Art du Pain Chaud & de la <span class="text-gold">Haute Pâtisserie</span> à Abidjan
+            </h1>
+            <p class="vip-hero-desc">
+                Depuis notre fournil au cœur de Cocody Riviera 2, nous allions la pure tradition de la boulangerie artisanale et la générosité des terroirs ivoiriens pour créer chaque jour des instants gourmands inoubliables.
+            </p>
 
-            <!-- Notre Histoire -->
-            <section class="history-section">
-                <div class="history-container">
-                    <div class="history-text">
-                        <div class="section-badge"><i class="fa-solid fa-wheat-awn"></i> NOTRE HISTOIRE</div>
-                        <h2>Une histoire de passion<br>et de tradition</h2>
-                        <p>Boulangerie de Babi est née d'un amour profond pour le bon pain et les produits de qualité.
-                            Fondée à Abidjan, notre boulangerie familiale perpétue les traditions artisanales tout en
-                            innovant chaque jour pour répondre aux attentes de nos clients.</p>
-                        <p>Du choix des matières premières à la cuisson, chaque étape est réalisée avec soin et passion
-                            par nos boulangers artisans.</p>
-                        <div class="signature">L'équipe Babi <i class="fa-regular fa-heart"></i></div>
-                    </div>
-                    <div class="history-image position-relative">
-                        <img src="assets/savoir_faire.png" alt="Notre histoire" class="w-100 rounded-4 shadow about-story-img">
-                        <div class="history-slogan p-3 rounded-4 shadow-lg text-center position-absolute bottom-0 end-0 m-3 m-md-4"
-                            style="background: rgba(43, 22, 12, 0.92); backdrop-filter: blur(8px); border: 1.5px solid #ffc107; max-width: 300px;">
-                            <div class="mb-1" style="color: #ffc107; font-size: 1rem;">
-                                <i class="fa-solid fa-quote-left"></i>
+            <!-- Metrics Ribbon -->
+            <div class="vip-metrics-ribbon">
+                <div class="vip-metric-card">
+                    <div class="vip-metric-num">5</div>
+                    <div class="vip-metric-label"><i class="fa-solid fa-fire text-warning me-1"></i> Fournées Chaudes / Jour</div>
+                </div>
+                <div class="vip-metric-card">
+                    <div class="vip-metric-num">100%</div>
+                    <div class="vip-metric-label"><i class="fa-solid fa-wheat-awn text-warning me-1"></i> Farines Pures & Levain</div>
+                </div>
+                <div class="vip-metric-card">
+                    <div class="vip-metric-num">+15 Ans</div>
+                    <div class="vip-metric-label"><i class="fa-solid fa-award text-warning me-1"></i> Savoir-Faire d'Artisans</div>
+                </div>
+                <div class="vip-metric-card">
+                    <div class="vip-metric-num">4.9 / 5</div>
+                    <div class="vip-metric-label"><i class="fa-solid fa-star text-warning me-1"></i> +12 000 Clients Régalés</div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main VIP Content Container -->
+    <main class="container mb-5">
+        <div class="vip-main-card">
+
+            <!-- SECTION 1 : NOTRE HISTOIRE & HÉRITAGE -->
+            <section class="vip-history-section">
+                <div class="vip-history-grid">
+                    <div class="vip-history-text">
+                        <div class="vip-section-badge">
+                            <i class="fa-solid fa-wheat-awn"></i> NOTRE HISTOIRE & HÉRITAGE
+                        </div>
+                        <h3>Une passion ardente pour le vrai goût artisanal</h3>
+                        <p>
+                            Née d'une vision noble et d'un amour profond pour la gastronomie authentique, <strong>Boulangerie de Babi</strong> perpétue les gestes ancestraux du pétrissage, des fermentations lentes et de la cuisson sur sole réfractaire.
+                        </p>
+                        <p>
+                            À Abidjan, nous refusons les compromis industriels : nos baguettes croustillent sous la dent, nos croissants feuilletent au beurre fin de premier choix, et nos jus naturels subliment la richesse des fruits de notre Côte d'Ivoire (Bissap, Tomi, Gingembre, Baobab).
+                        </p>
+                        <p>
+                            Chaque aube qui se lève dans nos ateliers est une symphonie de parfums, d'exigence et de convivialité, guidée par une seule promesse : vous régaler à chaque bouchée.
+                        </p>
+                        <div class="vip-signature-box">
+                            <div>
+                                <div class="small text-muted mb-1 text-uppercase fw-bold" style="letter-spacing: 1px;">Avec toute notre dévotion,</div>
+                                <div class="vip-signature">L'Équipe Boulangerie de Babi</div>
                             </div>
-                            <p class="fst-italic fw-bold mb-1 text-white" style="font-family: 'Playfair Display', serif; font-size: 0.95rem; line-height: 1.3;">
-                                « La passion du vrai pain frais, pétri avec amour chaque jour. »
-                            </p>
-                            <span class="badge bg-warning text-dark fw-bold text-uppercase px-2 py-1" style="font-size: 0.65rem;">
-                                — Boulangerie de Babi
-                            </span>
+                            <div class="vip-seal">
+                                <i class="fa-solid fa-certificate text-warning fs-5"></i>
+                                <span>Certifié Maître Artisan</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="vip-history-img-box">
+                        <img src="assets/savoir_faire.png" alt="Savoir-Faire Boulangerie de Babi" onerror="this.src='assets/boutique BB.png'">
+                        <div class="vip-history-quote-badge">
+                            <div class="d-flex align-items-center gap-2 mb-1">
+                                <i class="fa-solid fa-quote-left text-warning fs-5"></i>
+                                <span class="badge bg-warning text-dark fw-bold px-2 py-1" style="font-size: 0.7rem;">CHARTE D'EXCELLENCE</span>
+                            </div>
+                            <div class="fst-italic fw-bold text-white mb-1" style="font-family: 'Playfair Display', serif; font-size: 1.05rem;">
+                                « Le pain parfait n'est pas un hasard : c'est la patience du levain, la précision du feu et le cœur de l'artisan. »
+                            </div>
+                            <small class="text-warning fw-bold text-uppercase" style="font-size: 0.72rem;">— Direction Générale Babi</small>
                         </div>
                     </div>
                 </div>
             </section>
 
-            <!-- Nos Valeurs -->
-            <section class="values-section">
-                <div class="section-header text-center">
-                    <div class="section-badge mx-auto">NOS VALEURS</div>
-                    <div class="separator-icon"><i class="fa-solid fa-wheat-awn"></i></div>
+            <!-- SECTION 2 : NOS 4 PILIERS D'EXCELLENCE -->
+            <section class="mt-4">
+                <div class="vip-section-header">
+                    <div class="vip-section-badge">
+                        <i class="fa-solid fa-gem"></i> EXIGENCE & QUALITÉ SUPRÊME
+                    </div>
+                    <h2 class="vip-section-title">Les 4 Piliers de Notre Maison</h2>
+                    <div class="vip-separator">
+                        <i class="fa-solid fa-wheat-awn"></i>
+                    </div>
+                    <p class="vip-section-subtitle">
+                        Une philosophie intransigeante guidée par la recherche constante de la perfection culinaire et du bien-être de nos clients.
+                    </p>
                 </div>
-                <div class="values-grid">
-                    <div class="value-card">
-                        <div class="v-icon"><i class="fa-solid fa-wheat-awn"></i></div>
-                        <h4>Authenticité</h4>
-                        <p>Nous respectons les recettes traditionnelles pour préserver le vrai goût du pain.</p>
+
+                <div class="vip-values-grid">
+                    <div class="vip-value-card">
+                        <div class="vip-value-icon">
+                            <i class="fa-solid fa-wheat-awn"></i>
+                        </div>
+                        <h4>Levain & Tradition</h4>
+                        <p>
+                            Fermentation naturelle longue pour développer des arômes subtils, une mie aérée et une digestibilité incomparable.
+                        </p>
                     </div>
-                    <div class="value-card">
-                        <div class="v-icon"><i class="fa-solid fa-leaf"></i></div>
-                        <h4>Qualité</h4>
-                        <p>Nous sélectionnons les meilleurs ingrédients pour garantir des produits d'exception.</p>
+
+                    <div class="vip-value-card">
+                        <div class="vip-value-icon">
+                            <i class="fa-solid fa-leaf"></i>
+                        </div>
+                        <h4>Ingrédients Nobles</h4>
+                        <p>
+                            Beurre AOP, chocolats de dégustation et fruits frais cueillis à maturité pour des recettes d'une pureté exceptionnelle.
+                        </p>
                     </div>
-                    <div class="value-card">
-                        <div class="v-icon"><i class="fa-regular fa-heart"></i></div>
-                        <h4>Fait avec amour</h4>
-                        <p>Chaque création est faite avec soin et passion par nos artisans boulangers.</p>
+
+                    <div class="vip-value-card">
+                        <div class="vip-value-icon">
+                            <i class="fa-solid fa-hand-holding-heart"></i>
+                        </div>
+                        <h4>100% Fait Maison</h4>
+                        <p>
+                            Chaque pièce est façonnée manuellement avec amour et précision au quotidien par notre brigade de passionnés.
+                        </p>
                     </div>
-                    <div class="value-card">
-                        <div class="v-icon"><i class="fa-regular fa-lightbulb"></i></div>
-                        <h4>Innovation</h4>
-                        <p>Nous créons régulièrement de nouvelles saveurs tout en restant fidèles à notre identité.</p>
+
+                    <div class="vip-value-card">
+                        <div class="vip-value-icon">
+                            <i class="fa-solid fa-bolt-lightning"></i>
+                        </div>
+                        <h4>Service VIP Connecté</h4>
+                        <p>
+                            Commande en ligne fluide, caisse tactile haute performance et retrait sécurisé par code PIN à 4 chiffres en boutique.
+                        </p>
                     </div>
                 </div>
             </section>
 
-            <!-- Notre Savoir-Faire -->
-            <section class="savoir-faire-section">
-                <div class="section-header text-center">
-                    <div class="section-badge mx-auto">NOTRE SAVOIR-FAIRE</div>
-                    <h2>Comment nous créons nos délices</h2>
-                    <div class="separator-icon"><i class="fa-solid fa-wheat-awn"></i></div>
+            <!-- SECTION 3 : LE RITUEL DU FOURNIL (SAVOIR-FAIRE) -->
+            <section class="mt-4">
+                <div class="vip-section-header">
+                    <div class="vip-section-badge">
+                        <i class="fa-solid fa-fire"></i> DU GRAIN AU CROUSTILLANT
+                    </div>
+                    <h2 class="vip-section-title">Le Rituel Sacré de Fabrication</h2>
+                    <div class="vip-separator">
+                        <i class="fa-solid fa-wheat-awn"></i>
+                    </div>
+                    <p class="vip-section-subtitle">
+                        Découvrez les 4 étapes magiques qui transforment les ingrédients les plus purs en vos délices quotidiens.
+                    </p>
                 </div>
-                <div class="steps-container">
-                    <div class="step">
-                        <div class="step-content">
-                            <div class="step-number">01</div>
-                            <h4>Les meilleurs ingrédients</h4>
-                            <p>Des ingrédients locaux et de qualité soigneusement sélectionnés.</p>
+
+                <div class="vip-steps-grid">
+                    <!-- Step 1 -->
+                    <div class="vip-step-card">
+                        <div class="vip-step-badge">01</div>
+                        <img src="assets/product_campagne.png" class="vip-step-img" alt="Sélection Farines" onerror="this.src='assets/product_baguette.png'">
+                        <h4>Sélection des Grains</h4>
+                        <p>Dosage d'orfèvre des farines tamisées, eau pure et sels minéraux naturels.</p>
+                    </div>
+
+                    <!-- Step 2 -->
+                    <div class="vip-step-card">
+                        <div class="vip-step-badge">02</div>
+                        <img src="assets/croissant avant sa preparations.png" class="vip-step-img" alt="Pétrissage" onerror="this.src='assets/product_croissant.png'">
+                        <h4>Pétrissage & Repos</h4>
+                        <p>Pétrissage lent et maturation patiente sous température contrôlée pour développer la mie.</p>
+                    </div>
+
+                    <!-- Step 3 -->
+                    <div class="vip-step-card">
+                        <div class="vip-step-badge">03</div>
+                        <img src="assets/product_complet.png" class="vip-step-img" alt="Façonnage Manuel" onerror="this.src='assets/product_baguette.png'">
+                        <h4>Façonnage Artisanal</h4>
+                        <p>Chaque pièce est découpée, roulée et signée à la main selon la pure tradition boulangère.</p>
+                    </div>
+
+                    <!-- Step 4 -->
+                    <div class="vip-step-card">
+                        <div class="vip-step-badge">04</div>
+                        <img src="assets/product_baguette.png" class="vip-step-img" alt="Cuisson et Fournée" onerror="this.src='assets/baguette 200.png'">
+                        <h4>Cuisson sur Sole</h4>
+                        <p>Cuisson dorée et sorties chaudes à 06h, 09h, 14h, 17h et 18h toute la journée.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 4 : NOTRE ÉCRIN DE COCODY & NOTRE ÉQUIPE -->
+            <section class="mt-4">
+                <div class="vip-section-header">
+                    <div class="vip-section-badge">
+                        <i class="fa-solid fa-store"></i> NOTRE BOUTIQUE & NOTRE ÉQUIPE
+                    </div>
+                    <h2 class="vip-section-title">L'Accueil Chaleureux de Babi</h2>
+                    <div class="vip-separator">
+                        <i class="fa-solid fa-wheat-awn"></i>
+                    </div>
+                    <p class="vip-section-subtitle">
+                        Une équipe dévouée et souriante pour vous offrir la meilleure expérience en boutique à Cocody Riviera 2.
+                    </p>
+                </div>
+
+                <div class="vip-values-grid">
+                    <!-- Photo 1: Boutique Façade -->
+                    <div class="vip-gallery-card">
+                        <div class="vip-gallery-img-wrapper">
+                            <img src="assets/boutique BB.png" alt="Boutique Cocody Riviera 2" onerror="this.src='assets/hero_bakery.png'">
+                            <span class="vip-gallery-tag"><i class="fa-solid fa-location-dot me-1"></i> Riviera 2</span>
                         </div>
-                        <div class="step-image">
-                            <img loading="lazy" src="assets/product_campagne.png" alt="Étape 1">
+                        <div class="vip-gallery-body">
+                            <h4>Notre Écrin d'Abidjan</h4>
+                            <span class="vip-gallery-role">Façade & Emplacement Privilégié</span>
+                            <small>Situé à Cocody Riviera 2, un cadre moderne et convivial ouvert 7j/7 dès 05h45.</small>
                         </div>
                     </div>
-                    <div class="step-arrow"><i class="fa-solid fa-arrow-right"></i></div>
 
-                    <div class="step">
-                        <div class="step-content">
-                            <div class="step-number">02</div>
-                            <h4>Préparation artisanale</h4>
-                            <p>Nos boulangers pétrissent chaque pâte avec passion et savoir-faire.</p>
+                    <!-- Photo 2: Intérieur Boutique -->
+                    <div class="vip-gallery-card">
+                        <div class="vip-gallery-img-wrapper">
+                            <img src="assets/¸interieur.png" alt="Intérieur de la boutique" onerror="this.src='assets/interieur_bakery.png'">
+                            <span class="vip-gallery-tag"><i class="fa-solid fa-sparkles me-1"></i> Espace Vente</span>
                         </div>
-                        <div class="step-image">
-                            <img loading="lazy" src="assets/product_complet.png" alt="Étape 2">
+                        <div class="vip-gallery-body">
+                            <h4>Vitrines Gourmandes</h4>
+                            <span class="vip-gallery-role">Présentation & Fraîcheur</span>
+                            <small>Pains dorés, viennoiseries fondantes et gâteaux d'exception exposés avec soin.</small>
                         </div>
                     </div>
-                    <div class="step-arrow"><i class="fa-solid fa-arrow-right"></i></div>
 
-                    <div class="step">
-                        <div class="step-content">
-                            <div class="step-number">03</div>
-                            <h4>Cuisson parfaite</h4>
-                            <p>Une cuisson maîtrisée pour un goût unique et une texture idéale.</p>
+                    <!-- Photo 3: Caissière & Accueil -->
+                    <div class="vip-gallery-card">
+                        <div class="vip-gallery-img-wrapper">
+                            <img src="assets/caissiere.png" alt="Accueil & Conseil" style="object-position: center 20%;">
+                            <span class="vip-gallery-tag"><i class="fa-solid fa-heart me-1"></i> Service 5★</span>
                         </div>
-                        <div class="step-image">
-                            <img loading="lazy" src="assets/product_cereal.png" alt="Étape 3">
+                        <div class="vip-gallery-body">
+                            <h4>Accueil & Conseil Personnalisé</h4>
+                            <span class="vip-gallery-role">Équipe Caisse & Relation Client</span>
+                            <small>Un sourire authentique et un service attentionné pour chaque visiteur.</small>
                         </div>
                     </div>
-                    <div class="step-arrow"><i class="fa-solid fa-arrow-right"></i></div>
 
-                    <div class="step">
-                        <div class="step-content">
-                            <div class="step-number">04</div>
-                            <h4>Fraîcheur garantie</h4>
-                            <p>Des produits frais tous les jours pour votre plus grand plaisir.</p>
+                    <!-- Photo 4: Caisse Tactile & Rapidité -->
+                    <div class="vip-gallery-card">
+                        <div class="vip-gallery-img-wrapper">
+                            <img src="assets/caissiere1.png" alt="Retrait Express" style="object-position: center 20%;">
+                            <span class="vip-gallery-tag"><i class="fa-solid fa-bolt me-1"></i> Fluidité</span>
                         </div>
-                        <div class="step-image">
-                            <img loading="lazy" src="assets/product_baguette.png" alt="Étape 4">
+                        <div class="vip-gallery-body">
+                            <h4>Encaissement & Retrait Express</h4>
+                            <span class="vip-gallery-role">Gestion Tactile & Code PIN</span>
+                            <small>Validation instantanée de vos commandes en ligne pour zéro file d'attente.</small>
                         </div>
                     </div>
                 </div>
             </section>
 
-            <!-- Notre Équipe & Notre Boutique -->
-            <section class="team-section">
-                <div class="section-header text-center">
-                    <div class="section-badge mx-auto">NOTRE ÉQUIPE & NOTRE BOUTIQUE</div>
-                    <h2>Un accueil chaleureux et une équipe passionnée à Abidjan</h2>
-                    <div class="separator-icon"><i class="fa-solid fa-wheat-awn"></i></div>
-                </div>
-                <div class="team-grid">
-                    <div class="team-member shadow-sm rounded-4 overflow-hidden bg-white p-3 border">
-                        <img src="assets/caissiere1.png" alt="Équipe Caisse N°2"
-                            style="object-fit:cover; object-position:center 25%; height:320px; width:100%; border-radius:12px;">
-                        <h4 class="mt-3 mb-1 fw-bold" style="color:#2b160c;">Équipe Caisse - Comptoir</h4>
-                        <p class="text-primary fw-bold mb-1">Encaissement & Dynamisme</p>
-                        <small class="text-muted d-block">Service rapide et attention personnalisée pour tous nos
-                            clients.</small>
+            <!-- SECTION 5 : ENGAGEMENTS RSE & QUALITÉ -->
+            <section class="mt-4">
+                <div class="vip-commitments-grid">
+                    <div class="vip-commitment-item">
+                        <div class="vip-commitment-icon">
+                            <i class="fa-solid fa-award"></i>
+                        </div>
+                        <div class="vip-commitment-text">
+                            <h5>Ingrédients d'Origine</h5>
+                            <p>Partenariats directs avec des producteurs locaux ivoiriens et filières certifiées.</p>
+                        </div>
                     </div>
 
-                    <div class="team-member shadow-sm rounded-4 overflow-hidden bg-white p-3 border">
-                        <img src="assets/caissiere.png" alt="Nos Caissières & Accueil"
-                            style="object-fit:cover; object-position:center 25%; height:320px; width:100%; border-radius:12px;">
-                        <h4 class="mt-3 mb-1 fw-bold" style="color:#2b160c;">Équipe Caisse - Accueil</h4>
-                        <p class="text-primary fw-bold mb-1">Service & Conseil Client</p>
-                        <small class="text-muted d-block">Un sourire chaleureux et un accueil bienveillant à chaque
-                            visite !</small>
+                    <div class="vip-commitment-item">
+                        <div class="vip-commitment-icon">
+                            <i class="fa-solid fa-shield-halved"></i>
+                        </div>
+                        <div class="vip-commitment-text">
+                            <h5>Hygiène HACCP</h5>
+                            <p>Respect scrupuleux des normes de propreté et sécurité alimentaire à chaque étape.</p>
+                        </div>
                     </div>
 
-                    <div class="team-member shadow-sm rounded-4 overflow-hidden bg-white p-3 border">
-                        <img src="assets/boutique BB.png" alt="Notre Boutique à Abidjan"
-                            style="object-fit:cover; object-position:center center; height:320px; width:100%; border-radius:12px;">
-                        <h4 class="mt-3 mb-1 fw-bold" style="color:#2b160c;">Boulangerie de BABI</h4>
-                        <p class="text-primary fw-bold mb-1">Notre Façade Officielle</p>
-                        <small class="text-muted d-block">Située au cœur d'Abidjan pour vous servir au
-                            quotidien.</small>
+                    <div class="vip-commitment-item">
+                        <div class="vip-commitment-icon">
+                            <i class="fa-solid fa-seedling"></i>
+                        </div>
+                        <div class="vip-commitment-text">
+                            <h5>0% Conservateur</h5>
+                            <p>Recettes saines, naturelles et préparées fraîches le jour même sans additif chimique.</p>
+                        </div>
                     </div>
-                    <div class="team-member shadow-sm rounded-4 overflow-hidden bg-white p-3 border">
-                        <img src="assets/¸interieur.png" alt="L'Intérieur de notre Boutique"
-                            style="object-fit:cover; object-position:center center; height:320px; width:100%; border-radius:12px;">
-                        <h4 class="mt-3 mb-1 fw-bold" style="color:#2b160c;">Notre Espace Vente</h4>
-                        <p class="text-primary fw-bold mb-1">Cadre Chaleureux</p>
-                        <small class="text-muted d-block">Pains frais et pâtisseries du jour présentés avec
-                            soin.</small>
+
+                    <div class="vip-commitment-item">
+                        <div class="vip-commitment-icon">
+                            <i class="fa-solid fa-recycle"></i>
+                        </div>
+                        <div class="vip-commitment-text">
+                            <h5>Éco-Responsable</h5>
+                            <p>Emballages en papier kraft recyclable et réduction active de notre empreinte carbone.</p>
+                        </div>
                     </div>
                 </div>
             </section>
 
-            <!-- Engagements Banner -->
-            <section class="engagements-banner rounded-4 shadow-sm mb-4">
-                <div class="engagement">
-                    <div class="e-icon"><i class="fa-solid fa-award"></i></div>
-                    <div class="e-text">
-                        <h4>Ingrédients locaux</h4>
-                        <p>Nous privilégions les produits locaux et de saison.</p>
+            <!-- VIP CALL TO ACTION BOX -->
+            <section class="vip-cta-box">
+                <div class="position-relative" style="z-index: 2;">
+                    <div class="vip-section-badge mb-3">
+                        <i class="fa-solid fa-bell-concierge"></i> VIVEZ L'EXPÉRIENCE GOURMANDE
                     </div>
-                </div>
-                <div class="engagement">
-                    <div class="e-icon"><i class="fa-solid fa-shield-halved"></i></div>
-                    <div class="e-text">
-                        <h4>Hygiène garantie</h4>
-                        <p>Respect strict des normes d'hygiène et de sécurité.</p>
-                    </div>
-                </div>
-                <div class="engagement">
-                    <div class="e-icon"><i class="fa-solid fa-leaf"></i></div>
-                    <div class="e-text">
-                        <h4>Sans conservateur</h4>
-                        <p>Nos produits sont 100% naturels et sans conservateur.</p>
-                    </div>
-                </div>
-                <div class="engagement">
-                    <div class="e-icon"><i class="fa-solid fa-recycle"></i></div>
-                    <div class="e-text">
-                        <h4>Engagement éco-responsable</h4>
-                        <p>Nous réduisons notre impact environnemental au quotidien.</p>
+                    <h3>Prêt à Savourer le Meilleur d'Abidjan ?</h3>
+                    <p>
+                        Commandez en ligne en quelques clics pour un retrait express avec votre code PIN 4 chiffres ou découvrez notre atelier de gâteaux sur mesure pour vos mariages et anniversaires.
+                    </p>
+                    <div class="vip-cta-buttons">
+                        <a href="produits.html" class="btn-vip-primary">
+                            <i class="fa-solid fa-bread-slice"></i> Parcourir Nos Produits
+                        </a>
+                        <a href="evenements.html" class="btn-vip-secondary">
+                            <i class="fa-solid fa-cake-candles text-warning"></i> Gâteaux d'Événements VIP
+                        </a>
+                        <a href="https://maps.app.goo.gl/6JrQ1ryZj2KeD5zG7" target="_blank" class="btn-vip-secondary">
+                            <i class="fa-solid fa-location-dot text-danger"></i> Nous Rendre Visite (Riviera 2)
+                        </a>
                     </div>
                 </div>
             </section>
-
 
         </div>
-    </div>
-    <!-- Footer -->
+    </main>
+
     <!-- Unified Luxury Footer -->
-    <footer class="mt-5 text-white py-5" style="background: rgba(43, 22, 12, 0.96); border-top: 3px solid #fb923c;">
+    <footer class="text-white py-5" style="background: rgba(26, 13, 7, 0.98); border-top: 3px solid #fb923c;">
         <div class="container">
             <div class="row g-4">
                 <div class="col-lg-4 col-md-6">
                     <div class="d-flex align-items-center mb-3">
-                        <img src="assets/logo.png" alt="Logo" class="footer-brand-logo">
-                        <div class="d-flex flex-column lh-1">
-                            <span class="footer-brand-title">Boulangerie</span>
-                            <span class="footer-brand-subtitle">de Babi</span>
+                        <img src="assets/logo.png" alt="Logo" class="footer-brand-logo" style="height: 48px; width: auto;">
+                        <div class="d-flex flex-column lh-1 ms-2">
+                            <span class="footer-brand-title fw-bold text-white fs-5">Boulangerie</span>
+                            <span class="footer-brand-subtitle text-warning fw-bold small">de Babi</span>
                         </div>
                     </div>
-                    <p class="text-white small">L'excellence de la boulangerie et pâtisserie artisanale à Abidjan. Pains croustillants, viennoiseries dorées, pâtisseries fines et jus 100% naturels.</p>
-                    <div class="d-flex gap-2">
-                        <a href="https://maps.app.goo.gl/6JrQ1ryZj2KeD5zG7" target="_blank" class="btn btn-outline-warning btn-sm rounded-circle"><i class="fa-solid fa-location-dot"></i></a>
-                        <a href="tel:2722564123" class="btn btn-outline-warning btn-sm rounded-circle"><i class="fa-solid fa-phone"></i></a>
-                        <a href="tel:0704389201" class="btn btn-outline-warning btn-sm rounded-circle"><i class="fa-solid fa-mobile-screen"></i></a>
+                    <p class="text-white-50 small pe-lg-3">
+                        L'excellence de la boulangerie et de la pâtisserie fine à Abidjan. Pains croustillants, viennoiseries dorées pur beurre, gâteaux de prestige et jus 100% naturels faits maison.
+                    </p>
+                    <div class="d-flex gap-2 mt-3">
+                        <a href="https://maps.app.goo.gl/6JrQ1ryZj2KeD5zG7" target="_blank" class="btn btn-outline-warning btn-sm rounded-circle" title="Localisation"><i class="fa-solid fa-location-dot"></i></a>
+                        <a href="tel:2722564123" class="btn btn-outline-warning btn-sm rounded-circle" title="Téléphone Fixe"><i class="fa-solid fa-phone"></i></a>
+                        <a href="tel:0704389201" class="btn btn-outline-warning btn-sm rounded-circle" title="Mobile"><i class="fa-solid fa-mobile-screen"></i></a>
+                        <a href="https://wa.me/2250704389201" target="_blank" class="btn btn-outline-warning btn-sm rounded-circle" title="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
                     </div>
                 </div>
 
                 <div class="col-lg-2 col-md-6">
-                    <h5 class="fw-bold text-warning mb-3">NAVIGATION</h5>
+                    <h5 class="fw-bold text-warning mb-3" style="font-size: 0.95rem; letter-spacing: 0.5px;">NAVIGATION</h5>
                     <ul class="list-unstyled small lh-lg mb-0">
-                        <li><a href="index.html" class="text-white text-decoration-none hover-warning"><i class="fa-solid fa-chevron-right text-warning me-1 small"></i> Accueil</a></li>
-                        <li><a href="produits.html" class="text-white text-decoration-none hover-warning"><i class="fa-solid fa-chevron-right text-warning me-1 small"></i> Nos Produits</a></li>
-                        <li><a href="favoris.html" class="text-white text-decoration-none hover-warning"><i class="fa-solid fa-chevron-right text-warning me-1 small"></i> Mes Favoris</a></li>
-                        <li><a href="suivi.html" class="text-white text-decoration-none hover-warning"><i class="fa-solid fa-chevron-right text-warning me-1 small"></i> Suivi Commande</a></li>
-                        <li><a href="fidelite.html" class="text-white text-decoration-none hover-warning"><i class="fa-solid fa-chevron-right text-warning me-1 small"></i> Club Fidélité</a></li>
+                        <li><a href="index.html" class="text-white-50 text-decoration-none hover-warning"><i class="fa-solid fa-chevron-right text-warning me-1 small"></i> Accueil</a></li>
+                        <li><a href="produits.html" class="text-white-50 text-decoration-none hover-warning"><i class="fa-solid fa-chevron-right text-warning me-1 small"></i> Nos Produits</a></li>
+                        <li><a href="evenements.html" class="text-white-50 text-decoration-none hover-warning"><i class="fa-solid fa-chevron-right text-warning me-1 small"></i> Gâteaux Sur-Mesure</a></li>
+                        <li><a href="apropos.html" class="text-warning text-decoration-none fw-bold"><i class="fa-solid fa-chevron-right text-warning me-1 small"></i> La Maison & Savoir-Faire</a></li>
+                        <li><a href="suivi.html" class="text-white-50 text-decoration-none hover-warning"><i class="fa-solid fa-chevron-right text-warning me-1 small"></i> Suivi de Commande</a></li>
+                        <li><a href="fidelite.html" class="text-white-50 text-decoration-none hover-warning"><i class="fa-solid fa-chevron-right text-warning me-1 small"></i> Club Fidélité</a></li>
                     </ul>
                 </div>
 
                 <div class="col-lg-3 col-md-6">
-                    <h5 class="fw-bold text-warning mb-3">HORAIRES DE LA BOUTIQUE</h5>
-                    <p class="text-white small mb-1"><i class="fa-solid fa-clock text-warning me-2"></i> Lundi - Dimanche : 05h45 - 23h00</p>
-                    <h6 class="fw-bold text-warning mt-3 mb-2" style="font-size:0.9rem;">SORTIES DE PAIN CHAUDS</h6>
-                    <p class="text-white small mb-1">06h00 • 09h00 • 14h00 • 17h00 • 18h00</p>
+                    <h5 class="fw-bold text-warning mb-3" style="font-size: 0.95rem; letter-spacing: 0.5px;">HORAIRES DU FOURNIL</h5>
+                    <p class="text-white-50 small mb-1"><i class="fa-solid fa-clock text-warning me-2"></i> <strong>Lundi - Dimanche :</strong> 05h45 - 23h00</p>
+                    <h6 class="fw-bold text-warning mt-3 mb-2" style="font-size:0.88rem;"><i class="fa-solid fa-fire text-danger me-1"></i> SORTIES DE PAIN CHAUDS</h6>
+                    <p class="text-white-50 small mb-0">06h00 • 09h00 • 14h00 • 17h00 • 18h00</p>
                 </div>
 
                 <div class="col-lg-3 col-md-6">
-                    <h5 class="fw-bold text-warning mb-3">CONTACT BOUTIQUE</h5>
-                    <p class="text-white small mb-1"><i class="fa-solid fa-location-dot text-warning me-2"></i> Cocody Riviera 2, Abidjan - CI</p>
-                    <p class="text-white small mb-1"><i class="fa-solid fa-phone text-warning me-2"></i> <strong>Fixe :</strong> <a href="tel:2722564123" class="text-white text-decoration-none">27 22 56 41 23</a></p>
-                    <p class="text-white small mb-1"><i class="fa-solid fa-mobile-screen-button text-warning me-2"></i> <strong>Mobiles :</strong> <a href="tel:0704389201" class="text-white text-decoration-none">07 04 38 92 01</a> / <a href="tel:0706817977" class="text-white text-decoration-none">07 06 81 79 77</a></p>
-                    <a href="contact.html" class="btn btn-warning btn-sm w-100 fw-bold mt-2 rounded-pill" style="background:#fb923c; border:none; color:#2b160c;">
-                        <i class="fa-solid fa-paper-plane me-1"></i> Nous Contacter
+                    <h5 class="fw-bold text-warning mb-3" style="font-size: 0.95rem; letter-spacing: 0.5px;">NOUS CONTACTER</h5>
+                    <p class="text-white-50 small mb-1"><i class="fa-solid fa-location-dot text-warning me-2"></i> Cocody Riviera 2, Abidjan - Côte d'Ivoire</p>
+                    <p class="text-white-50 small mb-1"><i class="fa-solid fa-phone text-warning me-2"></i> <strong>Fixe :</strong> <a href="tel:2722564123" class="text-white-50 text-decoration-none">27 22 56 41 23</a></p>
+                    <p class="text-white-50 small mb-2"><i class="fa-solid fa-mobile-screen-button text-warning me-2"></i> <strong>Mobiles :</strong> <a href="tel:0704389201" class="text-white-50 text-decoration-none">07 04 38 92 01</a> / <a href="tel:0706817977" class="text-white-50 text-decoration-none">07 06 81 79 77</a></p>
+                    <a href="contact.html" class="btn btn-warning btn-sm w-100 fw-bold mt-1 rounded-pill" style="background:#fb923c; border:none; color:#2b160c;">
+                        <i class="fa-solid fa-paper-plane me-1"></i> Écrire à l'Équipe
                     </a>
                 </div>
             </div>
 
-            <div class="border-top border-secondary mt-5 pt-3 text-center text-muted small">
-                &copy; 2026 Boulangerie de Babi. Tous droits réservés.
+            <div class="border-top border-secondary border-opacity-25 mt-5 pt-3 text-center text-white-50 small">
+                &copy; 2026 Boulangerie de Babi. Tous droits réservés. L'artisanat ivoirien d'exception.
             </div>
         </div>
     </footer>
@@ -407,7 +558,6 @@
     <!-- Bootstrap 5 JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <!-- Custom JS -->
-    <script src="js/api_config.js"></script>
     <script src="js/cart.js"></script>
     <script src="js/store_schedule.js"></script>
     <script src="js/script.js"></script>
