@@ -1347,3 +1347,114 @@ footer h4, footer h5, footer .text-warning, footer i.text-warning {
         filter: grayscale(100%) contrast(150%) !important;
     }
 }
+
+/* ==========================================================================
+   LUXURY APP BUTTONS & ACTIONS
+   ========================================================================== */
+.btn-app-luxury {
+    display: inline-flex;
+    align-items: center;
+    gap: 14px;
+    padding: 12px 20px;
+    border-radius: 18px;
+    backdrop-filter: blur(12px);
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    text-decoration: none !important;
+}
+
+.btn-app-luxury:hover {
+    transform: translateY(-4px) scale(1.02);
+}
+
+.btn-app-luxury .app-btn-icon-box {
+    width: 44px;
+    height: 44px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: transform 0.3s ease;
+}
+
+.btn-app-luxury:hover .app-btn-icon-box {
+    transform: scale(1.1) rotate(5deg);
+}
+
+.android-app-btn {
+    background: linear-gradient(135deg, rgba(22, 163, 74, 0.22) 0%, rgba(20, 83, 45, 0.45) 100%);
+    border: 1.5px solid #22c55e !important;
+    box-shadow: 0 8px 24px rgba(34, 197, 94, 0.25);
+}
+
+.android-app-btn:hover {
+    box-shadow: 0 14px 32px rgba(34, 197, 94, 0.45);
+    border-color: #4ade80 !important;
+}
+
+.android-app-btn .app-btn-icon-box {
+    background: rgba(34, 197, 94, 0.2);
+    border: 1px solid rgba(34, 197, 94, 0.4);
+}
+
+.web-app-btn {
+    background: linear-gradient(135deg, rgba(251, 146, 60, 0.28) 0%, rgba(234, 88, 12, 0.5) 100%);
+    border: 1.5px solid #fb923c !important;
+    box-shadow: 0 8px 24px rgba(251, 146, 60, 0.28);
+}
+
+.web-app-btn:hover {
+    box-shadow: 0 14px 32px rgba(251, 146, 60, 0.5);
+    border-color: #fdba74 !important;
+}
+
+.web-app-btn .app-btn-icon-box {
+    background: rgba(251, 146, 60, 0.25);
+    border: 1px solid rgba(251, 146, 60, 0.5);
+}
+
+.qr-app-btn {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1.5px solid rgba(255, 255, 255, 0.22) !important;
+    color: #ffffff;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+.qr-app-btn:hover {
+    background: rgba(255, 255, 255, 0.14);
+    border-color: rgba(255, 255, 255, 0.4) !important;
+    box-shadow: 0 14px 28px rgba(0, 0, 0, 0.35);
+}
+
+.qr-app-btn .app-btn-icon-box {
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.app-btn-sub {
+    display: block;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    line-height: 1.2;
+}
+
+.app-btn-title {
+    display: block;
+    font-size: 0.96rem;
+    font-weight: 800;
+    color: #ffffff;
+    line-height: 1.2;
+    margin-top: 2px;
+}
+
+.app-btn-badge {
+    padding: 6px 10px;
+    border-radius: 10px;
+    font-size: 0.78rem;
+    margin-left: auto;
+}
