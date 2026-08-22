@@ -315,14 +315,17 @@ function renderPosProductsGrid(searchTerm = '') {
     }
 
     grid.innerHTML = filtered.map(p => `
-        <button onclick="addToPosCart('${p.id}', '${p.name.replace(/'/g, "\\'")}', ${p.price}, '${p.image}')" class="pos-product-item flex flex-col bg-surface rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all group relative text-left border border-outline-variant/20 hover:border-primary">
-            <div class="h-28 w-full relative overflow-hidden bg-surface-container-high">
-                <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" src="${p.image}" alt="${p.name}" onerror="this.src='assets/baguette 200.png'"/>
-                <div class="absolute top-2 right-2 bg-surface/90 backdrop-blur-sm px-2 py-0.5 rounded-lg font-label-md text-xs font-black text-on-surface shadow-sm font-mono">${p.price.toLocaleString()} F</div>
+        <button onclick="addToPosCart('${p.id}', '${p.name.replace(/'/g, "\\'")}', ${p.price}, '${p.image}')" class="pos-product-item flex flex-col bg-surface rounded-xl sm:rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all group relative text-left border border-outline-variant/30 hover:border-primary active:scale-[0.98]">
+            <div class="aspect-[4/3] w-full relative overflow-hidden bg-surface-container-high">
+                <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" src="${p.image}" alt="${p.name}" loading="lazy" onerror="this.onerror=null; this.src='assets/Croissant.png';"/>
+                <div class="absolute top-1.5 right-1.5 sm:top-2 sm:right-2 bg-surface/95 backdrop-blur-md px-1.5 sm:px-2 py-0.5 rounded-md sm:rounded-lg font-mono text-[10.5px] sm:text-xs font-black text-on-surface shadow-sm border border-outline-variant/40">${p.price.toLocaleString()} F</div>
             </div>
-            <div class="p-2.5 flex-1 flex flex-col justify-between">
-                <h3 class="font-headline-sm text-xs font-bold text-on-surface line-clamp-1 leading-tight">${p.name}</h3>
-                <p class="font-label-sm text-[11px] text-on-surface-variant mt-1 font-semibold">Stock: ${p.stock || 30}</p>
+            <div class="p-2 sm:p-2.5 flex-1 flex flex-col justify-between gap-1">
+                <h3 class="font-headline-sm text-xs sm:text-[13px] font-bold text-on-surface line-clamp-1 leading-snug">${p.name}</h3>
+                <div class="flex items-center justify-between text-[10px] sm:text-[11px] text-on-surface-variant font-semibold">
+                    <span>Stock : <strong class="text-primary font-mono">${p.stock || 30}</strong></span>
+                    <span class="material-symbols-outlined text-sm sm:text-base text-primary/80 group-hover:translate-x-0.5 transition-transform">add_circle</span>
+                </div>
             </div>
         </button>
     `).join('');
