@@ -81,7 +81,12 @@ function addToCart(product, price, image) {
     if (!itemObj) return;
 
     let items = getCartItems();
-    const existing = items.find(i => i.id === itemObj.id || i.name === itemObj.name);
+    const cleanName = (itemObj.name || '').trim().toLowerCase();
+    const existing = items.find(i => 
+        (i.id && itemObj.id && i.id === itemObj.id) || 
+        ((i.name || '').trim().toLowerCase() === cleanName)
+    );
+
     if (existing) {
         existing.qty = (existing.qty || 1) + (itemObj.qty || 1);
         existing.quantity = existing.qty;

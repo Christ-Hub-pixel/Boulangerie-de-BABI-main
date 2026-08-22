@@ -42,7 +42,14 @@ function renderCartPage() {
     const totalQty = items.reduce((s, i) => s + (i.qty || i.quantity || 1), 0);
     if (cartTitle) cartTitle.innerText = `Panier (${totalQty} article${totalQty > 1 ? 's' : ''})`;
 
-    let html = `<div class="p-3 border-bottom bg-light fw-bold text-muted small d-none d-md-flex align-items-center">
+    let html = `
+    <div class="border-bottom p-3 d-flex justify-content-between align-items-center bg-white rounded-top">
+        <h4 class="mb-0 fw-bold" style="color: #2b160c;">Panier (${totalQty} article${totalQty > 1 ? 's' : ''})</h4>
+        <button class="btn btn-sm btn-outline-danger border-0 fw-semibold" onclick="handleClearCart()" style="font-size:0.85rem;">
+            <i class="fa-solid fa-trash me-1"></i> Vider le panier
+        </button>
+    </div>
+    <div class="p-3 border-bottom bg-light fw-bold text-muted small d-none d-md-flex align-items-center">
         <div style="flex: 2;">PRODUIT</div>
         <div style="flex: 1;" class="text-center">PRIX UNITAIRE</div>
         <div style="flex: 1;" class="text-center">QUANTITÉ</div>
@@ -89,7 +96,7 @@ function renderCartPage() {
             </div>
             
             <div style="width: 40px;" class="text-end">
-                <button class="btn btn-link text-danger p-0" onclick="handleRemoveItem(${index})" title="Supprimer">
+                <button class="btn btn-link text-danger p-0" onclick="handleRemoveItem(${index})" title="Supprimer cet article">
                     <i class="fa-regular fa-trash-can fs-5"></i>
                 </button>
             </div>
@@ -105,6 +112,18 @@ function renderCartPage() {
         deliveryCost = 1000;
     }
     updateCartSummary(totalQty, subtotal, deliveryCost);
+}
+
+function handleClearCart() {
+    if (confirm('Voulez-vous vraiment vider tout votre panier ?')) {
+        if (typeof clearCart === 'function') {
+            clearCart();
+        } else {
+            localStorage.removeItem('babi_cart');
+            localStorage.removeItem('babi_cart_items');
+        }
+        renderCartPage();
+    }
 }
 
 function handleQtyChange(index, newQty) {
