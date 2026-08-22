@@ -588,7 +588,8 @@ main {
     }
 
     .magazine-search-pill {
-        max-width: 240px !important;
+        width: 100% !important;
+        max-width: 100% !important;
     }
 }
 
@@ -601,21 +602,22 @@ main {
     }
 
     .prestige-topbar {
-        padding: 0.35rem 0.625rem !important;
-        height: 58px !important;
+        padding: 0.5rem 0.75rem !important;
+        height: 62px !important;
     }
 
     main {
-        padding-top: 4.1rem !important;
+        padding-top: 4.5rem !important;
         padding-bottom: 5.25rem !important;
     }
 
     .magazine-search-pill {
-        max-width: 150px !important;
-        padding: 6px 10px !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        padding: 7px 12px !important;
     }
     .magazine-search-pill input {
-        font-size: 12px !important;
+        font-size: 12.5px !important;
     }
 
     .prestige-user-info {
