@@ -2,12 +2,22 @@
 
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
+    // Purge old cache stores to prevent QuotaExceededError
+    if ('caches' in window) {
+      caches.keys().then(keys => {
+        keys.forEach(k => {
+          if (k !== 'babi-bakery-v7') {
+            caches.delete(k).catch(() => {});
+          }
+        });
+      }).catch(() => {});
+    }
+
     navigator.serviceWorker.register('/sw.js')
       .then(reg => {
         reg.update();
-        console.log('Service Worker PWA à jour !', reg.scope);
       })
-      .catch(err => console.log('Erreur Service Worker:', err));
+      .catch(() => {});
   });
 }
 

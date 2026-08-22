@@ -2,7 +2,7 @@
 // 🥐 BABI POS CAISSIÈRE — TERMINAL TACTILE & GESTION RETRAITS
 // -------------------------------------------------------------
 
-const API_ROOT = (typeof window !== 'undefined' && (window.API_BASE_URL || (window.location.hostname.includes('boulangeriedebabi.com') ? 'https://api.boulangeriedebabi.com' : 'http://localhost:5000'))) || 'http://localhost:5000';
+const API_ROOT = (typeof window !== 'undefined' && window.API_BASE_URL) ? window.API_BASE_URL : '';
 
 let posProducts = [];
 let posCart = [
@@ -14,7 +14,7 @@ let currentCashDue = 0;
 let currentReceiptData = null;
 let livePickups = [];
 let currentPinInput = '';
-let isApiReachable = true;
+let isApiReachable = false;
 
 const FALLBACK_POS_PRODUCTS = [
     { id: 'baguette', name: 'Baguette Tradition', price: 200, category: 'pains', image: 'assets/baguette 200.png', stock: 42 },
@@ -38,12 +38,22 @@ const FALLBACK_POS_PRODUCTS = [
 
 // Initialize on DOM Ready
 document.addEventListener('DOMContentLoaded', () => {
+    // Clear any obsolete service worker cache if quota was exceeded
+    if ('caches' in window) {
+        caches.keys().then(keys => {
+            keys.forEach(key => {
+                if (key !== 'babi-bakery-v7') caches.delete(key);
+            });
+        }).catch(() => {});
+    }
+
     loadPosProducts();
     renderPosCart();
     refreshPickupQueue();
     updateSessionStats();
     renderHistoryTable();
     setInterval(updateClock, 1000);
+    
     // Instant sync across tabs when orders are placed
     window.addEventListener('storage', (e) => {
         if (e.key === 'babi_orders') {
@@ -59,7 +69,7 @@ function schedulePickupPolling() {
     setTimeout(async () => {
         await refreshPickupQueue();
         schedulePickupPolling();
-    }, isApiReachable ? 15000 : 45000);
+    }, 20000);
 }
 
 // Live Clock
@@ -130,28 +140,27 @@ function showPosView(viewName) {
 // -------------------------------------------------------------
 async function loadPosProducts() {
     try {
-        const res = await fetch(`${API_ROOT}/api/products`);
+        // Try local static products.json first
+        const res = await fetch('data/products.json');
         if (res.ok) {
             const data = await res.json();
-            if (Array.isArray(data) && data.length > 0) {
-                posProducts = data.map(p => ({
+            const productList = Array.isArray(data) ? data : (data.products || []);
+            if (productList.length > 0) {
+                posProducts = productList.map(p => ({
                     id: p.id || p._id || p.nom,
                     name: p.nom || p.name,
                     price: p.prix || p.price,
                     category: (p.categorie || p.category || 'pains').toLowerCase(),
                     image: p.image || 'assets/baguette 200.png',
-                    stock: p.stock !== undefined ? p.stock : 25
+                    stock: p.stock !== undefined ? p.stock : 30
                 }));
-            } else {
-                posProducts = [...FALLBACK_POS_PRODUCTS];
+                renderPosProductsGrid();
+                return;
             }
-        } else {
-            posProducts = [...FALLBACK_POS_PRODUCTS];
         }
-    } catch (_) {
-        posProducts = [...FALLBACK_POS_PRODUCTS];
-    }
+    } catch (_) {}
 
+    posProducts = [...FALLBACK_POS_PRODUCTS];
     renderPosProductsGrid();
 }
 
