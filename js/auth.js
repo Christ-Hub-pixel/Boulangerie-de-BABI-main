@@ -14,15 +14,36 @@ const firebaseConfig = {
     appId: "1:745132784695:web:d5e30df01010932f0ed3b2"
 };
 
-// Initialisation Firebase si disponible
+// Initialisation Firebase avec persistance locale illimitée
 if (typeof firebase !== 'undefined' && !firebase.apps.length) {
     try {
         firebase.initializeApp(firebaseConfig);
+        firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL).then(() => {
+            console.log("🔒 Persistance de session Firebase locale activée.");
+        });
         console.log("🔥 Firebase Web Auth initialisé avec succès pour Boulangerie de Babi");
     } catch (e) {
         console.warn("Erreur d'initialisation Firebase:", e);
     }
 }
+
+// Auto-redirection immédiate si déjà connecté (évite de réafficher le formulaire de connexion)
+(function checkExistingSession() {
+    const rawUser = localStorage.getItem('babi_user');
+    const path = window.location.pathname.toLowerCase();
+    
+    if (path.includes('connexion.html') || path.includes('inscription.html')) {
+        if (rawUser) {
+            try {
+                const user = JSON.parse(rawUser);
+                if (user && (user.email || user.nom || user.id)) {
+                    console.log("Utilisateur déjà authentifié, redirection directe vers le compte.");
+                    window.location.replace('compte.html');
+                }
+            } catch (_) {}
+        }
+    }
+})();
 
 let isGoogleAuthInProgress = false;
 
