@@ -294,55 +294,9 @@
                         </a>
                     </div>
 
-                    <!-- Order Card 1 -->
-                    <div class="border rounded-4 p-3 mb-3 bg-light shadow-sm">
-                        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 border-bottom pb-2 mb-2">
-                            <div>
-                                <span class="fw-bold" style="color: #1f1008;">Commande #BABI-1048</span>
-                                <span class="badge bg-success ms-2 order-badge-status"><i class="fa-solid fa-check me-1"></i> Livré</span>
-                            </div>
-                            <span class="text-muted small"><i class="fa-regular fa-clock me-1"></i> 21 Août 2026 • 18:30</span>
-                        </div>
-                        <div class="row align-items-center gy-2">
-                            <div class="col-md-8">
-                                <p class="fw-semibold mb-1" style="color: #2b160c;">🥖 2x Baguette Traditionnelle, 🥐 3x Croissant Pur Beurre, 🍫 2x Pain au Chocolat</p>
-                                <p class="text-muted small mb-0"><i class="fa-solid fa-location-dot text-danger me-1"></i> Riviera Palmeraie, Abidjan • <strong>Paiement Wave</strong></p>
-                            </div>
-                            <div class="col-md-4 text-md-end">
-                                <div class="h5 fw-bold mb-0" style="color: #c2410c;">3 500 FCFA</div>
-                                <span class="badge bg-warning text-dark small mt-1">+35 Pts gagnés</span>
-                            </div>
-                        </div>
-                        <div class="mt-3 pt-2 border-top d-flex justify-content-end gap-2">
-                            <a href="produits.html" class="btn btn-outline-dark btn-sm rounded-pill px-3">
-                                <i class="fa-solid fa-rotate-right me-1"></i> Recommander
-                            </a>
-                        </div>
-                    </div>
-
-                    <!-- Order Card 2 -->
-                    <div class="border rounded-4 p-3 mb-3 bg-light shadow-sm">
-                        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 border-bottom pb-2 mb-2">
-                            <div>
-                                <span class="fw-bold" style="color: #1f1008;">Commande #BABI-1012</span>
-                                <span class="badge bg-success ms-2 order-badge-status"><i class="fa-solid fa-check me-1"></i> Livré</span>
-                            </div>
-                            <span class="text-muted small"><i class="fa-regular fa-clock me-1"></i> 19 Août 2026 • 07:45</span>
-                        </div>
-                        <div class="row align-items-center gy-2">
-                            <div class="col-md-8">
-                                <p class="fw-semibold mb-1" style="color: #2b160c;">🎂 1x Gâteau Chocolat Prestige, 🧃 2x Jus d'Ananas Pur Pressé</p>
-                                <p class="text-muted small mb-0"><i class="fa-solid fa-location-dot text-danger me-1"></i> Cocody Angré, Abidjan • <strong>Paiement Orange Money</strong></p>
-                            </div>
-                            <div class="col-md-4 text-md-end">
-                                <div class="h5 fw-bold mb-0" style="color: #c2410c;">12 000 FCFA</div>
-                                <span class="badge bg-warning text-dark small mt-1">+120 Pts gagnés</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="text-center py-3 text-muted small">
-                        <i class="fa-solid fa-circle-check text-success me-1"></i> Toutes vos commandes sont à jour.
+                    <!-- Dynamic Orders Container -->
+                    <div id="ordersListContainer">
+                        <!-- Loaded dynamically via JavaScript -->
                     </div>
                 </div>
             </div>
@@ -444,7 +398,63 @@
                     badge.className = 'vip-badge bg-primary text-white';
                 }
             }
+
+            // Render Real Orders Dynamically (No fake hardcoded test orders)
+            renderUserOrders(user);
         });
+
+        function renderUserOrders(user) {
+            const container = document.getElementById('ordersListContainer');
+            if (!container) return;
+
+            // Retrieve real placed orders for this user
+            const allOrders = JSON.parse(localStorage.getItem('babi_orders') || '[]');
+            const userOrders = allOrders.filter(o => o.userEmail === user.email || o.userId === user.id);
+
+            if (!userOrders || userOrders.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-5">
+                        <div class="d-inline-flex align-items-center justify-content-center bg-light rounded-circle mb-3 shadow-sm" style="width: 86px; height: 86px; font-size: 2.2rem; color: #ea580c; border: 2px dashed rgba(251, 146, 60, 0.4);">
+                            <i class="fa-solid fa-basket-shopping"></i>
+                        </div>
+                        <h5 class="fw-bold mb-2" style="color: #1f1008;">Aucune commande pour le moment</h5>
+                        <p class="text-muted small mb-4 mx-auto" style="max-width: 400px; line-height: 1.6;">
+                            Vos <strong>50 points de fidélité de bienvenue</strong> sont prêts ! Passez votre première commande de pains chauds, viennoiseries ou jus frais et suivez-la en direct ici.
+                        </p>
+                        <a href="produits.html" class="btn btn-warning rounded-pill px-4 py-2 fw-bold shadow-sm" style="background: #f59e0b; border: none; color: #1f1008;">
+                            <i class="fa-solid fa-bag-shopping me-2"></i> Commander mes Délices ➔
+                        </a>
+                    </div>
+                `;
+                return;
+            }
+
+            // Render real orders
+            let html = '';
+            userOrders.reverse().forEach(order => {
+                html += `
+                    <div class="border rounded-4 p-3 mb-3 bg-light shadow-sm">
+                        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 border-bottom pb-2 mb-2">
+                            <div>
+                                <span class="fw-bold" style="color: #1f1008;">Commande #${order.id || order.numero || 'BABI-100'}</span>
+                                <span class="badge bg-success ms-2 order-badge-status"><i class="fa-solid fa-check me-1"></i> ${order.statut || 'En cours'}</span>
+                            </div>
+                            <span class="text-muted small"><i class="fa-regular fa-clock me-1"></i> ${order.date || 'Récemment'}</span>
+                        </div>
+                        <div class="row align-items-center gy-2">
+                            <div class="col-md-8">
+                                <p class="fw-semibold mb-1" style="color: #2b160c;">${order.itemsSummary || (order.items && order.items.map(i => i.name).join(', ')) || 'Articles du fournil'}</p>
+                                <p class="text-muted small mb-0"><i class="fa-solid fa-location-dot text-danger me-1"></i> ${order.adresse || 'Abidjan'} • <strong>${order.moyenPaiement || 'Paiement en ligne'}</strong></p>
+                            </div>
+                            <div class="col-md-4 text-md-end">
+                                <div class="h5 fw-bold mb-0" style="color: #c2410c;">${order.total || 0} FCFA</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+        }
 
         function logout() {
             localStorage.removeItem('babi_token');
