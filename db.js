@@ -149,12 +149,95 @@ async function initDB() {
             created_at DATETIME DEFAULT CURRENT_TIMESTAMP
         );
 
+        CREATE TABLE IF NOT EXISTS order_items (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            order_id TEXT NOT NULL,
+            product_id INTEGER,
+            product_name TEXT NOT NULL,
+            unit_price INTEGER NOT NULL,
+            quantity INTEGER NOT NULL,
+            total_price INTEGER NOT NULL
+        );
+
+        CREATE TABLE IF NOT EXISTS payments (
+            id TEXT PRIMARY KEY,
+            order_id TEXT NOT NULL,
+            user_id INTEGER,
+            amount INTEGER NOT NULL,
+            currency TEXT DEFAULT 'XOF',
+            provider TEXT NOT NULL,
+            provider_transaction_id TEXT,
+            status TEXT DEFAULT 'PENDING',
+            idempotency_key TEXT UNIQUE,
+            error_message TEXT,
+            raw_response TEXT,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        );
+
+        CREATE TABLE IF NOT EXISTS payment_events (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            payment_id TEXT NOT NULL,
+            order_id TEXT NOT NULL,
+            previous_status TEXT,
+            new_status TEXT NOT NULL,
+            event_source TEXT NOT NULL,
+            details TEXT,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        );
+
+        CREATE TABLE IF NOT EXISTS pickup_codes (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            order_id TEXT UNIQUE NOT NULL,
+            pin_code TEXT NOT NULL,
+            is_used INTEGER DEFAULT 0,
+            validated_by_user_id INTEGER,
+            validated_by_name TEXT,
+            validated_at DATETIME,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        );
+
+        CREATE TABLE IF NOT EXISTS refunds (
+            id TEXT PRIMARY KEY,
+            payment_id TEXT NOT NULL,
+            order_id TEXT NOT NULL,
+            amount INTEGER NOT NULL,
+            reason TEXT,
+            status TEXT DEFAULT 'PENDING',
+            provider_refund_id TEXT,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        );
+
+        CREATE TABLE IF NOT EXISTS notifications (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER,
+            order_id TEXT,
+            type TEXT NOT NULL,
+            title TEXT NOT NULL,
+            message TEXT NOT NULL,
+            channel TEXT DEFAULT 'in_app',
+            is_read INTEGER DEFAULT 0,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        );
+
+        CREATE TABLE IF NOT EXISTS audit_logs (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            event_type TEXT NOT NULL,
+            entity_type TEXT NOT NULL,
+            entity_id TEXT NOT NULL,
+            user_id TEXT,
+            ip_address TEXT,
+            details TEXT,
+            hash_signature TEXT,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        );
+
         CREATE TABLE IF NOT EXISTS security_audit_logs (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            event_type TEXT, -- 'PAYMENT_EVALUATION', 'WEBHOOK_RECEIVED', 'SUSPICIOUS_VELOCITY', 'PIN_VERIFICATION'
+            event_type TEXT,
             order_id TEXT,
             risk_score INTEGER DEFAULT 0,
-            risk_level TEXT DEFAULT 'FAIBLE', -- 'FAIBLE', 'MODÉRÉ', 'ÉLEVÉ'
+            risk_level TEXT DEFAULT 'FAIBLE',
             ip_address TEXT,
             user_agent TEXT,
             details TEXT,
@@ -162,6 +245,35 @@ async function initDB() {
             created_at DATETIME DEFAULT CURRENT_TIMESTAMP
         );
     `);
+
+    // Ensure columns exist if tables were already created in an earlier version
+    const migrations = [
+        "ALTER TABLE users ADD COLUMN prenom TEXT",
+        "ALTER TABLE users ADD COLUMN role TEXT DEFAULT 'client'",
+        "ALTER TABLE users ADD COLUMN avatar TEXT",
+        "ALTER TABLE orders ADD COLUMN user_id INTEGER",
+        "ALTER TABLE orders ADD COLUMN customer_email TEXT",
+        "ALTER TABLE orders ADD COLUMN customer_phone TEXT",
+        "ALTER TABLE orders ADD COLUMN type_retrait TEXT DEFAULT 'click_collect'",
+        "ALTER TABLE orders ADD COLUMN delivery_type TEXT DEFAULT 'click_collect'",
+        "ALTER TABLE orders ADD COLUMN pickup_slot TEXT",
+        "ALTER TABLE orders ADD COLUMN pickup_point TEXT DEFAULT 'Riviera'",
+        "ALTER TABLE orders ADD COLUMN delivery_address TEXT",
+        "ALTER TABLE orders ADD COLUMN notes TEXT",
+        "ALTER TABLE orders ADD COLUMN subtotal_amount INTEGER DEFAULT 0",
+        "ALTER TABLE orders ADD COLUMN delivery_fee INTEGER DEFAULT 0",
+        "ALTER TABLE orders ADD COLUMN total_amount INTEGER DEFAULT 0",
+        "ALTER TABLE orders ADD COLUMN currency TEXT DEFAULT 'XOF'",
+        "ALTER TABLE orders ADD COLUMN code_pin TEXT",
+        "ALTER TABLE orders ADD COLUMN security_risk_score INTEGER DEFAULT 0",
+        "ALTER TABLE orders ADD COLUMN security_risk_level TEXT DEFAULT 'FAIBLE'",
+        "ALTER TABLE orders ADD COLUMN security_flags TEXT",
+        "ALTER TABLE orders ADD COLUMN updated_at DATETIME"
+    ];
+
+    for (const sql of migrations) {
+        try { await db.run(sql); } catch (_) {}
+    }
 
     // Ensure columns exist if table was already created in an earlier version
     try {

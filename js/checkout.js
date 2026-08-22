@@ -210,136 +210,265 @@ function setupCheckoutFormEvents() {
     });
 }
 
-function submitBabiOrder(isAlreadyValidated = false) {
+async function submitBabiOrder() {
     const items = typeof getCartItems === 'function' ? getCartItems() : [];
     if (!items || items.length === 0) {
         alert('Votre panier est vide. Veuillez ajouter des produits avant de confirmer.');
         return;
     }
 
-    // Read form inputs & provide smart defaults if not filled
     const clientNameInput = document.getElementById('clientNameInput');
     const clientPhoneInput = document.getElementById('clientPhoneInput');
     const pickupSlotSelect = document.getElementById('pickupSlotSelect');
+    const notesInput = document.getElementById('orderNotesInput');
 
-    const inputs = document.querySelectorAll('#collapseOne input, #collapseOne select');
-    let fullName = clientNameInput ? clientNameInput.value.trim() : (inputs[0] ? inputs[0].value.trim() : '');
-    let phone = clientPhoneInput ? clientPhoneInput.value.trim() : (inputs[1] ? inputs[1].value.trim() : '');
+    const fullName = (clientNameInput && clientNameInput.value.trim()) || 'Client Comptoir BABI';
+    const phone = (clientPhoneInput && clientPhoneInput.value.trim()) || '07 04 38 92 01';
     const pickupSlot = pickupSlotSelect ? pickupSlotSelect.value : 'Dès que possible (~15-20 min)';
-
-    if (!fullName) {
-        fullName = 'Client Comptoir BABI';
-        if (clientNameInput) clientNameInput.value = fullName;
-    }
-    if (!phone) {
-        phone = '07 04 38 92 01';
-        if (clientPhoneInput) clientPhoneInput.value = phone;
-    }
-
-    const commune = 'Riviera';
-    const address = 'Boulangerie de BABI (Fournil Riviera)';
-    const deliveryMethod = 'Retrait en Boutique (Click & Collect)';
-    const deliveryCost = 0;
+    const orderNotes = notesInput ? notesInput.value.trim() : '';
 
     const paymentCashRadio = document.getElementById('p_cash');
     const isCash = paymentCashRadio ? paymentCashRadio.checked : false;
-    const isWave = !isCash;
-    const paymentMethod = isWave ? 'Wave Mobile Money' : 'Paiement au comptoir (Espèces)';
+    const provider = isCash ? 'cash' : 'wave';
 
-    const subtotal = typeof getCartTotal === 'function' ? getCartTotal() : 0;
-    const grandTotal = Math.max(0, subtotal + deliveryCost);
+    const submitBtn = document.querySelector('button[onclick="submitBabiOrder()"]');
+    if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Création sécurisée de la commande...';
+    }
 
-    const orderId = 'BABI-CMD-' + Math.floor(100000 + Math.random() * 900000);
-    const confCode = String(Math.floor(1000 + Math.random() * 9000));
+    try {
+        let user = {};
+        try { user = JSON.parse(localStorage.getItem('babi_user') || '{}'); } catch(_) {}
 
-    const notesInput = document.getElementById('orderNotesInput');
-    const orderNotes = notesInput ? notesInput.value.trim() : '';
+        // 1. Création de la commande côté backend avec recalcul strict des montants
+        const orderRes = await fetch(`${API_ROOT}/api/orders/create`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                customer_name: fullName,
+                customer_phone: phone,
+                customer_email: user.email || '',
+                user_id: user.id || null,
+                items: items,
+                pickup_slot: pickupSlot,
+                pickup_point: 'Riviera (Fournil BABI)',
+                notes: orderNotes,
+                delivery_type: 'click_collect'
+            })
+        });
 
-    const newOrder = {
-        id: orderId,
-        clientName: fullName,
-        phone: phone,
-        commune: commune,
-        address: address,
-        pickupSlot: pickupSlot,
-        delivery_method: deliveryMethod,
-        payment_method: paymentMethod,
-        payment_status: isWave ? 'paye' : 'en_attente',
-        items: items,
-        itemsSummary: items.map(i => `${i.name || i.title} (x${i.qty || i.quantity || 1})`).join(', '),
-        subtotal: subtotal,
-        delivery_cost: 0,
-        total_price: grandTotal,
-        notes: orderNotes,
-        status: 'Nouveau',
-        confCode: confCode,
-        code_pin: confCode,
-        pickup_pin: confCode,
-        idempotency_key: 'IDEM_' + Date.now() + '_' + Math.random().toString(36).substring(2, 9),
-        security_evaluated: true,
-        createdAt: new Date().toISOString()
-    };
+        const orderData = await orderRes.json();
+        if (!orderRes.ok || !orderData.order) {
+            throw new Error(orderData.error || "Erreur lors de la création de la commande.");
+        }
 
-    // Génération automatique du lien WhatsApp avec reçu et point de retrait
-    const whatsappUrl = generateWhatsAppOrderUrl(newOrder);
-    newOrder.whatsappUrl = whatsappUrl;
+        const createdOrder = orderData.order;
 
-    // Helper to finish order and save
-    const finalizeOrder = () => {
-        fetch(`${API_ROOT}/api/orders`, {
+        // 2. Initiation de la transaction de paiement
+        const idempotencyKey = 'IDEM_' + createdOrder.id + '_' + Date.now();
+        const payRes = await fetch(`${API_ROOT}/api/payments/initiate`, {
             method: 'POST',
             headers: { 
                 'Content-Type': 'application/json',
-                'X-Idempotency-Key': newOrder.idempotency_key
+                'X-Idempotency-Key': idempotencyKey
             },
             body: JSON.stringify({
-                customer_name: newOrder.clientName,
-                phone: newOrder.phone,
-                address: `${newOrder.commune}, ${newOrder.address}`,
-                items: newOrder.itemsSummary,
-                total_price: newOrder.total_price,
-                payment_method: newOrder.payment_method,
-                notes: newOrder.notes,
-                code_pin: newOrder.code_pin,
-                idempotency_key: newOrder.idempotency_key
+                order_id: createdOrder.id,
+                provider: provider,
+                customer_phone: phone,
+                customer_name: fullName,
+                user_id: user.id || null,
+                idempotency_key: idempotencyKey
             })
-        }).catch(() => {});
+        });
 
-        localStorage.setItem('babi_current_order', JSON.stringify(newOrder));
-
-        try {
-            let user = {};
-            try { user = JSON.parse(localStorage.getItem('babi_user') || '{}'); } catch(_) {}
-            newOrder.userEmail = user.email || '';
-            newOrder.userId = user.id || '';
-
-            let babiOrders = JSON.parse(localStorage.getItem('babi_orders')) || [];
-            babiOrders.unshift(newOrder);
-            localStorage.setItem('babi_orders', JSON.stringify(babiOrders));
-
-            let history = JSON.parse(localStorage.getItem('babi_orders_history')) || [];
-            history.unshift(newOrder);
-            localStorage.setItem('babi_orders_history', JSON.stringify(history));
-        } catch(e) {}
-
-        if (typeof clearCart === 'function') {
-            clearCart();
-        } else {
-            localStorage.removeItem('babi_cart_items');
-            localStorage.removeItem('babi_cart');
+        const payData = await payRes.json();
+        if (!payRes.ok) {
+            throw new Error(payData.error || "Erreur lors de l'initiation du paiement.");
         }
 
-        window.location.href = `suivi.html?orderId=${orderId}&phone=${encodeURIComponent(newOrder.phone)}`;
-    };
-
-    if (isWave && !isAlreadyValidated) {
-        if (typeof openOperatorPaymentModal === 'function') {
-            openOperatorPaymentModal('wave');
+        // Cas Paiement Espèces au Comptoir
+        if (provider === 'cash') {
+            createdOrder.pickup_pin = payData.pickupPin;
+            createdOrder.payment_method = 'Paiement au comptoir (Espèces)';
+            createdOrder.payment_status = 'en_attente';
+            
+            saveOrderLocally(createdOrder);
+            if (typeof clearCart === 'function') clearCart();
+            window.location.href = `suivi.html?orderId=${encodeURIComponent(createdOrder.id)}&phone=${encodeURIComponent(phone)}`;
             return;
         }
+
+        // Cas Wave Mobile Money : Ouverture du Modal de Paiement & Polling
+        if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '<i class="fa-solid fa-check-circle me-2"></i>CONFIRMER LA COMMANDE';
+        }
+
+        openWavePaymentModal(createdOrder, payData);
+
+    } catch (err) {
+        alert("Erreur : " + err.message);
+        if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '<i class="fa-solid fa-check-circle me-2"></i>CONFIRMER LA COMMANDE';
+        }
+    }
+}
+
+function openWavePaymentModal(order, paymentData) {
+    const modalEl = document.getElementById('paymentModal');
+    const modalHeader = document.getElementById('paymentModalHeader');
+    const modalTitle = document.getElementById('paymentModalTitle');
+    const modalBody = document.getElementById('paymentModalBody');
+
+    if (!modalEl || typeof bootstrap === 'undefined') return;
+    const bsModal = bootstrap.Modal.getOrCreateInstance(modalEl);
+
+    modalHeader.style.background = 'linear-gradient(135deg, #1dc4e9, #0284c7)';
+    modalTitle.innerHTML = `<img src="assets/wave_money.png" style="width:28px; height:28px; object-fit:contain;" class="me-2 rounded"><span class="fw-bold text-white">Paiement Wave — Boulangerie de BABI</span>`;
+
+    const grandTotal = order.total_amount || order.total_price || paymentData.amount || 0;
+    const launchUrl = paymentData.launchUrl || `https://pay.wave.com/m/M_ci_7X1JfUg2eEsX/c/ci/?amount=${grandTotal}&client_reference=${encodeURIComponent(order.id)}`;
+    const qrCodeUrl = paymentData.qrCodeUrl || `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(launchUrl)}`;
+
+    modalBody.innerHTML = `
+        <div class="py-2 text-start">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <span class="badge bg-light text-dark border px-2 py-1"><i class="fa-solid fa-receipt me-1 text-primary"></i> ${order.id}</span>
+                <span class="badge bg-success text-white px-2 py-1"><i class="fa-solid fa-shield-halved me-1"></i> Serveur Sécurisé</span>
+            </div>
+
+            <div class="text-center mb-3">
+                <h2 class="fw-bold text-dark mb-0">${grandTotal.toLocaleString()} FCFA</h2>
+                <div class="badge bg-info text-dark fw-bold mt-1 px-3 py-1">Compte Marchand Officiel BABI</div>
+            </div>
+
+            <div class="p-3 rounded-4 border mb-3 text-center" style="background: #f0fdf4; border-color: #86efac !important;">
+                <img src="${qrCodeUrl}" class="rounded-3 shadow-sm border p-2 bg-white mb-2" style="width:150px; height:150px;" alt="QR Code Wave">
+                <div class="small fw-bold text-dark mb-1">Scannez avec votre application Wave</div>
+                <div class="text-muted small mb-3">Ou ouvrez directement l'application :</div>
+                <a href="${launchUrl}" target="_blank" class="btn btn-info w-100 text-white fw-bold py-3 rounded-pill shadow d-flex align-items-center justify-content-center gap-2" style="background: linear-gradient(135deg, #1dc4e9, #0284c7); border:none; font-size: 15px;">
+                    <i class="fa-solid fa-mobile-screen fs-5"></i>
+                    <span>OUVRIR L'APPLICATION WAVE</span>
+                </a>
+            </div>
+
+            <div class="p-3 rounded-3 bg-light border text-center mb-3">
+                <div class="d-flex align-items-center justify-content-center gap-2 text-primary fw-bold small mb-1">
+                    <div class="spinner-border spinner-border-sm" role="status"></div>
+                    <span>En attente de confirmation Wave...</span>
+                </div>
+                <small class="text-muted d-block">Ne fermez pas cette page, elle se met à jour automatiquement.</small>
+            </div>
+
+            <button type="button" class="btn btn-success w-100 fw-bold py-3 rounded-pill shadow" onclick="manualConfirmPayment('${order.id}', '${paymentData.paymentId}')">
+                <i class="fa-solid fa-circle-check me-2"></i> J'AI VALIDÉ MON PAIEMENT
+            </button>
+        </div>
+    `;
+
+    bsModal.show();
+
+    // 3. Polling du statut serveur toutes les 2.5 secondes
+    startPaymentStatusPolling(order, paymentData.paymentId);
+}
+
+let pollingInterval = null;
+
+function startPaymentStatusPolling(order, paymentId) {
+    if (pollingInterval) clearInterval(pollingInterval);
+
+    pollingInterval = setInterval(async () => {
+        try {
+            const res = await fetch(`${API_ROOT}/api/payments/status/${paymentId}`);
+            if (!res.ok) return;
+
+            const data = await res.json();
+            if (data.isPaid && data.status === 'PAID') {
+                clearInterval(pollingInterval);
+                pollingInterval = null;
+                showPaymentSuccessInModal(order, data.pickupPin);
+            }
+        } catch (_) {}
+    }, 2500);
+}
+
+async function manualConfirmPayment(orderId, paymentId) {
+    const modalBody = document.getElementById('paymentModalBody');
+    if (modalBody) {
+        modalBody.innerHTML = `
+            <div class="py-4 text-center">
+                <div class="spinner-border text-primary mb-3" role="status" style="width: 3rem; height: 3rem;"></div>
+                <h5 class="fw-bold text-dark">Vérification de la transaction...</h5>
+                <p class="text-muted small">Vérification instantanée auprès des serveurs Wave...</p>
+            </div>
+        `;
     }
 
-    finalizeOrder();
+    try {
+        const res = await fetch(`${API_ROOT}/api/payments/confirm-manual`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ order_id: orderId, payment_id: paymentId })
+        });
+
+        const data = await res.json();
+        if (data.success) {
+            if (pollingInterval) { clearInterval(pollingInterval); pollingInterval = null; }
+            showPaymentSuccessInModal({ id: orderId, phone: document.getElementById('clientPhoneInput') ? document.getElementById('clientPhoneInput').value : '' }, data.pickupPin);
+        } else {
+            throw new Error(data.error || "Paiement non encore détecté.");
+        }
+    } catch (err) {
+        alert("Statut : " + err.message + " Si vous venez de payer, patientez quelques secondes.");
+    }
+}
+
+function showPaymentSuccessInModal(order, pickupPin) {
+    const modalBody = document.getElementById('paymentModalBody');
+    const pin = pickupPin || '7412';
+
+    order.pickup_pin = pin;
+    order.confCode = pin;
+    order.code_pin = pin;
+    order.payment_status = 'paye';
+    order.payment_method = 'Wave Mobile Money';
+
+    saveOrderLocally(order);
+    if (typeof clearCart === 'function') clearCart();
+
+    if (modalBody) {
+        modalBody.innerHTML = `
+            <div class="py-3 text-center">
+                <div class="d-inline-flex align-items-center justify-content-center bg-success text-white rounded-circle p-3 mb-3 shadow" style="width:70px; height:70px;">
+                    <i class="fa-solid fa-check fs-2"></i>
+                </div>
+                <h4 class="fw-bold text-dark mb-1">Paiement Confirmé !</h4>
+                <p class="text-muted small mb-3">Votre commande <strong>#${order.id}</strong> est envoyée au fournil.</p>
+
+                <div class="p-3 rounded-4 mb-3" style="background: #fffaf0; border: 2px dashed #fb923c;">
+                    <small class="text-muted text-uppercase fw-bold d-block" style="font-size:0.75rem;">Code de Retrait Express</small>
+                    <div class="display-4 fw-extrabold text-danger my-1" style="letter-spacing: 6px; font-weight: 800; font-family: monospace;">${pin}</div>
+                    <small class="text-muted">À présenter au comptoir de la Riviera</small>
+                </div>
+
+                <a href="suivi.html?orderId=${encodeURIComponent(order.id)}&phone=${encodeURIComponent(order.phone || '')}&status=paid" class="btn btn-warning w-100 fw-bold py-3 rounded-pill text-dark shadow" style="background:#fb923c; border:none;">
+                    <i class="fa-solid fa-receipt me-2"></i>VOIR MON REÇU & SUIVRE MA COMMANDE
+                </a>
+            </div>
+        `;
+    }
+}
+
+function saveOrderLocally(order) {
+    try {
+        localStorage.setItem('babi_current_order', JSON.stringify(order));
+        let babiOrders = JSON.parse(localStorage.getItem('babi_orders')) || [];
+        babiOrders.unshift(order);
+        localStorage.setItem('babi_orders', JSON.stringify(babiOrders));
+    } catch (_) {}
 }
 
 window.generateWhatsAppOrderUrl = function(order) {

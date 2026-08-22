@@ -107,57 +107,65 @@ function stopDeliveryAnimation(delivered) {
 }
 
 async function fetchOrderStatus() {
-    if(!currentPhone) return;
-    const cleanPhone = currentPhone.replace(/\s+/g, '');
-
     let foundOrder = null;
+    const urlParams = new URLSearchParams(window.location.search);
+    const orderIdParam = urlParams.get('orderId');
 
-    // 1. Try backend API
-    try {
-        const res = await fetch(`${API_ROOT}/api/orders/track/` + encodeURIComponent(cleanPhone));
-        if (res.ok) {
-            const data = await res.json();
-            if (data && data.success && data.order) {
-                foundOrder = data.order;
+    // 1. Try fetching by Order ID first if present
+    if (orderIdParam) {
+        try {
+            const res = await fetch(`${API_ROOT}/api/orders/${encodeURIComponent(orderIdParam)}`);
+            if (res.ok) {
+                const data = await res.json();
+                if (data && (data.order || data.id)) {
+                    foundOrder = data.order || data;
+                }
             }
-        }
-    } catch(e) {}
+        } catch (_) {}
+    }
 
-    // 2. Try localStorage current order & history
-    if (!foundOrder) {
+    if (!foundOrder && currentPhone) {
+        const cleanPhone = currentPhone.replace(/\s+/g, '');
+        // 2. Try backend API by phone
+        try {
+            const res = await fetch(`${API_ROOT}/api/orders/track/` + encodeURIComponent(cleanPhone));
+            if (res.ok) {
+                const data = await res.json();
+                if (Array.isArray(data) && data.length > 0) {
+                    foundOrder = data[0];
+                } else if (data && data.order) {
+                    foundOrder = data.order;
+                }
+            }
+        } catch(e) {}
+    }
+
+    // 3. Try localStorage current order & history
+    if (!foundOrder && currentPhone) {
+        const cleanPhone = currentPhone.replace(/\s+/g, '');
         try {
             const cur = JSON.parse(localStorage.getItem('babi_current_order'));
             if (cur && (cur.phone || '').replace(/\s+/g, '').includes(cleanPhone.slice(-8))) {
                 foundOrder = cur;
             }
             if (!foundOrder) {
-                const history = JSON.parse(localStorage.getItem('babi_orders_history')) || [];
+                const history = JSON.parse(localStorage.getItem('babi_orders_history') || localStorage.getItem('babi_orders') || '[]');
                 const matched = history.find(o => (o.phone || '').replace(/\s+/g, '').includes(cleanPhone.slice(-8)));
                 if (matched) foundOrder = matched;
             }
         } catch(e) {}
     }
 
-    // 3. Fallback realistic live order if searching for a phone number
+    // 4. Try active session order
     if (!foundOrder) {
-        foundOrder = {
-            id: 'BABI-CMD-' + (Math.abs(cleanPhone.split('').reduce((a, b) => ((a << 5) - a) + b.charCodeAt(0), 0)) % 900000 + 100000),
-            clientName: 'Client Passant BABI',
-            phone: currentPhone,
-            total_price: 10700,
-            payment_method: 'Wave Mobile Money',
-            payment_status: 'paye',
-            status: 'Au Fournil (Cuisson en cours)',
-            items: 'Baguette Tradition (x4), Croissant Pur Beurre (x4), Jus de Bissap 500ml (x2)',
-            itemsSummary: 'Baguette Tradition (x4), Croissant Pur Beurre (x4), Jus de Bissap 500ml (x2)',
-            confCode: '7412',
-            confirmation_code: '7412',
-            pickupSlot: 'Dès que possible (~15 min)'
-        };
+        try {
+            foundOrder = JSON.parse(localStorage.getItem('babi_current_order'));
+        } catch (_) {}
     }
 
-    // Display order on UI
-    displayOrderOnUI(foundOrder);
+    if (foundOrder) {
+        displayOrderOnUI(foundOrder);
+    }
 }
 
 function displayOrderOnUI(order) {

@@ -804,46 +804,53 @@ function printThermalReceipt() {
     window.print();
 }
 
-// Retrait PIN Click & Collect
+// Retrait PIN Click & Collect (Vérification Stricte Côté Serveur)
 async function verifyPickupPin() {
     const orderInput = document.getElementById('pickup-order-id')?.value.trim();
     const pinInput = document.getElementById('pickup-pin-code')?.value.trim();
     const resultDiv = document.getElementById('pickup-verify-result');
 
     if (!orderInput || !pinInput) {
-        resultDiv.innerHTML = `<div class="alert alert-warning mt-3">Veuillez renseigner le N° de commande et le code PIN.</div>`;
+        if (resultDiv) resultDiv.innerHTML = `<div class="alert alert-warning mt-3">Veuillez renseigner le N° de commande et le code PIN à 4 chiffres.</div>`;
         return;
     }
 
+    if (resultDiv) {
+        resultDiv.innerHTML = `<div class="p-3 text-center text-muted"><div class="spinner-border spinner-border-sm me-2"></div>Vérification du code PIN en temps réel...</div>`;
+    }
+
     try {
-        const res = await fetch(`${API_ROOT}/api/orders/verify-pin`, {
+        const res = await fetch(`${API_ROOT}/api/pickup/verify`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ order_id: orderInput, code_pin: pinInput })
+            body: JSON.stringify({
+                order_id: orderInput,
+                pin: pinInput,
+                cashier_name: 'Caissière Awa'
+            })
         });
         const data = await res.json();
 
-        if (data.success) {
-            resultDiv.innerHTML = `
-                <div class="alert alert-success mt-3">
-                    <h6 class="fw-bold"><i class="fa-solid fa-circle-check me-2"></i>PIN Confirmé !</h6>
-                    <p class="mb-1"><strong>Client :</strong> ${data.order.customer_name} (${data.order.phone})</p>
-                    <p class="mb-1"><strong>Total :</strong> ${data.order.total_price} FCFA — <em>Statut : Payé</em></p>
-                    <p class="mb-0 text-success fw-bold">👉 Remettre le colis au client.</p>
-                </div>
-            `;
+        if (res.ok && data.success) {
+            if (resultDiv) {
+                resultDiv.innerHTML = `
+                    <div class="alert alert-success mt-3 shadow-sm rounded-4 p-3 border-0" style="background:#dcfce7; color:#15803d;">
+                        <h6 class="fw-bold mb-1"><i class="fa-solid fa-circle-check me-2"></i>PIN #${pinInput} Confirmé & Consommé !</h6>
+                        <p class="mb-1"><strong>Client :</strong> ${data.customerName || 'Client'}</p>
+                        <p class="mb-1"><strong>Montant :</strong> ${(data.totalAmount || 0).toLocaleString()} FCFA — <em>Statut : PAYÉ</em></p>
+                        <p class="mb-0 text-success fw-bold">👉 Remettre le sachet au client.</p>
+                    </div>
+                `;
+            }
         } else {
-            resultDiv.innerHTML = `<div class="alert alert-danger mt-3"><i class="fa-solid fa-triangle-exclamation me-2"></i>${data.error || 'Code PIN invalide.'}</div>`;
+            if (resultDiv) {
+                resultDiv.innerHTML = `<div class="alert alert-danger mt-3 shadow-sm rounded-4 p-3 border-0"><i class="fa-solid fa-triangle-exclamation me-2"></i>${data.error || 'Code PIN invalide ou commande non payée.'}</div>`;
+            }
         }
     } catch (e) {
-        // Local simulation test
-        resultDiv.innerHTML = `
-            <div class="alert alert-success mt-3">
-                <h6 class="fw-bold"><i class="fa-solid fa-circle-check me-2"></i>PIN #${pinInput} Validé !</h6>
-                <p class="mb-1"><strong>Commande :</strong> #${orderInput}</p>
-                <p class="mb-0 text-success fw-bold">👉 Colis vérifié avec succès. Remettre la commande.</p>
-            </div>
-        `;
+        if (resultDiv) {
+            resultDiv.innerHTML = `<div class="alert alert-danger mt-3"><i class="fa-solid fa-circle-exclamation me-2"></i>Erreur de connexion au serveur de caisse.</div>`;
+        }
     }
 }
 

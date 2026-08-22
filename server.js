@@ -16,6 +16,13 @@ const antiHackerShield = require('./middlewares/anti_hacker_shield.js');
 const secureAuthService = require('./services/secure_auth.service.js');
 const paymentGatewayService = require('./services/payment_gateway.service.js');
 
+// 💳 Architecture de Paiement Professionnelle & Modulaire
+const paymentProviderInterface = require('./services/payment_provider.interface.js');
+const wavePaymentProvider = require('./services/wave_payment_provider.js');
+const orderManager = require('./services/order_manager.service.js');
+const paymentManager = require('./services/payment_manager.service.js');
+const pickupPinService = require('./services/pickup_pin.service.js');
+
 const app = express();
 const PORT = process.env.PORT || 5000;
 
@@ -534,37 +541,30 @@ app.post('/api/orders/pos', (req, res, next) => {
     app.handle(req, res, next);
 });
 
-// Verify secret PIN for Click & Collect pickup at cashier counter (ZK PBKDF2 100k Validator & Merkle Seal)
+// Verify secret PIN for Click & Collect pickup at cashier counter
 app.post('/api/pos/verify-pin', async (req, res) => {
     try {
-        const { order_id, pin } = req.body;
-        const order = await db.get("SELECT * FROM orders WHERE id = ? OR id LIKE ?", [order_id, `%${order_id}%`]);
-        
-        if (!order) {
-            return res.status(404).json({ success: false, error: "Commande introuvable." });
+        const { order_id, pin, caissiere_nom, cashier_name } = req.body;
+        const result = await pickupPinService.verifyAndConsumePin(db, order_id, pin, {
+            name: caissiere_nom || cashier_name || 'Caissière Awa'
+        });
+
+        if (!result.success) {
+            await recordSecurityAudit('PIN_VALIDATION_FAILED', order_id || 'N/A', result.isLocked ? 90 : 35, result.isLocked ? 'ÉLEVÉ' : 'MODÉRÉ', req, result);
+            return res.status(400).json(result);
         }
 
-        // ZK PIN Validation avec PBKDF2 et verrouillage progressif
-        const validation = zkPinValidator.verifyPinWithBackoff(order.id, pin, order.code_pin || '7412');
-        if (!validation.success) {
-            await recordSecurityAudit('PIN_VALIDATION_FAILED', order.id, validation.isLocked ? 90 : 35, validation.isLocked ? 'ÉLEVÉ' : 'MODÉRÉ', req, { attemptsRemaining: validation.attemptsRemaining });
-            return res.status(400).json({ success: false, error: validation.error });
-        }
-
-        // Mark order as delivered / handed over
-        await db.run("UPDATE orders SET status = 'livre', payment_status = 'paye' WHERE id = ?", [order.id]);
-        
-        // 📜 Scellement Merkle Immédiat à la Remise au Comptoir
-        merkleLedger.sealTransactionBlock(order.id, order.total_price || 0, order.payment_method || 'Retrait Comptoir', order.phone || 'N/A');
-        await recordSecurityAudit('PIN_SUCCESS_HANDOVER', order.id, 0, 'FAIBLE', req, { orderId: order.id });
+        // Backward compatibility flags
+        await db.run("UPDATE orders SET status = 'livre', payment_status = 'paye' WHERE id = ?", [result.orderId]);
+        await recordSecurityAudit('PIN_SUCCESS_HANDOVER', result.orderId, 0, 'FAIBLE', req, { orderId: result.orderId });
 
         res.json({
             success: true,
-            message: `Commande #${order.id} remise avec succès au client (Scellée dans l'Arbre de Merkle) !`,
-            order
+            message: `Commande #${result.orderId} remise avec succès au client !`,
+            ...result
         });
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        res.status(500).json({ success: false, error: err.message });
     }
 });
 
@@ -759,121 +759,225 @@ app.get('/api/orders/track/:phone', async (req, res) => {
 });
 
 // ==========================================
-// 💳 8. PAYMENTS API (WAVE & ORANGE MONEY)
+// 💳 8. ENTERPRISE PAYMENT & ORDER APIS
 // ==========================================
 
-const paymentSessions = new Map();
-
-// 🔒 Masked & Tokenized Payment Session Endpoint (Single-Use HMAC-Signed 5min Token)
-app.post('/api/pay/create-session', async (req, res) => {
+// 📦 1. Order Creation with Server-Side Price Recalculation
+app.post('/api/orders/create', async (req, res) => {
     try {
-        const { order_id, amount, phone, provider } = req.body;
-        const session = paymentGatewayService.createMaskedSession(order_id, amount, provider || 'wave', phone);
-        await recordSecurityAudit('PAYMENT_TOKEN_ISSUED', order_id || 'N/A', 0, 'FAIBLE', req, { amount, provider });
-        res.json({
+        const order = await orderManager.createVerifiedOrder(db, req.body);
+        await recordSecurityAudit('ORDER_CREATED_SERVER_VERIFIED', order.id, 0, 'FAIBLE', req, { totalAmount: order.total_amount, itemsCount: order.items.length });
+        res.status(201).json({
             success: true,
-            token: session.token,
-            masked_url: session.maskedGatewayUrl,
-            qr_code_url: session.qrCodeUrl,
-            expires_in_seconds: session.expiresInSeconds,
-            message: "Session de paiement sécurisée et masquée créée avec succès."
-        });
-    } catch(err) {
-        res.status(500).json({ error: "Erreur lors de la création de la session sécurisée." });
-    }
-});
-
-// 🚀 Masked Payment Launch Gateway (302 Secure Server-Side Redirect)
-app.get('/api/pay/launch/:token', (req, res) => {
-    try {
-        const targetUrl = paymentGatewayService.resolveGatewayUrl(req.params.token);
-        if (!targetUrl) {
-            return res.status(400).send(`
-                <!DOCTYPE html>
-                <html>
-                <head><title>Lien Expiré - Boulangerie de BABI</title><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"></head>
-                <body style="font-family: sans-serif; text-align: center; padding: 40px; background: #fffaf0;">
-                    <div style="max-width: 400px; margin: 0 auto; background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
-                        <h3 style="color: #ea580c;">⏳ Lien de paiement expiré</h3>
-                        <p style="color: #64748b;">Pour votre sécurité, les liens de paiement sont valables 5 minutes.</p>
-                        <a href="/checkout.html" style="display: inline-block; background: #fb923c; color: white; padding: 12px 24px; border-radius: 50px; text-decoration: none; font-weight: bold;">Retourner à la commande</a>
-                    </div>
-                </body>
-                </html>
-            `);
-        }
-        res.redirect(targetUrl);
-    } catch(err) {
-        res.status(500).send("Erreur de redirection de paiement.");
-    }
-});
-
-// 🖼️ Masked QR Code Proxy (Hides Merchant Identifier)
-app.get('/api/pay/qr/:token', (req, res) => {
-    try {
-        const targetUrl = paymentGatewayService.resolveGatewayUrl(req.params.token);
-        if (!targetUrl) return res.status(404).send("QR Code introuvable ou expiré.");
-        const qrServerUrl = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(targetUrl)}`;
-        res.redirect(qrServerUrl);
-    } catch(err) {
-        res.status(500).send("Erreur QR Code.");
-    }
-});
-
-// Wave Checkout Endpoint
-app.post('/api/payments/wave/checkout', async (req, res) => {
-    try {
-        const { order_id, amount, phone } = req.body;
-        const session = paymentGatewayService.createMaskedSession(order_id, amount, 'wave', phone);
-        
-        if (order_id) {
-            await db.run("UPDATE orders SET payment_status = 'paye', payment_method = 'Wave Mobile Money' WHERE id = ?", [order_id]);
-        }
-
-        res.json({
-            success: true,
-            session_id: session.token,
-            wave_launch_url: session.maskedGatewayUrl,
-            qr_code_url: session.qrCodeUrl,
-            message: "Session de paiement Wave initialisée avec succès (Lien masqué)."
+            order,
+            message: "Commande créée avec succès et montants vérifiés par le serveur."
         });
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        res.status(400).json({ success: false, error: err.message });
     }
 });
 
-// Orange Money Checkout Endpoint
-app.post('/api/payments/orange/checkout', async (req, res) => {
+// 🚀 2. Payment Initiation (Idempotent, Wave & Mobile Money)
+app.post('/api/payments/initiate', async (req, res) => {
     try {
-        const { order_id, amount, phone } = req.body;
-        const sessionId = 'om_sess_' + Date.now() + '_' + Math.floor(Math.random() * 1000);
+        const idempotencyKey = req.headers['x-idempotency-key'] || req.body.idempotency_key || '';
+        const paymentResult = await paymentManager.initiatePayment(db, {
+            orderId: req.body.order_id || req.body.orderId,
+            provider: req.body.provider || 'wave',
+            customerPhone: req.body.customer_phone || req.body.phone || '',
+            customerName: req.body.customer_name || req.body.name || '',
+            userId: req.body.user_id || req.body.userId || null,
+            idempotencyKey
+        });
 
-        const sessionData = {
-            id: sessionId,
-            order_id: order_id,
-            amount: amount,
-            phone: phone,
-            provider: 'orange_money',
-            status: 'completed',
-            ussd_code: '#144*82#',
-            created_at: new Date().toISOString()
-        };
+        await recordSecurityAudit('PAYMENT_INITIATED', paymentResult.orderId, 0, 'FAIBLE', req, { paymentId: paymentResult.paymentId, amount: paymentResult.amount, provider: paymentResult.provider });
+        res.status(200).json({
+            success: true,
+            ...paymentResult
+        });
+    } catch (err) {
+        res.status(400).json({ success: false, error: err.message });
+    }
+});
 
-        paymentSessions.set(sessionId, sessionData);
-
-        if (order_id) {
-            await db.run("UPDATE orders SET payment_status = 'paye', payment_method = 'Orange Money' WHERE id = ?", [order_id]);
+// 🔍 3. Live Payment Polling & Status Verification
+app.get('/api/payments/status/:paymentId', async (req, res) => {
+    try {
+        const paymentId = req.params.paymentId;
+        let payment = await db.get("SELECT * FROM payments WHERE id = ? OR order_id = ?", [paymentId, paymentId]);
+        if (!payment) {
+            return res.status(404).json({ success: false, error: "Transaction introuvable." });
         }
+
+        const order = await db.get("SELECT * FROM orders WHERE id = ?", [payment.order_id]);
+        const pinRecord = await db.get("SELECT * FROM pickup_codes WHERE order_id = ?", [payment.order_id]);
 
         res.json({
             success: true,
-            session_id: sessionId,
-            ussd_code: '#144*82#',
-            notif_message: "Veuillez valider le paiement Push USSD ou composer #144*82# sur votre mobile Orange Money.",
-            message: "Session Orange Money initialisée."
+            paymentId: payment.id,
+            orderId: payment.order_id,
+            status: payment.status,
+            amount: payment.amount,
+            currency: payment.currency,
+            provider: payment.provider,
+            isPaid: payment.status === 'PAID',
+            orderStatus: order ? order.status : 'UNKNOWN',
+            pickupPin: (payment.status === 'PAID' && pinRecord) ? pinRecord.pin_code : null,
+            updatedAt: payment.updated_at
         });
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        res.status(500).json({ success: false, error: err.message });
+    }
+});
+
+// 🔔 4. Wave Official Webhook Handler (HMAC-SHA256 Authenticated & Idempotent)
+app.post('/api/payments/webhook/wave', async (req, res) => {
+    try {
+        const webhookData = await wavePaymentProvider.handleWebhook(req);
+        if (!webhookData.isValid) {
+            await recordSecurityAudit('WEBHOOK_INVALID_SIGNATURE', webhookData.orderId || 'UNKNOWN', 85, 'ÉLEVÉ', req, { headers: req.headers });
+            return res.status(401).json({ error: "Signature de webhook invalide." });
+        }
+
+        if (webhookData.isPaid) {
+            const confirmation = await paymentManager.confirmSuccessfulPayment(db, {
+                paymentId: webhookData.paymentId,
+                orderId: webhookData.orderId,
+                providerTransactionId: webhookData.providerTransactionId,
+                amountPaid: webhookData.amount,
+                currency: webhookData.currency,
+                source: 'webhook',
+                rawPayload: webhookData.rawPayload
+            });
+
+            await recordSecurityAudit('WEBHOOK_PAYMENT_CONFIRMED', confirmation.orderId, 0, 'FAIBLE', req, { paymentId: confirmation.paymentId, amount: confirmation.amount });
+            return res.status(200).json({ success: true, message: "Paiement confirmé avec succès via webhook.", ...confirmation });
+        }
+
+        res.status(200).json({ success: true, message: "Événement webhook reçu et ignoré." });
+    } catch (err) {
+        console.error("Webhook processing error:", err);
+        res.status(500).json({ success: false, error: err.message });
+    }
+});
+
+// ⚡ 5. Instant Confirmation Endpoint (For Sandbox / Fast Real-Time Confirmation)
+app.post('/api/payments/confirm-manual', async (req, res) => {
+    try {
+        const { order_id, payment_id, transaction_id, amount } = req.body;
+        const confirmation = await paymentManager.confirmSuccessfulPayment(db, {
+            paymentId: payment_id,
+            orderId: order_id,
+            providerTransactionId: transaction_id || `MANUAL_${Date.now()}`,
+            amountPaid: amount,
+            source: 'manual_verification'
+        });
+
+        res.json({
+            success: true,
+            ...confirmation,
+            message: "Paiement validé avec succès côté serveur."
+        });
+    } catch (err) {
+        res.status(400).json({ success: false, error: err.message });
+    }
+});
+
+// 🔢 6. Cashier Counter Pickup PIN Verification
+app.post('/api/pickup/verify', async (req, res) => {
+    try {
+        const { order_id, pin, cashier_name, cashier_id } = req.body;
+        const result = await pickupPinService.verifyAndConsumePin(db, order_id, pin, {
+            name: cashier_name,
+            id: cashier_id
+        });
+
+        if (!result.success) {
+            return res.status(400).json(result);
+        }
+
+        res.json(result);
+    } catch (err) {
+        res.status(500).json({ success: false, error: err.message });
+    }
+});
+
+// 📊 7. Admin Payments Analytics & Metrics
+app.get('/api/admin/payments/analytics', async (req, res) => {
+    try {
+        const totalTx = await db.get("SELECT COUNT(*) as count, COALESCE(SUM(amount), 0) as gross_revenue FROM payments WHERE status = 'PAID'");
+        const pendingTx = await db.get("SELECT COUNT(*) as count FROM payments WHERE status = 'PENDING' OR status = 'PROCESSING'");
+        const failedTx = await db.get("SELECT COUNT(*) as count FROM payments WHERE status = 'FAILED' OR status = 'CANCELLED'");
+        const refundsTx = await db.get("SELECT COUNT(*) as count, COALESCE(SUM(amount), 0) as total_refunds FROM refunds WHERE status = 'COMPLETED'");
+
+        const grossRevenue = totalTx ? totalTx.gross_revenue : 0;
+        const commissionFee = Math.round(grossRevenue * 0.01); // 1% commission opérateur
+        const netToBakery = grossRevenue - commissionFee - (refundsTx ? refundsTx.total_refunds : 0);
+
+        res.json({
+            success: true,
+            total_transactions: (totalTx ? totalTx.count : 0) + (pendingTx ? pendingTx.count : 0) + (failedTx ? failedTx.count : 0),
+            paid_count: totalTx ? totalTx.count : 0,
+            pending_count: pendingTx ? pendingTx.count : 0,
+            failed_count: failedTx ? failedTx.count : 0,
+            refund_count: refundsTx ? refundsTx.count : 0,
+            gross_revenue: grossRevenue,
+            commission_fee: commissionFee,
+            total_refunds: refundsTx ? refundsTx.total_refunds : 0,
+            net_to_bakery: netToBakery,
+            currency: 'XOF'
+        });
+    } catch (err) {
+        res.status(500).json({ success: false, error: err.message });
+    }
+});
+
+// 📋 8. Admin Payments Transactions List
+app.get('/api/admin/payments/transactions', async (req, res) => {
+    try {
+        const transactions = await db.all(`
+            SELECT p.id as payment_id, p.order_id, p.amount, p.currency, p.provider, p.status, p.created_at,
+                   o.customer_name, o.customer_phone, o.delivery_type, o.pickup_point,
+                   pk.pin_code as pickup_pin, pk.is_used as is_pin_used
+            FROM payments p
+            LEFT JOIN orders o ON p.order_id = o.id
+            LEFT JOIN pickup_codes pk ON p.order_id = pk.order_id
+            ORDER BY p.created_at DESC
+            LIMIT 100
+        `);
+
+        res.json({
+            success: true,
+            transactions
+        });
+    } catch (err) {
+        res.status(500).json({ success: false, error: err.message });
+    }
+});
+
+// 👩‍🍳 9. Gérante Financial Overview
+app.get('/api/gerante/financial-overview', async (req, res) => {
+    try {
+        const paidStats = await db.get("SELECT COUNT(*) as count, COALESCE(SUM(amount), 0) as total FROM payments WHERE status = 'PAID'");
+        const pendingStats = await db.get("SELECT COUNT(*) as count FROM payments WHERE status = 'PROCESSING' OR status = 'PENDING'");
+        const failedStats = await db.get("SELECT COUNT(*) as count FROM payments WHERE status = 'FAILED'");
+
+        const totalRevenue = paidStats ? paidStats.total : 0;
+        const commissions = Math.round(totalRevenue * 0.01);
+        const netRevenue = totalRevenue - commissions;
+
+        res.json({
+            success: true,
+            total_revenue: totalRevenue,
+            paid_orders_count: paidStats ? paidStats.count : 0,
+            pending_orders_count: pendingStats ? pendingStats.count : 0,
+            failed_orders_count: failedStats ? failedStats.count : 0,
+            commissions: commissions,
+            net_revenue: netRevenue,
+            currency: 'XOF'
+        });
+    } catch (err) {
+        res.status(500).json({ success: false, error: err.message });
     }
 });
 

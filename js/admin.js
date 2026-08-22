@@ -228,8 +228,65 @@ async function fetchAdminData() {
         loadOrders(),
         loadEventOrders(),
         loadProducts(),
-        loadUsers()
+        loadUsers(),
+        loadPaymentAnalyticsAndTransactions()
     ]);
+}
+
+async function loadPaymentAnalyticsAndTransactions() {
+    try {
+        const [analyticsRes, txRes] = await Promise.all([
+            fetch(`${API_ROOT}/api/admin/payments/analytics`).catch(() => null),
+            fetch(`${API_ROOT}/api/admin/payments/transactions`).catch(() => null)
+        ]);
+
+        if (analyticsRes && analyticsRes.ok) {
+            const analytics = await analyticsRes.json();
+            const grossEl = document.getElementById('stat-gross-revenue');
+            const commEl = document.getElementById('stat-commissions');
+            const netEl = document.getElementById('stat-net-revenue');
+            const paidCountEl = document.getElementById('stat-paid-count');
+
+            if (grossEl) grossEl.innerText = (analytics.gross_revenue || 0).toLocaleString() + ' FCFA';
+            if (commEl) commEl.innerText = (analytics.commission_fee || 0).toLocaleString() + ' FCFA';
+            if (netEl) netEl.innerText = (analytics.net_to_bakery || 0).toLocaleString() + ' FCFA';
+            if (paidCountEl) paidCountEl.innerText = analytics.paid_count || 0;
+        }
+
+        if (txRes && txRes.ok) {
+            const txData = await txRes.json();
+            const transactions = txData.transactions || [];
+            renderTransactionsTable(transactions);
+        }
+    } catch (e) {
+        console.error("Erreur lors du chargement des transactions:", e);
+    }
+}
+
+function renderTransactionsTable(transactions) {
+    const tbody = document.getElementById('transactions-tbody') || document.querySelector('#transactions table tbody');
+    if (!tbody || !Array.isArray(transactions) || transactions.length === 0) return;
+
+    tbody.innerHTML = transactions.map(t => {
+        const isPaid = t.status === 'PAID';
+        const badgeClass = isPaid ? 'active' : (t.status === 'FAILED' ? 'danger' : 'warning');
+        const badgeLabel = isPaid ? 'Payé' : (t.status === 'FAILED' ? 'Échec' : 'En attente');
+        const pinBadge = t.pickup_pin ? `<span class="badge bg-danger text-white ms-1 px-2 py-0.5" style="font-size:10px; font-family:monospace;">PIN ${t.pickup_pin}</span>` : '';
+
+        return `
+            <tr>
+                <td style="font-family: monospace; color: #64748b;">#${t.payment_id || 'TRX'}</td>
+                <td><strong>${t.customer_name || 'Client'}</strong><br><small class="text-muted">${t.customer_phone || ''}</small></td>
+                <td><strong>${(t.amount || 0).toLocaleString()} FCFA</strong></td>
+                <td><span class="saas-badge-wave">🌊 ${t.provider || 'Wave'}</span></td>
+                <td>
+                    <span class="saas-badge-pill ${badgeClass}">${badgeLabel}</span>
+                    ${pinBadge}
+                </td>
+                <td class="small text-muted">${t.created_at ? new Date(t.created_at).toLocaleString('fr-FR') : 'N/A'}</td>
+            </tr>
+        `;
+    }).join('');
 }
 
 // =============================================================
