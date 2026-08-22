@@ -446,3 +446,111 @@ img.profile-avatar, .profile-avatar, img.logo-avatar, .logo-avatar {
     display: none;
 }
 
+/* ==========================================================================
+   PREMIUM PAYMENT ACTION BUTTONS (Wave Mobile & Espèces Cash)
+   ========================================================================== */
+.pos-btn-pay {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    padding: 12px 10px;
+    border-radius: 16px;
+    font-family: inherit;
+    font-weight: 800;
+    cursor: pointer;
+    overflow: hidden;
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    user-select: none;
+    outline: none;
+    border: none;
+    text-decoration: none;
+}
+
+.pos-btn-pay::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 50%;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255, 255, 0) 100%);
+    pointer-events: none;
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
+}
+
+.pos-btn-pay:hover {
+    transform: translateY(-2px);
+}
+
+.pos-btn-pay:active {
+    transform: scale(0.96);
+}
+
+.pos-btn-pay-icon-box {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.24);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+    color: #ffffff;
+    transition: transform 0.2s ease;
+}
+
+.pos-btn-pay:hover .pos-btn-pay-icon-box {
+    transform: scale(1.08);
+}
+
+.pos-btn-pay-title {
+    font-size: 12.5px;
+    font-weight: 900;
+    color: #ffffff;
+    line-height: 1.1;
+    letter-spacing: 0.2px;
+}
+
+.pos-btn-pay-subtitle {
+    font-size: 9.5px;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.92);
+    letter-spacing: 0.3px;
+    display: flex;
+    align-items: center;
+    gap: 3px;
+}
+
+/* WAVE MOBILE BUTTON (Vibrant Wave Cyan/Blue Gradient) */
+.pos-btn-wave {
+    background: linear-gradient(135deg, #1DC4FF 0%, #0084FF 100%) !important;
+    border: 1px solid rgba(255, 255, 255, 0.4) !important;
+    box-shadow: 0 8px 20px -4px rgba(0, 132, 255, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.2) inset !important;
+    color: #ffffff !important;
+}
+
+.pos-btn-wave:hover {
+    background: linear-gradient(135deg, #30cbff 0%, #0077ea 100%) !important;
+    box-shadow: 0 12px 28px -4px rgba(0, 132, 255, 0.65), 0 0 0 1px rgba(255, 255, 255, 0.35) inset !important;
+}
+
+/* CASH / ESPECES BUTTON (Emerald Cash Gradient) */
+.pos-btn-cash {
+    background: linear-gradient(135deg, #10B981 0%, #059669 100%) !important;
+    border: 1px solid rgba(255, 255, 255, 0.4) !important;
+    box-shadow: 0 8px 20px -4px rgba(16, 185, 129, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.2) inset !important;
+    color: #ffffff !important;
+}
+
+.pos-btn-cash:hover {
+    background: linear-gradient(135deg, #1fc990 0%, #048259 100%) !important;
+    box-shadow: 0 12px 28px -4px rgba(16, 185, 129, 0.65), 0 0 0 1px rgba(255, 255, 255, 0.35) inset !important;
+}
+
+

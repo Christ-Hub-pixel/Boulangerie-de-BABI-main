@@ -314,14 +314,20 @@
                                 </div>
                             </div>
 
-                            <div class="grid grid-cols-2 gap-2 mt-2">
-                                <button onclick="checkoutPos('especes')" class="btn-modal-submit-green" style="height: auto; padding: 14px 8px; border-radius: 14px; flex-direction: column; gap: 4px; font-size: 11px;">
-                                    <span class="material-symbols-outlined text-2xl font-bold">payments</span>
-                                    <span class="font-extrabold">Espèces (Cash)</span>
+                            <div class="grid grid-cols-2 gap-2.5 mt-2">
+                                <button onclick="checkoutPos('especes')" class="pos-btn-pay pos-btn-cash">
+                                    <div class="pos-btn-pay-icon-box">
+                                        <span class="material-symbols-outlined text-xl">payments</span>
+                                    </div>
+                                    <span class="pos-btn-pay-title">Espèces (Cash)</span>
+                                    <span class="pos-btn-pay-subtitle"><span class="material-symbols-outlined text-[11px]">currency_exchange</span> Rendu Monnaie</span>
                                 </button>
-                                <button onclick="checkoutPos('wave')" class="btn-modal-submit-gold" style="height: auto; padding: 14px 8px; border-radius: 14px; flex-direction: column; gap: 4px; font-size: 11px;">
-                                    <span class="material-symbols-outlined text-2xl font-bold">qr_code_scanner</span>
-                                    <span class="font-extrabold">Wave / Mobile</span>
+                                <button onclick="checkoutPos('wave')" class="pos-btn-pay pos-btn-wave">
+                                    <div class="pos-btn-pay-icon-box">
+                                        <span class="material-symbols-outlined text-xl">qr_code_scanner</span>
+                                    </div>
+                                    <span class="pos-btn-pay-title">Wave Mobile</span>
+                                    <span class="pos-btn-pay-subtitle"><span class="material-symbols-outlined text-[11px]">bolt</span> 1-Clic • 0% Frais</span>
                                 </button>
                             </div>
                         </div>
@@ -440,14 +446,20 @@
                     <span>TOTAL À PAYER :</span>
                     <span class="text-primary font-black text-xl font-mono" id="mobile-pos-total">0 FCFA</span>
                 </div>
-                <div class="grid grid-cols-2 gap-2">
-                    <button onclick="checkoutPos('especes'); closeMobileCart();" class="btn-modal-submit-green" style="padding: 12px 6px; font-size: 11px; flex-direction: column; gap: 2px;">
-                        <span class="material-symbols-outlined text-xl">payments</span>
-                        <span class="font-extrabold">Espèces (Cash)</span>
+                <div class="grid grid-cols-2 gap-2.5">
+                    <button onclick="checkoutPos('especes'); closeMobileCart();" class="pos-btn-pay pos-btn-cash">
+                        <div class="pos-btn-pay-icon-box">
+                            <span class="material-symbols-outlined text-xl">payments</span>
+                        </div>
+                        <span class="pos-btn-pay-title">Espèces (Cash)</span>
+                        <span class="pos-btn-pay-subtitle"><span class="material-symbols-outlined text-[11px]">currency_exchange</span> Rendu Monnaie</span>
                     </button>
-                    <button onclick="checkoutPos('wave'); closeMobileCart();" class="btn-modal-submit-gold" style="padding: 12px 6px; font-size: 11px; flex-direction: column; gap: 2px;">
-                        <span class="material-symbols-outlined text-xl">qr_code_scanner</span>
-                        <span class="font-extrabold">Wave Mobile</span>
+                    <button onclick="checkoutPos('wave'); closeMobileCart();" class="pos-btn-pay pos-btn-wave">
+                        <div class="pos-btn-pay-icon-box">
+                            <span class="material-symbols-outlined text-xl">qr_code_scanner</span>
+                        </div>
+                        <span class="pos-btn-pay-title">Wave Mobile</span>
+                        <span class="pos-btn-pay-subtitle"><span class="material-symbols-outlined text-[11px]">bolt</span> 1-Clic • 0% Frais</span>
                     </button>
                 </div>
             </div>
