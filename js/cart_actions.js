@@ -9,6 +9,8 @@ if (typeof window !== 'undefined') {
     window.CART_KEY = CART_KEY;
     window.LEGACY_CART_KEY = LEGACY_CART_KEY;
 }
+
+function getCartItems() {
     try {
         const primary = JSON.parse(localStorage.getItem(CART_KEY));
         if (Array.isArray(primary) && primary.length > 0) {
