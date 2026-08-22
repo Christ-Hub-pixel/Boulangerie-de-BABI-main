@@ -44,13 +44,97 @@ class PickupPinService {
     }
 
     /**
+     * Recherche les détails d'une commande par son code PIN (pour prévisualisation à la caisse)
+     */
+    async lookupOrderDetailsByPin(db, enteredPin) {
+        const cleanPin = String(enteredPin || '').trim();
+        if (!cleanPin || cleanPin.length < 4) {
+            return { success: false, error: "Code PIN invalide (4 chiffres requis)." };
+        }
+
+        // Recherche dans pickup_codes ou orders
+        let pinRecord = await db.get("SELECT * FROM pickup_codes WHERE pin_code = ? ORDER BY created_at DESC LIMIT 1", [cleanPin]);
+        let order = null;
+
+        if (pinRecord) {
+            const cleanOrderId = String(pinRecord.order_id || '').replace(/^ORD-/, '');
+            order = await db.get("SELECT * FROM orders WHERE id = ? OR id = ?", [pinRecord.order_id, cleanOrderId]);
+        } else {
+            order = await db.get("SELECT * FROM orders WHERE code_pin = ? ORDER BY created_at DESC LIMIT 1", [cleanPin]);
+        }
+
+        if (!order) {
+            return { success: false, error: `Aucune commande trouvée pour le code PIN #${cleanPin}.` };
+        }
+
+        let items = [];
+        try {
+            if (typeof order.items === 'string') {
+                items = JSON.parse(order.items);
+            } else if (Array.isArray(order.items)) {
+                items = order.items;
+            }
+        } catch (_) {
+            items = [{ name: order.items_summary || 'Articles boulangerie', quantity: 1, price: order.total_amount || order.total_price }];
+        }
+
+        const isPaid = order.status === 'PAID' || order.status === 'PREPARING' || order.status === 'READY_FOR_PICKUP' || order.payment_status === 'paye';
+        const isPickedUp = order.status === 'PICKED_UP' || (pinRecord && pinRecord.is_used === 1);
+
+        return {
+            success: true,
+            orderId: order.id,
+            customerName: order.customer_name || 'Client Web',
+            customerPhone: order.customer_phone || '',
+            totalAmount: order.total_amount || order.total_price || 0,
+            status: order.status,
+            isPaid: isPaid,
+            isPickedUp: isPickedUp,
+            paymentMethod: order.payment_method || 'Wave Mobile Money',
+            items: items,
+            itemsSummary: order.items_summary || items.map(i => `${i.quantity || i.qte || 1}x ${i.name || i.nom}`).join(', '),
+            createdAt: order.created_at
+        };
+    }
+
+    /**
      * Vérifie et consomme le code PIN à la caisse
      */
     async verifyAndConsumePin(db, orderId, enteredPin, cashierInfo = {}) {
-        const cleanOrderId = String(orderId || '').trim();
+        let cleanOrderId = String(orderId || '').trim();
         const cleanPin = String(enteredPin || '').trim();
 
-        // 1. Vérification Anti-Bruteforce
+        if (!cleanPin) {
+            return { success: false, error: "Code PIN requis." };
+        }
+
+        // 1. Si pas d'orderId fourni, recherche automatique par code PIN
+        let order = null;
+        let pinRecord = null;
+
+        if (cleanOrderId) {
+            const numId = String(cleanOrderId).replace(/^ORD-/, '');
+            order = await db.get("SELECT * FROM orders WHERE id = ? OR id = ?", [cleanOrderId, numId]);
+            if (order) {
+                pinRecord = await db.get("SELECT * FROM pickup_codes WHERE order_id = ? OR order_id = ?", [order.id, `ORD-${order.id}`]);
+            }
+        } else {
+            pinRecord = await db.get("SELECT * FROM pickup_codes WHERE pin_code = ? AND is_used = 0 ORDER BY created_at DESC LIMIT 1", [cleanPin]);
+            if (pinRecord) {
+                const numId = String(pinRecord.order_id).replace(/^ORD-/, '');
+                order = await db.get("SELECT * FROM orders WHERE id = ? OR id = ?", [pinRecord.order_id, numId]);
+            } else {
+                order = await db.get("SELECT * FROM orders WHERE code_pin = ? ORDER BY created_at DESC LIMIT 1", [cleanPin]);
+            }
+        }
+
+        if (!order) {
+            return { success: false, error: "Commande ou code PIN introuvable." };
+        }
+
+        cleanOrderId = String(order.id);
+
+        // 2. Vérification Anti-Bruteforce
         const tracker = this.attemptTracker.get(cleanOrderId);
         if (tracker && tracker.lockedUntil && Date.now() < tracker.lockedUntil) {
             const waitSeconds = Math.ceil((tracker.lockedUntil - Date.now()) / 1000);
@@ -61,32 +145,27 @@ class PickupPinService {
             };
         }
 
-        // 2. Recherche de la commande et du PIN
-        const numId = String(cleanOrderId).replace(/^ORD-/, '');
-        const order = await db.get("SELECT * FROM orders WHERE id = ? OR id = ?", [cleanOrderId, numId]);
-        if (!order) {
-            return { success: false, error: "Commande introuvable." };
-        }
-
         // 3. VÉRIFICATION STRICTE : La commande doit être PAYÉE
         const isPaid = order.status === 'PAID' || order.status === 'PREPARING' || order.status === 'READY_FOR_PICKUP' || order.payment_status === 'paye';
         if (!isPaid) {
             return {
                 success: false,
                 isNotPaid: true,
-                error: "⛔ Retrait impossible : Le paiement de cette commande n'a pas encore été confirmé."
+                error: "⛔ Retrait impossible : Le paiement de cette commande n'a pas encore été validé."
             };
         }
 
-        const pinRecord = await db.get("SELECT * FROM pickup_codes WHERE order_id = ? OR order_id = ?", [order.id, `ORD-${order.id}`]);
+        if (!pinRecord) {
+            pinRecord = await db.get("SELECT * FROM pickup_codes WHERE order_id = ? OR order_id = ?", [order.id, `ORD-${order.id}`]);
+        }
         const expectedPin = pinRecord ? pinRecord.pin_code : (order.code_pin || '7412');
 
         // 4. Vérification si déjà consommé
-        if (pinRecord && pinRecord.is_used === 1) {
+        if ((pinRecord && pinRecord.is_used === 1) || order.status === 'PICKED_UP') {
             return {
                 success: false,
                 isAlreadyUsed: true,
-                error: `⚠️ Ce code PIN a déjà été utilisé pour le retrait le ${pinRecord.validated_at} par ${pinRecord.validated_by_name || 'la caisse'}.`
+                error: `⚠️ Cette commande a déjà été retirée.`
             };
         }
 

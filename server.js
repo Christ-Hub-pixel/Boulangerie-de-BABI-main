@@ -883,7 +883,20 @@ app.post('/api/payments/confirm-manual', async (req, res) => {
     }
 });
 
-// 🔢 6. Cashier Counter Pickup PIN Verification
+// 🔢 6. Cashier Counter Pickup PIN Verification & Lookup
+app.post('/api/pickup/lookup', async (req, res) => {
+    try {
+        const { pin } = req.body;
+        const result = await pickupPinService.lookupOrderDetailsByPin(db, pin);
+        if (!result.success) {
+            return res.status(404).json(result);
+        }
+        res.json(result);
+    } catch (err) {
+        res.status(500).json({ success: false, error: err.message });
+    }
+});
+
 app.post('/api/pickup/verify', async (req, res) => {
     try {
         const { order_id, pin, cashier_name, cashier_id } = req.body;
@@ -897,6 +910,23 @@ app.post('/api/pickup/verify', async (req, res) => {
         }
 
         res.json(result);
+    } catch (err) {
+        res.status(500).json({ success: false, error: err.message });
+    }
+});
+
+// 📋 6.1 Live Pickup Queue for Cashier Dashboard
+app.get('/api/orders/pickup-queue', async (req, res) => {
+    try {
+        const orders = await db.all(
+            `SELECT o.*, p.pin_code, p.is_used 
+             FROM orders o
+             LEFT JOIN pickup_codes p ON o.id = p.order_id
+             WHERE o.status IN ('PAID', 'PREPARING', 'READY_FOR_PICKUP', 'paye') 
+                OR (o.payment_status = 'paye' AND (p.is_used IS NULL OR p.is_used = 0))
+             ORDER BY o.created_at DESC LIMIT 30`
+        );
+        res.json({ success: true, orders: orders || [] });
     } catch (err) {
         res.status(500).json({ success: false, error: err.message });
     }
