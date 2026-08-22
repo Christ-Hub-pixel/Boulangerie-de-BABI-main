@@ -3,346 +3,378 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Paiement Sécurisé - Boulangerie de Babi</title>
-    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <title>Paiement Sécurisé & Retrait Fournil — Boulangerie de BABI</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="css/global.css">
     <link rel="stylesheet" href="css/animations.css">
-    <style>
-        body {
-            background-color: #f5f5f5;
-            font-family: 'Inter', sans-serif;
-        }
-        .jumia-stepper-item.active .badge-step {
-            background: #fb923c !important;
-            color: #fff !important;
-            box-shadow: 0 2px 6px rgba(251, 146, 60, 0.4);
-        }
-        .jumia-stepper-item.active .step-title {
-            color: #2b160c !important;
-            font-weight: 700 !important;
-        }
-        .jumia-pay-card {
-            border: 2px solid #e2e8f0;
-            border-radius: 12px;
-            transition: all 0.2s ease-in-out;
-            cursor: pointer;
-            background: #fff;
-        }
-        .jumia-pay-card:hover {
-            border-color: #fb923c;
-            background: #fffaf0;
-        }
-        .jumia-pay-card.selected {
-            border-color: #fb923c !important;
-            background: #fffaf0 !important;
-            box-shadow: 0 4px 12px rgba(251, 146, 60, 0.12);
-        }
-        .jumia-btn-orange {
-            background: #fb923c !important;
-            border: none !important;
-            color: #2b160c !important;
-            font-weight: 700;
-            transition: transform 0.15s ease, box-shadow 0.15s ease;
-        }
-        .jumia-btn-orange:hover {
-            background: #f97316 !important;
-            color: #fff !important;
-            transform: translateY(-1px);
-            box-shadow: 0 6px 16px rgba(249, 115, 22, 0.35);
-        }
-    </style>
+    <link rel="stylesheet" href="css/checkout_luxury.css">
     <link rel="icon" type="image/png" href="assets/logo.png">
     <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
     <link rel="apple-touch-icon" href="assets/logo.png">
 </head>
 <body class="d-flex flex-column min-vh-100">
 
-    <!-- Jumia-Style Secure Header -->
-    <header class="shadow-sm fixed-top" style="background: rgba(43, 22, 12, 0.96); backdrop-filter: blur(10px); z-index: 1030;">
+    <!-- Header Haut de Gamme BABI -->
+    <header class="shadow-sm fixed-top" style="background: rgba(26, 15, 8, 0.95); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(251, 146, 60, 0.25); z-index: 1030;">
         <div class="container d-flex justify-content-between align-items-center py-2">
-            <a class="text-decoration-none d-flex align-items-center" href="index.html">
-                <img src="assets/logo.png" alt="Logo" class="navbar-brand-logo">
-                <div class="d-flex flex-column lh-1 ms-2">
-                    <span class="navbar-brand-title text-white">Boulangerie</span>
-                    <span class="navbar-brand-subtitle text-warning d-flex align-items-center">de Babi <span class="flag-ci flag-ci-sm ms-1"></span></span>
+            <a class="text-decoration-none d-flex align-items-center gap-2" href="index.html">
+                <img src="assets/logo.png" alt="Logo" class="navbar-brand-logo" style="height: 42px; width: auto;">
+                <div class="d-flex flex-column lh-1">
+                    <span class="navbar-brand-title text-white fw-bold" style="font-size: 1.1rem; letter-spacing: 0.5px;">Boulangerie</span>
+                    <span class="navbar-brand-subtitle d-flex align-items-center gap-1" style="color: #fb923c; font-size: 0.85rem; font-weight: 800;">
+                        de Babi <span class="flag-ci flag-ci-sm"></span>
+                    </span>
                 </div>
             </a>
-            <div class="d-flex align-items-center gap-3">
-                <a href="index.html" class="btn btn-outline-light btn-sm rounded-pill px-3 fw-bold">
-                    <i class="fa-solid fa-house me-1 text-warning"></i> Accueil
+            
+            <div class="d-flex align-items-center gap-2 gap-md-3">
+                <a href="index.html" class="btn btn-sm btn-outline-light rounded-pill px-3 fw-bold d-none d-sm-inline-flex align-items-center gap-1" style="border-color: rgba(255,255,255,0.25);">
+                    <i class="fa-solid fa-arrow-left text-warning"></i>
+                    <span>Continuer mes achats</span>
                 </a>
-                <div class="d-flex align-items-center bg-dark bg-opacity-50 px-3 py-1 rounded-pill text-white fw-bold border border-secondary">
-                    <i class="fa-solid fa-lock text-success me-2"></i>
-                    <span class="small">Paiement 100% Sécurisé</span>
+                <div class="d-flex align-items-center bg-dark bg-opacity-75 px-3 py-1.5 rounded-pill text-white fw-bold border border-secondary shadow-sm">
+                    <i class="fa-solid fa-lock text-success me-2 fs-6"></i>
+                    <span class="small" style="letter-spacing: 0.3px;">Paiement Garanti 100% Sécurisé</span>
                 </div>
             </div>
         </div>
     </header>
 
-    <div class="container" style="margin-top: 95px; margin-bottom: 50px;">
+    <!-- Main Container -->
+    <main class="container flex-grow-1" style="margin-top: 88px; margin-bottom: 60px;">
         
-        <!-- Jumia Stepper Navigation -->
-        <div class="card border-0 shadow-sm rounded-3 mb-4 p-3 bg-white">
-            <div class="d-flex justify-content-between align-items-center position-relative">
-                <div class="d-flex align-items-center gap-2 jumia-stepper-item active">
-                    <span class="badge rounded-circle badge-step fw-bold d-flex align-items-center justify-content-center" style="width:26px;height:26px; font-size:12px;">1</span>
-                    <span class="small step-title">1. COORDONNÉES</span>
+        <!-- Reassurance Banner -->
+        <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 p-3 mb-4 rounded-4 shadow-sm" style="background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%); border: 1px solid #fde68a;">
+            <div class="d-flex align-items-center gap-2">
+                <span class="fs-4">🥖</span>
+                <div>
+                    <strong class="d-block text-dark" style="font-size: 13.5px;">Cuit au Fournil & Servi Tout Chaud</strong>
+                    <span class="text-muted" style="font-size: 12px;">Préparé avec soin à la Riviera dès validation de votre commande.</span>
                 </div>
-                <div class="flex-grow-1 mx-2 border-top" style="border-color:#cbd5e1 !important;"></div>
-                <div class="d-flex align-items-center gap-2 jumia-stepper-item active">
-                    <span class="badge rounded-circle badge-step fw-bold d-flex align-items-center justify-content-center" style="width:26px;height:26px; font-size:12px;">2</span>
-                    <span class="small step-title">2. RETRAIT</span>
+            </div>
+            <div class="d-flex align-items-center gap-3">
+                <span class="badge bg-white text-dark border px-3 py-2 rounded-pill fw-bold shadow-xs">
+                    ⚡ Retrait Express en 15 min
+                </span>
+                <span class="badge text-white px-3 py-2 rounded-pill fw-bold shadow-xs" style="background: #1EA5FC;">
+                    🌊 Wave 0% Frais
+                </span>
+            </div>
+        </div>
+
+        <!-- 3-Step Progress Tracker -->
+        <div class="babi-stepper-container mb-4">
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="babi-step active" id="stepIndicator1">
+                    <div class="babi-step-circle">1</div>
+                    <div class="d-none d-sm-block">
+                        <span class="babi-step-label">COORDONNÉES</span>
+                    </div>
                 </div>
-                <div class="flex-grow-1 mx-2 border-top" style="border-color:#cbd5e1 !important;"></div>
-                <div class="d-flex align-items-center gap-2 jumia-stepper-item active">
-                    <span class="badge rounded-circle badge-step fw-bold d-flex align-items-center justify-content-center" style="width:26px;height:26px; font-size:12px;">3</span>
-                    <span class="small step-title">3. PAIEMENT</span>
+                <div class="babi-step-divider filled"></div>
+                <div class="babi-step active" id="stepIndicator2">
+                    <div class="babi-step-circle">2</div>
+                    <div class="d-none d-sm-block">
+                        <span class="babi-step-label">RETRAIT & CRÉNEAU</span>
+                    </div>
+                </div>
+                <div class="babi-step-divider filled"></div>
+                <div class="babi-step active" id="stepIndicator3">
+                    <div class="babi-step-circle">3</div>
+                    <div class="d-none d-sm-block">
+                        <span class="babi-step-label">PAIEMENT WAVE / ESPÈCES</span>
+                    </div>
                 </div>
             </div>
         </div>
 
         <div class="row g-4 align-items-start">
-            <!-- Left Column: Express 1-Page Checkout -->
+            
+            <!-- Left Column : Formulaire Express -->
             <div class="col-lg-8">
                 <div id="checkoutAlertBox" class="d-none alert alert-danger fw-bold shadow-sm mb-3 align-items-center gap-2" role="alert" style="border-left: 4px solid #dc3545;"></div>
 
-                <!-- CARD 1: COORDONNÉES DU CLIENT -->
-                <div class="card border-0 bg-white rounded-4 shadow-sm mb-4 p-4" style="border: 1px solid rgba(251, 146, 60, 0.2) !important;">
-                    <div class="d-flex align-items-center gap-2 mb-3 pb-2 border-bottom">
-                        <span class="badge rounded-circle bg-warning text-dark fw-bold d-flex align-items-center justify-content-center" style="width:32px;height:32px; font-size:14px; background:#fb923c !important; color:#fff !important;">1</span>
-                        <h5 class="fw-bold mb-0" style="color: #2b160c;">Vos Coordonnées</h5>
-                    </div>
-
-                    <div class="alert alert-warning py-2 px-3 small d-flex align-items-center gap-2 mb-3 rounded-3" style="background:#fffbeb; border: 1px solid #fde68a;">
-                        <i class="fa-solid fa-store text-warning fs-5"></i>
-                        <div><strong>Retrait Express au Fournil :</strong> Votre commande sera préparée avec amour et mise de côté au comptoir. Pas d'attente en caisse !</div>
+                <!-- CARD 1 : COORDONNÉES CLIENT -->
+                <div class="babi-checkout-card">
+                    <div class="d-flex align-items-center gap-3 mb-3 pb-2 border-bottom">
+                        <div class="babi-card-badge-num">1</div>
+                        <div>
+                            <h5 class="babi-card-title">Vos Coordonnées</h5>
+                            <span class="text-muted small">Pour vous avertir dès que votre sachet est prêt au comptoir.</span>
+                        </div>
                     </div>
 
                     <div class="row g-3">
                         <div class="col-md-6">
-                            <label class="form-label fs-sm text-dark fw-bold mb-1">Nom et Prénom du client *</label>
-                            <input type="text" class="form-control form-control-lg shadow-none" id="clientNameInput" placeholder="Ex: Kouassi Jean" required>
+                            <label class="form-label fw-bold text-dark mb-1" style="font-size: 13px;">
+                                Nom & Prénom du client <span class="text-danger">*</span>
+                            </label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0 text-muted"><i class="fa-solid fa-user"></i></span>
+                                <input type="text" class="form-control form-control-lg border-start-0 ps-1 fs-6 shadow-none" id="clientNameInput" placeholder="Ex: Jean Kouassi" required>
+                            </div>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label fs-sm text-dark fw-bold mb-1">Numéro de téléphone *</label>
-                            <div class="input-group input-group-lg">
-                                <span class="input-group-text bg-white fw-bold text-dark border-end-0 d-flex align-items-center">
+                            <label class="form-label fw-bold text-dark mb-1" style="font-size: 13px;">
+                                Numéro de téléphone portable <span class="text-danger">*</span>
+                            </label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-white fw-bold text-dark border-end-0 d-flex align-items-center gap-1">
                                     <span class="flag-ci"></span> +225
                                 </span>
-                                <input type="tel" class="form-control shadow-none border-start-0 ps-1" id="clientPhoneInput" placeholder="07 04 38 92 01" required oninput="syncPhoneToPayment(this.value)">
+                                <input type="tel" class="form-control form-control-lg border-start-0 ps-1 fs-6 fw-bold shadow-none" id="clientPhoneInput" placeholder="07 04 38 92 01" required oninput="syncPhoneToPayment(this.value)">
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- CARD 2: RETRAIT & CRÉNEAU SOUHAITÉ -->
-                <div class="card border-0 bg-white rounded-4 shadow-sm mb-4 p-4" style="border: 1px solid rgba(251, 146, 60, 0.2) !important;">
-                    <div class="d-flex align-items-center gap-2 mb-3 pb-2 border-bottom">
-                        <span class="badge rounded-circle bg-warning text-dark fw-bold d-flex align-items-center justify-content-center" style="width:32px;height:32px; font-size:14px; background:#fb923c !important; color:#fff !important;">2</span>
-                        <h5 class="fw-bold mb-0" style="color: #2b160c;">Lieu & Créneau de Retrait (Click & Collect)</h5>
+                <!-- CARD 2 : RETRAIT & CRÉNEAU SOUHAITÉ -->
+                <div class="babi-checkout-card">
+                    <div class="d-flex align-items-center gap-3 mb-3 pb-2 border-bottom">
+                        <div class="babi-card-badge-num">2</div>
+                        <div>
+                            <h5 class="babi-card-title">Point de Retrait & Créneau Fournil</h5>
+                            <span class="text-muted small">Click & Collect gratuit au comptoir de la Boulangerie de BABI.</span>
+                        </div>
                     </div>
 
                     <div class="row g-3">
                         <div class="col-md-6">
-                            <label class="form-label fs-sm text-dark fw-bold mb-1"><i class="fa-solid fa-clock text-warning me-1"></i> Quand souhaitez-vous récupérer votre commande ?</label>
-                            <select class="form-select form-select-lg shadow-none fw-bold" id="pickupSlotSelect">
-                                <option value="Dès que possible (15-20 min)" selected>⚡ Dès que possible (~15 à 20 min)</option>
+                            <label class="form-label fw-bold text-dark mb-1" style="font-size: 13px;">
+                                <i class="fa-solid fa-location-dot text-danger me-1"></i> Point de retrait sélectionné
+                            </label>
+                            <div class="p-2.5 rounded-3 bg-light border d-flex align-items-center justify-content-between">
+                                <div>
+                                    <strong class="d-block text-dark fs-6">Fournil Riviera (Abidjan)</strong>
+                                    <span class="text-muted small">Boulevard Lagunaire • Ouvert 05h45 - 23h00</span>
+                                </div>
+                                <span class="badge bg-success-subtle text-success border border-success-subtle fw-bold">Gratuit</span>
+                            </div>
+                            <input type="hidden" id="addressInput" value="Riviera (Boulangerie de BABI)">
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold text-dark mb-1" style="font-size: 13px;">
+                                <i class="fa-solid fa-clock text-warning me-1"></i> Heure souhaitée de récupération
+                            </label>
+                            <select class="form-select form-select-lg shadow-none fw-bold fs-6" id="pickupSlotSelect" style="border-radius: 12px;">
+                                <option value="Dès que possible (~15-20 min)" selected>⚡ Dès que possible (~15 à 20 min)</option>
                                 <option value="Dans 1 heure">🕐 Dans 1 heure</option>
                                 <option value="Ce midi (12h30 - 13h30)">☀️ Ce midi (12h30 - 13h30)</option>
-                                <option value="Goûter de 16h00">🧁 Pour le goûter (16h00 - 17h00)</option>
+                                <option value="Pour le goûter (16h00 - 17h00)">🧁 Pour le goûter (16h00 - 17h00)</option>
                                 <option value="Fournée du soir (18h00 - Pain Chaud)">🔥 Fournée du soir (18h00 - Pain tout chaud)</option>
                             </select>
                         </div>
-                        <div class="col-md-6">
-                            <label class="form-label fs-sm text-dark fw-bold mb-1"><i class="fa-solid fa-location-dot text-danger me-1"></i> Point de retrait</label>
-                            <input type="text" class="form-control form-control-lg shadow-none bg-light fw-bold" id="addressInput" value="Riviera (Boulangerie de BABI) — Retrait Gratuit" readonly>
-                        </div>
+
                         <div class="col-12">
-                            <label class="form-label fw-bold small text-dark mb-1">
-                                <i class="fa-solid fa-note-sticky text-warning me-1"></i> Remarques pour le fournil (Optionnel)
+                            <label class="form-label fw-bold text-muted mb-1" style="font-size: 12px;">
+                                <i class="fa-solid fa-comment-dots text-warning me-1"></i> Instructions particulières pour le boulanger (Optionnel)
                             </label>
-                            <input type="text" class="form-control shadow-none" id="orderNotesInput" placeholder="Ex: Bien doré, trancher la baguette, emballer séparément...">
+                            <input type="text" class="form-control shadow-none rounded-3" id="orderNotesInput" placeholder="Ex: Baguettes bien dorées, découper le pain, sachet séparé pour les croissants...">
                         </div>
                     </div>
                 </div>
 
-                <!-- CARD 3: MODE DE PAIEMENT (1-CLIC) -->
-                <div class="card border-0 bg-white rounded-4 shadow-sm mb-4 p-4" style="border: 1px solid rgba(251, 146, 60, 0.2) !important;">
-                    <div class="d-flex align-items-center gap-2 mb-3 pb-2 border-bottom">
-                        <span class="badge rounded-circle bg-warning text-dark fw-bold d-flex align-items-center justify-content-center" style="width:32px;height:32px; font-size:14px; background:#fb923c !important; color:#fff !important;">3</span>
-                        <h5 class="fw-bold mb-0" style="color: #2b160c;">Choisissez votre Mode de Paiement</h5>
+                <!-- CARD 3 : MODE DE PAIEMENT (WAVE EN VEDETTE) -->
+                <div class="babi-checkout-card">
+                    <div class="d-flex align-items-center gap-3 mb-3 pb-2 border-bottom">
+                        <div class="babi-card-badge-num">3</div>
+                        <div>
+                            <h5 class="babi-card-title">Choisissez votre Moyen de Paiement</h5>
+                            <span class="text-muted small">Paiement ultra-sécurisé avec reçu et code PIN instantanés.</span>
+                        </div>
                     </div>
 
-                    <!-- Option 1: Wave Mobile Money -->
-                    <div class="jumia-pay-card p-3 mb-3 selected rounded-3" id="card_momo_box" style="border: 2px solid #1dc4e9; cursor: pointer;" onclick="document.getElementById('p_momo').checked = true; togglePaymentMode('momo');">
-                        <label class="form-check m-0 d-flex align-items-center cursor-pointer w-100" for="p_momo">
-                            <input class="form-check-input mt-0 fs-5" type="radio" name="payment" id="p_momo" checked onclick="togglePaymentMode('momo')">
-                            <div class="ms-3 flex-grow-1">
-                                <div class="d-flex align-items-center gap-2 flex-wrap">
-                                    <span class="fw-bold d-block text-dark fs-6">Wave Mobile Money</span>
-                                    <span class="badge text-white fw-bold px-2 py-1" style="background:#1dc4e9; font-size:11px;">Recommandé • 0% Frais • Instantané</span>
-                                </div>
-                                <small class="text-muted">Paiement 1-clic direct par Wave App ou QR Code sécurisé.</small>
-                            </div>
-                            <div class="ms-auto">
-                                <img src="assets/wave_money.png" alt="Wave CI" style="width:42px; height:42px; object-fit:contain;">
-                            </div>
-                        </label>
-
-                        <!-- Wave Phone Input & Direct Button -->
-                        <div class="mt-3 p-3 bg-light rounded-3 border" id="operatorSection" style="border-color:#bae6fd !important;">
-                            <div class="row g-2 align-items-center">
-                                <div class="col-md-7">
-                                    <label class="form-label fs-xs text-muted mb-1 fw-bold">Numéro Wave à débiter</label>
-                                    <div class="input-group">
-                                        <span class="input-group-text bg-white fw-bold text-dark border-end-0">
-                                            <span class="flag-ci"></span> +225
+                    <!-- Option 1 : Wave Mobile Money (Carte Royale Bleue) -->
+                    <div class="babi-pay-option selected" id="card_momo_box" onclick="selectPaymentOption('wave')">
+                        <div class="d-flex align-items-start gap-3">
+                            <input class="babi-pay-radio mt-1" type="radio" name="payment" id="p_momo" checked>
+                            
+                            <div class="flex-grow-1">
+                                <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-1">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <h6 class="fw-bold text-dark mb-0 fs-6">Wave Mobile Money</h6>
+                                        <span class="babi-pay-badge-wave">
+                                            <i class="fa-solid fa-bolt"></i> Recommandé • 0% Frais
                                         </span>
-                                        <input type="tel" class="form-control shadow-none border-start-0 ps-1 fw-bold" id="momoPhoneInput" placeholder="07 04 38 92 01" oninput="validatePhoneSecurity(this)">
+                                    </div>
+                                    <div class="babi-wave-logo-box">
+                                        <img src="assets/wave_money.png" alt="Wave" style="width:34px; height:34px; object-fit:contain;">
                                     </div>
                                 </div>
-                                <div class="col-md-5">
-                                    <label class="form-label fs-xs text-muted mb-1 fw-bold">Guichet Express</label>
-                                    <button type="button" class="btn btn-info w-100 text-white fw-bold py-2 shadow-sm rounded-2 d-flex align-items-center justify-content-center gap-1" style="background: linear-gradient(135deg, #1dc4e9, #0284c7); border:none; font-size: 13px;" onclick="openOperatorPaymentModal('wave')">
-                                        <i class="fa-solid fa-qrcode me-1"></i>
-                                        <span>Ouvrir Wave App / QR</span>
-                                    </button>
+                                <p class="text-muted small mb-3">
+                                    Règlement direct en 1-clic via votre application Wave ou par QR Code sécurisé. Génération instantanée de votre code PIN de retrait.
+                                </p>
+
+                                <!-- Wave Input & Fast Trigger Area -->
+                                <div class="p-3 rounded-3 border" style="background: #f8fafc; border-color: #bae6fd !important;">
+                                    <div class="row g-2 align-items-center">
+                                        <div class="col-md-7">
+                                            <label class="form-label text-muted fw-bold mb-1" style="font-size: 11px;">Numéro Wave du compte à débiter</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text bg-white fw-bold text-dark border-end-0">
+                                                    <span class="flag-ci"></span> +225
+                                                </span>
+                                                <input type="tel" class="form-control shadow-none border-start-0 ps-1 fw-bold fs-6" id="momoPhoneInput" placeholder="07 04 38 92 01" oninput="validatePhoneSecurity(this)">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-5">
+                                            <label class="form-label text-muted fw-bold mb-1" style="font-size: 11px;">Guichet Wave Express</label>
+                                            <button type="button" class="btn w-100 text-white fw-bold py-2 rounded-3 shadow-xs d-flex align-items-center justify-content-center gap-2" style="background: linear-gradient(135deg, #1EA5FC, #0284c7); border:none; font-size: 13px;" onclick="openOperatorPaymentModal('wave')">
+                                                <i class="fa-solid fa-qrcode"></i>
+                                                <span>Aperçu QR Wave</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <input type="hidden" id="selectedOperatorInput" value="wave">
                                 </div>
                             </div>
-                            <input type="hidden" id="selectedOperatorInput" value="wave">
                         </div>
                     </div>
 
-                    <!-- Option 2: Cash / Espèces au comptoir -->
-                    <div class="jumia-pay-card p-3 mb-3 rounded-3" id="card_cash_box" style="border: 2px solid #e2e8f0; cursor: pointer;" onclick="document.getElementById('p_cash').checked = true; togglePaymentMode('cash');">
-                        <label class="form-check m-0 d-flex align-items-center cursor-pointer w-100" for="p_cash">
-                            <input class="form-check-input mt-0 fs-5" type="radio" name="payment" id="p_cash" onclick="togglePaymentMode('cash')">
-                            <div class="ms-3 flex-grow-1">
-                                <span class="fw-bold d-block text-dark fs-6">Paiement en Espèces (au comptoir)</span>
-                                <small class="text-muted">Réglez directement en caisse lors du retrait de vos produits chauds.</small>
-                            </div>
-                            <div class="ms-auto text-success fs-3">
-                                💵
-                            </div>
-                        </label>
+                    <!-- Option 2 : Paiement en Espèces au Comptoir -->
+                    <div class="babi-pay-option" id="card_cash_box" onclick="selectPaymentOption('cash')">
+                        <div class="d-flex align-items-start gap-3">
+                            <input class="babi-pay-radio mt-1" type="radio" name="payment" id="p_cash">
+                            
+                            <div class="flex-grow-1">
+                                <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-1">
+                                    <h6 class="fw-bold text-dark mb-0 fs-6">Paiement en Espèces (au comptoir)</h6>
+                                    <span class="fs-4">💵</span>
+                                </div>
+                                <p class="text-muted small mb-2">
+                                    Réglez directement en liquide à la caisse du fournil au moment de retirer votre commande chaude.
+                                </p>
 
-                        <!-- Cash Change Selector -->
-                        <div class="mt-3 p-3 rounded-3 border d-none" id="cashSection" style="background:#f8fafc; border-color:#cbd5e1 !important;">
-                            <p class="fs-xs fw-bold text-dark mb-2"><i class="fa-solid fa-coins text-warning me-1"></i> Monnaie à prévoir au comptoir :</p>
-                            <div class="d-flex flex-wrap gap-2">
-                                <button type="button" class="btn btn-sm btn-outline-dark fw-bold active-change" onclick="selectCashChange(this, 'exact')">Monnaie exacte</button>
-                                <button type="button" class="btn btn-sm btn-outline-dark fw-bold" onclick="selectCashChange(this, '2000')">Billet de 2 000 F</button>
-                                <button type="button" class="btn btn-sm btn-outline-dark fw-bold" onclick="selectCashChange(this, '5000')">Billet de 5 000 F</button>
-                                <button type="button" class="btn btn-sm btn-outline-dark fw-bold" onclick="selectCashChange(this, '10000')">Billet de 10 000 F</button>
+                                <!-- Change Selector -->
+                                <div class="mt-2 p-3 rounded-3 border d-none" id="cashSection" style="background: #fffaf5; border-color: #fed7aa !important;">
+                                    <span class="d-block fw-bold text-dark mb-2" style="font-size: 12px;">
+                                        <i class="fa-solid fa-coins text-warning me-1"></i> Monnaie à prévoir par la caissière :
+                                    </span>
+                                    <div class="d-flex flex-wrap gap-2">
+                                        <button type="button" class="btn btn-sm btn-outline-dark fw-bold rounded-pill active-change" onclick="selectCashChange(this, 'exact')">Monnaie exacte</button>
+                                        <button type="button" class="btn btn-sm btn-outline-dark fw-bold rounded-pill" onclick="selectCashChange(this, '2000')">Billet de 2 000 F</button>
+                                        <button type="button" class="btn btn-sm btn-outline-dark fw-bold rounded-pill" onclick="selectCashChange(this, '5000')">Billet de 5 000 F</button>
+                                        <button type="button" class="btn btn-sm btn-outline-dark fw-bold rounded-pill" onclick="selectCashChange(this, '10000')">Billet de 10 000 F</button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Security Badge -->
-                    <div class="p-3 rounded-3 border d-flex align-items-center gap-3" style="background: #f0fdf4; border-color: #a7f3d0 !important;">
+                    <!-- Security Guarantee -->
+                    <div class="p-3 rounded-4 border d-flex align-items-center gap-3 mt-3" style="background: #f0fdf4; border-color: #bbf7d0 !important;">
                         <i class="fa-solid fa-shield-check text-success fs-3"></i>
                         <div class="small">
-                            <strong class="text-success">Paiement Garanti 100% Sécurisé :</strong> Cryptage SSL 256-bit et protection des données clients.
+                            <strong class="text-success d-block">Transaction & Données 100% Protégées</strong>
+                            <span class="text-muted">Chiffrement bancaire SSL 256-bit, vérification serveur inviolable et code PIN de retrait unique.</span>
                         </div>
                     </div>
 
-                    <div class="mt-4 text-center">
-                        <button type="button" id="accordionPlaceOrderBtn" class="btn jumia-btn-orange w-100 py-3 fs-5 shadow-sm rounded-pill fw-bold" onclick="submitBabiOrder()">
-                            <i class="fa-solid fa-circle-check me-2"></i> CONFIRMER ET PAYER MA COMMANDE
+                    <!-- Main Action Button -->
+                    <div class="mt-4">
+                        <button type="button" id="accordionPlaceOrderBtn" class="babi-btn-checkout" onclick="submitBabiOrder()">
+                            <i class="fa-solid fa-circle-check fs-5"></i>
+                            <span>CONFIRMER ET PAYER MA COMMANDE</span>
                         </button>
                     </div>
                 </div>
             </div>
 
-            <!-- Right Column: Order Summary (Sticky Jumia Style) -->
+            <!-- Right Column : Dynamic Order Summary Sticky -->
             <div class="col-lg-4">
-                <div class="bg-white rounded-3 shadow-sm p-3 sticky-top" id="checkoutSummaryBox" style="top: 85px; border: 1px solid #e2e8f0;">
-                    <h6 class="fw-bold border-bottom pb-2 mb-3 d-flex align-items-center justify-content-between" style="color:#2b160c;">
-                        <span><i class="fa-solid fa-receipt me-1 text-warning"></i> RÉSUMÉ DE LA COMMANDE</span>
-                        <span class="badge bg-light text-dark border">BABI</span>
-                    </h6>
-                    
-                    <div class="d-flex justify-content-between mb-2 fs-sm">
-                        <span>Sous-total des articles</span>
-                        <span class="fw-bold">0 FCFA</span>
+                <div class="babi-summary-card sticky-top" id="checkoutSummaryBox" style="top: 100px;">
+                    <div class="d-flex align-items-center justify-content-between border-bottom pb-3 mb-3">
+                        <h6 class="fw-bold mb-0 text-dark d-flex align-items-center gap-2">
+                            <i class="fa-solid fa-basket-shopping text-warning fs-5"></i>
+                            <span>RÉSUMÉ DU PANIER</span>
+                        </h6>
+                        <span class="badge bg-light text-dark border px-2.5 py-1 fw-bold rounded-pill">Fournil Riviera</span>
                     </div>
-                    <div class="d-flex justify-content-between mb-3 fs-sm border-bottom pb-3">
+
+                    <!-- Dynamic Cart Item List -->
+                    <div id="checkoutCartItemsList" class="mb-3" style="max-height: 240px; overflow-y: auto;">
+                        <!-- Injected by cart_actions.js / checkout.js -->
+                    </div>
+
+                    <!-- Breakdown Costs -->
+                    <div class="d-flex justify-content-between mb-2 small text-muted">
+                        <span>Sous-total des produits</span>
+                        <span class="fw-bold text-dark" id="checkoutSubtotalDisplay">0 FCFA</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-3 small text-muted border-bottom pb-3">
                         <span>Frais de retrait au fournil</span>
                         <span class="fw-bold text-success">Gratuit (0 FCFA)</span>
                     </div>
-                    
-                    <div class="d-flex justify-content-between mb-3">
-                        <span class="fw-bold fs-5">Total</span>
-                        <span class="fw-bold fs-5 text-primary" style="color:#fb923c !important;">0 FCFA</span>
+
+                    <!-- Grand Total -->
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <span class="fw-bold text-dark fs-5">Total à régler</span>
+                        <span class="fw-extrabold fs-4" style="color: #ea580c; font-weight: 900;" id="checkoutTotalDisplay">0 FCFA</span>
                     </div>
-                    
-                    <button type="button" class="btn jumia-btn-orange w-100 py-3 fs-6 rounded-3 shadow-sm" onclick="submitBabiOrder()">
-                        <i class="fa-solid fa-check-circle me-2"></i>CONFIRMER LA COMMANDE
+
+                    <!-- Reassurance Button -->
+                    <button type="button" class="babi-btn-checkout mb-3" onclick="submitBabiOrder()">
+                        <i class="fa-solid fa-lock"></i>
+                        <span>VALIDER LE PAIEMENT</span>
                     </button>
 
-                    <div class="mt-3 pt-2 text-center text-muted" style="font-size: 10.5px;">
-                        En passant commande, vous acceptez les <strong>Conditions Générales de Vente</strong> de la Boulangerie de BABI.
+                    <div class="text-center text-muted small" style="font-size: 11px; line-height: 1.4;">
+                        <i class="fa-solid fa-circle-info text-warning me-1"></i> Votre code PIN de retrait vous sera remis immédiatement après la confirmation du paiement.
                     </div>
 
-                    <!-- Payment Partner Logos Row (Jumia Style) -->
-                    <div class="d-flex align-items-center justify-content-center gap-3 mt-3 pt-2 border-top opacity-75">
-                        <img src="assets/wave_money.png" alt="Wave" style="height: 20px; object-fit: contain;">
-                        <span class="badge bg-light text-dark border small">Orange Money</span>
-                        <span class="badge bg-light text-dark border small">MTN</span>
-                        <span class="badge bg-success-subtle text-success border border-success-subtle small"><i class="fa-solid fa-lock me-1"></i>SSL</span>
+                    <!-- Partners Row -->
+                    <div class="d-flex align-items-center justify-content-center gap-3 mt-3 pt-3 border-top opacity-75">
+                        <img src="assets/wave_money.png" alt="Wave" style="height: 22px; object-fit: contain;">
+                        <span class="badge bg-light text-dark border small fw-bold">Orange Money</span>
+                        <span class="badge bg-light text-dark border small fw-bold">MTN</span>
+                        <span class="badge bg-success-subtle text-success border border-success-subtle small fw-bold"><i class="fa-solid fa-lock me-1"></i>SSL</span>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
+    </main>
 
     <!-- Unified Luxury Footer -->
-    <footer class="mt-auto text-white py-5" style="background: rgba(43, 22, 12, 0.96); border-top: 3px solid #fb923c;">
+    <footer class="mt-auto text-white py-5" style="background: #1a0f08; border-top: 3px solid #fb923c;">
         <div class="container">
             <div class="row g-4">
                 <div class="col-lg-4 col-md-6">
                     <div class="d-flex align-items-center mb-3">
-                        <img src="assets/logo.png" alt="Logo" class="footer-brand-logo">
+                        <img src="assets/logo.png" alt="Logo" class="footer-brand-logo" style="height: 38px; width: auto;">
                         <div class="d-flex flex-column lh-1 ms-2">
-                            <span class="footer-brand-title">Boulangerie</span>
-                            <span class="footer-brand-subtitle">de Babi</span>
+                            <span class="footer-brand-title text-white fw-bold">Boulangerie</span>
+                            <span class="footer-brand-subtitle" style="color:#fb923c; font-weight: 800;">de Babi</span>
                         </div>
                     </div>
-                    <p class="text-white small">L'excellence de la boulangerie et pâtisserie artisanale à Abidjan. Pains croustillants, viennoiseries dorées, pâtisseries fines et jus 100% naturels.</p>
-                    <div class="d-flex gap-2">
-                        <a href="https://www.google.com/maps/place/5%C2%B022%2738.2%22N+3%C2%B055%2738.1%22W/@5.3772845,-3.9272566,17z" target="_blank" class="btn btn-outline-warning btn-sm rounded-circle"><i class="fa-solid fa-location-dot"></i></a>
-                        <a href="tel:2722564123" class="btn btn-outline-warning btn-sm rounded-circle"><i class="fa-solid fa-phone"></i></a>
-                        <a href="tel:0704389201" class="btn btn-outline-warning btn-sm rounded-circle"><i class="fa-solid fa-mobile-screen"></i></a>
-                    </div>
+                    <p class="text-white-50 small">L'art de la boulangerie & viennoiserie artisanale à Abidjan. Pains au levain croustillants, viennoiseries pur beurre et pâtisseries raffinées.</p>
                 </div>
 
                 <div class="col-lg-2 col-md-6">
-                    <h5 class="fw-bold text-warning mb-3">NAVIGATION</h5>
+                    <h6 class="fw-bold text-warning mb-3">NAVIGATION</h6>
                     <ul class="list-unstyled small lh-lg mb-0">
-                        <li><a href="index.html" class="text-white text-decoration-none hover-warning"><i class="fa-solid fa-chevron-right text-warning me-1 small"></i> Accueil</a></li>
-                        <li><a href="produits.html" class="text-white text-decoration-none hover-warning"><i class="fa-solid fa-chevron-right text-warning me-1 small"></i> Nos Produits</a></li>
-                        <li><a href="favoris.html" class="text-white text-decoration-none hover-warning"><i class="fa-solid fa-chevron-right text-warning me-1 small"></i> Mes Favoris</a></li>
-                        <li><a href="suivi.html" class="text-white text-decoration-none hover-warning"><i class="fa-solid fa-chevron-right text-warning me-1 small"></i> Suivi Commande</a></li>
-                        <li><a href="fidelite.html" class="text-white text-decoration-none hover-warning"><i class="fa-solid fa-chevron-right text-warning me-1 small"></i> Club Fidélité</a></li>
+                        <li><a href="index.html" class="text-white-50 text-decoration-none hover-warning">Accueil</a></li>
+                        <li><a href="produits.html" class="text-white-50 text-decoration-none hover-warning">Nos Produits</a></li>
+                        <li><a href="suivi.html" class="text-white-50 text-decoration-none hover-warning">Suivi de Commande</a></li>
                     </ul>
                 </div>
 
                 <div class="col-lg-3 col-md-6">
-                    <h5 class="fw-bold text-warning mb-3">HORAIRES DE LA BOUTIQUE</h5>
-                    <p class="text-white small mb-1"><i class="fa-solid fa-clock text-warning me-2"></i> Lundi - Dimanche : 05h45 - 23h00</p>
-                    <h6 class="fw-bold text-warning mt-3 mb-2" style="font-size:0.9rem;">SORTIES DE PAIN CHAUDS</h6>
-                    <p class="text-white small mb-1">06h00 • 09h00 • 14h00 • 17h00 • 18h00</p>
+                    <h6 class="fw-bold text-warning mb-3">HORAIRES DU FOURNIL</h6>
+                    <p class="text-white-50 small mb-1"><i class="fa-solid fa-clock text-warning me-2"></i> 7j/7 : 05h45 - 23h00</p>
+                    <p class="text-white-50 small mb-0"><i class="fa-solid fa-fire text-warning me-2"></i> Sorties de pain : 06h, 09h, 14h, 17h, 18h</p>
                 </div>
 
                 <div class="col-lg-3 col-md-6">
-                    <h5 class="fw-bold text-warning mb-3">CONTACT BOUTIQUE</h5>
-                    <p class="text-white small mb-1"><i class="fa-solid fa-location-dot text-warning me-2"></i> Riviera, Abidjan - CI</p>
-                    <p class="text-white small mb-1"><i class="fa-solid fa-phone text-warning me-2"></i> <strong>Fixe :</strong> <a href="tel:2722564123" class="text-white text-decoration-none">27 22 56 41 23</a></p>
-                    <p class="text-white small mb-1"><i class="fa-solid fa-mobile-screen-button text-warning me-2"></i> <strong>Mobiles :</strong> <a href="tel:0704389201" class="text-white text-decoration-none">07 04 38 92 01</a> / <a href="tel:0706817977" class="text-white text-decoration-none">07 06 81 79 77</a></p>
-                    <a href="contact.html" class="btn btn-warning btn-sm w-100 fw-bold mt-2 rounded-pill" style="background:#fb923c; border:none; color:#2b160c;">
-                        <i class="fa-solid fa-paper-plane me-1"></i> Nous Contacter
+                    <h6 class="fw-bold text-warning mb-3">CONTACT FOURNIL</h6>
+                    <p class="text-white-50 small mb-1"><i class="fa-solid fa-location-dot text-warning me-2"></i> Riviera, Abidjan - Côte d'Ivoire</p>
+                    <p class="text-white-50 small mb-2"><i class="fa-solid fa-phone text-warning me-2"></i> +225 07 04 38 92 01</p>
+                    <a href="https://wa.me/2250704389201" target="_blank" class="btn btn-sm btn-outline-warning rounded-pill px-3 fw-bold">
+                        <i class="fa-brands fa-whatsapp me-1"></i> WhatsApp Boutique
                     </a>
                 </div>
             </div>
@@ -352,11 +384,12 @@
     <!-- Wave / Mobile Money Direct Payment Modal -->
     <div class="modal fade" id="paymentModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
         <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content border-0 shadow-lg rounded-4" style="overflow: hidden;">
-                <div class="modal-header text-white border-0 py-3" id="paymentModalHeader" style="background: #2b160c;">
-                    <h5 class="modal-title fw-bold" id="paymentModalTitle">
-                        <i class="fa-solid fa-shield-halved me-2 text-warning"></i>Paiement Mobile Sécurisé
-                    </h5>
+            <div class="modal-content border-0 shadow-2xl rounded-4" style="overflow: hidden;">
+                <div class="modal-header babi-wave-modal-header py-3" id="paymentModalHeader">
+                    <div class="d-flex align-items-center gap-2" id="paymentModalTitle">
+                        <img src="assets/wave_money.png" style="width:28px; height:28px; object-fit:contain;" class="rounded">
+                        <span class="fw-bold text-white fs-6">Paiement Wave — Boulangerie de BABI</span>
+                    </div>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body p-4 text-center" id="paymentModalBody">
@@ -371,5 +404,27 @@
     <script src="js/checkout.js"></script>
     <script src="js/store_schedule.js"></script>
     <script src="js/anti_hacker_client.js"></script>
+    <script>
+        function selectPaymentOption(mode) {
+            const momoCard = document.getElementById('card_momo_box');
+            const cashCard = document.getElementById('card_cash_box');
+            const momoRadio = document.getElementById('p_momo');
+            const cashRadio = document.getElementById('p_cash');
+            const cashSection = document.getElementById('cashSection');
+
+            if (mode === 'wave') {
+                momoRadio.checked = true;
+                momoCard.classList.add('selected');
+                momoCard.classList.remove('cash-selected');
+                cashCard.classList.remove('selected', 'cash-selected');
+                if (cashSection) cashSection.classList.add('d-none');
+            } else {
+                cashRadio.checked = true;
+                cashCard.classList.add('cash-selected');
+                momoCard.classList.remove('selected', 'cash-selected');
+                if (cashSection) cashSection.classList.remove('d-none');
+            }
+        }
+    </script>
 </body>
 </html>

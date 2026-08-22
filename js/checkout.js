@@ -102,71 +102,45 @@ function renderCheckoutSummary() {
     const deliveryCost = getSelectedDeliveryCost();
     const grandTotal = Math.max(0, subtotal + deliveryCost);
 
-    const summaryBox = document.getElementById('checkoutSummaryBox') || document.querySelector('.col-lg-4 .bg-white');
-    if (!summaryBox) return;
+    const itemsListContainer = document.getElementById('checkoutCartItemsList');
+    const subtotalDisplay = document.getElementById('checkoutSubtotalDisplay');
+    const totalDisplay = document.getElementById('checkoutTotalDisplay');
 
-    let itemsHtml = items.map(item => {
-        const itemPrice = typeof parsePriceFromItem === 'function' ? parsePriceFromItem(item) : (item.price || item.prix || 0);
-        const itemQty = item.qty || item.quantity || 1;
-        return `
-        <div class="d-flex align-items-center justify-content-between mb-2 pb-2 border-bottom">
-            <div class="d-flex align-items-center gap-2">
-                <img src="${item.image || item.img}" style="width:36px;height:36px;object-fit:cover;border-radius:6px;" onerror="this.src='assets/product_baguette.png'">
-                <div>
-                    <div class="fw-bold small text-truncate" style="max-width:140px;">${item.name || item.title}</div>
-                    <small class="text-muted">Qté: ${itemQty}</small>
+    if (itemsListContainer) {
+        if (items.length === 0) {
+            itemsListContainer.innerHTML = `
+                <div class="text-center py-4 text-muted">
+                    <i class="fa-solid fa-basket-shopping fs-3 mb-2 opacity-50"></i>
+                    <p class="small mb-0 font-semibold">Votre panier est vide.</p>
                 </div>
-            </div>
-            <div class="fw-bold small">${(itemPrice * itemQty).toLocaleString()} FCFA</div>
-        </div>
-    `;
-    }).join('');
+            `;
+        } else {
+            itemsListContainer.innerHTML = items.map(item => {
+                const itemPrice = typeof parsePriceFromItem === 'function' ? parsePriceFromItem(item) : (item.price || item.prix || 0);
+                const itemQty = item.qty || item.quantity || 1;
+                const imgSrc = item.image || item.img || 'assets/product_baguette.png';
+                return `
+                    <div class="d-flex align-items-center justify-content-between mb-2.5 pb-2.5 border-bottom">
+                        <div class="d-flex align-items-center gap-2.5">
+                            <img src="${imgSrc}" style="width:40px;height:40px;object-fit:cover;border-radius:10px;" class="border shadow-xs" onerror="this.src='assets/product_baguette.png'">
+                            <div>
+                                <div class="fw-bold small text-dark text-truncate" style="max-width:150px;">${item.name || item.title || 'Produit'}</div>
+                                <span class="badge bg-light text-muted border px-2 py-0.5" style="font-size:10px;">x${itemQty} (${itemPrice.toLocaleString()} F/u)</span>
+                            </div>
+                        </div>
+                        <div class="fw-bold small text-dark">${(itemPrice * itemQty).toLocaleString()} F</div>
+                    </div>
+                `;
+            }).join('');
+        }
+    }
 
-    const clickAndCollectBanner = `<div class="alert alert-success py-2 px-3 small fw-bold mb-3 d-flex align-items-center"><i class="fa-solid fa-store text-success me-2 fs-5"></i> ⚡ Click & Collect : Retrait Gratuit & Sans File d'Attente !</div>`;
+    if (subtotalDisplay) subtotalDisplay.textContent = `${subtotal.toLocaleString()} FCFA`;
+    if (totalDisplay) totalDisplay.textContent = `${grandTotal.toLocaleString()} FCFA`;
 
-    summaryBox.innerHTML = `
-        <h6 class="fw-bold border-bottom pb-2 mb-3" style="color:#2b160c;">
-            <i class="fa-solid fa-receipt me-1 text-warning"></i> RÉSUMÉ DE LA COMMANDE
-        </h6>
-
-        ${clickAndCollectBanner}
-        
-        <div class="items-list mb-3" style="max-height: 240px; overflow-y: auto;">
-            ${itemsHtml}
-        </div>
-        
-        <div class="d-flex justify-content-between mb-2 fs-sm text-muted">
-            <span>Sous-total (${items.reduce((s,i) => s+(i.qty||1), 0)} articles)</span>
-            <span class="fw-bold text-dark">${subtotal.toLocaleString()} FCFA</span>
-        </div>
-        <div class="d-flex justify-content-between mb-3 fs-sm text-muted">
-            <span>Frais de retrait au fournil</span>
-            <span class="fw-bold text-success">Gratuit (0 FCFA)</span>
-        </div>
-        
-        <div class="d-flex justify-content-between mb-4 border-top pt-3">
-            <span class="fw-bold fs-5" style="color:#2b160c;">Total</span>
-            <span class="fw-bold fs-5 text-primary" style="color:#fb923c !important;">${grandTotal.toLocaleString()} FCFA</span>
-        </div>
-        
-        <button type="button" class="btn btn-warning w-100 fw-bold text-dark shadow-sm py-3 fs-6 rounded-3" 
-            style="background:#fb923c; border:none;" id="placeOrderBtn" onclick="submitBabiOrder()">
-            <i class="fa-solid fa-check-circle me-2"></i>CONFIRMER ET RÉSERVER (${grandTotal.toLocaleString()} FCFA)
-        </button>
-
-        <div class="mt-3 pt-2 border-top text-center text-muted" style="font-size: 11px;">
-            <div class="d-flex align-items-center justify-content-center gap-1 mb-1 text-success fw-bold">
-                <i class="fa-solid fa-shield-halved"></i> Paiement Garanti 100% Sécurisé
-            </div>
-            <span>Chiffrement SSL 256-bit • Sans frais additionnels</span>
-        </div>
-    `;
-
-    // Also update main payment submit button inside accordion if present
     const accordionSubmitBtn = document.getElementById('accordionPlaceOrderBtn');
     if (accordionSubmitBtn) {
-        accordionSubmitBtn.innerHTML = `<i class="fa-solid fa-check-circle me-2"></i>CONFIRMER ET RÉSERVER (${grandTotal.toLocaleString()} FCFA)`;
-        accordionSubmitBtn.onclick = submitBabiOrder;
+        accordionSubmitBtn.innerHTML = `<i class="fa-solid fa-circle-check fs-5"></i> <span>CONFIRMER ET PAYER (${grandTotal.toLocaleString()} FCFA)</span>`;
     }
 }
 
@@ -326,45 +300,73 @@ function openWavePaymentModal(order, paymentData) {
     if (!modalEl || typeof bootstrap === 'undefined') return;
     const bsModal = bootstrap.Modal.getOrCreateInstance(modalEl);
 
-    modalHeader.style.background = 'linear-gradient(135deg, #1dc4e9, #0284c7)';
-    modalTitle.innerHTML = `<img src="assets/wave_money.png" style="width:28px; height:28px; object-fit:contain;" class="me-2 rounded"><span class="fw-bold text-white">Paiement Wave — Boulangerie de BABI</span>`;
+    if (modalHeader) {
+        modalHeader.className = 'modal-header babi-wave-modal-header py-3';
+    }
+    if (modalTitle) {
+        modalTitle.innerHTML = `
+            <div class="d-flex align-items-center gap-2">
+                <img src="assets/wave_money.png" style="width:28px; height:28px; object-fit:contain;" class="rounded">
+                <span class="fw-bold text-white fs-6">Paiement Wave — Boulangerie de BABI</span>
+            </div>
+        `;
+    }
 
     const grandTotal = order.total_amount || order.total_price || paymentData.amount || 0;
     const launchUrl = paymentData.launchUrl || `https://pay.wave.com/m/M_ci_7X1JfUg2eEsX/c/ci/?amount=${grandTotal}&client_reference=${encodeURIComponent(order.id)}`;
-    const qrCodeUrl = paymentData.qrCodeUrl || `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(launchUrl)}`;
+    const qrCodeUrl = paymentData.qrCodeUrl || `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(launchUrl)}`;
 
     modalBody.innerHTML = `
         <div class="py-2 text-start">
             <div class="d-flex justify-content-between align-items-center mb-3">
-                <span class="badge bg-light text-dark border px-2 py-1"><i class="fa-solid fa-receipt me-1 text-primary"></i> ${order.id}</span>
-                <span class="badge bg-success text-white px-2 py-1"><i class="fa-solid fa-shield-halved me-1"></i> Serveur Sécurisé</span>
+                <span class="badge bg-light text-dark border px-2.5 py-1.5 rounded-pill fw-bold" style="font-family: monospace;">
+                    <i class="fa-solid fa-receipt me-1 text-primary"></i> ${order.id}
+                </span>
+                <span class="badge bg-success-subtle text-success border border-success-subtle px-2.5 py-1.5 rounded-pill fw-bold">
+                    <i class="fa-solid fa-shield-halved me-1"></i> Serveur Sécurisé
+                </span>
             </div>
 
-            <div class="text-center mb-3">
-                <h2 class="fw-bold text-dark mb-0">${grandTotal.toLocaleString()} FCFA</h2>
-                <div class="badge bg-info text-dark fw-bold mt-1 px-3 py-1">Compte Marchand Officiel BABI</div>
+            <div class="text-center mb-4 p-3 rounded-4" style="background: #f8fafc; border: 1px solid #e2e8f0;">
+                <span class="text-muted small text-uppercase fw-bold d-block mb-1">Montant Total à Régler</span>
+                <h1 class="fw-extrabold text-dark mb-0" style="font-size: 2.2rem; font-weight: 900; color: #0f172a;">
+                    ${grandTotal.toLocaleString()} <span class="fs-4 text-primary">FCFA</span>
+                </h1>
+                <div class="badge text-white fw-bold mt-2 px-3 py-1 rounded-pill" style="background: #1EA5FC; font-size: 11px;">
+                    Compte Marchand Officiel BABI
+                </div>
             </div>
 
-            <div class="p-3 rounded-4 border mb-3 text-center" style="background: #f0fdf4; border-color: #86efac !important;">
-                <img src="${qrCodeUrl}" class="rounded-3 shadow-sm border p-2 bg-white mb-2" style="width:150px; height:150px;" alt="QR Code Wave">
-                <div class="small fw-bold text-dark mb-1">Scannez avec votre application Wave</div>
-                <div class="text-muted small mb-3">Ou ouvrez directement l'application :</div>
-                <a href="${launchUrl}" target="_blank" class="btn btn-info w-100 text-white fw-bold py-3 rounded-pill shadow d-flex align-items-center justify-content-center gap-2" style="background: linear-gradient(135deg, #1dc4e9, #0284c7); border:none; font-size: 15px;">
-                    <i class="fa-solid fa-mobile-screen fs-5"></i>
+            <!-- QR Code Container with Scanner Frame -->
+            <div class="text-center mb-3 p-4 rounded-4" style="background: linear-gradient(180deg, #f0fdf4 0%, #ffffff 100%); border: 1px solid #bbf7d0;">
+                <div class="babi-qr-frame mb-3">
+                    <div class="babi-qr-corner babi-qr-tl"></div>
+                    <div class="babi-qr-corner babi-qr-tr"></div>
+                    <div class="babi-qr-corner babi-qr-bl"></div>
+                    <div class="babi-qr-corner babi-qr-br"></div>
+                    <img src="${qrCodeUrl}" style="width: 160px; height: 160px; display: block;" alt="QR Code Wave">
+                </div>
+                
+                <div class="fw-bold text-dark mb-1" style="font-size: 13.5px;">Scannez avec votre application Wave</div>
+                <div class="text-muted small mb-3">Ou ouvrez directement l'application sur votre téléphone :</div>
+                
+                <a href="${launchUrl}" target="_blank" class="btn w-100 text-white fw-bold py-3 rounded-pill shadow-sm d-flex align-items-center justify-content-center gap-2" style="background: linear-gradient(135deg, #1EA5FC 0%, #0284c7 100%); border:none; font-size: 15px;">
+                    <i class="fa-solid fa-mobile-screen-button fs-5"></i>
                     <span>OUVRIR L'APPLICATION WAVE</span>
                 </a>
             </div>
 
-            <div class="p-3 rounded-3 bg-light border text-center mb-3">
+            <!-- Live Status Radar -->
+            <div class="p-3 rounded-3 border text-center mb-3" style="background: #f8fafc; border-color: #bae6fd !important;">
                 <div class="d-flex align-items-center justify-content-center gap-2 text-primary fw-bold small mb-1">
-                    <div class="spinner-border spinner-border-sm" role="status"></div>
+                    <span class="babi-pulse-ring"></span>
                     <span>En attente de confirmation Wave...</span>
                 </div>
-                <small class="text-muted d-block">Ne fermez pas cette page, elle se met à jour automatiquement.</small>
+                <small class="text-muted d-block" style="font-size: 11px;">La validation est instantanée dès votre débit Wave.</small>
             </div>
 
-            <button type="button" class="btn btn-success w-100 fw-bold py-3 rounded-pill shadow" onclick="manualConfirmPayment('${order.id}', '${paymentData.paymentId}')">
-                <i class="fa-solid fa-circle-check me-2"></i> J'AI VALIDÉ MON PAIEMENT
+            <button type="button" class="btn btn-outline-success w-100 fw-bold py-2.5 rounded-pill" onclick="manualConfirmPayment('${order.id}', '${paymentData.paymentId}')">
+                <i class="fa-solid fa-rotate me-1"></i> J'ai déjà validé sur Wave (Vérifier)
             </button>
         </div>
     `;
@@ -399,10 +401,10 @@ async function manualConfirmPayment(orderId, paymentId) {
     const modalBody = document.getElementById('paymentModalBody');
     if (modalBody) {
         modalBody.innerHTML = `
-            <div class="py-4 text-center">
-                <div class="spinner-border text-primary mb-3" role="status" style="width: 3rem; height: 3rem;"></div>
-                <h5 class="fw-bold text-dark">Vérification de la transaction...</h5>
-                <p class="text-muted small">Vérification instantanée auprès des serveurs Wave...</p>
+            <div class="py-5 text-center">
+                <div class="spinner-border text-primary mb-3" role="status" style="width: 3.5rem; height: 3.5rem; color: #1EA5FC !important;"></div>
+                <h5 class="fw-bold text-dark mb-1">Vérification de la transaction...</h5>
+                <p class="text-muted small">Interrogation en temps réel des serveurs Wave...</p>
             </div>
         `;
     }
@@ -442,21 +444,33 @@ function showPaymentSuccessInModal(order, pickupPin) {
     if (modalBody) {
         modalBody.innerHTML = `
             <div class="py-3 text-center">
-                <div class="d-inline-flex align-items-center justify-content-center bg-success text-white rounded-circle p-3 mb-3 shadow" style="width:70px; height:70px;">
-                    <i class="fa-solid fa-check fs-2"></i>
+                <div class="d-inline-flex align-items-center justify-content-center text-white rounded-circle p-3 mb-3 shadow-lg" style="width:76px; height:76px; background: linear-gradient(135deg, #22c55e, #16a34a);">
+                    <i class="fa-solid fa-check fs-1"></i>
                 </div>
-                <h4 class="fw-bold text-dark mb-1">Paiement Confirmé !</h4>
-                <p class="text-muted small mb-3">Votre commande <strong>#${order.id}</strong> est envoyée au fournil.</p>
+                
+                <h3 class="fw-extrabold text-dark mb-1" style="font-weight: 900;">Paiement Réussi !</h3>
+                <p class="text-muted small mb-3">Votre commande <strong>#${order.id}</strong> est confirmée et en cours de cuisson au fournil.</p>
 
-                <div class="p-3 rounded-4 mb-3" style="background: #fffaf0; border: 2px dashed #fb923c;">
-                    <small class="text-muted text-uppercase fw-bold d-block" style="font-size:0.75rem;">Code de Retrait Express</small>
-                    <div class="display-4 fw-extrabold text-danger my-1" style="letter-spacing: 6px; font-weight: 800; font-family: monospace;">${pin}</div>
-                    <small class="text-muted">À présenter au comptoir de la Riviera</small>
+                <!-- Pass Code PIN de Retrait -->
+                <div class="babi-pin-pass mb-4">
+                    <span class="badge bg-warning text-dark px-3 py-1 rounded-pill fw-bold mb-2 shadow-xs" style="font-size: 11px;">
+                        🔑 CODE SECRET DE RETRAIT COMPTOIR
+                    </span>
+                    <div class="babi-pin-digits">${pin}</div>
+                    <p class="text-muted small mb-0 fw-semibold">
+                        À présenter à la caissière de la Riviera pour récupérer votre commande.
+                    </p>
                 </div>
 
-                <a href="suivi.html?orderId=${encodeURIComponent(order.id)}&phone=${encodeURIComponent(order.phone || '')}&status=paid" class="btn btn-warning w-100 fw-bold py-3 rounded-pill text-dark shadow" style="background:#fb923c; border:none;">
-                    <i class="fa-solid fa-receipt me-2"></i>VOIR MON REÇU & SUIVRE MA COMMANDE
-                </a>
+                <div class="d-grid gap-2">
+                    <a href="suivi.html?orderId=${encodeURIComponent(order.id)}&phone=${encodeURIComponent(order.phone || '')}&status=paid" class="babi-btn-checkout text-decoration-none">
+                        <i class="fa-solid fa-receipt me-2"></i>VOIR MON REÇU & SUIVRE MA COMMANDE
+                    </a>
+                    
+                    <button type="button" class="btn btn-light rounded-pill py-2.5 fw-bold text-muted border" onclick="navigator.clipboard.writeText('${pin}'); alert('Code PIN ${pin} copié dans le presse-papier !');">
+                        <i class="fa-solid fa-copy me-1"></i> Copier mon code PIN (${pin})
+                    </button>
+                </div>
             </div>
         `;
     }

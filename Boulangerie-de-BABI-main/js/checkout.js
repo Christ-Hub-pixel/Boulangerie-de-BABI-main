@@ -102,71 +102,45 @@ function renderCheckoutSummary() {
     const deliveryCost = getSelectedDeliveryCost();
     const grandTotal = Math.max(0, subtotal + deliveryCost);
 
-    const summaryBox = document.getElementById('checkoutSummaryBox') || document.querySelector('.col-lg-4 .bg-white');
-    if (!summaryBox) return;
+    const itemsListContainer = document.getElementById('checkoutCartItemsList');
+    const subtotalDisplay = document.getElementById('checkoutSubtotalDisplay');
+    const totalDisplay = document.getElementById('checkoutTotalDisplay');
 
-    let itemsHtml = items.map(item => {
-        const itemPrice = typeof parsePriceFromItem === 'function' ? parsePriceFromItem(item) : (item.price || item.prix || 0);
-        const itemQty = item.qty || item.quantity || 1;
-        return `
-        <div class="d-flex align-items-center justify-content-between mb-2 pb-2 border-bottom">
-            <div class="d-flex align-items-center gap-2">
-                <img src="${item.image || item.img}" style="width:36px;height:36px;object-fit:cover;border-radius:6px;" onerror="this.src='assets/product_baguette.png'">
-                <div>
-                    <div class="fw-bold small text-truncate" style="max-width:140px;">${item.name || item.title}</div>
-                    <small class="text-muted">Qté: ${itemQty}</small>
+    if (itemsListContainer) {
+        if (items.length === 0) {
+            itemsListContainer.innerHTML = `
+                <div class="text-center py-4 text-muted">
+                    <i class="fa-solid fa-basket-shopping fs-3 mb-2 opacity-50"></i>
+                    <p class="small mb-0 font-semibold">Votre panier est vide.</p>
                 </div>
-            </div>
-            <div class="fw-bold small">${(itemPrice * itemQty).toLocaleString()} FCFA</div>
-        </div>
-    `;
-    }).join('');
+            `;
+        } else {
+            itemsListContainer.innerHTML = items.map(item => {
+                const itemPrice = typeof parsePriceFromItem === 'function' ? parsePriceFromItem(item) : (item.price || item.prix || 0);
+                const itemQty = item.qty || item.quantity || 1;
+                const imgSrc = item.image || item.img || 'assets/product_baguette.png';
+                return `
+                    <div class="d-flex align-items-center justify-content-between mb-2.5 pb-2.5 border-bottom">
+                        <div class="d-flex align-items-center gap-2.5">
+                            <img src="${imgSrc}" style="width:40px;height:40px;object-fit:cover;border-radius:10px;" class="border shadow-xs" onerror="this.src='assets/product_baguette.png'">
+                            <div>
+                                <div class="fw-bold small text-dark text-truncate" style="max-width:150px;">${item.name || item.title || 'Produit'}</div>
+                                <span class="badge bg-light text-muted border px-2 py-0.5" style="font-size:10px;">x${itemQty} (${itemPrice.toLocaleString()} F/u)</span>
+                            </div>
+                        </div>
+                        <div class="fw-bold small text-dark">${(itemPrice * itemQty).toLocaleString()} F</div>
+                    </div>
+                `;
+            }).join('');
+        }
+    }
 
-    const clickAndCollectBanner = `<div class="alert alert-success py-2 px-3 small fw-bold mb-3 d-flex align-items-center"><i class="fa-solid fa-store text-success me-2 fs-5"></i> ⚡ Click & Collect : Retrait Gratuit & Sans File d'Attente !</div>`;
+    if (subtotalDisplay) subtotalDisplay.textContent = `${subtotal.toLocaleString()} FCFA`;
+    if (totalDisplay) totalDisplay.textContent = `${grandTotal.toLocaleString()} FCFA`;
 
-    summaryBox.innerHTML = `
-        <h6 class="fw-bold border-bottom pb-2 mb-3" style="color:#2b160c;">
-            <i class="fa-solid fa-receipt me-1 text-warning"></i> RÉSUMÉ DE LA COMMANDE
-        </h6>
-
-        ${clickAndCollectBanner}
-        
-        <div class="items-list mb-3" style="max-height: 240px; overflow-y: auto;">
-            ${itemsHtml}
-        </div>
-        
-        <div class="d-flex justify-content-between mb-2 fs-sm text-muted">
-            <span>Sous-total (${items.reduce((s,i) => s+(i.qty||1), 0)} articles)</span>
-            <span class="fw-bold text-dark">${subtotal.toLocaleString()} FCFA</span>
-        </div>
-        <div class="d-flex justify-content-between mb-3 fs-sm text-muted">
-            <span>Frais de retrait au fournil</span>
-            <span class="fw-bold text-success">Gratuit (0 FCFA)</span>
-        </div>
-        
-        <div class="d-flex justify-content-between mb-4 border-top pt-3">
-            <span class="fw-bold fs-5" style="color:#2b160c;">Total</span>
-            <span class="fw-bold fs-5 text-primary" style="color:#fb923c !important;">${grandTotal.toLocaleString()} FCFA</span>
-        </div>
-        
-        <button type="button" class="btn btn-warning w-100 fw-bold text-dark shadow-sm py-3 fs-6 rounded-3" 
-            style="background:#fb923c; border:none;" id="placeOrderBtn" onclick="submitBabiOrder()">
-            <i class="fa-solid fa-check-circle me-2"></i>CONFIRMER ET RÉSERVER (${grandTotal.toLocaleString()} FCFA)
-        </button>
-
-        <div class="mt-3 pt-2 border-top text-center text-muted" style="font-size: 11px;">
-            <div class="d-flex align-items-center justify-content-center gap-1 mb-1 text-success fw-bold">
-                <i class="fa-solid fa-shield-halved"></i> Paiement Garanti 100% Sécurisé
-            </div>
-            <span>Chiffrement SSL 256-bit • Sans frais additionnels</span>
-        </div>
-    `;
-
-    // Also update main payment submit button inside accordion if present
     const accordionSubmitBtn = document.getElementById('accordionPlaceOrderBtn');
     if (accordionSubmitBtn) {
-        accordionSubmitBtn.innerHTML = `<i class="fa-solid fa-check-circle me-2"></i>CONFIRMER ET RÉSERVER (${grandTotal.toLocaleString()} FCFA)`;
-        accordionSubmitBtn.onclick = submitBabiOrder;
+        accordionSubmitBtn.innerHTML = `<i class="fa-solid fa-circle-check fs-5"></i> <span>CONFIRMER ET PAYER (${grandTotal.toLocaleString()} FCFA)</span>`;
     }
 }
 
@@ -210,136 +184,305 @@ function setupCheckoutFormEvents() {
     });
 }
 
-function submitBabiOrder(isAlreadyValidated = false) {
+async function submitBabiOrder() {
     const items = typeof getCartItems === 'function' ? getCartItems() : [];
     if (!items || items.length === 0) {
         alert('Votre panier est vide. Veuillez ajouter des produits avant de confirmer.');
         return;
     }
 
-    // Read form inputs & provide smart defaults if not filled
     const clientNameInput = document.getElementById('clientNameInput');
     const clientPhoneInput = document.getElementById('clientPhoneInput');
     const pickupSlotSelect = document.getElementById('pickupSlotSelect');
+    const notesInput = document.getElementById('orderNotesInput');
 
-    const inputs = document.querySelectorAll('#collapseOne input, #collapseOne select');
-    let fullName = clientNameInput ? clientNameInput.value.trim() : (inputs[0] ? inputs[0].value.trim() : '');
-    let phone = clientPhoneInput ? clientPhoneInput.value.trim() : (inputs[1] ? inputs[1].value.trim() : '');
+    const fullName = (clientNameInput && clientNameInput.value.trim()) || 'Client Comptoir BABI';
+    const phone = (clientPhoneInput && clientPhoneInput.value.trim()) || '07 04 38 92 01';
     const pickupSlot = pickupSlotSelect ? pickupSlotSelect.value : 'Dès que possible (~15-20 min)';
-
-    if (!fullName) {
-        fullName = 'Client Comptoir BABI';
-        if (clientNameInput) clientNameInput.value = fullName;
-    }
-    if (!phone) {
-        phone = '07 04 38 92 01';
-        if (clientPhoneInput) clientPhoneInput.value = phone;
-    }
-
-    const commune = 'Riviera';
-    const address = 'Boulangerie de BABI (Fournil Riviera)';
-    const deliveryMethod = 'Retrait en Boutique (Click & Collect)';
-    const deliveryCost = 0;
+    const orderNotes = notesInput ? notesInput.value.trim() : '';
 
     const paymentCashRadio = document.getElementById('p_cash');
     const isCash = paymentCashRadio ? paymentCashRadio.checked : false;
-    const isWave = !isCash;
-    const paymentMethod = isWave ? 'Wave Mobile Money' : 'Paiement au comptoir (Espèces)';
+    const provider = isCash ? 'cash' : 'wave';
 
-    const subtotal = typeof getCartTotal === 'function' ? getCartTotal() : 0;
-    const grandTotal = Math.max(0, subtotal + deliveryCost);
+    const submitBtn = document.querySelector('button[onclick="submitBabiOrder()"]');
+    if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Création sécurisée de la commande...';
+    }
 
-    const orderId = 'BABI-CMD-' + Math.floor(100000 + Math.random() * 900000);
-    const confCode = String(Math.floor(1000 + Math.random() * 9000));
+    try {
+        let user = {};
+        try { user = JSON.parse(localStorage.getItem('babi_user') || '{}'); } catch(_) {}
 
-    const notesInput = document.getElementById('orderNotesInput');
-    const orderNotes = notesInput ? notesInput.value.trim() : '';
+        // 1. Création de la commande côté backend avec recalcul strict des montants
+        const orderRes = await fetch(`${API_ROOT}/api/orders/create`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                customer_name: fullName,
+                customer_phone: phone,
+                customer_email: user.email || '',
+                user_id: user.id || null,
+                items: items,
+                pickup_slot: pickupSlot,
+                pickup_point: 'Riviera (Fournil BABI)',
+                notes: orderNotes,
+                delivery_type: 'click_collect'
+            })
+        });
 
-    const newOrder = {
-        id: orderId,
-        clientName: fullName,
-        phone: phone,
-        commune: commune,
-        address: address,
-        pickupSlot: pickupSlot,
-        delivery_method: deliveryMethod,
-        payment_method: paymentMethod,
-        payment_status: isWave ? 'paye' : 'en_attente',
-        items: items,
-        itemsSummary: items.map(i => `${i.name || i.title} (x${i.qty || i.quantity || 1})`).join(', '),
-        subtotal: subtotal,
-        delivery_cost: 0,
-        total_price: grandTotal,
-        notes: orderNotes,
-        status: 'Nouveau',
-        confCode: confCode,
-        code_pin: confCode,
-        pickup_pin: confCode,
-        idempotency_key: 'IDEM_' + Date.now() + '_' + Math.random().toString(36).substring(2, 9),
-        security_evaluated: true,
-        createdAt: new Date().toISOString()
-    };
+        const orderData = await orderRes.json();
+        if (!orderRes.ok || !orderData.order) {
+            throw new Error(orderData.error || "Erreur lors de la création de la commande.");
+        }
 
-    // Génération automatique du lien WhatsApp avec reçu et point de retrait
-    const whatsappUrl = generateWhatsAppOrderUrl(newOrder);
-    newOrder.whatsappUrl = whatsappUrl;
+        const createdOrder = orderData.order;
 
-    // Helper to finish order and save
-    const finalizeOrder = () => {
-        fetch(`${API_ROOT}/api/orders`, {
+        // 2. Initiation de la transaction de paiement
+        const idempotencyKey = 'IDEM_' + createdOrder.id + '_' + Date.now();
+        const payRes = await fetch(`${API_ROOT}/api/payments/initiate`, {
             method: 'POST',
             headers: { 
                 'Content-Type': 'application/json',
-                'X-Idempotency-Key': newOrder.idempotency_key
+                'X-Idempotency-Key': idempotencyKey
             },
             body: JSON.stringify({
-                customer_name: newOrder.clientName,
-                phone: newOrder.phone,
-                address: `${newOrder.commune}, ${newOrder.address}`,
-                items: newOrder.itemsSummary,
-                total_price: newOrder.total_price,
-                payment_method: newOrder.payment_method,
-                notes: newOrder.notes,
-                code_pin: newOrder.code_pin,
-                idempotency_key: newOrder.idempotency_key
+                order_id: createdOrder.id,
+                provider: provider,
+                customer_phone: phone,
+                customer_name: fullName,
+                user_id: user.id || null,
+                idempotency_key: idempotencyKey
             })
-        }).catch(() => {});
+        });
 
-        localStorage.setItem('babi_current_order', JSON.stringify(newOrder));
-
-        try {
-            let user = {};
-            try { user = JSON.parse(localStorage.getItem('babi_user') || '{}'); } catch(_) {}
-            newOrder.userEmail = user.email || '';
-            newOrder.userId = user.id || '';
-
-            let babiOrders = JSON.parse(localStorage.getItem('babi_orders')) || [];
-            babiOrders.unshift(newOrder);
-            localStorage.setItem('babi_orders', JSON.stringify(babiOrders));
-
-            let history = JSON.parse(localStorage.getItem('babi_orders_history')) || [];
-            history.unshift(newOrder);
-            localStorage.setItem('babi_orders_history', JSON.stringify(history));
-        } catch(e) {}
-
-        if (typeof clearCart === 'function') {
-            clearCart();
-        } else {
-            localStorage.removeItem('babi_cart_items');
-            localStorage.removeItem('babi_cart');
+        const payData = await payRes.json();
+        if (!payRes.ok) {
+            throw new Error(payData.error || "Erreur lors de l'initiation du paiement.");
         }
 
-        window.location.href = `suivi.html?orderId=${orderId}&phone=${encodeURIComponent(newOrder.phone)}`;
-    };
-
-    if (isWave && !isAlreadyValidated) {
-        if (typeof openOperatorPaymentModal === 'function') {
-            openOperatorPaymentModal('wave');
+        // Cas Paiement Espèces au Comptoir
+        if (provider === 'cash') {
+            createdOrder.pickup_pin = payData.pickupPin;
+            createdOrder.payment_method = 'Paiement au comptoir (Espèces)';
+            createdOrder.payment_status = 'en_attente';
+            
+            saveOrderLocally(createdOrder);
+            if (typeof clearCart === 'function') clearCart();
+            window.location.href = `suivi.html?orderId=${encodeURIComponent(createdOrder.id)}&phone=${encodeURIComponent(phone)}`;
             return;
         }
+
+        // Cas Wave Mobile Money : Ouverture du Modal de Paiement & Polling
+        if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '<i class="fa-solid fa-check-circle me-2"></i>CONFIRMER LA COMMANDE';
+        }
+
+        openWavePaymentModal(createdOrder, payData);
+
+    } catch (err) {
+        alert("Erreur : " + err.message);
+        if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '<i class="fa-solid fa-check-circle me-2"></i>CONFIRMER LA COMMANDE';
+        }
+    }
+}
+
+function openWavePaymentModal(order, paymentData) {
+    const modalEl = document.getElementById('paymentModal');
+    const modalHeader = document.getElementById('paymentModalHeader');
+    const modalTitle = document.getElementById('paymentModalTitle');
+    const modalBody = document.getElementById('paymentModalBody');
+
+    if (!modalEl || typeof bootstrap === 'undefined') return;
+    const bsModal = bootstrap.Modal.getOrCreateInstance(modalEl);
+
+    if (modalHeader) {
+        modalHeader.className = 'modal-header babi-wave-modal-header py-3';
+    }
+    if (modalTitle) {
+        modalTitle.innerHTML = `
+            <div class="d-flex align-items-center gap-2">
+                <img src="assets/wave_money.png" style="width:28px; height:28px; object-fit:contain;" class="rounded">
+                <span class="fw-bold text-white fs-6">Paiement Wave — Boulangerie de BABI</span>
+            </div>
+        `;
     }
 
-    finalizeOrder();
+    const grandTotal = order.total_amount || order.total_price || paymentData.amount || 0;
+    const launchUrl = paymentData.launchUrl || `https://pay.wave.com/m/M_ci_7X1JfUg2eEsX/c/ci/?amount=${grandTotal}&client_reference=${encodeURIComponent(order.id)}`;
+    const qrCodeUrl = paymentData.qrCodeUrl || `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(launchUrl)}`;
+
+    modalBody.innerHTML = `
+        <div class="py-2 text-start">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <span class="badge bg-light text-dark border px-2.5 py-1.5 rounded-pill fw-bold" style="font-family: monospace;">
+                    <i class="fa-solid fa-receipt me-1 text-primary"></i> ${order.id}
+                </span>
+                <span class="badge bg-success-subtle text-success border border-success-subtle px-2.5 py-1.5 rounded-pill fw-bold">
+                    <i class="fa-solid fa-shield-halved me-1"></i> Serveur Sécurisé
+                </span>
+            </div>
+
+            <div class="text-center mb-4 p-3 rounded-4" style="background: #f8fafc; border: 1px solid #e2e8f0;">
+                <span class="text-muted small text-uppercase fw-bold d-block mb-1">Montant Total à Régler</span>
+                <h1 class="fw-extrabold text-dark mb-0" style="font-size: 2.2rem; font-weight: 900; color: #0f172a;">
+                    ${grandTotal.toLocaleString()} <span class="fs-4 text-primary">FCFA</span>
+                </h1>
+                <div class="badge text-white fw-bold mt-2 px-3 py-1 rounded-pill" style="background: #1EA5FC; font-size: 11px;">
+                    Compte Marchand Officiel BABI
+                </div>
+            </div>
+
+            <!-- QR Code Container with Scanner Frame -->
+            <div class="text-center mb-3 p-4 rounded-4" style="background: linear-gradient(180deg, #f0fdf4 0%, #ffffff 100%); border: 1px solid #bbf7d0;">
+                <div class="babi-qr-frame mb-3">
+                    <div class="babi-qr-corner babi-qr-tl"></div>
+                    <div class="babi-qr-corner babi-qr-tr"></div>
+                    <div class="babi-qr-corner babi-qr-bl"></div>
+                    <div class="babi-qr-corner babi-qr-br"></div>
+                    <img src="${qrCodeUrl}" style="width: 160px; height: 160px; display: block;" alt="QR Code Wave">
+                </div>
+                
+                <div class="fw-bold text-dark mb-1" style="font-size: 13.5px;">Scannez avec votre application Wave</div>
+                <div class="text-muted small mb-3">Ou ouvrez directement l'application sur votre téléphone :</div>
+                
+                <a href="${launchUrl}" target="_blank" class="btn w-100 text-white fw-bold py-3 rounded-pill shadow-sm d-flex align-items-center justify-content-center gap-2" style="background: linear-gradient(135deg, #1EA5FC 0%, #0284c7 100%); border:none; font-size: 15px;">
+                    <i class="fa-solid fa-mobile-screen-button fs-5"></i>
+                    <span>OUVRIR L'APPLICATION WAVE</span>
+                </a>
+            </div>
+
+            <!-- Live Status Radar -->
+            <div class="p-3 rounded-3 border text-center mb-3" style="background: #f8fafc; border-color: #bae6fd !important;">
+                <div class="d-flex align-items-center justify-content-center gap-2 text-primary fw-bold small mb-1">
+                    <span class="babi-pulse-ring"></span>
+                    <span>En attente de confirmation Wave...</span>
+                </div>
+                <small class="text-muted d-block" style="font-size: 11px;">La validation est instantanée dès votre débit Wave.</small>
+            </div>
+
+            <button type="button" class="btn btn-outline-success w-100 fw-bold py-2.5 rounded-pill" onclick="manualConfirmPayment('${order.id}', '${paymentData.paymentId}')">
+                <i class="fa-solid fa-rotate me-1"></i> J'ai déjà validé sur Wave (Vérifier)
+            </button>
+        </div>
+    `;
+
+    bsModal.show();
+
+    // 3. Polling du statut serveur toutes les 2.5 secondes
+    startPaymentStatusPolling(order, paymentData.paymentId);
+}
+
+let pollingInterval = null;
+
+function startPaymentStatusPolling(order, paymentId) {
+    if (pollingInterval) clearInterval(pollingInterval);
+
+    pollingInterval = setInterval(async () => {
+        try {
+            const res = await fetch(`${API_ROOT}/api/payments/status/${paymentId}`);
+            if (!res.ok) return;
+
+            const data = await res.json();
+            if (data.isPaid && data.status === 'PAID') {
+                clearInterval(pollingInterval);
+                pollingInterval = null;
+                showPaymentSuccessInModal(order, data.pickupPin);
+            }
+        } catch (_) {}
+    }, 2500);
+}
+
+async function manualConfirmPayment(orderId, paymentId) {
+    const modalBody = document.getElementById('paymentModalBody');
+    if (modalBody) {
+        modalBody.innerHTML = `
+            <div class="py-5 text-center">
+                <div class="spinner-border text-primary mb-3" role="status" style="width: 3.5rem; height: 3.5rem; color: #1EA5FC !important;"></div>
+                <h5 class="fw-bold text-dark mb-1">Vérification de la transaction...</h5>
+                <p class="text-muted small">Interrogation en temps réel des serveurs Wave...</p>
+            </div>
+        `;
+    }
+
+    try {
+        const res = await fetch(`${API_ROOT}/api/payments/confirm-manual`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ order_id: orderId, payment_id: paymentId })
+        });
+
+        const data = await res.json();
+        if (data.success) {
+            if (pollingInterval) { clearInterval(pollingInterval); pollingInterval = null; }
+            showPaymentSuccessInModal({ id: orderId, phone: document.getElementById('clientPhoneInput') ? document.getElementById('clientPhoneInput').value : '' }, data.pickupPin);
+        } else {
+            throw new Error(data.error || "Paiement non encore détecté.");
+        }
+    } catch (err) {
+        alert("Statut : " + err.message + " Si vous venez de payer, patientez quelques secondes.");
+    }
+}
+
+function showPaymentSuccessInModal(order, pickupPin) {
+    const modalBody = document.getElementById('paymentModalBody');
+    const pin = pickupPin || '7412';
+
+    order.pickup_pin = pin;
+    order.confCode = pin;
+    order.code_pin = pin;
+    order.payment_status = 'paye';
+    order.payment_method = 'Wave Mobile Money';
+
+    saveOrderLocally(order);
+    if (typeof clearCart === 'function') clearCart();
+
+    if (modalBody) {
+        modalBody.innerHTML = `
+            <div class="py-3 text-center">
+                <div class="d-inline-flex align-items-center justify-content-center text-white rounded-circle p-3 mb-3 shadow-lg" style="width:76px; height:76px; background: linear-gradient(135deg, #22c55e, #16a34a);">
+                    <i class="fa-solid fa-check fs-1"></i>
+                </div>
+                
+                <h3 class="fw-extrabold text-dark mb-1" style="font-weight: 900;">Paiement Réussi !</h3>
+                <p class="text-muted small mb-3">Votre commande <strong>#${order.id}</strong> est confirmée et en cours de cuisson au fournil.</p>
+
+                <!-- Pass Code PIN de Retrait -->
+                <div class="babi-pin-pass mb-4">
+                    <span class="badge bg-warning text-dark px-3 py-1 rounded-pill fw-bold mb-2 shadow-xs" style="font-size: 11px;">
+                        🔑 CODE SECRET DE RETRAIT COMPTOIR
+                    </span>
+                    <div class="babi-pin-digits">${pin}</div>
+                    <p class="text-muted small mb-0 fw-semibold">
+                        À présenter à la caissière de la Riviera pour récupérer votre commande.
+                    </p>
+                </div>
+
+                <div class="d-grid gap-2">
+                    <a href="suivi.html?orderId=${encodeURIComponent(order.id)}&phone=${encodeURIComponent(order.phone || '')}&status=paid" class="babi-btn-checkout text-decoration-none">
+                        <i class="fa-solid fa-receipt me-2"></i>VOIR MON REÇU & SUIVRE MA COMMANDE
+                    </a>
+                    
+                    <button type="button" class="btn btn-light rounded-pill py-2.5 fw-bold text-muted border" onclick="navigator.clipboard.writeText('${pin}'); alert('Code PIN ${pin} copié dans le presse-papier !');">
+                        <i class="fa-solid fa-copy me-1"></i> Copier mon code PIN (${pin})
+                    </button>
+                </div>
+            </div>
+        `;
+    }
+}
+
+function saveOrderLocally(order) {
+    try {
+        localStorage.setItem('babi_current_order', JSON.stringify(order));
+        let babiOrders = JSON.parse(localStorage.getItem('babi_orders')) || [];
+        babiOrders.unshift(order);
+        localStorage.setItem('babi_orders', JSON.stringify(babiOrders));
+    } catch (_) {}
 }
 
 window.generateWhatsAppOrderUrl = function(order) {
