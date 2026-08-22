@@ -715,6 +715,21 @@ function updatePinDisplay() {
     }
 }
 
+function safeParseStorageJson(raw) {
+    if (!raw) return [];
+    try {
+        let val = JSON.parse(raw);
+        if (typeof val === 'string') {
+            try { val = JSON.parse(val); } catch (_) {}
+        }
+        if (Array.isArray(val)) return val;
+        if (typeof val === 'object' && val !== null) return [val];
+        return [];
+    } catch (_) {
+        return [];
+    }
+}
+
 async function previewPinOrder(pin) {
     const resultBox = document.getElementById('pin-verify-result-box');
     if (!resultBox) return;
@@ -776,29 +791,21 @@ async function previewPinOrder(pin) {
         } catch (_) {}
     }
 
-    // 2. Fallback: Search all local storage keys (Flutter web & standard web app)
+    // 2. Fallback: Search all local storage keys (Flutter web double-encoded JSON & standard web app)
     let allOrders = [];
-    const storageKeys = [
-        'flutter.babi_realtime_orders_v2',
-        'babi_realtime_orders_v2',
-        'babi_orders',
-        'orders',
-        'pos_orders'
-    ];
-
-    for (const key of storageKeys) {
-        try {
-            const raw = localStorage.getItem(key);
-            if (raw) {
-                const parsed = JSON.parse(raw);
-                if (Array.isArray(parsed)) allOrders.push(...parsed);
-                else if (typeof parsed === 'object') allOrders.push(parsed);
+    for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key && (key.includes('orders') || key.includes('order') || key.includes('babi'))) {
+            if (key === 'babi_consumed_pins') continue;
+            const items = safeParseStorageJson(localStorage.getItem(key));
+            if (items && items.length > 0) {
+                allOrders.push(...items);
             }
-        } catch (_) {}
+        }
     }
 
     const matched = allOrders.find(o => {
-        const oPin = String(o.pickupPin || o.pickup_pin || o.code_pin || o.pin || '').trim();
+        const oPin = String(o.pickupPin || o.pickup_pin || o.pin_code || o.code_pin || o.pin || '').trim();
         return oPin === cleanPin || (cleanPin.length === 4 && oPin.padStart(4, '0') === cleanPin);
     });
 
@@ -815,7 +822,7 @@ async function previewPinOrder(pin) {
 
         let itemsSummary = 'Articles boulangerie';
         if (Array.isArray(matched.items)) {
-            itemsSummary = matched.items.map(i => `${i.qty || i.quantity || 1}x ${i.name || i.nom || 'Produit'}`).join(', ');
+            itemsSummary = matched.items.map(i => `${i.qty || i.quantity || 1}x ${i.name || i.nom || i.productName || 'Produit'}`).join(', ');
         } else if (matched.items_summary) {
             itemsSummary = matched.items_summary;
         }
@@ -993,25 +1000,17 @@ async function refreshPickupQueue() {
         } catch (_) {}
     }
 
-    // 2. Fetch from all Local Storage keys (Flutter Web & Standard web)
+    // 2. Fetch from all Local Storage keys (Flutter Web double-encoded & standard web)
     let localOrdersList = [];
-    const storageKeys = [
-        'flutter.babi_realtime_orders_v2',
-        'babi_realtime_orders_v2',
-        'babi_orders',
-        'orders'
-    ];
-
-    for (const key of storageKeys) {
-        try {
-            const raw = localStorage.getItem(key);
-            if (raw) {
-                const parsed = JSON.parse(raw);
-                if (Array.isArray(parsed)) {
-                    localOrdersList.push(...parsed);
-                }
+    for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key && (key.includes('orders') || key.includes('order') || key.includes('babi'))) {
+            if (key === 'babi_consumed_pins') continue;
+            const items = safeParseStorageJson(localStorage.getItem(key));
+            if (items && items.length > 0) {
+                localOrdersList.push(...items);
             }
-        } catch (_) {}
+        }
     }
 
     // 3. Exclude consumed PINs and picked-up orders
