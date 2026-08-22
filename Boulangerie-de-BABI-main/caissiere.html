@@ -227,16 +227,10 @@
                 </div>
             </div>
 
-            <!-- Right: Cashier Identity & Mobile Cart Button -->
+            <!-- Right: Cashier Identity & Live Clock Status -->
             <div class="flex items-center gap-2.5 sm:gap-4 shrink-0">
-                <!-- Mobile Cart Trigger Button (< 768px) -->
-                <button onclick="openMobileCart()" class="md:hidden relative w-10 h-10 rounded-xl bg-primary text-on-primary flex items-center justify-center shadow-md hover:brightness-95 transition-all shrink-0" title="Voir Ticket">
-                    <span class="material-symbols-outlined text-xl">shopping_cart</span>
-                    <span id="mobile-topbar-cart-badge" class="absolute -top-1.5 -right-1.5 bg-rose-600 text-white font-black text-[10px] w-5 h-5 rounded-full flex items-center justify-center border-2 border-white">0</span>
-                </button>
-
-                <!-- Live Clock (Large screens only >= 1280px) -->
-                <span class="prestige-status-badge emerald hidden xl:inline-flex shrink-0">
+                <!-- Live Clock Status Badge -->
+                <span class="prestige-status-badge emerald inline-flex shrink-0">
                     <span class="status-pulse-dot emerald"></span>
                     <span id="pos-live-clock">18:00:00</span>
                 </span>
