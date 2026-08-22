@@ -346,20 +346,16 @@ function openWavePaymentModal(order, paymentData) {
             <div class="p-3 rounded-3 border text-center mb-3" style="background: #f8fafc; border-color: #bae6fd !important;">
                 <div class="d-flex align-items-center justify-content-center gap-2 text-primary fw-bold small mb-1">
                     <span class="babi-pulse-ring"></span>
-                    <span>En attente de confirmation Wave...</span>
+                    <span>Validation 100% Automatique en cours...</span>
                 </div>
-                <small class="text-muted d-block" style="font-size: 11px;">La validation est instantanée dès votre débit Wave.</small>
+                <small class="text-muted d-block" style="font-size: 11px;">Dès validation de votre paiement par Wave, votre commande sera confirmée automatiquement.</small>
             </div>
-
-            <button type="button" class="btn btn-outline-success w-100 fw-bold py-2.5 rounded-pill" onclick="manualConfirmPayment('${order.id}', '${paymentData.paymentId}')">
-                <i class="fa-solid fa-rotate me-1"></i> J'ai déjà validé sur Wave (Vérifier)
-            </button>
         </div>
     `;
 
     bsModal.show();
 
-    // 3. Polling du statut serveur toutes les 2.5 secondes
+    // 3. Polling du statut serveur toutes les 2.0 secondes
     startPaymentStatusPolling(order, paymentData.paymentId);
 }
 
@@ -380,37 +376,23 @@ function startPaymentStatusPolling(order, paymentId) {
                 showPaymentSuccessInModal(order, data.pickupPin);
             }
         } catch (_) {}
-    }, 2500);
+    }, 2000);
 }
 
-async function manualConfirmPayment(orderId, paymentId) {
-    const modalBody = document.getElementById('paymentModalBody');
-    if (modalBody) {
-        modalBody.innerHTML = `
-            <div class="py-5 text-center">
-                <div class="spinner-border text-primary mb-3" role="status" style="width: 3.5rem; height: 3.5rem; color: #1EA5FC !important;"></div>
-                <h5 class="fw-bold text-dark mb-1">Vérification de la transaction...</h5>
-                <p class="text-muted small">Interrogation en temps réel des serveurs Wave...</p>
-            </div>
-        `;
-    }
-
+async function verifyServerPaymentStatus(orderId, paymentId) {
     try {
-        const res = await fetch(`${API_ROOT}/api/payments/confirm-manual`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ order_id: orderId, payment_id: paymentId })
-        });
+        const res = await fetch(`${API_ROOT}/api/payments/status/${paymentId}`);
+        if (!res.ok) throw new Error("Vérification en cours auprès de Wave...");
 
         const data = await res.json();
-        if (data.success) {
+        if (data.isPaid && data.status === 'PAID') {
             if (pollingInterval) { clearInterval(pollingInterval); pollingInterval = null; }
             showPaymentSuccessInModal({ id: orderId, phone: document.getElementById('clientPhoneInput') ? document.getElementById('clientPhoneInput').value : '' }, data.pickupPin);
         } else {
-            throw new Error(data.error || "Paiement non encore détecté.");
+            alert("Paiement non encore validé sur Wave. Veuillez finaliser votre paiement sur votre application.");
         }
     } catch (err) {
-        alert("Statut : " + err.message + " Si vous venez de payer, patientez quelques secondes.");
+        alert(err.message);
     }
 }
 
