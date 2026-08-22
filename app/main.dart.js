@@ -60111,7 +60111,7 @@ B.b.E(k,p.f)
 p.sbF(k)
 s=3
 return A.n(p.rv(),$async$Ak)
-case 3:try{A.aeV("/orders",A.D(["order_number",n,"total",e,"payment_method",c,"pickup_pin",m,"items",i],t.N,t.z)).fz(new A.auq())}catch(g){}q=h
+case 3:try{A.aeV("/orders",A.D(["order_number",n,"id",n,"customer_name","Client Mobile","phone","0707000000","customer_phone","0707000000","total",e,"total_price",e,"total_amount",e,"payment_method",c,"pickup_pin",m,"code_pin",m,"pin",m,"items",i,"type_retrait","comptoir","status","PAID","payment_status","paye"],t.N,t.z)).fz(new A.auq())}catch(g){}q=h
 s=1
 break
 case 1:return A.w(q,r)}})

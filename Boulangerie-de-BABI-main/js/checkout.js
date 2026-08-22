@@ -448,8 +448,13 @@ function saveOrderLocally(order) {
     try {
         localStorage.setItem('babi_current_order', JSON.stringify(order));
         let babiOrders = JSON.parse(localStorage.getItem('babi_orders')) || [];
+        babiOrders = babiOrders.filter(o => o && o.id !== order.id);
         babiOrders.unshift(order);
         localStorage.setItem('babi_orders', JSON.stringify(babiOrders));
+        try {
+            const syncChan = new BroadcastChannel('babi_orders_sync');
+            syncChan.postMessage({ type: 'NEW_ORDER', order });
+        } catch (_) {}
     } catch (_) {}
 }
 
