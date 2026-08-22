@@ -937,13 +937,14 @@ async function confirmOrderPickup(orderId, pin) {
     } catch (_) {}
 
     // 3. Mark in all local orders
+    // 3. Mark in all local orders
     const storageKeys = ['babi_orders', 'orders', 'flutter.babi_realtime_orders_v2', 'babi_realtime_orders_v2'];
     for (const key of storageKeys) {
         try {
             const raw = localStorage.getItem(key);
             if (raw) {
-                const list = JSON.parse(raw);
-                if (Array.isArray(list)) {
+                const list = safeParseStorageJson(raw);
+                if (Array.isArray(list) && list.length > 0) {
                     list.forEach(o => {
                         const oPin = String(o.pickupPin || o.pickup_pin || o.code_pin || o.pin || '');
                         if (String(o.id) === cleanOrderId || oPin === cleanPin) {
