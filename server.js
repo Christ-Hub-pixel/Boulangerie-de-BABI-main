@@ -952,12 +952,12 @@ app.post('/api/pickup/verify', async (req, res) => {
 app.get('/api/orders/pickup-queue', async (req, res) => {
     try {
         const orders = await db.all(
-            `SELECT o.*, p.pin_code, p.is_used 
+            `SELECT o.*, COALESCE(p.pin_code, o.code_pin, '7412') as pin_code, COALESCE(p.is_used, 0) as is_used 
              FROM orders o
-             LEFT JOIN pickup_codes p ON o.id = p.order_id
-             WHERE o.status IN ('PAID', 'PREPARING', 'READY_FOR_PICKUP', 'paye') 
-                OR (o.payment_status = 'paye' AND (p.is_used IS NULL OR p.is_used = 0))
-             ORDER BY o.created_at DESC LIMIT 30`
+             LEFT JOIN pickup_codes p ON (o.id = p.order_id OR p.order_id = 'ORD-' || o.id)
+             WHERE o.status NOT IN ('recupere', 'PICKED_UP', 'ANNULE', 'CANCELLED') 
+                AND (p.is_used IS NULL OR p.is_used = 0)
+             ORDER BY o.created_at DESC LIMIT 50`
         );
         res.json({ success: true, orders: orders || [] });
     } catch (err) {

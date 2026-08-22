@@ -117,6 +117,7 @@ body {
 .vip-hero-title .text-gold {
     background: linear-gradient(90deg, #ffc107 0%, #fb923c 50%, #fde047 100%);
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
     font-style: italic;
 }

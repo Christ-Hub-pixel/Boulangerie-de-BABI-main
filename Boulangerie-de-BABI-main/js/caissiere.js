@@ -56,12 +56,22 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Instant sync across tabs when orders are placed
     window.addEventListener('storage', (e) => {
-        if (e.key === 'babi_orders') {
+        if (!e.key || e.key.includes('orders') || e.key.includes('babi')) {
             refreshPickupQueue();
             updateSessionStats();
             renderHistoryTable();
         }
     });
+
+    try {
+        const orderChannel = new BroadcastChannel('babi_orders_sync');
+        orderChannel.onmessage = () => {
+            refreshPickupQueue();
+            updateSessionStats();
+            renderHistoryTable();
+        };
+    } catch (_) {}
+
     schedulePickupPolling();
 });
 
@@ -69,7 +79,7 @@ function schedulePickupPolling() {
     setTimeout(async () => {
         await refreshPickupQueue();
         schedulePickupPolling();
-    }, 20000);
+    }, 2500); // 2.5 seconds real-time poll
 }
 
 // Live Clock
@@ -948,40 +958,179 @@ async function confirmOrderPickup(orderId, pin) {
 }
 
 // -------------------------------------------------------------
-// 7. LIVE PICKUP QUEUE
+// 7. LIVE PICKUP QUEUE & REAL-TIME ORDER ALERTS
 // -------------------------------------------------------------
+let previousPickupCount = -1;
+let knownOrderIds = new Set();
+
 async function refreshPickupQueue() {
-    let orders = [];
-    try {
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 3500);
-        const res = await fetch(`${API_ROOT}/api/orders/pickup-queue`, { signal: controller.signal });
-        clearTimeout(timeoutId);
-        if (res.ok) {
-            isApiReachable = true;
-            const data = await res.json();
-            if (data.orders) orders = data.orders;
-        } else {
-            isApiReachable = false;
-        }
-    } catch (_) {
-        isApiReachable = false;
+    let apiOrders = [];
+    
+    // 1. Fetch from multiple API endpoints
+    const apiEndpoints = [
+        `${API_ROOT}/api/orders/pickup-queue`,
+        `/api/orders/pickup-queue`,
+        `https://api.boulangeriedebabi.com/api/orders/pickup-queue`,
+        `${API_ROOT}/api/orders`,
+        `/api/orders`
+    ];
+
+    for (const url of apiEndpoints) {
+        try {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 2000);
+            const res = await fetch(url, { signal: controller.signal });
+            clearTimeout(timeoutId);
+            if (res.ok) {
+                isApiReachable = true;
+                const data = await res.json();
+                const list = Array.isArray(data) ? data : (data.orders || []);
+                if (list && list.length > 0) {
+                    apiOrders.push(...list);
+                    break;
+                }
+            }
+        } catch (_) {}
     }
 
-    // Merge with local orders
-    const localOrders = JSON.parse(localStorage.getItem('babi_orders') || '[]');
-    const localPending = localOrders.filter(o => o.status !== 'recupere' && o.status !== 'PICKED_UP');
-    
-    // Combine and deduplicate
-    const combined = [...orders, ...localPending];
-    const uniqueOrders = Array.from(new Map(combined.map(o => [o.id, o])).values());
-    livePickups = uniqueOrders;
+    // 2. Fetch from all Local Storage keys (Flutter Web & Standard web)
+    let localOrdersList = [];
+    const storageKeys = [
+        'flutter.babi_realtime_orders_v2',
+        'babi_realtime_orders_v2',
+        'babi_orders',
+        'orders'
+    ];
 
-    // Update Badge Count
+    for (const key of storageKeys) {
+        try {
+            const raw = localStorage.getItem(key);
+            if (raw) {
+                const parsed = JSON.parse(raw);
+                if (Array.isArray(parsed)) {
+                    localOrdersList.push(...parsed);
+                }
+            }
+        } catch (_) {}
+    }
+
+    // 3. Exclude consumed PINs and picked-up orders
+    const consumedPins = JSON.parse(localStorage.getItem('babi_consumed_pins') || '[]');
+    const consumedPinSet = new Set(consumedPins.map(c => String(c.pin).trim()));
+    const consumedOrderSet = new Set(consumedPins.map(c => String(c.orderId).trim()));
+
+    const allRaw = [...apiOrders, ...localOrdersList];
+    const validOrdersMap = new Map();
+
+    allRaw.forEach(o => {
+        if (!o) return;
+        const oId = String(o.id || o.order_number || o.orderId || '').trim();
+        const oPin = String(o.pickupPin || o.pickup_pin || o.pin_code || o.code_pin || o.pin || '').trim();
+        const status = String(o.status || o.statusCode || '').toLowerCase();
+        
+        // Skip if already picked up or in consumed set
+        if (status === 'recupere' || status === 'picked_up' || status === 'delivered' || o.is_used === 1 || o.is_used === true) {
+            return;
+        }
+        if (consumedPinSet.has(oPin) || (oPin && consumedPinSet.has(oPin.padStart(4, '0')))) {
+            return;
+        }
+        if (oId && consumedOrderSet.has(oId)) {
+            return;
+        }
+
+        const key = oId || oPin || Math.random().toString();
+        if (!validOrdersMap.has(key)) {
+            let itemsSummary = '';
+            if (Array.isArray(o.items)) {
+                itemsSummary = o.items.map(i => `${i.qty || i.quantity || 1}x ${i.name || i.nom || i.productName || 'Produit'}`).join(', ');
+            } else if (o.items_summary) {
+                itemsSummary = o.items_summary;
+            } else if (typeof o.items === 'string') {
+                try {
+                    const parsed = JSON.parse(o.items);
+                    if (Array.isArray(parsed)) itemsSummary = parsed.map(i => `${i.qty || i.quantity || 1}x ${i.name || i.nom || 'Produit'}`).join(', ');
+                    else itemsSummary = o.items;
+                } catch (_) {
+                    itemsSummary = o.items;
+                }
+            }
+
+            validOrdersMap.set(key, {
+                id: oId || `BABI-${oPin}`,
+                pin_code: oPin || '7412',
+                customer_name: o.customer_name || o.customerName || 'Client App Mobile',
+                customer_phone: o.customer_phone || o.customerPhone || o.phone || '0707000000',
+                total_price: Number(o.total_price || o.total_amount || o.total || 2500),
+                items_summary: itemsSummary || 'Articles boulangerie',
+                created_at: o.created_at || o.createdAt || new Date().toISOString()
+            });
+        }
+    });
+
+    const newLivePickups = Array.from(validOrdersMap.values());
+
+    // Check for incoming new orders to notify cashier with chime & toast
+    if (previousPickupCount !== -1 && newLivePickups.length > previousPickupCount) {
+        const newest = newLivePickups.find(o => !knownOrderIds.has(o.id));
+        if (newest) {
+            playPosAudio('beep');
+            showIncomingOrderNotification(newest);
+        }
+    }
+
+    previousPickupCount = newLivePickups.length;
+    knownOrderIds = new Set(newLivePickups.map(o => o.id));
+    livePickups = newLivePickups;
+
+    // Update Badge Counters (Sidebar & Mobile bottom navigation)
     const badge = document.getElementById('pickup-badge-count');
-    if (badge) badge.innerText = livePickups.length;
+    if (badge) {
+        badge.innerText = livePickups.length;
+        badge.style.display = livePickups.length > 0 ? 'inline-flex' : 'none';
+    }
+    const mobileBadge = document.getElementById('mobile-tab-pickup-badge');
+    if (mobileBadge) {
+        mobileBadge.innerText = livePickups.length;
+        mobileBadge.style.display = livePickups.length > 0 ? 'flex' : 'none';
+    }
 
     renderPickupCards();
+}
+
+function showIncomingOrderNotification(order) {
+    let toast = document.getElementById('pos-order-toast');
+    if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'pos-order-toast';
+        toast.className = 'fixed top-20 right-4 sm:right-6 z-[999] max-w-sm p-4 bg-[#180b05] text-white rounded-2xl shadow-2xl border-2 border-amber-400 flex items-center gap-3 transition-all duration-300 transform translate-y-0 opacity-100 cursor-pointer';
+        document.body.appendChild(toast);
+    }
+
+    toast.innerHTML = `
+        <div class="w-11 h-11 rounded-xl bg-amber-400 text-black flex items-center justify-center font-black text-xl shrink-0 animate-bounce">
+            🥐
+        </div>
+        <div class="flex-1 min-w-0">
+            <div class="flex items-center justify-between gap-2">
+                <strong class="text-amber-300 text-[11px] uppercase font-mono tracking-wider font-black">Nouvelle Commande !</strong>
+                <span class="text-[10px] bg-emerald-600 text-white font-extrabold px-2 py-0.5 rounded-full font-mono">PIN #${order.pin_code}</span>
+            </div>
+            <p class="text-white font-black text-xs truncate mt-0.5">${order.customer_name} • ${order.total_price.toLocaleString()} FCFA</p>
+            <p class="text-amber-100/70 text-[11px] truncate">${order.items_summary}</p>
+        </div>
+    `;
+    toast.onclick = () => {
+        showPosView('pickups');
+        openPinModal(order.pin_code);
+    };
+
+    setTimeout(() => {
+        if (toast && toast.parentNode) {
+            toast.style.opacity = '0';
+            setTimeout(() => toast.remove(), 400);
+        }
+    }, 8000);
 }
 
 function renderPickupCards() {
@@ -992,8 +1141,8 @@ function renderPickupCards() {
         container.innerHTML = `
             <div class="col-span-full py-16 text-center text-on-surface-variant bg-surface rounded-2xl border border-outline-variant/30">
                 <span class="material-symbols-outlined text-5xl text-amber-500 opacity-40 mb-2">takeout_dining</span>
-                <p class="font-bold text-base text-on-surface">Toutes les commandes ont été retirées !</p>
-                <p class="text-xs text-on-surface-variant">Les nouvelles commandes Click & Collect apparaîtront ici automatiquement.</p>
+                <p class="font-bold text-base text-on-surface">Aucune commande en attente de retrait</p>
+                <p class="text-xs text-on-surface-variant">Les nouvelles commandes Click & Collect apparaîtront ici automatiquement en temps réel.</p>
             </div>
         `;
         return;
