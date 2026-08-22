@@ -14,25 +14,26 @@ let currentCashDue = 0;
 let currentReceiptData = null;
 let livePickups = [];
 let currentPinInput = '';
+let isApiReachable = true;
 
 const FALLBACK_POS_PRODUCTS = [
     { id: 'baguette', name: 'Baguette Tradition', price: 200, category: 'pains', image: 'assets/baguette 200.png', stock: 42 },
     { id: 'croissant', name: 'Croissant Pur Beurre', price: 350, category: 'viennoiseries', image: 'assets/Croissant.png', stock: 28 },
     { id: 'pain_choc', name: 'Pain au Chocolat', price: 400, category: 'viennoiseries', image: 'assets/pain au chocolat.png', stock: 24 },
-    { id: 'croissant_amande', name: 'Croissant aux Amandes', price: 500, category: 'viennoiseries', image: 'assets/Croissant aux Amandes.png', stock: 15 },
-    { id: 'pain_raisin', name: 'Pain aux Raisins', price: 450, category: 'viennoiseries', image: 'assets/Pain aux Raisins.png', stock: 18 },
-    { id: 'chausson_pommes', name: 'Chausson aux Pommes', price: 450, category: 'viennoiseries', image: 'assets/Chausson aux Pommes.png', stock: 14 },
+    { id: 'croissant_amande', name: 'Croissant aux Amandes', price: 500, category: 'viennoiseries', image: 'assets/Croissant.png', stock: 15 },
+    { id: 'pain_raisin', name: 'Pain aux Raisins', price: 450, category: 'viennoiseries', image: 'assets/pain au raisin.png', stock: 18 },
+    { id: 'chausson_pommes', name: 'Chausson aux Pommes', price: 450, category: 'viennoiseries', image: 'assets/chausson aux pommes.png', stock: 14 },
     { id: 'foret_noire', name: 'Forêt Noire Royale', price: 1500, category: 'patisseries', image: 'assets/product_foret_noire.png', stock: 8 },
     { id: 'fondant', name: 'Fondant au Chocolat', price: 800, category: 'patisseries', image: 'assets/Fondant au Chocolat.png', stock: 15 },
-    { id: 'eclair_choc', name: 'Éclair au Chocolat', price: 700, category: 'patisseries', image: 'assets/Éclair au Chocolat.png', stock: 20 },
-    { id: 'tarte_citron', name: 'Tarte au Citron Meringuée', price: 1200, category: 'patisseries', image: 'assets/Tarte au Citron Meringuée.png', stock: 10 },
-    { id: 'mille_feuille', name: 'Mille-feuille Vanille', price: 1000, category: 'patisseries', image: 'assets/Mille-feuille.png', stock: 12 },
-    { id: 'bissap', name: 'Jus de Bissap Artisanal', price: 600, category: 'boissons', image: 'assets/product_jus_bissap.png', stock: 35 },
-    { id: 'gingembre', name: 'Jus de Gingembre Frais', price: 600, category: 'boissons', image: 'assets/product_jus_gingembre.png', stock: 30 },
+    { id: 'eclair_choc', name: 'Éclair au Chocolat', price: 700, category: 'patisseries', image: 'assets/choco suisse.png', stock: 20 },
+    { id: 'tarte_citron', name: 'Tarte au Citron Meringuée', price: 1200, category: 'patisseries', image: 'assets/Gateau1.png', stock: 10 },
+    { id: 'mille_feuille', name: 'Mille-feuille Vanille', price: 1000, category: 'patisseries', image: 'assets/cake.png', stock: 12 },
+    { id: 'bissap', name: 'Jus de Bissap Artisanal', price: 600, category: 'boissons', image: 'assets/jus de bissap.png', stock: 35 },
+    { id: 'gingembre', name: 'Jus de Gingembre Frais', price: 600, category: 'boissons', image: 'assets/jus de gingembre.png', stock: 30 },
     { id: 'cappuccino', name: 'Cappuccino Moka', price: 1000, category: 'boissons', image: 'assets/product_cappuccino.png', stock: 50 },
-    { id: 'espresso', name: 'Espresso Pur Arabica', price: 800, category: 'boissons', image: 'assets/product_espresso.png', stock: 60 },
+    { id: 'espresso', name: 'Espresso Pur Arabica', price: 800, category: 'boissons', image: 'assets/Chocolat Chaud.png', stock: 60 },
     { id: 'sandwich', name: 'Sandwich Poulet Braisé', price: 1500, category: 'traiteur', image: 'assets/product_sandwich.png', stock: 12 },
-    { id: 'quiche_lorraine', name: 'Quiche Lorraine Dorée', price: 1200, category: 'traiteur', image: 'assets/quiche_lorraine.png', stock: 16 }
+    { id: 'quiche_lorraine', name: 'Quiche Lorraine Dorée', price: 1200, category: 'traiteur', image: 'assets/Panini.png', stock: 16 }
 ];
 
 // Initialize on DOM Ready
@@ -43,8 +44,23 @@ document.addEventListener('DOMContentLoaded', () => {
     updateSessionStats();
     renderHistoryTable();
     setInterval(updateClock, 1000);
-    setInterval(refreshPickupQueue, 8000); // Polling live pickup queue every 8s
+    // Instant sync across tabs when orders are placed
+    window.addEventListener('storage', (e) => {
+        if (e.key === 'babi_orders') {
+            refreshPickupQueue();
+            updateSessionStats();
+            renderHistoryTable();
+        }
+    });
+    schedulePickupPolling();
 });
+
+function schedulePickupPolling() {
+    setTimeout(async () => {
+        await refreshPickupQueue();
+        schedulePickupPolling();
+    }, isApiReachable ? 15000 : 45000);
+}
 
 // Live Clock
 function updateClock() {
@@ -672,12 +688,20 @@ async function confirmOrderPickup(orderId, pin) {
 async function refreshPickupQueue() {
     let orders = [];
     try {
-        const res = await fetch(`${API_ROOT}/api/orders/pickup-queue`);
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 3500);
+        const res = await fetch(`${API_ROOT}/api/orders/pickup-queue`, { signal: controller.signal });
+        clearTimeout(timeoutId);
         if (res.ok) {
+            isApiReachable = true;
             const data = await res.json();
             if (data.orders) orders = data.orders;
+        } else {
+            isApiReachable = false;
         }
-    } catch (_) {}
+    } catch (_) {
+        isApiReachable = false;
+    }
 
     // Merge with local orders
     const localOrders = JSON.parse(localStorage.getItem('babi_orders') || '[]');
