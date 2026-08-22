@@ -502,6 +502,18 @@ h1, h2, h3, .font-headline-lg, .font-display-lg, .font-headline-md, .font-headli
     display: none;
 }
 
+/* Base Layout Containment */
+html, body {
+    max-width: 100vw;
+    overflow-x: hidden !important;
+}
+
+main, .pos-main-view {
+    max-width: 100vw;
+    box-sizing: border-box;
+    overflow-x: hidden;
+}
+
 /* Base Topbar */
 .prestige-topbar {
     position: fixed;
@@ -518,6 +530,7 @@ h1, h2, h3, .font-headline-lg, .font-display-lg, .font-headline-md, .font-headli
     display: flex;
     align-items: center;
     justify-content: space-between;
+    box-sizing: border-box;
     transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 

@@ -199,23 +199,23 @@
     </aside>
 
     <!-- MAIN POS WRAPPER -->
-    <div class="lg:pl-72 pl-0 transition-all duration-300 w-full min-h-screen flex flex-col">
+    <div class="lg:pl-72 pl-0 transition-all duration-300 w-full min-h-screen flex flex-col overflow-x-hidden">
         <!-- TOPBAR PRESTIGE LUXURY -->
-        <header class="prestige-topbar no-print flex items-center justify-between">
+        <header class="prestige-topbar no-print flex items-center justify-between gap-2 overflow-hidden">
             <!-- Left: Mobile Hamburger & Search Bar -->
-            <div class="flex items-center gap-2 sm:gap-2.5 flex-1 max-w-md">
-                <button onclick="toggleMobileSidebar()" class="lg:hidden p-2 rounded-xl bg-surface text-on-surface border border-outline-variant/30 flex items-center justify-center hover:bg-surface-container-high transition-all" title="Ouvrir Menu">
-                    <span class="material-symbols-outlined text-2xl">menu</span>
+            <div class="flex items-center gap-1.5 sm:gap-2.5 flex-1 min-w-0 max-w-md">
+                <button onclick="toggleMobileSidebar()" class="lg:hidden p-2 rounded-xl bg-surface text-on-surface border border-outline-variant/30 flex items-center justify-center hover:bg-surface-container-high transition-all shrink-0" title="Ouvrir Menu">
+                    <span class="material-symbols-outlined text-xl sm:text-2xl">menu</span>
                 </button>
                 <!-- Search bar with gold focus ring -->
-                <div class="magazine-search-pill flex-1">
-                    <span class="material-symbols-outlined search-icon" style="color: #765b00;">search</span>
-                    <input placeholder="Rechercher un produit..." type="text" id="pos-product-search" oninput="filterPosProducts(this.value)"/>
+                <div class="magazine-search-pill flex-1 min-w-0">
+                    <span class="material-symbols-outlined search-icon shrink-0" style="color: #765b00;">search</span>
+                    <input placeholder="Rechercher..." type="text" id="pos-product-search" oninput="filterPosProducts(this.value)" class="w-full min-w-0"/>
                 </div>
             </div>
 
-            <!-- Session Stats Live Summary Chip -->
-            <div class="hidden md:flex items-center gap-3 px-3.5 py-1.5 bg-surface-container rounded-2xl border border-outline-variant/30 mx-2">
+            <!-- Session Stats Live Summary Chip (Desktop only) -->
+            <div class="hidden md:flex items-center gap-3 px-3.5 py-1.5 bg-surface-container rounded-2xl border border-outline-variant/30 mx-2 shrink-0">
                 <div class="flex items-center gap-1.5 text-xs font-bold text-[#5a4030]">
                     <span class="material-symbols-outlined text-base text-emerald-600">payments</span>
                     <span>Ventes : <strong class="text-emerald-700 font-mono" id="topbar-sales-total">0 FCFA</strong></span>
@@ -228,23 +228,23 @@
             </div>
 
             <!-- Cashier Identity, Mobile Cart Button & Status -->
-            <div class="flex items-center gap-2 sm:gap-4">
+            <div class="flex items-center gap-1.5 sm:gap-3 shrink-0">
                 <!-- Mobile Cart Trigger Button -->
-                <button onclick="openMobileCart()" class="lg:hidden relative p-2 rounded-xl bg-primary text-on-primary flex items-center justify-center shadow-md hover:brightness-95 transition-all" title="Voir Ticket">
-                    <span class="material-symbols-outlined text-xl">shopping_cart</span>
+                <button onclick="openMobileCart()" class="md:hidden relative p-2 rounded-xl bg-primary text-on-primary flex items-center justify-center shadow-md hover:brightness-95 transition-all shrink-0" title="Voir Ticket">
+                    <span class="material-symbols-outlined text-lg sm:text-xl">shopping_cart</span>
                     <span id="mobile-topbar-cart-badge" class="absolute -top-1.5 -right-1.5 bg-rose-600 text-white font-black text-[10px] w-5 h-5 rounded-full flex items-center justify-center border-2 border-white">0</span>
                 </button>
 
-                <span class="prestige-status-badge emerald hidden sm:inline-flex">
+                <span class="prestige-status-badge emerald hidden sm:inline-flex shrink-0">
                     <span class="status-pulse-dot emerald"></span>
                     <span id="pos-live-clock">18:00:00</span>
                 </span>
-                <div class="prestige-user-card" title="Profil Caissière">
+                <div class="prestige-user-card shrink-0" title="Profil Caissière">
                     <div class="relative flex items-center">
                         <img alt="Profile" class="profile-avatar" src="assets/caissiere.png"/>
                         <span class="online-status-dot"></span>
                     </div>
-                    <div class="prestige-user-info">
+                    <div class="prestige-user-info hidden md:flex">
                         <span class="prestige-user-name flex items-center gap-1.5" id="caissiere-name-badge">
                             Awa Kouassi <span class="bg-amber-400 text-black text-[9px] font-black px-1.5 py-0.2 rounded-md shadow-xs">VIP</span>
                         </span>
@@ -340,48 +340,48 @@
 
             <!-- VIEW 2: COMMANDES EN ATTENTE DE RETRAIT (CLICK & COLLECT) -->
             <div id="pos-view-pickups" class="pos-main-view p-container-padding flex flex-col gap-stack-md hidden">
-                <div class="flex items-center justify-between bg-surface-container p-5 rounded-2xl border border-outline-variant/30">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-surface-container p-3.5 sm:p-5 rounded-2xl border border-outline-variant/30">
                     <div>
-                        <h2 class="text-xl font-headline-md font-black text-on-surface flex items-center gap-2.5">
-                            <span class="material-symbols-outlined text-2xl text-amber-500">takeout_dining</span>
-                            <span>File des Commandes Click & Collect (En Ligne)</span>
+                        <h2 class="text-base sm:text-xl font-headline-md font-black text-on-surface flex items-center gap-2">
+                            <span class="material-symbols-outlined text-xl sm:text-2xl text-amber-500">takeout_dining</span>
+                            <span>File des Retraits Click & Collect</span>
                         </h2>
-                        <p class="text-xs text-on-surface-variant mt-1">Commandes payées prêtes à être remises aux clients au comptoir</p>
+                        <p class="text-[11px] sm:text-xs text-on-surface-variant mt-0.5">Commandes payées prêtes à être remises aux clients</p>
                     </div>
-                    <div class="flex items-center gap-3">
-                        <button onclick="refreshPickupQueue()" class="px-4 py-2.5 bg-surface text-on-surface font-bold text-xs rounded-xl border border-outline-variant/30 hover:bg-surface-container-high flex items-center gap-2 transition-all">
-                            <span class="material-symbols-outlined text-base">refresh</span> Actualiser la file
+                    <div class="flex items-center gap-2 flex-wrap sm:flex-nowrap w-full sm:w-auto">
+                        <button onclick="refreshPickupQueue()" class="flex-1 sm:flex-none px-3.5 py-2 sm:py-2.5 bg-surface text-on-surface font-bold text-xs rounded-xl border border-outline-variant/30 hover:bg-surface-container-high flex items-center justify-center gap-1.5 transition-all">
+                            <span class="material-symbols-outlined text-base">refresh</span> Actualiser
                         </button>
-                        <button onclick="openPinModal()" class="px-5 py-2.5 bg-primary text-on-primary font-extrabold text-xs rounded-xl shadow-md hover:brightness-95 flex items-center gap-2 transition-all">
-                            <span class="material-symbols-outlined text-base">dialpad</span> Saisir un Code PIN
+                        <button onclick="openPinModal()" class="flex-1 sm:flex-none px-4 py-2 sm:py-2.5 bg-primary text-on-primary font-extrabold text-xs rounded-xl shadow-md hover:brightness-95 flex items-center justify-center gap-1.5 transition-all">
+                            <span class="material-symbols-outlined text-base">dialpad</span> Saisir Code PIN
                         </button>
                     </div>
                 </div>
 
                 <!-- Pickup Queue Cards Grid -->
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="pos-pickup-cards-container">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4" id="pos-pickup-cards-container">
                     <!-- Dynamic live orders injected here -->
                 </div>
             </div>
 
             <!-- VIEW 3: HISTORIQUE DES TICKETS DU JOUR -->
             <div id="pos-view-history" class="pos-main-view p-container-padding flex flex-col gap-stack-md hidden">
-                <div class="flex items-center justify-between bg-surface-container p-5 rounded-2xl border border-outline-variant/30">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-surface-container p-3.5 sm:p-5 rounded-2xl border border-outline-variant/30">
                     <div>
-                        <h2 class="text-xl font-headline-md font-black text-on-surface flex items-center gap-2.5">
-                            <span class="material-symbols-outlined text-2xl text-primary">receipt_long</span>
-                            <span>Historique des Tickets & Ventes du Jour</span>
+                        <h2 class="text-base sm:text-xl font-headline-md font-black text-on-surface flex items-center gap-2">
+                            <span class="material-symbols-outlined text-xl sm:text-2xl text-primary">receipt_long</span>
+                            <span>Historique des Ventes du Jour</span>
                         </h2>
-                        <p class="text-xs text-on-surface-variant mt-1">Journal des transactions enregistrées et scellées au terminal</p>
+                        <p class="text-[11px] sm:text-xs text-on-surface-variant mt-0.5">Journal des transactions enregistrées au terminal</p>
                     </div>
-                    <div class="flex items-center gap-2">
-                        <button onclick="filterHistoryMethod('all')" class="px-3.5 py-1.5 bg-primary text-on-primary text-xs font-bold rounded-lg history-filter-btn active">Tous</button>
-                        <button onclick="filterHistoryMethod('especes')" class="px-3.5 py-1.5 bg-surface text-on-surface text-xs font-bold rounded-lg border border-outline-variant/30 history-filter-btn">Espèces</button>
-                        <button onclick="filterHistoryMethod('wave')" class="px-3.5 py-1.5 bg-surface text-on-surface text-xs font-bold rounded-lg border border-outline-variant/30 history-filter-btn">Wave</button>
+                    <div class="flex items-center gap-1.5 flex-wrap">
+                        <button onclick="filterHistoryMethod('all')" class="px-3 py-1.5 bg-primary text-on-primary text-xs font-bold rounded-lg history-filter-btn active">Tous</button>
+                        <button onclick="filterHistoryMethod('especes')" class="px-3 py-1.5 bg-surface text-on-surface text-xs font-bold rounded-lg border border-outline-variant/30 history-filter-btn">Espèces</button>
+                        <button onclick="filterHistoryMethod('wave')" class="px-3 py-1.5 bg-surface text-on-surface text-xs font-bold rounded-lg border border-outline-variant/30 history-filter-btn">Wave</button>
                     </div>
                 </div>
 
-                <div class="bg-surface rounded-2xl shadow-sm border border-outline-variant/30 overflow-hidden">
+                <div class="bg-surface rounded-2xl shadow-sm border border-outline-variant/30 overflow-x-auto">
                     <table class="w-full text-left text-xs border-collapse">
                         <thead class="bg-surface-container-high text-on-surface font-extrabold uppercase text-[11px] border-b border-outline-variant/30">
                             <tr>
