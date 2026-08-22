@@ -316,9 +316,9 @@ function renderPosProductsGrid(searchTerm = '') {
 
     grid.innerHTML = filtered.map(p => `
         <button onclick="addToPosCart('${p.id}', '${p.name.replace(/'/g, "\\'")}', ${p.price}, '${p.image}')" class="pos-product-item flex flex-col rounded-2xl overflow-hidden group relative text-left">
-            <div class="aspect-[4/3] w-full relative overflow-hidden pos-product-img-box">
-                <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" src="${p.image}" alt="${p.name}" loading="lazy" onerror="this.onerror=null; this.src='assets/Croissant.png';"/>
-                <div class="pos-price-badge-vip absolute top-2 right-2 px-2.5 py-0.5 rounded-lg font-mono text-[11px] sm:text-xs font-black">${p.price.toLocaleString()} F</div>
+            <div class="pos-product-img-box w-full">
+                <img class="pos-product-img" src="${p.image}" alt="${p.name}" loading="lazy" onerror="this.onerror=null; this.src='assets/Croissant.png';"/>
+                <div class="pos-price-badge-vip absolute top-2 right-2 px-2.5 py-0.5 rounded-lg font-mono text-[11px] sm:text-xs font-black z-10">${p.price.toLocaleString()} F</div>
             </div>
             <div class="p-2.5 sm:p-3 flex-1 flex flex-col justify-between gap-1.5 bg-white">
                 <h3 class="font-headline-sm text-xs sm:text-[13.5px] font-extrabold text-[#1a0c06] line-clamp-1 leading-snug tracking-tight">${p.name}</h3>

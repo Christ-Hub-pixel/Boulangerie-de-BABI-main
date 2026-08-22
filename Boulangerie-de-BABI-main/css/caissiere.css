@@ -177,8 +177,38 @@ h1, h2, h3, .font-headline-lg, .font-display-lg, .font-headline-md, .font-headli
 }
 
 .pos-product-img-box {
-    background: radial-gradient(circle at center, rgba(245, 184, 0, 0.06) 0%, rgba(235, 228, 212, 0.4) 100%);
-    border-bottom: 1px solid rgba(212, 175, 55, 0.15);
+    background: radial-gradient(circle at center, rgba(255, 255, 255, 0.95) 0%, rgba(246, 241, 230, 0.8) 100%);
+    border-bottom: 1px solid rgba(212, 175, 55, 0.18);
+    position: relative;
+    height: 135px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    overflow: hidden;
+}
+
+@media (min-width: 640px) {
+    .pos-product-img-box {
+        height: 155px;
+        padding: 12px;
+    }
+}
+
+.pos-product-img {
+    max-height: 100% !important;
+    max-width: 100% !important;
+    width: auto !important;
+    height: auto !important;
+    object-fit: contain !important;
+    filter: drop-shadow(0 4px 10px rgba(43, 22, 12, 0.14));
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    display: block;
+    margin: auto;
+}
+
+.pos-product-item:hover .pos-product-img {
+    transform: scale(1.08);
 }
 
 /* VIP 24K Gold Price Badge */
