@@ -33,11 +33,11 @@
         .numpad-btn {
             background: #ffffff;
             border: 1px solid #e2e8f0;
-            border-radius: 14px;
-            font-size: 1.35rem;
+            border-radius: 12px;
+            font-size: 1.25rem;
             font-weight: 800;
             color: #0f172a;
-            padding: 14px 0;
+            padding: 10px 0;
             box-shadow: 0 2px 4px rgba(0,0,0,0.04);
             transition: all 0.15s ease;
         }
@@ -48,7 +48,7 @@
         .numpad-btn-action {
             background: #f8fafc;
             color: #64748b;
-            font-size: 1.1rem;
+            font-size: 1.05rem;
         }
         .numpad-btn-submit {
             background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
@@ -377,10 +377,10 @@
 
     <!-- PIN VERIFICATION MODAL WITH TACTILE NUMPAD -->
     <div id="pinModal" class="prestige-modal-backdrop hidden">
-        <div class="prestige-modal-card max-w-md text-center p-6 rounded-3xl shadow-2xl">
-            <div class="flex items-center justify-between mb-4">
+        <div class="prestige-modal-card max-w-md text-center p-6 rounded-3xl shadow-2xl" style="max-height: 90vh; overflow-y: auto;">
+            <div class="flex items-center justify-between mb-3">
                 <div class="flex items-center gap-2.5">
-                    <div class="flex items-center justify-center w-11 h-11 rounded-2xl bg-amber-400 text-black shadow-md">
+                    <div class="flex items-center justify-center w-10 h-10 rounded-2xl bg-amber-400 text-black shadow-md">
                         <span class="material-symbols-outlined text-2xl">dialpad</span>
                     </div>
                     <div class="text-left">
@@ -392,12 +392,17 @@
             </div>
 
             <!-- PIN Display -->
-            <div class="bg-surface-container rounded-2xl p-3.5 mb-4 border-2 border-primary/30 flex items-center justify-center">
+            <div class="bg-surface-container rounded-2xl p-3 mb-3 border-2 border-primary/30 flex items-center justify-center">
                 <input type="text" id="input-pin-code" maxlength="4" readonly class="bg-transparent text-center text-3xl font-mono font-black tracking-widest text-primary w-full outline-none" placeholder="••••"/>
             </div>
 
+            <!-- Result / Error / Preview Box (Placed above numpad for immediate visibility) -->
+            <div id="pin-verify-result-box" class="text-left hidden mb-3">
+                <!-- Order Preview Result or Error Message injected here -->
+            </div>
+
             <!-- Tactile Numpad Grid -->
-            <div class="grid grid-cols-3 gap-2 mb-4">
+            <div class="grid grid-cols-3 gap-2 pb-2">
                 <button type="button" onclick="appendPinDigit('1')" class="numpad-btn">1</button>
                 <button type="button" onclick="appendPinDigit('2')" class="numpad-btn">2</button>
                 <button type="button" onclick="appendPinDigit('3')" class="numpad-btn">3</button>
@@ -415,11 +420,6 @@
                 <button type="button" onclick="verifyPickupPinDirect()" class="numpad-btn numpad-btn-submit font-extrabold flex items-center justify-center gap-1">
                     <span>Valider</span> <span class="material-symbols-outlined text-lg">arrow_forward</span>
                 </button>
-            </div>
-
-            <!-- Result Box -->
-            <div id="pin-verify-result-box" class="text-left hidden mb-3">
-                <!-- Order Preview Result injected here -->
             </div>
         </div>
     </div>

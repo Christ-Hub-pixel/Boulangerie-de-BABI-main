@@ -21,11 +21,51 @@
             font-family: 'Manrope';
             src: url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&display=swap');
         }
+
+        /* Thermal Ticket Print Styles */
+        @media print {
+            body * { visibility: hidden; }
+            #receiptModal, #receiptModal * { visibility: visible; }
+            #receiptModal { position: absolute; left: 0; top: 0; width: 100%; margin: 0; padding: 0; background: white !important; }
+            .no-print { display: none !important; }
+        }
+
+        .numpad-btn {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: #0f172a;
+            padding: 10px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+            transition: all 0.15s ease;
+        }
+        .numpad-btn:active {
+            transform: scale(0.95);
+            background: #f1f5f9;
+        }
+        .numpad-btn-action {
+            background: #f8fafc;
+            color: #64748b;
+            font-size: 1.05rem;
+        }
+        .numpad-btn-submit {
+            background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+            color: white;
+            border: none;
+            box-shadow: 0 4px 12px rgba(22, 163, 74, 0.25);
+        }
+        .numpad-btn-submit:active {
+            background: #15803d;
+        }
     </style>
 
     <!-- Google Fonts & Material Symbols -->
     <link href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:wght@400;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+    <!-- FontAwesome for additional icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
     <!-- CSS Custom Stylesheets -->
     <link rel="stylesheet" href="css/admin.css"/>
     <link rel="stylesheet" href="css/caissiere.css"/>
@@ -93,7 +133,7 @@
 <body class="bg-background font-body-md text-on-surface antialiased">
 
     <!-- SIDEBAR (PRESTIGE DARK CHOCOLATE & GOLD) -->
-    <aside class="fixed left-0 top-0 h-full w-72 prestige-sidebar z-50 flex flex-col p-5">
+    <aside class="fixed left-0 top-0 h-full w-72 prestige-sidebar z-50 flex flex-col p-5 no-print">
         <!-- Official Brand Banner -->
         <a href="index.html" class="babi-brand-banner-prestige mb-4">
             <div class="babi-logo-badge">
@@ -117,6 +157,13 @@
                 <span class="material-symbols-outlined text-xl">point_of_sale</span>
                 <span class="flex-1">Caisse Tactile</span>
             </a>
+            <a href="#" onclick="showPosView('pickups'); return false;" class="prestige-nav-item flex items-center justify-between" id="nav-pos-pickups">
+                <div class="flex items-center gap-3">
+                    <span class="material-symbols-outlined text-xl text-amber-400">delivery_dining</span>
+                    <span>Retraits en direct</span>
+                </div>
+                <span id="pickup-badge-count" class="bg-amber-500 text-black font-extrabold text-[11px] px-2 py-0.5 rounded-full">0</span>
+            </a>
             <a href="#" onclick="showPosView('history'); return false;" class="prestige-nav-item" id="nav-pos-history">
                 <span class="material-symbols-outlined text-xl">receipt_long</span>
                 <span class="flex-1">Historique Tickets</span>
@@ -128,8 +175,8 @@
 
             <!-- Quick Action PIN & Shortcuts -->
             <div class="mt-auto pt-4 border-t border-[rgba(245,184,0,0.15)] flex flex-col gap-2">
-                <button onclick="openPinModal()" class="w-full py-2.5 px-4 bg-gradient-to-r from-amber-500 to-amber-600 text-black font-extrabold rounded-xl text-xs flex items-center justify-center gap-2 shadow-md hover:brightness-105 transition-all">
-                    <span class="material-symbols-outlined text-base">dialpad</span> Retrait PIN Client
+                <button onclick="openPinModal()" class="w-full py-3 px-4 bg-gradient-to-r from-amber-400 to-amber-500 text-black font-extrabold rounded-xl text-xs flex items-center justify-center gap-2 shadow-lg hover:brightness-105 transition-all">
+                    <span class="material-symbols-outlined text-lg">dialpad</span> Saisir Code PIN Retrait
                 </button>
                 <div class="sidebar-section-title p-0 mb-1 mt-2">RETOURS RAPIDES</div>
                 <a href="admin.html" class="prestige-shortcut-btn btn-pos">
@@ -145,18 +192,31 @@
     <!-- MAIN POS WRAPPER -->
     <div class="pl-72">
         <!-- TOPBAR PRESTIGE LUXURY -->
-        <header class="prestige-topbar">
+        <header class="prestige-topbar no-print">
             <!-- Search bar with gold focus ring -->
-            <div class="magazine-search-pill" style="max-width: 480px;">
+            <div class="magazine-search-pill" style="max-width: 380px;">
                 <span class="material-symbols-outlined search-icon" style="color: #765b00;">search</span>
-                <input placeholder="Rechercher un produit, code barre, client..." type="text" id="pos-product-search" onkeyup="filterPosProducts(this.value)"/>
+                <input placeholder="Rechercher un produit, code barre..." type="text" id="pos-product-search" oninput="filterPosProducts(this.value)"/>
+            </div>
+
+            <!-- Session Stats Live Summary Chip -->
+            <div class="hidden md:flex items-center gap-3 px-4 py-2 bg-surface-container rounded-2xl border border-outline-variant/30">
+                <div class="flex items-center gap-1.5 text-xs font-bold text-[#5a4030]">
+                    <span class="material-symbols-outlined text-base text-emerald-600">payments</span>
+                    <span>Ventes Jour : <strong class="text-emerald-700 font-mono" id="topbar-sales-total">0 FCFA</strong></span>
+                </div>
+                <span class="text-outline-variant">•</span>
+                <div class="flex items-center gap-1.5 text-xs font-bold text-[#5a4030]">
+                    <span class="material-symbols-outlined text-base text-amber-600">receipt</span>
+                    <span>Tickets : <strong class="text-on-surface font-mono" id="topbar-ticket-count">0</strong></span>
+                </div>
             </div>
 
             <!-- Cashier Identity & Status -->
             <div class="flex items-center gap-4">
                 <span class="prestige-status-badge emerald">
                     <span class="status-pulse-dot emerald"></span>
-                    <span>Caisse Connectée (Poste 1)</span>
+                    <span id="pos-live-clock">18:00:00</span>
                 </span>
                 <div class="prestige-user-card" title="Profil Caissière">
                     <div class="relative flex items-center">
@@ -164,128 +224,36 @@
                         <span class="online-status-dot"></span>
                     </div>
                     <div class="prestige-user-info">
-                        <span class="prestige-user-name">Awa Kouassi</span>
+                        <span class="prestige-user-name" id="caissiere-name-badge">Awa Kouassi</span>
                         <span class="prestige-user-role">Caissière Principale • BABI 🥐</span>
                     </div>
-                    <span class="material-symbols-outlined text-base" style="color: #765b00; opacity: 0.6;">expand_more</span>
                 </div>
             </div>
         </header>
 
         <!-- MAIN CONTENT AREA -->
-        <main class="relative bg-background min-h-screen" style="padding-top: 6.5rem;">
-            <div class="flex flex-col w-full h-full p-container-padding gap-stack-lg">
+        <main class="relative bg-background min-h-screen no-print" style="padding-top: 6.5rem;">
+            
+            <!-- VIEW 1: TERMINAL CAISSE TACTILE -->
+            <div id="pos-view-terminal" class="pos-main-view p-container-padding flex flex-col gap-stack-lg">
                 <div class="flex flex-col lg:flex-row gap-gutter h-full">
 
                     <!-- LEFT 2/3 COLUMN: PRODUCTS CATALOG & CATEGORIES -->
                     <div class="flex-[2] flex flex-col gap-stack-md bg-surface-container rounded-2xl shadow-sm p-4 border border-outline-variant/30">
                         <!-- Category Tabs -->
                         <div class="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-hide" id="category-pills">
-                            <button onclick="filterPosCategory('all', this)" class="category-filter-btn px-6 py-2 rounded-full bg-primary text-on-primary font-label-md text-xs font-bold whitespace-nowrap shadow-sm hover:brightness-95 transition-all">Tous</button>
-                            <button onclick="filterPosCategory('pains', this)" class="category-filter-btn px-6 py-2 rounded-full bg-surface text-on-surface font-label-md text-xs font-bold whitespace-nowrap hover:bg-surface-container-high transition-all">Pains</button>
-                            <button onclick="filterPosCategory('viennoiseries', this)" class="category-filter-btn px-6 py-2 rounded-full bg-surface text-on-surface font-label-md text-xs font-bold whitespace-nowrap hover:bg-surface-container-high transition-all">Viennoiseries</button>
-                            <button onclick="filterPosCategory('patisseries', this)" class="category-filter-btn px-6 py-2 rounded-full bg-surface text-on-surface font-label-md text-xs font-bold whitespace-nowrap hover:bg-surface-container-high transition-all">Pâtisseries</button>
-                            <button onclick="filterPosCategory('boissons', this)" class="category-filter-btn px-6 py-2 rounded-full bg-surface text-on-surface font-label-md text-xs font-bold whitespace-nowrap hover:bg-surface-container-high transition-all">Boissons</button>
+                            <button onclick="filterPosCategory('all', this)" class="category-filter-btn px-5 py-2 rounded-full bg-primary text-on-primary font-label-md text-xs font-bold whitespace-nowrap shadow-sm hover:brightness-95 transition-all">Tous</button>
+                            <button onclick="filterPosCategory('pains', this)" class="category-filter-btn px-5 py-2 rounded-full bg-surface text-on-surface font-label-md text-xs font-bold whitespace-nowrap hover:bg-surface-container-high transition-all">Pains</button>
+                            <button onclick="filterPosCategory('viennoiseries', this)" class="category-filter-btn px-5 py-2 rounded-full bg-surface text-on-surface font-label-md text-xs font-bold whitespace-nowrap hover:bg-surface-container-high transition-all">Viennoiseries</button>
+                            <button onclick="filterPosCategory('patisseries', this)" class="category-filter-btn px-5 py-2 rounded-full bg-surface text-on-surface font-label-md text-xs font-bold whitespace-nowrap hover:bg-surface-container-high transition-all">Pâtisseries</button>
+                            <button onclick="filterPosCategory('boissons', this)" class="category-filter-btn px-5 py-2 rounded-full bg-surface text-on-surface font-label-md text-xs font-bold whitespace-nowrap hover:bg-surface-container-high transition-all">Boissons</button>
+                            <button onclick="filterPosCategory('traiteur', this)" class="category-filter-btn px-5 py-2 rounded-full bg-surface text-on-surface font-label-md text-xs font-bold whitespace-nowrap hover:bg-surface-container-high transition-all">Snacks & Traiteur</button>
                         </div>
 
                         <!-- Product Grid -->
-                        <div class="flex-1 overflow-y-auto pr-1">
+                        <div class="flex-1 overflow-y-auto pr-1" style="max-height: calc(100vh - 240px);">
                             <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3.5" id="pos-products-grid">
-                                <!-- Product Card 1: Baguette -->
-                                <button onclick="addToPosCart('baguette', 'Baguette Tradition', 200, 'assets/baguette 200.png')" class="pos-product-item flex flex-col bg-surface rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all group relative text-left h-full border border-outline-variant/20 hover:border-primary" data-category="pains">
-                                    <div class="h-28 w-full relative overflow-hidden bg-surface-container-high">
-                                        <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" src="assets/baguette 200.png" alt="Baguette Tradition"/>
-                                        <div class="absolute top-2 right-2 bg-surface/90 backdrop-blur-sm px-2 py-0.5 rounded-lg font-label-md text-xs font-bold text-on-surface shadow-sm">200 F</div>
-                                    </div>
-                                    <div class="p-2.5 flex-1 flex flex-col justify-between">
-                                        <h3 class="font-headline-sm text-sm font-bold text-on-surface line-clamp-1 leading-tight">Baguette Tradition</h3>
-                                        <p class="font-label-sm text-xs text-on-surface-variant mt-1">Stock: 42</p>
-                                    </div>
-                                </button>
-
-                                <!-- Product Card 2: Croissant -->
-                                <button onclick="addToPosCart('croissant', 'Croissant Pur Beurre', 350, 'assets/Croissant.png')" class="pos-product-item flex flex-col bg-surface rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all group relative text-left h-full border border-outline-variant/20 hover:border-primary" data-category="viennoiseries">
-                                    <div class="h-28 w-full relative overflow-hidden bg-surface-container-high">
-                                        <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" src="assets/Croissant.png" alt="Croissant Pur Beurre"/>
-                                        <div class="absolute top-2 right-2 bg-surface/90 backdrop-blur-sm px-2 py-0.5 rounded-lg font-label-md text-xs font-bold text-on-surface shadow-sm">350 F</div>
-                                    </div>
-                                    <div class="p-2.5 flex-1 flex flex-col justify-between">
-                                        <h3 class="font-headline-sm text-sm font-bold text-on-surface line-clamp-1 leading-tight">Croissant Pur Beurre</h3>
-                                        <p class="font-label-sm text-xs text-on-surface-variant mt-1">Stock: 18</p>
-                                    </div>
-                                </button>
-
-                                <!-- Product Card 3: Pain au Chocolat -->
-                                <button onclick="addToPosCart('pain_choc', 'Pain au Chocolat', 400, 'assets/pain au chocolat.png')" class="pos-product-item flex flex-col bg-surface rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all group relative text-left h-full border border-outline-variant/20 hover:border-primary" data-category="viennoiseries">
-                                    <div class="h-28 w-full relative overflow-hidden bg-surface-container-high">
-                                        <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" src="assets/pain au chocolat.png" alt="Pain au Chocolat"/>
-                                        <div class="absolute top-2 right-2 bg-surface/90 backdrop-blur-sm px-2 py-0.5 rounded-lg font-label-md text-xs font-bold text-on-surface shadow-sm">400 F</div>
-                                    </div>
-                                    <div class="p-2.5 flex-1 flex flex-col justify-between">
-                                        <h3 class="font-headline-sm text-sm font-bold text-on-surface line-clamp-1 leading-tight">Pain au Chocolat</h3>
-                                        <p class="font-label-sm text-xs text-on-surface-variant mt-1">Stock: 24</p>
-                                    </div>
-                                </button>
-
-                                <!-- Product Card 4: Forêt Noire -->
-                                <button onclick="addToPosCart('foret_noire', 'Forêt Noire Royale', 1500, 'assets/product_foret_noire.png')" class="pos-product-item flex flex-col bg-surface rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all group relative text-left h-full border border-outline-variant/20 hover:border-primary" data-category="patisseries">
-                                    <div class="h-28 w-full relative overflow-hidden bg-surface-container-high">
-                                        <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" src="assets/product_foret_noire.png" alt="Forêt Noire"/>
-                                        <div class="absolute top-2 right-2 bg-surface/90 backdrop-blur-sm px-2 py-0.5 rounded-lg font-label-md text-xs font-bold text-on-surface shadow-sm">1 500 F</div>
-                                    </div>
-                                    <div class="p-2.5 flex-1 flex flex-col justify-between">
-                                        <h3 class="font-headline-sm text-sm font-bold text-on-surface line-clamp-1 leading-tight">Forêt Noire Royale</h3>
-                                        <p class="font-label-sm text-xs text-on-surface-variant mt-1">Stock: 8</p>
-                                    </div>
-                                </button>
-
-                                <!-- Product Card 5: Jus de Bissap -->
-                                <button onclick="addToPosCart('bissap', 'Jus de Bissap Artisanal', 600, 'assets/product_jus_bissap.png')" class="pos-product-item flex flex-col bg-surface rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all group relative text-left h-full border border-outline-variant/20 hover:border-primary" data-category="boissons">
-                                    <div class="h-28 w-full relative overflow-hidden bg-surface-container-high">
-                                        <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" src="assets/product_jus_bissap.png" alt="Jus de Bissap"/>
-                                        <div class="absolute top-2 right-2 bg-surface/90 backdrop-blur-sm px-2 py-0.5 rounded-lg font-label-md text-xs font-bold text-on-surface shadow-sm">600 F</div>
-                                    </div>
-                                    <div class="p-2.5 flex-1 flex flex-col justify-between">
-                                        <h3 class="font-headline-sm text-sm font-bold text-on-surface line-clamp-1 leading-tight">Jus de Bissap 100% Frais</h3>
-                                        <p class="font-label-sm text-xs text-on-surface-variant mt-1">Stock: 35</p>
-                                    </div>
-                                </button>
-
-                                <!-- Product Card 6: Cappuccino -->
-                                <button onclick="addToPosCart('cappuccino', 'Cappuccino Moka', 1000, 'assets/product_cappuccino.png')" class="pos-product-item flex flex-col bg-surface rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all group relative text-left h-full border border-outline-variant/20 hover:border-primary" data-category="boissons">
-                                    <div class="h-28 w-full relative overflow-hidden bg-surface-container-high">
-                                        <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" src="assets/product_cappuccino.png" alt="Cappuccino Moka"/>
-                                        <div class="absolute top-2 right-2 bg-surface/90 backdrop-blur-sm px-2 py-0.5 rounded-lg font-label-md text-xs font-bold text-on-surface shadow-sm">1 000 F</div>
-                                    </div>
-                                    <div class="p-2.5 flex-1 flex flex-col justify-between">
-                                        <h3 class="font-headline-sm text-sm font-bold text-on-surface line-clamp-1 leading-tight">Cappuccino Chaud</h3>
-                                        <p class="font-label-sm text-xs text-on-surface-variant mt-1">Stock: 50</p>
-                                    </div>
-                                </button>
-
-                                <!-- Product Card 7: Sandwich -->
-                                <button onclick="addToPosCart('sandwich', 'Sandwich Poulet Braisé', 1500, 'assets/product_sandwich.png')" class="pos-product-item flex flex-col bg-surface rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all group relative text-left h-full border border-outline-variant/20 hover:border-primary" data-category="pains">
-                                    <div class="h-28 w-full relative overflow-hidden bg-surface-container-high">
-                                        <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" src="assets/product_sandwich.png" alt="Sandwich"/>
-                                        <div class="absolute top-2 right-2 bg-surface/90 backdrop-blur-sm px-2 py-0.5 rounded-lg font-label-md text-xs font-bold text-on-surface shadow-sm">1 500 F</div>
-                                    </div>
-                                    <div class="p-2.5 flex-1 flex flex-col justify-between">
-                                        <h3 class="font-headline-sm text-sm font-bold text-on-surface line-clamp-1 leading-tight">Sandwich Gourmet</h3>
-                                        <p class="font-label-sm text-xs text-on-surface-variant mt-1">Stock: 12</p>
-                                    </div>
-                                </button>
-
-                                <!-- Product Card 8: Fondant -->
-                                <button onclick="addToPosCart('fondant', 'Fondant au Chocolat', 800, 'assets/Fondant au Chocolat.png')" class="pos-product-item flex flex-col bg-surface rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all group relative text-left h-full border border-outline-variant/20 hover:border-primary" data-category="patisseries">
-                                    <div class="h-28 w-full relative overflow-hidden bg-surface-container-high">
-                                        <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" src="assets/Fondant au Chocolat.png" alt="Fondant Chocolat"/>
-                                        <div class="absolute top-2 right-2 bg-surface/90 backdrop-blur-sm px-2 py-0.5 rounded-lg font-label-md text-xs font-bold text-on-surface shadow-sm">800 F</div>
-                                    </div>
-                                    <div class="p-2.5 flex-1 flex flex-col justify-between">
-                                        <h3 class="font-headline-sm text-sm font-bold text-on-surface line-clamp-1 leading-tight">Fondant Cœur Coulant</h3>
-                                        <p class="font-label-sm text-xs text-on-surface-variant mt-1">Stock: 15</p>
-                                    </div>
-                                </button>
+                                <!-- Products loaded via loadPosProducts() in js/caissiere.js -->
                             </div>
                         </div>
                     </div>
@@ -294,14 +262,17 @@
                     <div class="flex-1 flex flex-col bg-surface rounded-2xl shadow-md overflow-hidden min-w-[320px] max-w-[400px] border border-outline-variant/30">
                         <!-- Cart Header -->
                         <div class="p-4 bg-surface-container-low border-b border-outline-variant/20 flex items-center justify-between">
-                            <h2 class="font-headline-md text-base font-bold text-on-surface">Ticket En Cours <span class="text-primary" id="ticket-number">#142</span></h2>
+                            <div class="flex items-center gap-2">
+                                <span class="material-symbols-outlined text-primary text-xl">receipt</span>
+                                <h2 class="font-headline-md text-base font-bold text-on-surface">Ticket En Cours <span class="text-primary font-mono" id="ticket-number">#142</span></h2>
+                            </div>
                             <button onclick="clearPosCart()" class="p-2 text-on-surface-variant hover:text-error transition-colors rounded-full hover:bg-error-container/50" title="Vider le ticket">
-                                <span class="material-symbols-outlined text-lg">delete</span>
+                                <span class="material-symbols-outlined text-lg">delete_sweep</span>
                             </button>
                         </div>
 
                         <!-- Cart Items List -->
-                        <div class="flex-1 overflow-y-auto p-4 flex flex-col gap-2.5" id="pos-cart-items">
+                        <div class="flex-1 overflow-y-auto p-4 flex flex-col gap-2.5" id="pos-cart-items" style="min-height: 260px; max-height: calc(100vh - 460px);">
                             <!-- Items injected dynamically -->
                         </div>
 
@@ -310,26 +281,26 @@
                             <div class="flex flex-col gap-1.5 text-xs">
                                 <div class="flex justify-between font-body-md text-on-surface-variant">
                                     <span>Sous-total HT</span>
-                                    <span id="pos-subtotal">0 FCFA</span>
+                                    <span class="font-mono" id="pos-subtotal">0 FCFA</span>
                                 </div>
                                 <div class="flex justify-between font-body-md text-on-surface-variant">
                                     <span>TVA Inclus (5.5%)</span>
-                                    <span id="pos-tva">0 FCFA</span>
+                                    <span class="font-mono" id="pos-tva">0 FCFA</span>
                                 </div>
                                 <div class="flex justify-between text-base font-bold text-on-surface pt-2 border-t border-outline-variant/30">
                                     <span>TOTAL NET :</span>
-                                    <span class="text-primary font-extrabold text-lg" id="pos-total">0 FCFA</span>
+                                    <span class="text-primary font-extrabold text-xl font-mono" id="pos-total">0 FCFA</span>
                                 </div>
                             </div>
 
                             <div class="grid grid-cols-2 gap-2 mt-2">
-                                <button onclick="checkoutPos('especes')" class="btn-modal-submit-green" style="height: auto; padding: 12px 8px; border-radius: 14px; flex-direction: column; gap: 4px; font-size: 11px;">
-                                    <span class="material-symbols-outlined text-xl">payments</span>
-                                    <span>Espèces (Cash)</span>
+                                <button onclick="checkoutPos('especes')" class="btn-modal-submit-green" style="height: auto; padding: 14px 8px; border-radius: 14px; flex-direction: column; gap: 4px; font-size: 11px;">
+                                    <span class="material-symbols-outlined text-2xl font-bold">payments</span>
+                                    <span class="font-extrabold">Espèces (Cash)</span>
                                 </button>
-                                <button onclick="checkoutPos('wave')" class="btn-modal-submit-gold" style="height: auto; padding: 12px 8px; border-radius: 14px; flex-direction: column; gap: 4px; font-size: 11px;">
-                                    <span class="material-symbols-outlined text-xl font-bold">credit_card</span>
-                                    <span>Wave / Mobile</span>
+                                <button onclick="checkoutPos('wave')" class="btn-modal-submit-gold" style="height: auto; padding: 14px 8px; border-radius: 14px; flex-direction: column; gap: 4px; font-size: 11px;">
+                                    <span class="material-symbols-outlined text-2xl font-bold">qr_code_scanner</span>
+                                    <span class="font-extrabold">Wave / Mobile</span>
                                 </button>
                             </div>
                         </div>
@@ -337,54 +308,166 @@
 
                 </div>
             </div>
+
+            <!-- VIEW 2: COMMANDES EN ATTENTE DE RETRAIT (CLICK & COLLECT) -->
+            <div id="pos-view-pickups" class="pos-main-view p-container-padding flex flex-col gap-stack-md hidden">
+                <div class="flex items-center justify-between bg-surface-container p-5 rounded-2xl border border-outline-variant/30">
+                    <div>
+                        <h2 class="text-xl font-headline-md font-black text-on-surface flex items-center gap-2.5">
+                            <span class="material-symbols-outlined text-2xl text-amber-500">takeout_dining</span>
+                            <span>File des Commandes Click & Collect (En Ligne)</span>
+                        </h2>
+                        <p class="text-xs text-on-surface-variant mt-1">Commandes payées prêtes à être remises aux clients au comptoir</p>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <button onclick="refreshPickupQueue()" class="px-4 py-2.5 bg-surface text-on-surface font-bold text-xs rounded-xl border border-outline-variant/30 hover:bg-surface-container-high flex items-center gap-2 transition-all">
+                            <span class="material-symbols-outlined text-base">refresh</span> Actualiser la file
+                        </button>
+                        <button onclick="openPinModal()" class="px-5 py-2.5 bg-primary text-on-primary font-extrabold text-xs rounded-xl shadow-md hover:brightness-95 flex items-center gap-2 transition-all">
+                            <span class="material-symbols-outlined text-base">dialpad</span> Saisir un Code PIN
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Pickup Queue Cards Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="pos-pickup-cards-container">
+                    <!-- Dynamic live orders injected here -->
+                </div>
+            </div>
+
+            <!-- VIEW 3: HISTORIQUE DES TICKETS DU JOUR -->
+            <div id="pos-view-history" class="pos-main-view p-container-padding flex flex-col gap-stack-md hidden">
+                <div class="flex items-center justify-between bg-surface-container p-5 rounded-2xl border border-outline-variant/30">
+                    <div>
+                        <h2 class="text-xl font-headline-md font-black text-on-surface flex items-center gap-2.5">
+                            <span class="material-symbols-outlined text-2xl text-primary">receipt_long</span>
+                            <span>Historique des Tickets & Ventes du Jour</span>
+                        </h2>
+                        <p class="text-xs text-on-surface-variant mt-1">Journal des transactions enregistrées et scellées au terminal</p>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button onclick="filterHistoryMethod('all')" class="px-3.5 py-1.5 bg-primary text-on-primary text-xs font-bold rounded-lg history-filter-btn active">Tous</button>
+                        <button onclick="filterHistoryMethod('especes')" class="px-3.5 py-1.5 bg-surface text-on-surface text-xs font-bold rounded-lg border border-outline-variant/30 history-filter-btn">Espèces</button>
+                        <button onclick="filterHistoryMethod('wave')" class="px-3.5 py-1.5 bg-surface text-on-surface text-xs font-bold rounded-lg border border-outline-variant/30 history-filter-btn">Wave</button>
+                    </div>
+                </div>
+
+                <div class="bg-surface rounded-2xl shadow-sm border border-outline-variant/30 overflow-hidden">
+                    <table class="w-full text-left text-xs border-collapse">
+                        <thead class="bg-surface-container-high text-on-surface font-extrabold uppercase text-[11px] border-b border-outline-variant/30">
+                            <tr>
+                                <th class="p-3.5">N° Ticket</th>
+                                <th class="p-3.5">Heure</th>
+                                <th class="p-3.5">Client / Canal</th>
+                                <th class="p-3.5">Articles</th>
+                                <th class="p-3.5">Mode</th>
+                                <th class="p-3.5 text-right">Total</th>
+                                <th class="p-3.5 text-center">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="pos-history-table-body" class="divide-y divide-outline-variant/20">
+                            <!-- Injected dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
         </main>
     </div>
 
-    <!-- PIN VERIFICATION MODAL PRESTIGE -->
+    <!-- PIN VERIFICATION MODAL WITH TACTILE NUMPAD -->
     <div id="pinModal" class="prestige-modal-backdrop hidden">
-        <div class="prestige-modal-card max-w-sm text-center">
-            <div class="flex items-center justify-center w-14 h-14 mx-auto mb-3 rounded-2xl" style="background: linear-gradient(135deg, #f5b800 0%, #dfa500 100%); box-shadow: 0 6px 16px rgba(245, 184, 0, 0.35);">
-                <span class="material-symbols-outlined text-3xl text-black">dialpad</span>
+        <div class="prestige-modal-card max-w-md text-center p-6 rounded-3xl shadow-2xl" style="max-height: 90vh; overflow-y: auto;">
+            <div class="flex items-center justify-between mb-3">
+                <div class="flex items-center gap-2.5">
+                    <div class="flex items-center justify-center w-10 h-10 rounded-2xl bg-amber-400 text-black shadow-md">
+                        <span class="material-symbols-outlined text-2xl">dialpad</span>
+                    </div>
+                    <div class="text-left">
+                        <h3 class="text-base font-extrabold text-on-surface">Retrait Code PIN Client</h3>
+                        <p class="text-[11px] text-on-surface-variant">Saisissez les 4 chiffres du code de retrait</p>
+                    </div>
+                </div>
+                <button type="button" onclick="closePinModal()" class="text-on-surface-variant hover:text-error text-xl font-bold p-1">✕</button>
             </div>
-            <h3 class="prestige-modal-title mb-1">Retrait Commande PIN</h3>
-            <p class="text-xs text-[#786558] mb-4">Saisissez le code PIN à 4 chiffres fourni par le client</p>
-            <input type="text" id="input-pin-code" maxlength="4" class="prestige-form-input text-center text-3xl font-mono tracking-widest py-3 mb-4" placeholder="••••"/>
-            <div class="prestige-modal-actions">
-                <button type="button" onclick="closePinModal()" class="btn-modal-cancel">Annuler</button>
-                <button type="button" onclick="verifyPickupPin()" class="btn-modal-submit-green">
-                    <span class="material-symbols-outlined text-base">check_circle</span> Valider Remise
+
+            <!-- PIN Display -->
+            <div class="bg-surface-container rounded-2xl p-3 mb-3 border-2 border-primary/30 flex items-center justify-center">
+                <input type="text" id="input-pin-code" maxlength="4" readonly class="bg-transparent text-center text-3xl font-mono font-black tracking-widest text-primary w-full outline-none" placeholder="••••"/>
+            </div>
+
+            <!-- Result / Error / Preview Box (Placed above numpad for immediate visibility) -->
+            <div id="pin-verify-result-box" class="text-left hidden mb-3">
+                <!-- Order Preview Result or Error Message injected here -->
+            </div>
+
+            <!-- Tactile Numpad Grid -->
+            <div class="grid grid-cols-3 gap-2 pb-2">
+                <button type="button" onclick="appendPinDigit('1')" class="numpad-btn">1</button>
+                <button type="button" onclick="appendPinDigit('2')" class="numpad-btn">2</button>
+                <button type="button" onclick="appendPinDigit('3')" class="numpad-btn">3</button>
+                
+                <button type="button" onclick="appendPinDigit('4')" class="numpad-btn">4</button>
+                <button type="button" onclick="appendPinDigit('5')" class="numpad-btn">5</button>
+                <button type="button" onclick="appendPinDigit('6')" class="numpad-btn">6</button>
+                
+                <button type="button" onclick="appendPinDigit('7')" class="numpad-btn">7</button>
+                <button type="button" onclick="appendPinDigit('8')" class="numpad-btn">8</button>
+                <button type="button" onclick="appendPinDigit('9')" class="numpad-btn">9</button>
+                
+                <button type="button" onclick="clearPinInput()" class="numpad-btn numpad-btn-action text-rose-600 font-bold">⌫ Effacer</button>
+                <button type="button" onclick="appendPinDigit('0')" class="numpad-btn">0</button>
+                <button type="button" onclick="verifyPickupPinDirect()" class="numpad-btn numpad-btn-submit font-extrabold flex items-center justify-center gap-1">
+                    <span>Valider</span> <span class="material-symbols-outlined text-lg">arrow_forward</span>
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- CLOSURE MODAL PRESTIGE -->
+    <!-- THERMAL RECEIPT MODAL 80mm -->
+    <div id="receiptModal" class="prestige-modal-backdrop hidden">
+        <div class="prestige-modal-card max-w-sm p-5 rounded-3xl bg-white shadow-2xl">
+            <!-- 80mm Receipt Preview Container -->
+            <div id="thermal-receipt-content" class="bg-white p-4 text-black font-mono text-xs border border-dashed border-gray-300 rounded-xl shadow-inner mb-4">
+                <!-- Injected dynamically via showThermalReceipt() -->
+            </div>
+
+            <div class="flex gap-2 no-print">
+                <button type="button" onclick="closeReceiptModal()" class="flex-1 py-3 bg-gray-100 text-gray-800 font-bold rounded-xl text-xs hover:bg-gray-200 transition-all">Fermer</button>
+                <button type="button" onclick="window.print()" class="flex-[2] py-3 bg-primary text-white font-extrabold rounded-xl text-xs hover:brightness-95 flex items-center justify-center gap-2 shadow-md transition-all">
+                    <span class="material-symbols-outlined text-base">print</span> Imprimer Ticket (80mm)
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- CLOSURE MODAL PRESTIGE (Z DE CAISSE) -->
     <div id="closureModal" class="prestige-modal-backdrop hidden">
-        <div class="prestige-modal-card">
+        <div class="prestige-modal-card max-w-md">
             <div class="prestige-modal-header">
                 <div class="flex items-center gap-2.5">
                     <div class="action-icon-badge gold" style="width: 36px; height: 36px; min-width: 36px; border-radius: 10px;">
                         <span class="material-symbols-outlined text-xl">account_balance</span>
                     </div>
                     <div>
-                        <h3 class="prestige-modal-title">Journal & Clôture</h3>
-                        <span class="text-xs text-[#786558] font-bold" id="closure-date">Date : 17 Août 2026</span>
+                        <h3 class="prestige-modal-title">Clôture Journalière (Z de Caisse)</h3>
+                        <span class="text-xs text-[#786558] font-bold" id="closure-date">Session Caisse 1</span>
                     </div>
                 </div>
                 <button onclick="closeClosureModal()" class="text-[#786558] hover:text-[#ba1a1a] text-2xl font-bold transition-colors">✕</button>
             </div>
 
             <div class="flex flex-col gap-3 py-3 border-y border-[#ebe4d5] text-sm">
-                <div class="flex justify-between items-center"><span class="text-[#5a4030] font-bold">Ventes Totales :</span> <strong class="text-[#765b00] font-mono text-base font-extrabold" id="closure-total">154 500 FCFA</strong></div>
-                <div class="flex justify-between items-center"><span class="text-[#5a4030] font-bold">Encaissements Espèces :</span> <strong class="font-mono text-emerald-800" id="closure-cash">78 000 FCFA</strong></div>
-                <div class="flex justify-between items-center"><span class="text-[#5a4030] font-bold">Encaissements Wave :</span> <strong class="font-mono text-amber-800" id="closure-wave">56 500 FCFA</strong></div>
-                <div class="flex justify-between items-center"><span class="text-[#5a4030] font-bold">Encaissements Orange Money :</span> <strong class="font-mono text-orange-800" id="closure-orange">20 000 FCFA</strong></div>
+                <div class="flex justify-between items-center"><span class="text-[#5a4030] font-bold">Ventes Totales :</span> <strong class="text-[#765b00] font-mono text-base font-extrabold" id="closure-total">0 FCFA</strong></div>
+                <div class="flex justify-between items-center"><span class="text-[#5a4030] font-bold">Espèces en Tiroir :</span> <strong class="font-mono text-emerald-800" id="closure-cash">0 FCFA</strong></div>
+                <div class="flex justify-between items-center"><span class="text-[#5a4030] font-bold">Encaissements Wave :</span> <strong class="font-mono text-amber-800" id="closure-wave">0 FCFA</strong></div>
+                <div class="flex justify-between items-center"><span class="text-[#5a4030] font-bold">Nombre de Tickets :</span> <strong class="font-mono text-on-surface" id="closure-ticket-count">0</strong></div>
             </div>
 
-            <div class="prestige-modal-actions">
+            <div class="prestige-modal-actions mt-4">
                 <button type="button" onclick="closeClosureModal()" class="btn-modal-cancel">Fermer</button>
-                <button type="button" onclick="window.print()" class="btn-modal-submit-gold">
-                    <span class="material-symbols-outlined text-base">print</span> Imprimer Bilan
+                <button type="button" onclick="printClosureReport()" class="btn-modal-submit-gold flex items-center justify-center gap-2">
+                    <span class="material-symbols-outlined text-base">print</span> Imprimer Bilan Z
                 </button>
             </div>
         </div>
@@ -392,7 +475,7 @@
 
     <!-- CASH PAYMENT & CHANGE CALCULATOR MODAL PRESTIGE -->
     <div id="cashModal" class="prestige-modal-backdrop hidden">
-        <div class="prestige-modal-card">
+        <div class="prestige-modal-card max-w-md">
             <div class="prestige-modal-header">
                 <div class="flex items-center gap-2.5">
                     <div class="action-icon-badge emerald" style="width: 36px; height: 36px; min-width: 36px; border-radius: 10px;">
@@ -448,14 +531,6 @@
     </div>
 
     <!-- SCRIPTS -->
-    <script>
-        function showPosView(view) {
-            document.querySelectorAll('.prestige-nav-item').forEach(b => b.classList.remove('active'));
-            const btn = document.getElementById(`nav-pos-${view}`);
-            if (btn) btn.classList.add('active');
-        }
-    </script>
-    <script src="js/api_config.js"></script>
     <script src="js/caissiere.js"></script>
     <script src="js/store_schedule.js"></script>
     <script src="js/anti_hacker_client.js"></script>
