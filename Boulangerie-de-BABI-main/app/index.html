@@ -109,9 +109,16 @@
   </style>
   <script id="splash-screen-script">
     function removeSplashFromWeb() {
-      document.getElementById("splash")?.remove();
-      document.getElementById("splash-branding")?.remove();
-      document.body.style.background = "transparent";
+      const splash = document.getElementById("splash");
+      if (splash) {
+        splash.style.transition = "opacity 0.4s ease-out";
+        splash.style.opacity = "0";
+        setTimeout(() => {
+          splash.remove();
+          document.getElementById("splash-branding")?.remove();
+          document.body.style.background = "transparent";
+        }, 400);
+      }
     }
   </script>
   <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport">
