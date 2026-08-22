@@ -821,23 +821,14 @@ async function previewPinOrder(pin) {
         return;
     }
 
-    // 3. Fallback for live testing mode (valid 4-digit code not yet consumed)
-    if (/^\d{4}$/.test(cleanPin)) {
-        renderPinPreviewSuccess({
-            orderId: `BABI-${cleanPin}`,
-            customerName: 'Client Application Mobile',
-            customerPhone: '07 00 00 00 00',
-            totalAmount: 2500,
-            itemsSummary: '1x Pain Chocolat, 1x Croissant Pur Beurre, 1x Jus Naturel',
-            isPaid: true
-        }, cleanPin);
-        return;
-    }
-
-    // 4. Not found
+    // 3. Not found in any active database or order registry
     resultBox.innerHTML = `
-        <div class="p-3 bg-rose-50 border border-rose-200 text-rose-800 rounded-2xl text-xs font-bold">
-            ⚠️ Aucun retrait actif pour le code PIN <strong>#${cleanPin}</strong>.
+        <div class="p-3.5 bg-rose-50 border border-rose-200 text-rose-900 rounded-2xl text-xs font-bold text-left">
+            <div class="flex items-center gap-1.5 text-rose-700 font-extrabold mb-1">
+                <span class="material-symbols-outlined text-lg">error</span>
+                <span>Code PIN Introuvable</span>
+            </div>
+            <p>Aucun retrait actif n'est associé au code PIN <strong>#${cleanPin}</strong>. Veuillez vérifier le code sur le reçu ou l'application du client.</p>
         </div>
     `;
     playPosAudio('error');
