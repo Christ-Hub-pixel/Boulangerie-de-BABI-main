@@ -17,8 +17,33 @@ function initCheckoutPage() {
         return;
     }
 
+    // Auto-prefill authenticated user details
+    try {
+        const rawUser = localStorage.getItem('babi_user');
+        if (rawUser) {
+            const user = JSON.parse(rawUser);
+            const fullName = (user.prenom ? (user.prenom + ' ' + (user.nom || '')) : (user.nom || user.displayName || '')).trim();
+            const phone = user.phone || user.telephone || '';
+
+            const nameInput = document.getElementById('clientNameInput');
+            const phoneInput = document.getElementById('clientPhoneInput');
+            const momoInput = document.getElementById('momoPhoneInput');
+
+            if (nameInput && fullName && !nameInput.value) nameInput.value = fullName;
+            if (phoneInput && phone && !phoneInput.value) phoneInput.value = phone;
+            if (momoInput && phone && !momoInput.value) momoInput.value = phone;
+        }
+    } catch (_) {}
+
     renderCheckoutSummary();
     setupCheckoutFormEvents();
+}
+
+function syncPhoneToPayment(val) {
+    const momoInput = document.getElementById('momoPhoneInput');
+    if (momoInput) {
+        momoInput.value = val;
+    }
 }
 
 // ================================================================
@@ -283,6 +308,15 @@ function submitBabiOrder(isAlreadyValidated = false) {
         localStorage.setItem('babi_current_order', JSON.stringify(newOrder));
 
         try {
+            let user = {};
+            try { user = JSON.parse(localStorage.getItem('babi_user') || '{}'); } catch(_) {}
+            newOrder.userEmail = user.email || '';
+            newOrder.userId = user.id || '';
+
+            let babiOrders = JSON.parse(localStorage.getItem('babi_orders')) || [];
+            babiOrders.unshift(newOrder);
+            localStorage.setItem('babi_orders', JSON.stringify(babiOrders));
+
             let history = JSON.parse(localStorage.getItem('babi_orders_history')) || [];
             history.unshift(newOrder);
             localStorage.setItem('babi_orders_history', JSON.stringify(history));
@@ -597,12 +631,15 @@ function togglePaymentMode(mode) {
     const momoBox = document.getElementById('card_momo_box');
     const cashBox = document.getElementById('card_cash_box');
 
-    // Réinitialiser les surbrillances style Jumia
     if (momoBox) {
         momoBox.classList.toggle('selected', mode === 'momo');
+        momoBox.style.borderColor = (mode === 'momo') ? '#1dc4e9' : '#e2e8f0';
+        momoBox.style.background = (mode === 'momo') ? '#f0f9ff' : '#ffffff';
     }
     if (cashBox) {
         cashBox.classList.toggle('selected', mode === 'cash');
+        cashBox.style.borderColor = (mode === 'cash') ? '#22c55e' : '#e2e8f0';
+        cashBox.style.background = (mode === 'cash') ? '#f0fdf4' : '#ffffff';
     }
 
     if (momoSec) momoSec.style.display = (mode === 'momo') ? 'block' : 'none';

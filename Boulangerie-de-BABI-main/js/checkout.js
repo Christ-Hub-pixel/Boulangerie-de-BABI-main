@@ -2,6 +2,8 @@
 // BABI CHECKOUT & ORDER SUBMISSION CONTROLLER
 // ================================================================
 
+const API_ROOT = (typeof window !== 'undefined' && (window.API_BASE_URL || (window.location.hostname.includes('boulangeriedebabi.com') ? 'https://api.boulangeriedebabi.com' : 'http://localhost:5000'))) || 'http://localhost:5000';
+
 document.addEventListener('DOMContentLoaded', () => {
     initCheckoutPage();
 });
@@ -15,8 +17,33 @@ function initCheckoutPage() {
         return;
     }
 
+    // Auto-prefill authenticated user details
+    try {
+        const rawUser = localStorage.getItem('babi_user');
+        if (rawUser) {
+            const user = JSON.parse(rawUser);
+            const fullName = (user.prenom ? (user.prenom + ' ' + (user.nom || '')) : (user.nom || user.displayName || '')).trim();
+            const phone = user.phone || user.telephone || '';
+
+            const nameInput = document.getElementById('clientNameInput');
+            const phoneInput = document.getElementById('clientPhoneInput');
+            const momoInput = document.getElementById('momoPhoneInput');
+
+            if (nameInput && fullName && !nameInput.value) nameInput.value = fullName;
+            if (phoneInput && phone && !phoneInput.value) phoneInput.value = phone;
+            if (momoInput && phone && !momoInput.value) momoInput.value = phone;
+        }
+    } catch (_) {}
+
     renderCheckoutSummary();
     setupCheckoutFormEvents();
+}
+
+function syncPhoneToPayment(val) {
+    const momoInput = document.getElementById('momoPhoneInput');
+    if (momoInput) {
+        momoInput.value = val;
+    }
 }
 
 // ================================================================
@@ -223,7 +250,7 @@ function submitBabiOrder(isAlreadyValidated = false) {
     const grandTotal = Math.max(0, subtotal + deliveryCost);
 
     const orderId = 'BABI-CMD-' + Math.floor(100000 + Math.random() * 900000);
-    const confCode = Math.floor(1000 + Math.random() * 9000);
+    const confCode = String(Math.floor(1000 + Math.random() * 9000));
 
     const notesInput = document.getElementById('orderNotesInput');
     const orderNotes = notesInput ? notesInput.value.trim() : '';
@@ -246,6 +273,8 @@ function submitBabiOrder(isAlreadyValidated = false) {
         notes: orderNotes,
         status: 'Nouveau',
         confCode: confCode,
+        code_pin: confCode,
+        pickup_pin: confCode,
         idempotency_key: 'IDEM_' + Date.now() + '_' + Math.random().toString(36).substring(2, 9),
         security_evaluated: true,
         createdAt: new Date().toISOString()
@@ -257,7 +286,7 @@ function submitBabiOrder(isAlreadyValidated = false) {
 
     // Helper to finish order and save
     const finalizeOrder = () => {
-        fetch(API_BASE_URL + '/orders', {
+        fetch(`${API_ROOT}/api/orders`, {
             method: 'POST',
             headers: { 
                 'Content-Type': 'application/json',
@@ -271,6 +300,7 @@ function submitBabiOrder(isAlreadyValidated = false) {
                 total_price: newOrder.total_price,
                 payment_method: newOrder.payment_method,
                 notes: newOrder.notes,
+                code_pin: newOrder.code_pin,
                 idempotency_key: newOrder.idempotency_key
             })
         }).catch(() => {});
@@ -278,6 +308,15 @@ function submitBabiOrder(isAlreadyValidated = false) {
         localStorage.setItem('babi_current_order', JSON.stringify(newOrder));
 
         try {
+            let user = {};
+            try { user = JSON.parse(localStorage.getItem('babi_user') || '{}'); } catch(_) {}
+            newOrder.userEmail = user.email || '';
+            newOrder.userId = user.id || '';
+
+            let babiOrders = JSON.parse(localStorage.getItem('babi_orders')) || [];
+            babiOrders.unshift(newOrder);
+            localStorage.setItem('babi_orders', JSON.stringify(babiOrders));
+
             let history = JSON.parse(localStorage.getItem('babi_orders_history')) || [];
             history.unshift(newOrder);
             localStorage.setItem('babi_orders_history', JSON.stringify(history));
@@ -592,12 +631,15 @@ function togglePaymentMode(mode) {
     const momoBox = document.getElementById('card_momo_box');
     const cashBox = document.getElementById('card_cash_box');
 
-    // Réinitialiser les surbrillances style Jumia
     if (momoBox) {
         momoBox.classList.toggle('selected', mode === 'momo');
+        momoBox.style.borderColor = (mode === 'momo') ? '#1dc4e9' : '#e2e8f0';
+        momoBox.style.background = (mode === 'momo') ? '#f0f9ff' : '#ffffff';
     }
     if (cashBox) {
         cashBox.classList.toggle('selected', mode === 'cash');
+        cashBox.style.borderColor = (mode === 'cash') ? '#22c55e' : '#e2e8f0';
+        cashBox.style.background = (mode === 'cash') ? '#f0fdf4' : '#ffffff';
     }
 
     if (momoSec) momoSec.style.display = (mode === 'momo') ? 'block' : 'none';
@@ -630,4 +672,3 @@ window.selectCashChange = selectCashChange;
 window.openOperatorPaymentModal = openOperatorPaymentModal;
 window.triggerModalPaymentSuccess = triggerModalPaymentSuccess;
 window.updateDeliveryHighlight = updateDeliveryHighlight;
-

@@ -53,6 +53,9 @@
             box-shadow: 0 6px 16px rgba(249, 115, 22, 0.35);
         }
     </style>
+    <link rel="icon" type="image/png" href="assets/logo.png">
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+    <link rel="apple-touch-icon" href="assets/logo.png">
 </head>
 <body class="d-flex flex-column min-vh-100">
 
@@ -101,236 +104,155 @@
         </div>
 
         <div class="row g-4 align-items-start">
-            <!-- Left Column: Checkout Funnel Accordion -->
+            <!-- Left Column: Express 1-Page Checkout -->
             <div class="col-lg-8">
                 <div id="checkoutAlertBox" class="d-none alert alert-danger fw-bold shadow-sm mb-3 align-items-center gap-2" role="alert" style="border-left: 4px solid #dc3545;"></div>
-                <div class="accordion" id="checkoutAccordion">
-                    
-                    <!-- Etape 1: COORDONNÉES & CRÉNEAU -->
-                    <div class="accordion-item border-0 bg-white rounded shadow-sm mb-3">
-                        <h2 class="accordion-header">
-                            <button class="accordion-button fw-bold fs-6 text-dark" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true">
-                                <i class="fa-solid fa-circle-check text-success me-2 fs-5"></i> 1. ADRESSE & COORDONNÉES DU CLIENT
-                            </button>
-                        </h2>
-                        <div id="collapseOne" class="accordion-collapse collapse show" data-bs-parent="#checkoutAccordion">
-                            <div class="accordion-body border-top">
-                                <div class="alert alert-warning py-2 px-3 small d-flex align-items-center gap-2 mb-3 rounded-3" style="background:#fffbeb; border: 1px solid #fde68a;">
-                                    <i class="fa-solid fa-store text-warning fs-5"></i>
-                                    <div><strong>Retrait Express au Fournil :</strong> Votre commande sera préparée avec amour et mise de côté au comptoir. Pas d'attente en caisse !</div>
-                                </div>
 
-                                <div class="row g-3">
-                                    <div class="col-md-6 mb-2">
-                                        <label class="form-label fs-sm text-dark fw-bold mb-1">Nom et Prénom du client *</label>
-                                        <input type="text" class="form-control shadow-none" id="clientNameInput" placeholder="Ex: Kouassi Jean" required>
-                                    </div>
-                                    <div class="col-md-6 mb-2">
-                                        <label class="form-label fs-sm text-dark fw-bold mb-1">Numéro de téléphone *</label>
-                                        <div class="input-group">
-                                            <span class="input-group-text bg-white fw-bold text-dark border-end-0 d-flex align-items-center">
-                                                <span class="flag-ci"></span> +225
-                                            </span>
-                                            <input type="tel" class="form-control shadow-none border-start-0 ps-1" id="clientPhoneInput" placeholder="07 04 38 92 01" required>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6 mb-2">
-                                        <label class="form-label fs-sm text-dark fw-bold mb-1"><i class="fa-solid fa-clock text-warning me-1"></i> Créneau de retrait souhaité</label>
-                                        <select class="form-select shadow-none fw-bold" id="pickupSlotSelect">
-                                            <option value="Dès que possible (15-20 min)" selected>⚡ Dès que possible (~15 à 20 min)</option>
-                                            <option value="Dans 1 heure">🕐 Dans 1 heure</option>
-                                            <option value="Ce midi (12h30 - 13h30)">☀️ Ce midi (12h30 - 13h30)</option>
-                                            <option value="Goûter de 16h00">🧁 Pour le goûter (16h00 - 17h00)</option>
-                                            <option value="Fournée du soir (18h00 - Pain Chaud)">🔥 Fournée du soir (18h00 - Pain tout chaud)</option>
-                                        </select>
-                                    </div>
-                                    <div class="col-md-6 mb-2">
-                                        <label class="form-label fs-sm text-dark fw-bold mb-1"><i class="fa-solid fa-location-dot text-danger me-1"></i> Point de retrait</label>
-                                        <input type="text" class="form-control shadow-none bg-light" id="addressInput" value="Riviera (Boulangerie de BABI)" readonly>
-                                    </div>
+                <!-- CARD 1: COORDONNÉES DU CLIENT -->
+                <div class="card border-0 bg-white rounded-4 shadow-sm mb-4 p-4" style="border: 1px solid rgba(251, 146, 60, 0.2) !important;">
+                    <div class="d-flex align-items-center gap-2 mb-3 pb-2 border-bottom">
+                        <span class="badge rounded-circle bg-warning text-dark fw-bold d-flex align-items-center justify-content-center" style="width:32px;height:32px; font-size:14px; background:#fb923c !important; color:#fff !important;">1</span>
+                        <h5 class="fw-bold mb-0" style="color: #2b160c;">Vos Coordonnées</h5>
+                    </div>
 
-                                    <div class="col-12 text-end mt-3">
-                                        <button class="btn jumia-btn-orange px-4 py-2 rounded-2" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo">
-                                            CONTINUER VERS LE RETRAIT <i class="fa-solid fa-chevron-right ms-1"></i>
-                                        </button>
-                                    </div>
-                                </div>
+                    <div class="alert alert-warning py-2 px-3 small d-flex align-items-center gap-2 mb-3 rounded-3" style="background:#fffbeb; border: 1px solid #fde68a;">
+                        <i class="fa-solid fa-store text-warning fs-5"></i>
+                        <div><strong>Retrait Express au Fournil :</strong> Votre commande sera préparée avec amour et mise de côté au comptoir. Pas d'attente en caisse !</div>
+                    </div>
+
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label fs-sm text-dark fw-bold mb-1">Nom et Prénom du client *</label>
+                            <input type="text" class="form-control form-control-lg shadow-none" id="clientNameInput" placeholder="Ex: Kouassi Jean" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fs-sm text-dark fw-bold mb-1">Numéro de téléphone *</label>
+                            <div class="input-group input-group-lg">
+                                <span class="input-group-text bg-white fw-bold text-dark border-end-0 d-flex align-items-center">
+                                    <span class="flag-ci"></span> +225
+                                </span>
+                                <input type="tel" class="form-control shadow-none border-start-0 ps-1" id="clientPhoneInput" placeholder="07 04 38 92 01" required oninput="syncPhoneToPayment(this.value)">
                             </div>
                         </div>
                     </div>
+                </div>
 
-                    <!-- Etape 2: POINT DE RETRAIT EN BOUTIQUE -->
-                    <div class="accordion-item border-0 bg-white rounded shadow-sm mb-3">
-                        <h2 class="accordion-header">
-                            <button class="accordion-button collapsed fw-bold fs-6 text-dark" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false">
-                                <i class="fa-solid fa-store text-warning me-2 fs-5"></i> 2. MODE & LIEU DE RETRAIT (CLICK & COLLECT)
-                            </button>
-                        </h2>
-                        <div id="collapseTwo" class="accordion-collapse collapse" data-bs-parent="#checkoutAccordion">
-                            <div class="accordion-body border-top">
-                                
-                                <div class="card border-0 rounded-3 p-3 mb-3 shadow-sm" style="background: linear-gradient(135deg, #fffaf0 0%, #fef3c7 100%); border: 1px solid #fde68a !important;">
-                                    <div class="d-flex align-items-start gap-3">
-                                        <div class="bg-warning text-dark rounded-circle p-3 d-flex align-items-center justify-content-center flex-shrink-0" style="width:48px;height:48px;">
-                                            <i class="fa-solid fa-shop fs-5"></i>
-                                        </div>
-                                        <div>
-                                            <span class="badge bg-success text-white px-3 py-1 rounded-pill fw-bold mb-1">
-                                                <i class="fa-solid fa-check me-1"></i> RETRAIT GRATUIT (0 FCFA)
-                                            </span>
-                                            <h6 class="fw-bold mb-1" style="color:#2b160c;">
-                                                Fournil Boulangerie de BABI — Riviera
-                                            </h6>
-                                            <p class="text-muted small mb-2">
-                                                <i class="fa-solid fa-location-dot text-danger me-1"></i> <strong>Adresse :</strong> Riviera, Boulevard Sainte Famille, Abidjan.<br>
-                                                <i class="fa-solid fa-clock text-warning me-1"></i> <strong>Horaires :</strong> Lundi au Dimanche de 05h45 à 23h00 (Non-stop).
-                                            </p>
-                                            <div class="d-flex gap-2">
-                                                <a href="https://www.google.com/maps/place/5%C2%B022%2738.2%22N+3%C2%B055%2738.1%22W/@5.3772845,-3.9272566,17z" target="_blank" class="btn btn-outline-dark btn-sm rounded-pill px-3 fw-semibold">
-                                                    <i class="fa-solid fa-location-arrow me-1 text-primary"></i> Itinéraire GPS
-                                                </a>
-                                                <a href="tel:2722564123" class="btn btn-outline-dark btn-sm rounded-pill px-3 fw-semibold">
-                                                    <i class="fa-solid fa-phone me-1"></i> Appeler la Caisse
-                                                </a>
-                                            </div>
-                                        </div>
+                <!-- CARD 2: RETRAIT & CRÉNEAU SOUHAITÉ -->
+                <div class="card border-0 bg-white rounded-4 shadow-sm mb-4 p-4" style="border: 1px solid rgba(251, 146, 60, 0.2) !important;">
+                    <div class="d-flex align-items-center gap-2 mb-3 pb-2 border-bottom">
+                        <span class="badge rounded-circle bg-warning text-dark fw-bold d-flex align-items-center justify-content-center" style="width:32px;height:32px; font-size:14px; background:#fb923c !important; color:#fff !important;">2</span>
+                        <h5 class="fw-bold mb-0" style="color: #2b160c;">Lieu & Créneau de Retrait (Click & Collect)</h5>
+                    </div>
+
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label fs-sm text-dark fw-bold mb-1"><i class="fa-solid fa-clock text-warning me-1"></i> Quand souhaitez-vous récupérer votre commande ?</label>
+                            <select class="form-select form-select-lg shadow-none fw-bold" id="pickupSlotSelect">
+                                <option value="Dès que possible (15-20 min)" selected>⚡ Dès que possible (~15 à 20 min)</option>
+                                <option value="Dans 1 heure">🕐 Dans 1 heure</option>
+                                <option value="Ce midi (12h30 - 13h30)">☀️ Ce midi (12h30 - 13h30)</option>
+                                <option value="Goûter de 16h00">🧁 Pour le goûter (16h00 - 17h00)</option>
+                                <option value="Fournée du soir (18h00 - Pain Chaud)">🔥 Fournée du soir (18h00 - Pain tout chaud)</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fs-sm text-dark fw-bold mb-1"><i class="fa-solid fa-location-dot text-danger me-1"></i> Point de retrait</label>
+                            <input type="text" class="form-control form-control-lg shadow-none bg-light fw-bold" id="addressInput" value="Riviera (Boulangerie de BABI) — Retrait Gratuit" readonly>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label fw-bold small text-dark mb-1">
+                                <i class="fa-solid fa-note-sticky text-warning me-1"></i> Remarques pour le fournil (Optionnel)
+                            </label>
+                            <input type="text" class="form-control shadow-none" id="orderNotesInput" placeholder="Ex: Bien doré, trancher la baguette, emballer séparément...">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CARD 3: MODE DE PAIEMENT (1-CLIC) -->
+                <div class="card border-0 bg-white rounded-4 shadow-sm mb-4 p-4" style="border: 1px solid rgba(251, 146, 60, 0.2) !important;">
+                    <div class="d-flex align-items-center gap-2 mb-3 pb-2 border-bottom">
+                        <span class="badge rounded-circle bg-warning text-dark fw-bold d-flex align-items-center justify-content-center" style="width:32px;height:32px; font-size:14px; background:#fb923c !important; color:#fff !important;">3</span>
+                        <h5 class="fw-bold mb-0" style="color: #2b160c;">Choisissez votre Mode de Paiement</h5>
+                    </div>
+
+                    <!-- Option 1: Wave Mobile Money -->
+                    <div class="jumia-pay-card p-3 mb-3 selected rounded-3" id="card_momo_box" style="border: 2px solid #1dc4e9; cursor: pointer;" onclick="document.getElementById('p_momo').checked = true; togglePaymentMode('momo');">
+                        <label class="form-check m-0 d-flex align-items-center cursor-pointer w-100" for="p_momo">
+                            <input class="form-check-input mt-0 fs-5" type="radio" name="payment" id="p_momo" checked onclick="togglePaymentMode('momo')">
+                            <div class="ms-3 flex-grow-1">
+                                <div class="d-flex align-items-center gap-2 flex-wrap">
+                                    <span class="fw-bold d-block text-dark fs-6">Wave Mobile Money</span>
+                                    <span class="badge text-white fw-bold px-2 py-1" style="background:#1dc4e9; font-size:11px;">Recommandé • 0% Frais • Instantané</span>
+                                </div>
+                                <small class="text-muted">Paiement 1-clic direct par Wave App ou QR Code sécurisé.</small>
+                            </div>
+                            <div class="ms-auto">
+                                <img src="assets/wave_money.png" alt="Wave CI" style="width:42px; height:42px; object-fit:contain;">
+                            </div>
+                        </label>
+
+                        <!-- Wave Phone Input & Direct Button -->
+                        <div class="mt-3 p-3 bg-light rounded-3 border" id="operatorSection" style="border-color:#bae6fd !important;">
+                            <div class="row g-2 align-items-center">
+                                <div class="col-md-7">
+                                    <label class="form-label fs-xs text-muted mb-1 fw-bold">Numéro Wave à débiter</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-white fw-bold text-dark border-end-0">
+                                            <span class="flag-ci"></span> +225
+                                        </span>
+                                        <input type="tel" class="form-control shadow-none border-start-0 ps-1 fw-bold" id="momoPhoneInput" placeholder="07 04 38 92 01" oninput="validatePhoneSecurity(this)">
                                     </div>
                                 </div>
-
-                                <!-- Special Instructions / Order Notes -->
-                                <div class="mt-3">
-                                    <label class="form-label fw-bold small text-dark mb-1">
-                                        <i class="fa-solid fa-note-sticky text-warning me-1"></i> Remarques pour le fournil (Optionnel)
-                                    </label>
-                                    <textarea class="form-control shadow-none small" id="orderNotesInput" rows="2" placeholder="Ex: Bien dorer la croûte, trancher la baguette, emballer les croissants séparément..."></textarea>
-                                </div>
-
-                                <div class="col-12 text-end mt-4">
-                                    <button class="btn jumia-btn-orange px-4 py-2 rounded-2" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree">
-                                        PASSER AU PAIEMENT <i class="fa-solid fa-chevron-right ms-1"></i>
+                                <div class="col-md-5">
+                                    <label class="form-label fs-xs text-muted mb-1 fw-bold">Guichet Express</label>
+                                    <button type="button" class="btn btn-info w-100 text-white fw-bold py-2 shadow-sm rounded-2 d-flex align-items-center justify-content-center gap-1" style="background: linear-gradient(135deg, #1dc4e9, #0284c7); border:none; font-size: 13px;" onclick="openOperatorPaymentModal('wave')">
+                                        <i class="fa-solid fa-qrcode me-1"></i>
+                                        <span>Ouvrir Wave App / QR</span>
                                     </button>
                                 </div>
                             </div>
+                            <input type="hidden" id="selectedOperatorInput" value="wave">
                         </div>
                     </div>
 
-                    <!-- Etape 3: PAIEMENT (Jumia Style) -->
-                    <div class="accordion-item border-0 bg-white rounded shadow-sm mb-3">
-                        <h2 class="accordion-header">
-                            <button class="accordion-button collapsed fw-bold fs-6 text-dark" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false">
-                                <i class="fa-solid fa-credit-card text-primary me-2 fs-5"></i> 3. MODE DE PAIEMENT SÉCURISÉ
-                            </button>
-                        </h2>
-                        <div id="collapseThree" class="accordion-collapse collapse" data-bs-parent="#checkoutAccordion">
-                            <div class="accordion-body border-top">
-                                
-                                <!-- Mode 1: Wave Mobile Money -->
-                                <div class="jumia-pay-card p-3 mb-3 selected" id="card_momo_box">
-                                    <label class="form-check m-0 d-flex align-items-center cursor-pointer" for="p_momo">
-                                        <input class="form-check-input mt-0" type="radio" name="payment" id="p_momo" checked onclick="togglePaymentMode('momo')">
-                                        <div class="ms-3 flex-grow-1">
-                                            <div class="d-flex align-items-center gap-2">
-                                                <span class="fw-bold d-block text-dark fs-6">Wave Mobile Money</span>
-                                                <span class="badge text-white fw-bold px-2 py-1" style="background:#1dc4e9; font-size:10px;">Recommandé • 0% Frais</span>
-                                            </div>
-                                            <small class="text-muted">Paiement instantané 1-clic par Wave App ou QR Code sécurisé.</small>
-                                        </div>
-                                        <div class="ms-auto">
-                                            <img src="assets/wave_money.png" alt="Wave CI" style="width:38px; height:38px; object-fit:contain;">
-                                        </div>
-                                    </label>
+                    <!-- Option 2: Cash / Espèces au comptoir -->
+                    <div class="jumia-pay-card p-3 mb-3 rounded-3" id="card_cash_box" style="border: 2px solid #e2e8f0; cursor: pointer;" onclick="document.getElementById('p_cash').checked = true; togglePaymentMode('cash');">
+                        <label class="form-check m-0 d-flex align-items-center cursor-pointer w-100" for="p_cash">
+                            <input class="form-check-input mt-0 fs-5" type="radio" name="payment" id="p_cash" onclick="togglePaymentMode('cash')">
+                            <div class="ms-3 flex-grow-1">
+                                <span class="fw-bold d-block text-dark fs-6">Paiement en Espèces (au comptoir)</span>
+                                <small class="text-muted">Réglez directement en caisse lors du retrait de vos produits chauds.</small>
+                            </div>
+                            <div class="ms-auto text-success fs-3">
+                                💵
+                            </div>
+                        </label>
 
-                                    <!-- Wave Phone Input & QR Code -->
-                                    <div class="mt-3 p-3 bg-white rounded-3 border shadow-sm" id="operatorSection" style="border-color:#bae6fd !important;">
-                                        <div class="row g-2 align-items-center">
-                                            <div class="col-md-7">
-                                                <div class="d-flex justify-content-between align-items-center mb-1">
-                                                    <label class="form-label fs-xs text-muted mb-0 fw-bold">Numéro Wave à débiter</label>
-                                                    <span class="badge bg-success-subtle text-success border border-success-subtle fw-semibold" style="font-size: 10px;">
-                                                        <i class="fa-solid fa-lock me-1"></i> Canal Chiffré SSL 256-bit
-                                                    </span>
-                                                </div>
-                                                <div class="input-group">
-                                                    <span class="input-group-text bg-light fw-bold text-dark border-end-0 d-flex align-items-center">
-                                                        <span class="flag-ci"></span> +225
-                                                    </span>
-                                                    <input type="tel" class="form-control shadow-none border-start-0 ps-1 fw-bold" id="momoPhoneInput" placeholder="07 04 38 92 01" oninput="validatePhoneSecurity(this)">
-                                                </div>
-                                            </div>
-                                            <div class="col-md-5">
-                                                <label class="form-label fs-xs text-muted mb-1 fw-bold">Guichet Express</label>
-                                                <button type="button" class="btn btn-info w-100 text-white fw-bold py-2 shadow-sm rounded-2 d-flex align-items-center justify-content-center gap-1" style="background: linear-gradient(135deg, #1dc4e9, #0284c7); border:none; font-size: 13px;" onclick="openOperatorPaymentModal('wave')">
-                                                    <i class="fa-solid fa-qrcode"></i>
-                                                    <span>Ouvrir Wave App / QR</span>
-                                                </button>
-                                            </div>
-                                        </div>
-                                        <div class="mt-2 small text-muted d-flex align-items-center gap-1" id="opFormNote">
-                                            <i class="fa-solid fa-shield-halved text-success me-1"></i>
-                                            <span>Session de paiement direct protégée par jeton éphémère anti-usurpation.</span>
-                                        </div>
-                                        <input type="hidden" id="selectedOperatorInput" value="wave">
-                                    </div>
-                                </div>
-
-                                <!-- Mode 2: Cash on Counter / Pickup -->
-                                <div class="jumia-pay-card p-3 mb-3" id="card_cash_box">
-                                    <label class="form-check m-0 d-flex align-items-center cursor-pointer" for="p_cash">
-                                        <input class="form-check-input mt-0" type="radio" name="payment" id="p_cash" onclick="togglePaymentMode('cash')">
-                                        <div class="ms-3">
-                                            <span class="fw-bold d-block text-dark fs-6">Paiement en Espèces (au comptoir)</span>
-                                            <small class="text-muted">Réglez directement en cash lors du retrait de votre commande à la boutique.</small>
-                                        </div>
-                                        <div class="ms-auto text-success">
-                                            <i class="fa-solid fa-money-bill-wave fs-2"></i>
-                                        </div>
-                                    </label>
-
-                                    <!-- Cash Change Selector -->
-                                    <div class="mt-3 p-3 rounded border d-none" id="cashSection" style="background:#f8fafc; border-color:#cbd5e1 !important;">
-                                        <p class="fs-xs fw-bold text-dark mb-2"><i class="fa-solid fa-coins text-warning me-1"></i> Monnaie à prévoir au comptoir (pour votre confort) :</p>
-                                        <div class="d-flex flex-wrap gap-2">
-                                            <button type="button" class="btn btn-sm btn-outline-dark fw-bold active-change" onclick="selectCashChange(this, 'exact')">Monnaie exacte</button>
-                                            <button type="button" class="btn btn-sm btn-outline-dark fw-bold" onclick="selectCashChange(this, '2000')">Billet de 2 000 F</button>
-                                            <button type="button" class="btn btn-sm btn-outline-dark fw-bold" onclick="selectCashChange(this, '5000')">Billet de 5 000 F</button>
-                                            <button type="button" class="btn btn-sm btn-outline-dark fw-bold" onclick="selectCashChange(this, '10000')">Billet de 10 000 F</button>
-                                        </div>
-                                        <div class="mt-2 small text-muted" style="font-size:11px;">
-                                            <i class="fa-solid fa-circle-info text-primary me-1"></i> Le caissier aura votre monnaie prête lors de votre passage.
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- JUMIA-PAY STYLE SECURITY GUARANTEE BANNER -->
-                                <div class="p-3 mb-4 rounded-3 border shadow-sm" style="background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%); border-color: #a7f3d0 !important;">
-                                    <div class="d-flex align-items-center gap-3 mb-2">
-                                        <div class="d-flex align-items-center justify-content-center bg-success text-white rounded-circle shadow-sm" style="width: 36px; height: 36px; min-width: 36px;">
-                                            <i class="fa-solid fa-shield-check fs-5"></i>
-                                        </div>
-                                        <div>
-                                            <div class="fw-bold text-dark fs-6">Paiement 100% Sécurisé & Garanti (Grade JumiaPay / FinTech)</div>
-                                            <div class="text-muted small" style="font-size: 11.5px;">Chiffrement SSL 256-bit de bout en bout • Transaction scellée cryptographiquement • Zéro frais cachés</div>
-                                        </div>
-                                    </div>
-                                    <div class="d-flex flex-wrap align-items-center justify-content-between pt-2 border-top gap-2" style="border-color: #d1fae5 !important; font-size: 11px;">
-                                        <span class="text-success fw-bold"><i class="fa-solid fa-circle-check me-1"></i> Passerelle Agréée Wave CI</span>
-                                        <span class="text-secondary"><i class="fa-solid fa-fingerprint me-1"></i> Code PIN Personnel Sécurisé</span>
-                                        <span class="text-secondary"><i class="fa-solid fa-receipt me-1"></i> Reçu Numérique Certifié</span>
-                                    </div>
-                                </div>
-
-                                <div class="col-12 text-center">
-                                    <button type="button" id="accordionPlaceOrderBtn" class="btn jumia-btn-orange w-100 py-3 fs-5 shadow-sm rounded-3" onclick="submitBabiOrder()">
-                                        <i class="fa-solid fa-check-circle me-2"></i>CONFIRMER ET RÉSERVER
-                                    </button>
-                                    <div class="mt-2 text-center text-muted small" style="font-size: 11px;">
-                                        <i class="fa-solid fa-lock text-success me-1"></i> Transaction 100% sécurisée • Données confidentielles protégées
-                                    </div>
-                                </div>
+                        <!-- Cash Change Selector -->
+                        <div class="mt-3 p-3 rounded-3 border d-none" id="cashSection" style="background:#f8fafc; border-color:#cbd5e1 !important;">
+                            <p class="fs-xs fw-bold text-dark mb-2"><i class="fa-solid fa-coins text-warning me-1"></i> Monnaie à prévoir au comptoir :</p>
+                            <div class="d-flex flex-wrap gap-2">
+                                <button type="button" class="btn btn-sm btn-outline-dark fw-bold active-change" onclick="selectCashChange(this, 'exact')">Monnaie exacte</button>
+                                <button type="button" class="btn btn-sm btn-outline-dark fw-bold" onclick="selectCashChange(this, '2000')">Billet de 2 000 F</button>
+                                <button type="button" class="btn btn-sm btn-outline-dark fw-bold" onclick="selectCashChange(this, '5000')">Billet de 5 000 F</button>
+                                <button type="button" class="btn btn-sm btn-outline-dark fw-bold" onclick="selectCashChange(this, '10000')">Billet de 10 000 F</button>
                             </div>
                         </div>
                     </div>
 
+                    <!-- Security Badge -->
+                    <div class="p-3 rounded-3 border d-flex align-items-center gap-3" style="background: #f0fdf4; border-color: #a7f3d0 !important;">
+                        <i class="fa-solid fa-shield-check text-success fs-3"></i>
+                        <div class="small">
+                            <strong class="text-success">Paiement Garanti 100% Sécurisé :</strong> Cryptage SSL 256-bit et protection des données clients.
+                        </div>
+                    </div>
+
+                    <div class="mt-4 text-center">
+                        <button type="button" id="accordionPlaceOrderBtn" class="btn jumia-btn-orange w-100 py-3 fs-5 shadow-sm rounded-pill fw-bold" onclick="submitBabiOrder()">
+                            <i class="fa-solid fa-circle-check me-2"></i> CONFIRMER ET PAYER MA COMMANDE
+                        </button>
+                    </div>
                 </div>
             </div>
 
@@ -445,7 +367,6 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="js/api_config.js"></script>
     <script src="js/cart_actions.js"></script>
     <script src="js/checkout.js"></script>
     <script src="js/store_schedule.js"></script>
