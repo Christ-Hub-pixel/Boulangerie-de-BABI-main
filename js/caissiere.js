@@ -946,9 +946,6 @@ async function confirmOrderPickup(orderId, pin) {
     refreshPickupQueue();
     renderHistoryTable();
 }
-    refreshPickupQueue();
-    renderHistoryTable();
-}
 
 // -------------------------------------------------------------
 // 7. LIVE PICKUP QUEUE
