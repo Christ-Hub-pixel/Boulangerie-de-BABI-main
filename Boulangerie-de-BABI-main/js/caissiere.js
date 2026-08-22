@@ -314,26 +314,39 @@ function renderPosProductsGrid(searchTerm = '') {
         return;
     }
 
-    grid.innerHTML = filtered.map(p => `
-        <button onclick="addToPosCart('${p.id}', '${p.name.replace(/'/g, "\\'")}', ${p.price}, '${p.image}')" class="pos-product-item flex flex-col rounded-2xl overflow-hidden group relative text-left">
-            <div class="pos-product-img-box w-full">
-                <img class="pos-product-img" src="${p.image}" alt="${p.name}" loading="lazy" onerror="this.onerror=null; this.src='assets/Croissant.png';"/>
-                <div class="pos-price-badge-vip absolute top-2 right-2 px-2.5 py-0.5 rounded-lg font-mono text-[11px] sm:text-xs font-black z-10">${p.price.toLocaleString()} F</div>
-            </div>
-            <div class="p-2.5 sm:p-3 flex-1 flex flex-col justify-between gap-1.5 bg-white">
-                <h3 class="font-headline-sm text-xs sm:text-[13.5px] font-extrabold text-[#1a0c06] line-clamp-1 leading-snug tracking-tight">${p.name}</h3>
-                <div class="flex items-center justify-between text-[10.5px] sm:text-[11px] text-[#786558] font-semibold pt-1 border-t border-[rgba(212,175,55,0.15)]">
-                    <span class="flex items-center gap-1">
-                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                        Stock : <strong class="text-[#765b00] font-mono">${p.stock || 30}</strong>
-                    </span>
-                    <div class="w-6 h-6 rounded-full bg-[#fbf8f1] border border-[#f5b800]/50 text-[#765b00] flex items-center justify-center group-hover:bg-[#f5b800] group-hover:text-black transition-all shadow-sm">
-                        <span class="material-symbols-outlined text-sm font-bold">add</span>
+    grid.innerHTML = filtered.map(p => {
+        const cat = (p.category || '').toLowerCase();
+        const name = (p.name || '').toLowerCase();
+        const isDrink = cat.includes('boisson') || cat.includes('jus') || cat.includes('café') || cat.includes('cafe') || 
+                        name.includes('chill') || name.includes('youyou') || name.includes('youki') || name.includes('cola') || 
+                        name.includes('sprite') || name.includes('orangina') || name.includes('eau') || name.includes('malt') || 
+                        name.includes('céleste') || name.includes('awé') || name.includes('boisson') || name.includes('jus') ||
+                        name.includes('bissap') || name.includes('gingembre') || name.includes('baobab') || name.includes('tamarind');
+
+        const boxClass = isDrink ? 'drink-box' : 'food-box';
+        const imgClass = isDrink ? 'pos-img-drink' : 'pos-img-food';
+
+        return `
+            <button onclick="addToPosCart('${p.id}', '${p.name.replace(/'/g, "\\'")}', ${p.price}, '${p.image}')" class="pos-product-item flex flex-col rounded-2xl overflow-hidden group relative text-left">
+                <div class="pos-product-img-box ${boxClass} w-full">
+                    <img class="${imgClass}" src="${p.image}" alt="${p.name}" loading="lazy" onerror="this.onerror=null; this.src='assets/Croissant.png';"/>
+                    <div class="pos-price-badge-vip absolute top-2 right-2 px-2.5 py-0.5 rounded-lg font-mono text-[11px] sm:text-xs font-black z-10">${p.price.toLocaleString()} F</div>
+                </div>
+                <div class="p-2.5 sm:p-3 flex-1 flex flex-col justify-between gap-1.5 bg-white">
+                    <h3 class="font-headline-sm text-xs sm:text-[13.5px] font-extrabold text-[#1a0c06] line-clamp-1 leading-snug tracking-tight">${p.name}</h3>
+                    <div class="flex items-center justify-between text-[10.5px] sm:text-[11px] text-[#786558] font-semibold pt-1 border-t border-[rgba(212,175,55,0.15)]">
+                        <span class="flex items-center gap-1">
+                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                            Stock : <strong class="text-[#765b00] font-mono">${p.stock || 30}</strong>
+                        </span>
+                        <div class="w-6 h-6 rounded-full bg-[#fbf8f1] border border-[#f5b800]/50 text-[#765b00] flex items-center justify-center group-hover:bg-[#f5b800] group-hover:text-black transition-all shadow-sm">
+                            <span class="material-symbols-outlined text-sm font-bold">add</span>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </button>
-    `).join('');
+            </button>
+        `;
+    }).join('');
 }
 
 // -------------------------------------------------------------
