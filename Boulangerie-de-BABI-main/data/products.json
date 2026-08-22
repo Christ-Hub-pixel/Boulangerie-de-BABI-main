@@ -5,7 +5,7 @@
         "price": 700,
         "category": "Boissons",
         "description": "Boisson rafraîchissante pétillante.",
-        "image": "assets/chill.png",
+        "image": "assets/chill.webp",
         "rating": 4.6,
         "reviews": 45
     },
@@ -15,7 +15,7 @@
         "price": 500,
         "category": "Boissons",
         "description": "Jus fruité local et désaltérant.",
-        "image": "assets/youzou.png",
+        "image": "assets/youzou.webp",
         "rating": 4.5,
         "reviews": 60
     },
@@ -25,7 +25,7 @@
         "price": 500,
         "category": "Boissons",
         "description": "Soda cola pétillant très frais.",
-        "image": "assets/world cola.png",
+        "image": "assets/world_cola.webp",
         "rating": 4.4,
         "reviews": 88
     },
@@ -35,7 +35,7 @@
         "price": 500,
         "category": "Boissons",
         "description": "Boisson gazeuse à la saveur orange intense.",
-        "image": "assets/youki moka cafe.png",
+        "image": "assets/youki_moka_cafe.webp",
         "rating": 4.7,
         "reviews": 112
     },
@@ -45,7 +45,7 @@
         "price": 500,
         "category": "Boissons",
         "description": "Boisson gazeuse rafraîchissante au goût pomme.",
-        "image": "assets/youki pomme.png",
+        "image": "assets/youki_pomme.webp",
         "rating": 4.6,
         "reviews": 95
     },
@@ -55,7 +55,7 @@
         "price": 300,
         "category": "Jus",
         "description": "Jus de fruits frais fait maison 300ml.",
-        "image": "assets/Jus Naturel (Petit).png",
+        "image": "assets/jus_naturel_petit.webp",
         "rating": 4.9,
         "reviews": 210,
         "badge": "POPULAIRE"
@@ -66,7 +66,7 @@
         "price": 500,
         "category": "Jus",
         "description": "Jus de fruits frais fait maison 500ml.",
-        "image": "assets/Jus Naturel (Moyen).png",
+        "image": "assets/jus_naturel_moyen.webp",
         "rating": 4.9,
         "reviews": 180
     },
@@ -76,8 +76,8 @@
         "price": 2000,
         "category": "Jus",
         "description": "Grand format familial 1.5 Litres.",
-        "image": "assets/Jus Naturel (Grand).png",
-        "rating": 5.0,
+        "image": "assets/jus_naturel_grand.webp",
+        "rating": 5,
         "reviews": 95
     },
     {
@@ -86,7 +86,7 @@
         "price": 500,
         "category": "Boissons",
         "description": "Boisson avec vraie pulpe d'orange.",
-        "image": "assets/Orangina.png",
+        "image": "assets/orangina.webp",
         "rating": 4.7,
         "reviews": 130
     },
@@ -96,7 +96,7 @@
         "price": 500,
         "category": "Boissons",
         "description": "Soda citron-limonade gazeux glacé.",
-        "image": "assets/sprite.png",
+        "image": "assets/sprite.webp",
         "rating": 4.6,
         "reviews": 140
     },
@@ -106,7 +106,7 @@
         "price": 700,
         "category": "Boissons",
         "description": "Boisson maltée fortifiante et tonifiante.",
-        "image": "assets/energie malt .png",
+        "image": "assets/energie_malt_.webp",
         "rating": 4.8,
         "reviews": 75
     },
@@ -116,7 +116,7 @@
         "price": 200,
         "category": "Boissons",
         "description": "Eau pure et fraîche 50cl.",
-        "image": "assets/bouteille celeste.png",
+        "image": "assets/bouteille_celeste.webp",
         "rating": 4.9,
         "reviews": 400
     },
@@ -126,7 +126,7 @@
         "price": 1000,
         "category": "Boissons",
         "description": "Bouteille d'eau minérale 1.5 Litres.",
-        "image": "assets/bouteille celeste.png",
+        "image": "assets/bouteille_celeste.webp",
         "rating": 4.9,
         "reviews": 230
     },
@@ -136,8 +136,8 @@
         "price": 500,
         "category": "Boissons",
         "description": "Dessert lacté au grumeau de mil sucré.",
-        "image": "assets/jus de bissap.png",
-        "rating": 5.0,
+        "image": "assets/jus_de_bissap.webp",
+        "rating": 5,
         "reviews": 350,
         "badge": "SPÉCIALITÉ"
     },
@@ -147,7 +147,7 @@
         "price": 500,
         "category": "Boissons",
         "description": "Lait pasteurisé frais et onctueux.",
-        "image": "assets/Chocolat Chaud.png",
+        "image": "assets/chocolat_chaud.webp",
         "rating": 4.7,
         "reviews": 80
     },
@@ -157,7 +157,7 @@
         "price": 3000,
         "category": "Jus",
         "description": "Jus de maracudja 100% naturel grand format.",
-        "image": "assets/jus de passion.png",
+        "image": "assets/jus_de_passion.webp",
         "rating": 4.9,
         "reviews": 160
     },
@@ -167,7 +167,7 @@
         "price": 700,
         "category": "Jus",
         "description": "Jus de fruits de la passion pur 50cl.",
-        "image": "assets/jus de passion.png",
+        "image": "assets/jus_de_passion.webp",
         "rating": 4.8,
         "reviews": 190
     },
@@ -177,7 +177,7 @@
         "price": 500,
         "category": "Jus",
         "description": "Jus riche en vitamine C et calcium.",
-        "image": "assets/jus de baobab.png",
+        "image": "assets/jus_de_baobab.webp",
         "rating": 4.9,
         "reviews": 280
     },
@@ -187,7 +187,7 @@
         "price": 300,
         "category": "Jus",
         "description": "Petit format de jus de Baobab naturel très frais.",
-        "image": "assets/jus de baobab petit.png",
+        "image": "assets/jus_de_baobab_petit.webp",
         "rating": 4.8,
         "reviews": 140
     },
@@ -197,8 +197,8 @@
         "price": 2000,
         "category": "Jus",
         "description": "Infusion d'hibiscus rouge aromatisée à la menthe (1.5L).",
-        "image": "assets/jus de bissap.png",
-        "rating": 5.0,
+        "image": "assets/jus_de_bissap.webp",
+        "rating": 5,
         "reviews": 420,
         "badge": "BEST-SELLER"
     },
@@ -208,7 +208,7 @@
         "price": 3000,
         "category": "Jus",
         "description": "Jus de gingembre épicé et rafraîchissant (1.5L).",
-        "image": "assets/jus de gingembre.png",
+        "image": "assets/jus_de_gingembre.webp",
         "rating": 4.9,
         "reviews": 310
     },
@@ -218,7 +218,7 @@
         "price": 2000,
         "category": "Jus",
         "description": "Jus acidulé et digeste 1.5L.",
-        "image": "assets/jus de tamari.png",
+        "image": "assets/jus_de_tamari.webp",
         "rating": 4.7,
         "reviews": 110
     },
@@ -228,7 +228,7 @@
         "price": 3000,
         "category": "Jus",
         "description": "Mélange exotique ananas, passion, orange 1.5L.",
-        "image": "assets/cocktail.png",
+        "image": "assets/cocktail.webp",
         "rating": 4.9,
         "reviews": 175
     },
@@ -238,7 +238,7 @@
         "price": 2000,
         "category": "Jus",
         "description": "Limonade maison au citron vert pur 1.5L.",
-        "image": "assets/jus de citron.png",
+        "image": "assets/jus_de_citron.webp",
         "rating": 4.8,
         "reviews": 140
     },
@@ -248,7 +248,7 @@
         "price": 3000,
         "category": "Boissons",
         "description": "Chocolat pur cacao ivoirien onctueux.",
-        "image": "assets/Chocolat Chaud.png",
+        "image": "assets/chocolat_chaud.webp",
         "rating": 4.9,
         "reviews": 90
     },
@@ -258,7 +258,7 @@
         "price": 150,
         "category": "Pains",
         "description": "La baguette classique croustillante au quotidien.",
-        "image": "assets/baguette 150.png",
+        "image": "assets/baguette_150.webp",
         "rating": 4.6,
         "reviews": 520
     },
@@ -268,7 +268,7 @@
         "price": 200,
         "category": "Pains",
         "description": "Farine de tradition française au levain.",
-        "image": "assets/baguette 200.png",
+        "image": "assets/baguette_200.webp",
         "rating": 4.9,
         "reviews": 680,
         "badge": "POPULAIRE"
@@ -279,7 +279,7 @@
         "price": 500,
         "category": "Pains",
         "description": "Fine baguette fine et extra croustillante.",
-        "image": "assets/baguette 150.png",
+        "image": "assets/baguette_150.webp",
         "rating": 4.7,
         "reviews": 85
     },
@@ -289,7 +289,7 @@
         "price": 1000,
         "category": "Pains",
         "description": "Pain riche en fibres et farine intégrale.",
-        "image": "assets/Pain Complet (Grand).png",
+        "image": "assets/pain_complet.webp",
         "rating": 4.8,
         "reviews": 145
     },
@@ -299,7 +299,7 @@
         "price": 500,
         "category": "Pains",
         "description": "Format idéal pour le petit-déjeuner équilibré.",
-        "image": "assets/pain complet 2.png",
+        "image": "assets/pain_complet_2.webp",
         "rating": 4.7,
         "reviews": 190
     },
@@ -309,7 +309,7 @@
         "price": 150,
         "category": "Pains",
         "description": "Pain diététique sans aucun ajout de sel.",
-        "image": "assets/pain sans sel.png",
+        "image": "assets/pain_sans_sel.webp",
         "rating": 4.5,
         "reviews": 60
     },
@@ -319,7 +319,7 @@
         "price": 100,
         "category": "Pains",
         "description": "Pain italien moelleux pour sandwichs.",
-        "image": "assets/Panini.png",
+        "image": "assets/panini.webp",
         "rating": 4.6,
         "reviews": 230
     },
@@ -329,7 +329,7 @@
         "price": 50,
         "category": "Pains",
         "description": "Petit bread de table moelleux.",
-        "image": "assets/pain individuel.png",
+        "image": "assets/pain_individuel.webp",
         "rating": 4.5,
         "reviews": 410
     },
@@ -339,7 +339,7 @@
         "price": 100,
         "category": "Pains",
         "description": "Petit bread de table doré.",
-        "image": "assets/pain individuel.png",
+        "image": "assets/pain_individuel.webp",
         "rating": 4.6,
         "reviews": 290
     },
@@ -349,7 +349,7 @@
         "price": 1000,
         "category": "Snacks",
         "description": "Mini pizza tomate, fromage et origan.",
-        "image": "assets/Pizza.png",
+        "image": "assets/pizza.webp",
         "rating": 4.7,
         "reviews": 180,
         "badge": "HOT"
@@ -360,7 +360,7 @@
         "price": 5000,
         "category": "Snacks",
         "description": "Pizza individuelle bien garnie viandes & fromage.",
-        "image": "assets/Pizza.png",
+        "image": "assets/pizza.webp",
         "rating": 4.8,
         "reviews": 120
     },
@@ -370,7 +370,7 @@
         "price": 10000,
         "category": "Snacks",
         "description": "Grande pizza XXL pour 4 à 6 personnes.",
-        "image": "assets/Pizza.png",
+        "image": "assets/pizza.webp",
         "rating": 4.9,
         "reviews": 210,
         "badge": "FAMILIAL"
@@ -381,7 +381,7 @@
         "price": 700,
         "category": "Viennoiseries",
         "description": "Viennoiserie généreuse et feuilletée.",
-        "image": "assets/Croissant.png",
+        "image": "assets/croissant.webp",
         "rating": 4.7,
         "reviews": 95
     },
@@ -391,7 +391,7 @@
         "price": 1000,
         "category": "Viennoiseries",
         "description": "Biscottes dorées au four ultra croquantes.",
-        "image": "assets/biscottes.png",
+        "image": "assets/biscottes.webp",
         "rating": 4.8,
         "reviews": 110
     },
@@ -401,7 +401,7 @@
         "price": 700,
         "category": "Viennoiseries",
         "description": "Spécialité feuilletée garnie de crème et raisins secs.",
-        "image": "assets/charaphe au raisin.png",
+        "image": "assets/charaphe_au_raisin.webp",
         "rating": 4.6,
         "reviews": 70
     },
@@ -411,7 +411,7 @@
         "price": 1000,
         "category": "Viennoiseries",
         "description": "Feuilleté pur beurre avec compote de pommes.",
-        "image": "assets/chausson aux pommes.png",
+        "image": "assets/chausson_aux_pommes.webp",
         "rating": 4.9,
         "reviews": 160
     },
@@ -421,7 +421,7 @@
         "price": 800,
         "category": "Viennoiseries",
         "description": "Brioche suisse fourrée crème pâtissière et pépites.",
-        "image": "assets/choco suisse.png",
+        "image": "assets/choco_suisse.webp",
         "rating": 4.8,
         "reviews": 190
     },
@@ -431,7 +431,7 @@
         "price": 200,
         "category": "Viennoiseries",
         "description": "Cookie américain croquant au cœur fondant.",
-        "image": "assets/cookies.png",
+        "image": "assets/cookies.webp",
         "rating": 4.7,
         "reviews": 320
     },
@@ -441,7 +441,7 @@
         "price": 500,
         "category": "Viennoiseries",
         "description": "Feuilletage artisanal pur beurre de baratte.",
-        "image": "assets/Croissant.png",
+        "image": "assets/croissant.webp",
         "rating": 4.9,
         "reviews": 850,
         "badge": "MUST"
@@ -452,7 +452,7 @@
         "price": 700,
         "category": "Viennoiseries",
         "description": "Pain aux raisins roulé et caramélisé.",
-        "image": "assets/pain au raisin.png",
+        "image": "assets/pain_au_raisin.webp",
         "rating": 4.7,
         "reviews": 140
     },
@@ -462,7 +462,7 @@
         "price": 1000,
         "category": "Pâtisseries",
         "description": "Part de flan à la vanille bourbon onctueux.",
-        "image": "assets/Flan.png",
+        "image": "assets/flan.webp",
         "rating": 4.9,
         "reviews": 230
     },
@@ -472,7 +472,7 @@
         "price": 500,
         "category": "Snacks",
         "description": "Quiche au fromage et garniture savoureuse.",
-        "image": "assets/Pizza.png",
+        "image": "assets/pizza.webp",
         "rating": 4.6,
         "reviews": 90
     },
@@ -482,7 +482,7 @@
         "price": 1000,
         "category": "Viennoiseries",
         "description": "Sachet économique de 6 cookies gourmands.",
-        "image": "assets/cookies_unite.png",
+        "image": "assets/cookies_unite.webp",
         "rating": 4.9,
         "reviews": 170
     },
@@ -492,7 +492,7 @@
         "price": 500,
         "category": "Viennoiseries",
         "description": "Deux barres de chocolat noir pur dans un feuilletage d'or.",
-        "image": "assets/pain au chocolat.png",
+        "image": "assets/pain_au_chocolat.webp",
         "rating": 4.9,
         "reviews": 920,
         "badge": "POPULAIRE"
@@ -503,7 +503,7 @@
         "price": 200,
         "category": "Viennoiseries",
         "description": "Petit pain brioché doux au lait.",
-        "image": "assets/pain de mie.png",
+        "image": "assets/pain_de_mie.webp",
         "rating": 4.6,
         "reviews": 210
     },
@@ -513,7 +513,7 @@
         "price": 700,
         "category": "Viennoiseries",
         "description": "Roulé viennois raisins secs et crème vanille.",
-        "image": "assets/pain au raisin.png",
+        "image": "assets/pain_au_raisin.webp",
         "rating": 4.8,
         "reviews": 150
     },
@@ -523,7 +523,7 @@
         "price": 800,
         "category": "Viennoiseries",
         "description": "Viennoiserie royale saupoudrée de sucre.",
-        "image": "assets/cake.png",
+        "image": "assets/cake.webp",
         "rating": 4.7,
         "reviews": 65
     },
@@ -533,7 +533,7 @@
         "price": 800,
         "category": "Viennoiseries",
         "description": "Rectangle feuilleté crème et pépites de chocolat.",
-        "image": "assets/choco suisse.png",
+        "image": "assets/choco_suisse.webp",
         "rating": 4.8,
         "reviews": 180
     },
@@ -543,7 +543,7 @@
         "price": 200,
         "category": "Viennoiseries",
         "description": "Feuilleté caramélisé en forme de cœur.",
-        "image": "assets/palmier.png",
+        "image": "assets/palmier.webp",
         "rating": 4.6,
         "reviews": 130
     },
@@ -553,7 +553,7 @@
         "price": 800,
         "category": "Viennoiseries",
         "description": "Viennoiserie suisse dorée et fondante.",
-        "image": "assets/choco suisse.png",
+        "image": "assets/choco_suisse.webp",
         "rating": 4.7,
         "reviews": 85
     },
@@ -563,7 +563,7 @@
         "price": 800,
         "category": "Viennoiseries",
         "description": "Torsade feuilletée aux pépites de chocolat.",
-        "image": "assets/torsade.png",
+        "image": "assets/torsade.webp",
         "rating": 4.8,
         "reviews": 160
     },
@@ -573,7 +573,7 @@
         "price": 700,
         "category": "Snacks",
         "description": "Pain de mie, jambon, béchamel et fromage gratiné.",
-        "image": "assets/Panini.png",
+        "image": "assets/panini.webp",
         "rating": 4.8,
         "reviews": 240
     },
@@ -583,7 +583,7 @@
         "price": 100,
         "category": "Viennoiseries",
         "description": "Madeleine moelleuse traditionnelle.",
-        "image": "assets/madeleine unite.png",
+        "image": "assets/madeleine_unite.webp",
         "rating": 4.7,
         "reviews": 310
     },
@@ -593,8 +593,8 @@
         "price": 10000,
         "category": "Pâtisseries",
         "description": "Gâteau sur-mesure au choix (Chocolat, Vanille, Fruits).",
-        "image": "assets/Gateau1.png",
-        "rating": 5.0,
+        "image": "assets/gateau1.webp",
+        "rating": 5,
         "reviews": 140,
         "badge": "FÊTES"
     },
@@ -604,7 +604,7 @@
         "price": 15000,
         "category": "Pâtisseries",
         "description": "Gâteau pour 15 personnes avec décoration personnalisée.",
-        "image": "assets/Gateau1.1.png",
+        "image": "assets/gateau1.webp",
         "rating": 4.9,
         "reviews": 95
     },
@@ -614,8 +614,8 @@
         "price": 20000,
         "category": "Pâtisseries",
         "description": "Gâteau d'exception pour 20 convives.",
-        "image": "assets/Gateau1.2.png",
-        "rating": 5.0,
+        "image": "assets/gateau1.webp",
+        "rating": 5,
         "reviews": 60
     },
     {
@@ -624,8 +624,8 @@
         "price": 25000,
         "category": "Pâtisseries",
         "description": "Pièce montée ou gâteau géant 25 personnes.",
-        "image": "assets/gateau2.png",
-        "rating": 5.0,
+        "image": "assets/gateau2.webp",
+        "rating": 5,
         "reviews": 45
     },
     {
@@ -634,7 +634,7 @@
         "price": 5000,
         "category": "Pâtisseries",
         "description": "Bûche pâtissière traditionnelle.",
-        "image": "assets/buche de noel.png",
+        "image": "assets/buche_de_noel.webp",
         "rating": 4.9,
         "reviews": 110
     },
@@ -644,8 +644,8 @@
         "price": 7000,
         "category": "Pâtisseries",
         "description": "Grande bûche festive pour toute la famille.",
-        "image": "assets/buche de noel.png",
-        "rating": 5.0,
+        "image": "assets/buche_de_noel.webp",
+        "rating": 5,
         "reviews": 130
     },
     {
@@ -654,7 +654,7 @@
         "price": 1500,
         "category": "Pâtisseries",
         "description": "Génoise légère et crème au beurre extrait de café.",
-        "image": "assets/moka1.png",
+        "image": "assets/moka1.webp",
         "rating": 4.8,
         "reviews": 85
     },
@@ -664,7 +664,7 @@
         "price": 500,
         "category": "Viennoiseries",
         "description": "Sachet gourmand de 6 madeleines moelleuses.",
-        "image": "assets/lots de madeleine.png",
+        "image": "assets/lots_de_madeleine.webp",
         "rating": 4.9,
         "reviews": 175
     },
@@ -674,7 +674,7 @@
         "price": 500,
         "category": "Pâtisseries",
         "description": "Petit gâteau américain avec glaçage onctueux.",
-        "image": "assets/moka1.1.png",
+        "image": "assets/moka1.webp",
         "rating": 4.7,
         "reviews": 120
     },
@@ -684,7 +684,7 @@
         "price": 300,
         "category": "Pâtisseries",
         "description": "Tranche généreuse de cake maison.",
-        "image": "assets/cake1.png",
+        "image": "assets/cake1.webp",
         "rating": 4.6,
         "reviews": 190
     },
@@ -694,7 +694,7 @@
         "price": 700,
         "category": "Pâtisseries",
         "description": "Cake moule entier prêt à découper.",
-        "image": "assets/cake.png",
+        "image": "assets/cake.webp",
         "rating": 4.8,
         "reviews": 210
     },
@@ -704,7 +704,7 @@
         "price": 2000,
         "category": "Pâtisseries",
         "description": "Grande crêpe chaude généreusement tartinée de Nutella.",
-        "image": "assets/crepe au nutella.png",
+        "image": "assets/crepe_au_nutella.webp",
         "rating": 4.9,
         "reviews": 320,
         "badge": "GOURMAND"
@@ -715,7 +715,7 @@
         "price": 1500,
         "category": "Pâtisseries",
         "description": "Crêpe maison parfumée à la vanille.",
-        "image": "assets/crepe a la vanille.png",
+        "image": "assets/crepe_a_la_vanille.webp",
         "rating": 4.7,
         "reviews": 80
     },
@@ -725,7 +725,7 @@
         "price": 1500,
         "category": "Pâtisseries",
         "description": "Crêpe au zeste d'orange aromatisé.",
-        "image": "assets/Crêpe Suzette.png",
+        "image": "assets/crêpe_suzette.webp",
         "rating": 4.8,
         "reviews": 65
     },
@@ -735,8 +735,8 @@
         "price": 1000,
         "category": "Pâtisseries",
         "description": "Gâteau au cœur coulant chocolat noir.",
-        "image": "assets/Fondant au Chocolat.png",
-        "rating": 5.0,
+        "image": "assets/fondant_au_chocolat.webp",
+        "rating": 5,
         "reviews": 410,
         "badge": "DELICE"
     },
@@ -746,7 +746,7 @@
         "price": 1000,
         "category": "Glaces",
         "description": "Glace artisanale parfum vanille, chocolat ou fraise.",
-        "image": "assets/glace.png",
+        "image": "assets/glace.webp",
         "rating": 4.9,
         "reviews": 290
     },
@@ -756,7 +756,7 @@
         "price": 700,
         "category": "Pains",
         "description": "Délicieux pain au lait moelleux et doré, délicatement sucré.",
-        "image": "assets/cabre.png",
+        "image": "assets/cabre.webp",
         "rating": 4.7,
         "reviews": 55
     },
@@ -766,7 +766,7 @@
         "price": 700,
         "category": "Pains",
         "description": "Pain rustique breton à la farine sélectionnée.",
-        "image": "assets/pain complet.png",
+        "image": "assets/pain_complet.webp",
         "rating": 4.8,
         "reviews": 60
     },
@@ -776,7 +776,7 @@
         "price": 700,
         "category": "Pains",
         "description": "Pain brioché tendre et savoureux.",
-        "image": "assets/marbre1.1.png",
+        "image": "assets/marbre1.webp",
         "rating": 4.9,
         "reviews": 110
     },
@@ -786,7 +786,7 @@
         "price": 500,
         "category": "Pains",
         "description": "Pain spécial marbré au cacao et vanille.",
-        "image": "assets/marbre.png",
+        "image": "assets/marbre1.1.webp",
         "rating": 4.7,
         "reviews": 75
     },
@@ -796,8 +796,8 @@
         "price": 1000,
         "category": "Pains",
         "description": "Pain spécial en forme de cœur, idéal pour partager.",
-        "image": "assets/gateau evenement.png",
-        "rating": 5.0,
+        "image": "assets/gateau_evenement.webp",
+        "rating": 5,
         "reviews": 180
     },
     {
@@ -806,7 +806,7 @@
         "price": 700,
         "category": "Pains",
         "description": "Pain de mie multigrains canadien très riche.",
-        "image": "assets/pain complet 3.png",
+        "image": "assets/pain_complet_3.webp",
         "rating": 4.8,
         "reviews": 90
     },
@@ -816,7 +816,7 @@
         "price": 2000,
         "category": "Pains",
         "description": "Grand pain de mie tranché ultra tendre.",
-        "image": "assets/pain de mie.png",
+        "image": "assets/pain_de_mie.webp",
         "rating": 4.9,
         "reviews": 250
     },
@@ -826,7 +826,7 @@
         "price": 300,
         "category": "Pains",
         "description": "Grosse baguette parisienne à croûte dorée.",
-        "image": "assets/pain  parisien.jpeg",
+        "image": "assets/baguette_200.webp",
         "rating": 4.6,
         "reviews": 310
     },
@@ -836,7 +836,7 @@
         "price": 500,
         "category": "Pains",
         "description": "Pain brioché viennois aux pépites de chocolat.",
-        "image": "assets/marbre1.1.png",
+        "image": "assets/marbre1.webp",
         "rating": 4.9,
         "reviews": 220
     },
@@ -846,7 +846,7 @@
         "price": 700,
         "category": "Pains",
         "description": "Grand pain brioché viennois familial.",
-        "image": "assets/marbre1.png",
+        "image": "assets/marbre1.webp",
         "rating": 4.9,
         "reviews": 190
     },
@@ -856,7 +856,7 @@
         "price": 300,
         "category": "Pains",
         "description": "Pain doux délicatement sucré.",
-        "image": "assets/crepe jaune.png",
+        "image": "assets/crepe_jaune.webp",
         "rating": 4.7,
         "reviews": 140
     },
@@ -866,7 +866,7 @@
         "price": 1000,
         "category": "Snacks",
         "description": "Brioche moelleuse fourrée à la viande hachée assaisonnée.",
-        "image": "assets/Panini.png",
+        "image": "assets/panini.webp",
         "rating": 4.9,
         "reviews": 165
     },
@@ -876,7 +876,7 @@
         "price": 500,
         "category": "Snacks",
         "description": "Feuilleté croustillant au fromage ou saucisse.",
-        "image": "assets/palmier2.png",
+        "image": "assets/palmier2.webp",
         "rating": 4.6,
         "reviews": 115
     }
