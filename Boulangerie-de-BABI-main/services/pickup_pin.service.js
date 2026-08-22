@@ -89,7 +89,21 @@ class PickupPinService {
         }
 
         const isPaid = order.status === 'PAID' || order.status === 'PREPARING' || order.status === 'READY_FOR_PICKUP' || order.payment_status === 'paye';
-        const isPickedUp = order.status === 'PICKED_UP' || (pinRecord && pinRecord.is_used === 1);
+        const isPickedUp = order.status === 'PICKED_UP' || order.status === 'recupere' || (pinRecord && pinRecord.is_used === 1);
+
+        if (isPickedUp) {
+            return {
+                success: false,
+                isAlreadyUsed: true,
+                isFraudAlert: true,
+                orderId: order.id,
+                customerName: order.customer_name || 'Client',
+                totalAmount: order.total_amount || order.total_price || 0,
+                validatedAt: (pinRecord && pinRecord.validated_at) ? pinRecord.validated_at : (order.updated_at || 'Aujourd\'hui'),
+                validatedBy: (pinRecord && pinRecord.validated_by_name) ? pinRecord.validated_by_name : 'Awa Kouassi (Caisse VIP)',
+                error: `🛑 ALERTE SÉCURITÉ / FRAUDE : Le code PIN #${cleanPin} a DÉJÀ ÉTÉ UTILISÉ pour la commande #${order.id}. Remise déjà effectuée !`
+            };
+        }
 
         return {
             success: true,
@@ -99,7 +113,7 @@ class PickupPinService {
             totalAmount: order.total_amount || order.total_price || 0,
             status: order.status,
             isPaid: isPaid,
-            isPickedUp: isPickedUp,
+            isPickedUp: false,
             paymentMethod: order.payment_method || 'Wave Mobile Money',
             items: items,
             itemsSummary: order.items_summary || items.map(i => `${i.quantity || i.qte || 1}x ${i.name || i.nom}`).join(', '),

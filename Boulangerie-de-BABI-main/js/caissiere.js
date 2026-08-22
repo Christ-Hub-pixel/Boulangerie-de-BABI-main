@@ -717,6 +717,20 @@ async function previewPinOrder(pin) {
         </div>
     `;
 
+    // 0. Anti-Fraud Local Registry Check
+    const consumedPins = JSON.parse(localStorage.getItem('babi_consumed_pins') || '[]');
+    const alreadyConsumed = consumedPins.find(c => String(c.pin) === cleanPin || (cleanPin.length === 4 && String(c.pin).padStart(4, '0') === cleanPin));
+
+    if (alreadyConsumed) {
+        renderPinFraudWarning({
+            orderId: alreadyConsumed.orderId || `BABI-${cleanPin}`,
+            pin: cleanPin,
+            consumedAt: alreadyConsumed.consumedAt || 'Précédemment',
+            cashier: alreadyConsumed.cashier || 'Awa Kouassi (Caisse VIP)'
+        });
+        return;
+    }
+
     // 1. Try Backend API lookup
     const apiEndpoints = [
         `${API_ROOT}/api/pickup/lookup`,
@@ -735,6 +749,17 @@ async function previewPinOrder(pin) {
                 const data = await res.json();
                 if (data.success) {
                     renderPinPreviewSuccess(data, cleanPin);
+                    return;
+                }
+            } else if (res.status === 400 || res.status === 403 || res.status === 404) {
+                const data = await res.json().catch(() => ({}));
+                if (data.isFraudAlert || data.isAlreadyUsed) {
+                    renderPinFraudWarning({
+                        orderId: data.orderId || `BABI-${cleanPin}`,
+                        pin: cleanPin,
+                        consumedAt: data.validatedAt || 'Aujourd\'hui',
+                        cashier: data.validatedBy || 'Awa Kouassi'
+                    });
                     return;
                 }
             }
@@ -768,6 +793,16 @@ async function previewPinOrder(pin) {
     });
 
     if (matched) {
+        if (matched.status === 'recupere' || matched.status === 'PICKED_UP' || matched.is_used === 1) {
+            renderPinFraudWarning({
+                orderId: matched.id || `BABI-${cleanPin}`,
+                pin: cleanPin,
+                consumedAt: matched.updated_at || 'Aujourd\'hui',
+                cashier: 'Awa Kouassi (Caisse VIP)'
+            });
+            return;
+        }
+
         let itemsSummary = 'Articles boulangerie';
         if (Array.isArray(matched.items)) {
             itemsSummary = matched.items.map(i => `${i.qty || i.quantity || 1}x ${i.name || i.nom || 'Produit'}`).join(', ');
@@ -786,7 +821,7 @@ async function previewPinOrder(pin) {
         return;
     }
 
-    // 3. Fallback for live testing mode (valid 4-digit code)
+    // 3. Fallback for live testing mode (valid 4-digit code not yet consumed)
     if (/^\d{4}$/.test(cleanPin)) {
         renderPinPreviewSuccess({
             orderId: `BABI-${cleanPin}`,
@@ -803,6 +838,32 @@ async function previewPinOrder(pin) {
     resultBox.innerHTML = `
         <div class="p-3 bg-rose-50 border border-rose-200 text-rose-800 rounded-2xl text-xs font-bold">
             ⚠️ Aucun retrait actif pour le code PIN <strong>#${cleanPin}</strong>.
+        </div>
+    `;
+    playPosAudio('error');
+}
+
+function renderPinFraudWarning(info) {
+    const resultBox = document.getElementById('pin-verify-result-box');
+    if (!resultBox) return;
+
+    resultBox.classList.remove('hidden');
+    resultBox.innerHTML = `
+        <div class="p-4 bg-rose-50 border-2 border-rose-500 text-rose-950 rounded-2xl shadow-md text-xs text-left">
+            <div class="flex items-center gap-2 mb-2">
+                <span class="material-symbols-outlined text-2xl text-rose-600 animate-pulse">gpp_bad</span>
+                <span class="font-black text-rose-700 text-sm">🛑 ALERTE FRAUDE : CODE PIN DÉJÀ UTILISÉ !</span>
+            </div>
+            <p class="text-rose-900 font-bold mb-2">
+                Le code PIN <strong>#${info.pin}</strong> a déjà été validé et la commande <strong>#${info.orderId}</strong> a déjà été remise au client.
+            </p>
+            <div class="p-2.5 bg-white/95 rounded-xl border border-rose-200 space-y-1 font-mono text-[11px] text-rose-900">
+                <div class="flex justify-between"><span>📅 <strong>Heure de remise :</strong></span> <span>${info.consumedAt || 'Aujourd\'hui'}</span></div>
+                <div class="flex justify-between"><span>👤 <strong>Validé par :</strong></span> <span>${info.cashier || 'Awa Kouassi (Caisse VIP)'}</span></div>
+                <div class="pt-1 text-center font-sans font-black text-rose-700 text-[10px] tracking-wide uppercase border-t border-rose-100 mt-1">
+                    ⛔ TENTATIVE DE DOUBLE RETRAIT BLOQUÉE PAR LE SYSTÈME
+                </div>
+            </div>
         </div>
     `;
     playPosAudio('error');
@@ -840,29 +901,60 @@ async function verifyPickupPinDirect() {
 }
 
 async function confirmOrderPickup(orderId, pin) {
+    const cleanPin = String(pin || '').trim();
+    const cleanOrderId = String(orderId || '').trim();
+    const nowTime = new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+
+    // 1. Save to consumed PINs list for instant fraud blocking
+    const consumedPins = JSON.parse(localStorage.getItem('babi_consumed_pins') || '[]');
+    consumedPins.unshift({
+        pin: cleanPin,
+        orderId: cleanOrderId,
+        consumedAt: nowTime,
+        cashier: 'Awa Kouassi (Caisse VIP)'
+    });
+    localStorage.setItem('babi_consumed_pins', JSON.stringify(consumedPins));
+
+    // 2. Call backend verification
     try {
         await fetch(`${API_ROOT}/api/pickup/verify`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                order_id: orderId,
-                pin: pin,
+                order_id: cleanOrderId,
+                pin: cleanPin,
                 cashier_name: 'Awa Kouassi'
             })
         });
     } catch (_) {}
 
-    // Update localStorage order status
-    const localOrders = JSON.parse(localStorage.getItem('babi_orders') || '[]');
-    const idx = localOrders.findIndex(o => String(o.id) === String(orderId) || String(o.code_pin) === String(pin));
-    if (idx !== -1) {
-        localOrders[idx].status = 'recupere';
-        localStorage.setItem('babi_orders', JSON.stringify(localOrders));
+    // 3. Mark in all local orders
+    const storageKeys = ['babi_orders', 'orders', 'flutter.babi_realtime_orders_v2', 'babi_realtime_orders_v2'];
+    for (const key of storageKeys) {
+        try {
+            const raw = localStorage.getItem(key);
+            if (raw) {
+                const list = JSON.parse(raw);
+                if (Array.isArray(list)) {
+                    list.forEach(o => {
+                        const oPin = String(o.pickupPin || o.pickup_pin || o.code_pin || o.pin || '');
+                        if (String(o.id) === cleanOrderId || oPin === cleanPin) {
+                            o.status = 'recupere';
+                            o.is_used = 1;
+                        }
+                    });
+                    localStorage.setItem(key, JSON.stringify(list));
+                }
+            }
+        } catch (_) {}
     }
 
     playPosAudio('success');
-    alert(`🎉 Commande #${orderId} remise avec succès au client !`);
+    alert(`🎉 Commande #${cleanOrderId} remise avec succès au client !\nCode PIN #${cleanPin} scellé et invalidé pour éviter toute fraude.`);
     closePinModal();
+    refreshPickupQueue();
+    renderHistoryTable();
+}
     refreshPickupQueue();
     renderHistoryTable();
 }
