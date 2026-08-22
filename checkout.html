@@ -236,33 +236,12 @@
                         </div>
                     </div>
 
-                    <!-- Option 2 : Paiement en Espèces au Comptoir -->
-                    <div class="babi-pay-option" id="card_cash_box" onclick="selectPaymentOption('cash')">
-                        <div class="d-flex align-items-start gap-3">
-                            <input class="babi-pay-radio mt-1" type="radio" name="payment" id="p_cash">
-                            
-                            <div class="flex-grow-1">
-                                <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-1">
-                                    <h6 class="fw-bold text-dark mb-0 fs-6">Paiement en Espèces (au comptoir)</h6>
-                                    <span class="fs-4">💵</span>
-                                </div>
-                                <p class="text-muted small mb-2">
-                                    Réglez directement en liquide à la caisse du fournil au moment de retirer votre commande chaude.
-                                </p>
-
-                                <!-- Change Selector -->
-                                <div class="mt-2 p-3 rounded-3 border d-none" id="cashSection" style="background: #fffaf5; border-color: #fed7aa !important;">
-                                    <span class="d-block fw-bold text-dark mb-2" style="font-size: 12px;">
-                                        <i class="fa-solid fa-coins text-warning me-1"></i> Monnaie à prévoir par la caissière :
-                                    </span>
-                                    <div class="d-flex flex-wrap gap-2">
-                                        <button type="button" class="btn btn-sm btn-outline-dark fw-bold rounded-pill active-change" onclick="selectCashChange(this, 'exact')">Monnaie exacte</button>
-                                        <button type="button" class="btn btn-sm btn-outline-dark fw-bold rounded-pill" onclick="selectCashChange(this, '2000')">Billet de 2 000 F</button>
-                                        <button type="button" class="btn btn-sm btn-outline-dark fw-bold rounded-pill" onclick="selectCashChange(this, '5000')">Billet de 5 000 F</button>
-                                        <button type="button" class="btn btn-sm btn-outline-dark fw-bold rounded-pill" onclick="selectCashChange(this, '10000')">Billet de 10 000 F</button>
-                                    </div>
-                                </div>
-                            </div>
+                    <!-- VIP Express Guarantee Badge -->
+                    <div class="p-3 rounded-4 border d-flex align-items-center gap-3 mt-3" style="background: #fffbeb; border-color: #fde68a !important;">
+                        <span class="fs-3">⚡</span>
+                        <div class="small">
+                            <strong class="text-dark d-block">Retrait Express Garanti (Zéro File d'Attente)</strong>
+                            <span class="text-muted">Votre commande prépayée par Wave est préparée en priorité au fournil. Présentez simplement votre code PIN au comptoir sans faire la queue en caisse !</span>
                         </div>
                     </div>
 
@@ -405,26 +384,9 @@
     <script src="js/store_schedule.js"></script>
     <script src="js/anti_hacker_client.js"></script>
     <script>
-        function selectPaymentOption(mode) {
-            const momoCard = document.getElementById('card_momo_box');
-            const cashCard = document.getElementById('card_cash_box');
-            const momoRadio = document.getElementById('p_momo');
-            const cashRadio = document.getElementById('p_cash');
-            const cashSection = document.getElementById('cashSection');
-
-            if (mode === 'wave') {
-                momoRadio.checked = true;
-                momoCard.classList.add('selected');
-                momoCard.classList.remove('cash-selected');
-                cashCard.classList.remove('selected', 'cash-selected');
-                if (cashSection) cashSection.classList.add('d-none');
-            } else {
-                cashRadio.checked = true;
-                cashCard.classList.add('cash-selected');
-                momoCard.classList.remove('selected', 'cash-selected');
-                if (cashSection) cashSection.classList.remove('d-none');
-            }
-        }
+        document.addEventListener('DOMContentLoaded', () => {
+            if (typeof renderCheckoutSummary === 'function') renderCheckoutSummary();
+        });
     </script>
 </body>
 </html>

@@ -201,9 +201,7 @@ async function submitBabiOrder() {
     const pickupSlot = pickupSlotSelect ? pickupSlotSelect.value : 'Dès que possible (~15-20 min)';
     const orderNotes = notesInput ? notesInput.value.trim() : '';
 
-    const paymentCashRadio = document.getElementById('p_cash');
-    const isCash = paymentCashRadio ? paymentCashRadio.checked : false;
-    const provider = isCash ? 'cash' : 'wave';
+    const provider = 'wave';
 
     const submitBtn = document.querySelector('button[onclick="submitBabiOrder()"]');
     if (submitBtn) {
@@ -239,7 +237,7 @@ async function submitBabiOrder() {
 
         const createdOrder = orderData.order;
 
-        // 2. Initiation de la transaction de paiement
+        // 2. Initiation de la transaction de paiement Wave
         const idempotencyKey = 'IDEM_' + createdOrder.id + '_' + Date.now();
         const payRes = await fetch(`${API_ROOT}/api/payments/initiate`, {
             method: 'POST',
@@ -260,18 +258,6 @@ async function submitBabiOrder() {
         const payData = await payRes.json();
         if (!payRes.ok) {
             throw new Error(payData.error || "Erreur lors de l'initiation du paiement.");
-        }
-
-        // Cas Paiement Espèces au Comptoir
-        if (provider === 'cash') {
-            createdOrder.pickup_pin = payData.pickupPin;
-            createdOrder.payment_method = 'Paiement au comptoir (Espèces)';
-            createdOrder.payment_status = 'en_attente';
-            
-            saveOrderLocally(createdOrder);
-            if (typeof clearCart === 'function') clearCart();
-            window.location.href = `suivi.html?orderId=${encodeURIComponent(createdOrder.id)}&phone=${encodeURIComponent(phone)}`;
-            return;
         }
 
         // Cas Wave Mobile Money : Ouverture du Modal de Paiement & Polling
