@@ -695,34 +695,67 @@ app.get('/api/orders', async (req, res) => {
 // Create new online order with strict Price & Input Validation
 app.post('/api/orders', async (req, res) => {
     try {
-        const { customer_name, phone, address, items, total_price, payment_method, type_retrait } = req.body;
+        const { 
+            customer_name, 
+            phone, 
+            customer_phone,
+            address, 
+            items, 
+            total_price, 
+            total,
+            total_amount,
+            payment_method, 
+            type_retrait,
+            order_number,
+            order_id,
+            id
+        } = req.body;
         
-        const cleanPrice = Number(total_price);
+        const cleanPrice = Number(total_price || total || total_amount || 0);
         if (isNaN(cleanPrice) || cleanPrice <= 0) {
             return res.status(400).json({ error: "Montant de commande invalide (Falsification de prix bloquée)." });
         }
 
-        if (!phone || String(phone).trim().length < 6) {
-            return res.status(400).json({ error: "Numéro de téléphone obligatoire pour la validation." });
-        }
+        const effectivePhone = String(phone || customer_phone || '0700000000').trim();
 
-        const rawPin = req.body.code_pin || req.body.pin;
-        const pin = (rawPin && /^\d{4}$/.test(String(rawPin)))
-            ? String(rawPin)
+        const rawPin = req.body.code_pin || req.body.pin || req.body.pickup_pin;
+        const pin = (rawPin && /^\d{3,6}$/.test(String(rawPin)))
+            ? String(rawPin).padStart(4, '0')
             : Math.floor(1000 + Math.random() * 9000).toString();
         
+        const customOrderId = String(order_number || order_id || id || `BABI-${Date.now().toString().slice(-6)}`);
+
         const result = await db.run(
-            `INSERT INTO orders (customer_name, phone, address, items, total_price, payment_method, status, type_retrait, code_pin)
-             VALUES (?, ?, ?, ?, ?, ?, 'nouveau', ?, ?)`,
-            [customer_name || 'Client Passant', phone.trim(), address || 'Riviera', typeof items === 'string' ? items : JSON.stringify(items), cleanPrice, payment_method || 'Wave Mobile Money', type_retrait || 'livraison', pin]
+            `INSERT INTO orders (id, customer_name, phone, address, items, total_price, total_amount, payment_method, status, payment_status, type_retrait, code_pin)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'PAID', 'paye', ?, ?)`,
+            [
+                customOrderId,
+                customer_name || 'Client App BABI',
+                effectivePhone,
+                address || 'Fournil Riviera',
+                typeof items === 'string' ? items : JSON.stringify(items || []),
+                cleanPrice,
+                cleanPrice,
+                payment_method || 'Wave Mobile Money',
+                type_retrait || 'comptoir',
+                pin
+            ]
         );
+
+        // Also record in pickup_codes table for zero-failure cashier verification
+        try {
+            await db.run(
+                `INSERT INTO pickup_codes (order_id, pin_code, is_used) VALUES (?, ?, 0)`,
+                [customOrderId, pin]
+            );
+        } catch (_) {}
 
         // Decrement stock for products
         try {
             const parsedItems = typeof items === 'string' ? JSON.parse(items) : items;
             if (Array.isArray(parsedItems)) {
                 for (const it of parsedItems) {
-                    const qty = it.quantity || it.qte || 1;
+                    const qty = it.quantity || it.qte || it.qty || 1;
                     const name = it.name || it.nom;
                     if (name) {
                         await db.run("UPDATE stocks SET quantite_disponible = MAX(0, quantite_disponible - ?) WHERE nom_produit LIKE ?", [qty, `%${name}%`]);
@@ -731,7 +764,7 @@ app.post('/api/orders', async (req, res) => {
             }
         } catch (e) {}
 
-        res.status(201).json({ success: true, order_id: result.lastID, pin, code_pin: pin });
+        res.status(201).json({ success: true, order_id: customOrderId, pin, code_pin: pin, pickup_pin: pin });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
