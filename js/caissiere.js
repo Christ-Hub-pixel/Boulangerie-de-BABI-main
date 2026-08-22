@@ -234,26 +234,54 @@ function clearPosCart() {
 
 function renderPosCart() {
     const cartContainer = document.getElementById('pos-cart-items');
-    if (!cartContainer) return;
+    const mobileCartContainer = document.getElementById('mobile-pos-cart-items');
+    const floatingCart = document.getElementById('pos-mobile-floating-cart');
+    const topbarCartBadge = document.getElementById('mobile-topbar-cart-badge');
+    const bottomTabCartBadge = document.getElementById('mobile-tab-cart-badge');
+    const floatingCount = document.getElementById('mobile-floating-count');
+    const floatingTotal = document.getElementById('mobile-floating-total');
+    const mobileTotalEl = document.getElementById('mobile-pos-total');
+
+    const totalItemCount = posCart.reduce((sum, item) => sum + item.qty, 0);
+    const subtotal = posCart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+    const tva = Math.round(subtotal * 0.055);
+    const total = subtotal;
+
+    // Update Badges
+    if (topbarCartBadge) topbarCartBadge.innerText = totalItemCount;
+    if (bottomTabCartBadge) bottomTabCartBadge.innerText = totalItemCount;
+    if (floatingCount) floatingCount.innerText = totalItemCount;
+    if (floatingTotal) floatingTotal.innerText = total.toLocaleString() + ' FCFA';
+    if (mobileTotalEl) mobileTotalEl.innerText = total.toLocaleString() + ' FCFA';
+
+    // Show or hide floating cart on mobile
+    if (floatingCart) {
+        if (posCart.length > 0) {
+            floatingCart.classList.remove('hidden');
+        } else {
+            floatingCart.classList.add('hidden');
+        }
+    }
 
     if (posCart.length === 0) {
-        cartContainer.innerHTML = `
+        const emptyHtml = `
             <div class="flex-1 flex flex-col items-center justify-center text-center p-6 text-on-surface-variant/60 my-auto">
                 <span class="material-symbols-outlined text-4xl mb-2 text-outline-variant">shopping_cart</span>
                 <p class="text-xs font-bold">Le ticket est vide.</p>
                 <p class="text-[11px] text-muted">Touchez un article pour l'ajouter.</p>
             </div>
         `;
-        document.getElementById('pos-subtotal').innerText = '0 FCFA';
-        document.getElementById('pos-tva').innerText = '0 FCFA';
-        document.getElementById('pos-total').innerText = '0 FCFA';
+        if (cartContainer) cartContainer.innerHTML = emptyHtml;
+        if (mobileCartContainer) mobileCartContainer.innerHTML = emptyHtml;
+
+        if (document.getElementById('pos-subtotal')) document.getElementById('pos-subtotal').innerText = '0 FCFA';
+        if (document.getElementById('pos-tva')) document.getElementById('pos-tva').innerText = '0 FCFA';
+        if (document.getElementById('pos-total')) document.getElementById('pos-total').innerText = '0 FCFA';
         return;
     }
 
-    let subtotal = 0;
-    cartContainer.innerHTML = posCart.map(item => {
+    const itemsHtml = posCart.map(item => {
         const lineTotal = item.price * item.qty;
-        subtotal += lineTotal;
         return `
             <div class="flex items-center justify-between p-2.5 bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant/20">
                 <div class="flex flex-col flex-1 pr-2">
@@ -272,12 +300,43 @@ function renderPosCart() {
         `;
     }).join('');
 
-    const tva = Math.round(subtotal * 0.055);
-    const total = subtotal;
+    if (cartContainer) cartContainer.innerHTML = itemsHtml;
+    if (mobileCartContainer) mobileCartContainer.innerHTML = itemsHtml;
 
-    document.getElementById('pos-subtotal').innerText = (subtotal - tva).toLocaleString() + ' FCFA';
-    document.getElementById('pos-tva').innerText = tva.toLocaleString() + ' FCFA';
-    document.getElementById('pos-total').innerText = total.toLocaleString() + ' FCFA';
+    if (document.getElementById('pos-subtotal')) document.getElementById('pos-subtotal').innerText = (subtotal - tva).toLocaleString() + ' FCFA';
+    if (document.getElementById('pos-tva')) document.getElementById('pos-tva').innerText = tva.toLocaleString() + ' FCFA';
+    if (document.getElementById('pos-total')) document.getElementById('pos-total').innerText = total.toLocaleString() + ' FCFA';
+}
+
+// Mobile drawer & sidebar helpers
+function toggleMobileSidebar(forceState) {
+    const sidebar = document.querySelector('.prestige-sidebar');
+    const overlay = document.getElementById('sidebar-overlay');
+    if (!sidebar) return;
+    
+    const isOpen = (typeof forceState === 'boolean') ? forceState : !sidebar.classList.contains('open');
+    if (isOpen) {
+        sidebar.classList.add('open');
+        if (overlay) overlay.classList.remove('hidden');
+    } else {
+        sidebar.classList.remove('open');
+        if (overlay) overlay.classList.add('hidden');
+    }
+}
+
+function openMobileCart() {
+    const drawer = document.getElementById('pos-mobile-cart-drawer');
+    if (drawer) drawer.classList.remove('hidden');
+}
+
+function closeMobileCart() {
+    const drawer = document.getElementById('pos-mobile-cart-drawer');
+    if (drawer) drawer.classList.add('hidden');
+}
+
+function setActiveMobileTab(btn) {
+    document.querySelectorAll('.pos-mobile-tab-btn').forEach(b => b.classList.remove('active'));
+    if (btn) btn.classList.add('active');
 }
 
 // -------------------------------------------------------------

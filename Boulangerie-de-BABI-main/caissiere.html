@@ -132,8 +132,17 @@
 </head>
 <body class="bg-background font-body-md text-on-surface antialiased">
 
+    <!-- MOBILE SIDEBAR OVERLAY (FOR TOUCH SCREENS & MOBILE) -->
+    <div id="sidebar-overlay" onclick="toggleMobileSidebar(false)" class="sidebar-overlay fixed inset-0 bg-black/60 z-40 hidden backdrop-blur-sm transition-opacity no-print"></div>
+
     <!-- SIDEBAR (PRESTIGE DARK CHOCOLATE & GOLD) -->
     <aside class="fixed left-0 top-0 h-full w-72 prestige-sidebar z-50 flex flex-col p-5 no-print">
+        <!-- Close button on Mobile Drawer -->
+        <div class="lg:hidden flex items-center justify-between pb-3 mb-2 border-b border-[rgba(245,184,0,0.2)]">
+            <span class="text-xs font-bold text-amber-300">MENU CAISSIÈRE</span>
+            <button onclick="toggleMobileSidebar(false)" class="text-white hover:text-amber-400 p-1 font-bold text-xl">✕</button>
+        </div>
+
         <!-- Official Brand Banner -->
         <a href="index.html" class="babi-brand-banner-prestige mb-4">
             <div class="babi-logo-badge">
@@ -153,29 +162,29 @@
         <!-- Navigation -->
         <nav class="flex-1 flex flex-col gap-1 overflow-y-auto pr-1">
             <div class="sidebar-section-title">TERMINAL DE VENTE</div>
-            <a href="#" onclick="showPosView('terminal'); return false;" class="prestige-nav-item active" id="nav-pos-terminal">
+            <a href="#" onclick="showPosView('terminal'); toggleMobileSidebar(false); return false;" class="prestige-nav-item active" id="nav-pos-terminal">
                 <span class="material-symbols-outlined text-xl">point_of_sale</span>
                 <span class="flex-1">Caisse Tactile</span>
             </a>
-            <a href="#" onclick="showPosView('pickups'); return false;" class="prestige-nav-item flex items-center justify-between" id="nav-pos-pickups">
+            <a href="#" onclick="showPosView('pickups'); toggleMobileSidebar(false); return false;" class="prestige-nav-item flex items-center justify-between" id="nav-pos-pickups">
                 <div class="flex items-center gap-3">
                     <span class="material-symbols-outlined text-xl text-amber-400">delivery_dining</span>
                     <span>Retraits en direct</span>
                 </div>
                 <span id="pickup-badge-count" class="bg-amber-500 text-black font-extrabold text-[11px] px-2 py-0.5 rounded-full">0</span>
             </a>
-            <a href="#" onclick="showPosView('history'); return false;" class="prestige-nav-item" id="nav-pos-history">
+            <a href="#" onclick="showPosView('history'); toggleMobileSidebar(false); return false;" class="prestige-nav-item" id="nav-pos-history">
                 <span class="material-symbols-outlined text-xl">receipt_long</span>
                 <span class="flex-1">Historique Tickets</span>
             </a>
-            <a href="#" onclick="openClosureModal(); return false;" class="prestige-nav-item" id="nav-pos-closure">
+            <a href="#" onclick="openClosureModal(); toggleMobileSidebar(false); return false;" class="prestige-nav-item" id="nav-pos-closure">
                 <span class="material-symbols-outlined text-xl">account_balance</span>
                 <span class="flex-1">Clôture Journalière</span>
             </a>
 
             <!-- Quick Action PIN & Shortcuts -->
             <div class="mt-auto pt-4 border-t border-[rgba(245,184,0,0.15)] flex flex-col gap-2">
-                <button onclick="openPinModal()" class="w-full py-3 px-4 bg-gradient-to-r from-amber-400 to-amber-500 text-black font-extrabold rounded-xl text-xs flex items-center justify-center gap-2 shadow-lg hover:brightness-105 transition-all">
+                <button onclick="openPinModal(); toggleMobileSidebar(false);" class="w-full py-3 px-4 bg-gradient-to-r from-amber-400 to-amber-500 text-black font-extrabold rounded-xl text-xs flex items-center justify-center gap-2 shadow-lg hover:brightness-105 transition-all">
                     <span class="material-symbols-outlined text-lg">dialpad</span> Saisir Code PIN Retrait
                 </button>
                 <div class="sidebar-section-title p-0 mb-1 mt-2">RETOURS RAPIDES</div>
@@ -192,15 +201,21 @@
     <!-- MAIN POS WRAPPER -->
     <div class="pl-72">
         <!-- TOPBAR PRESTIGE LUXURY -->
-        <header class="prestige-topbar no-print">
-            <!-- Search bar with gold focus ring -->
-            <div class="magazine-search-pill" style="max-width: 380px;">
-                <span class="material-symbols-outlined search-icon" style="color: #765b00;">search</span>
-                <input placeholder="Rechercher un produit, code barre..." type="text" id="pos-product-search" oninput="filterPosProducts(this.value)"/>
+        <header class="prestige-topbar no-print flex items-center justify-between">
+            <!-- Left: Mobile Hamburger & Search Bar -->
+            <div class="flex items-center gap-2.5 flex-1 max-w-md">
+                <button onclick="toggleMobileSidebar()" class="lg:hidden p-2 rounded-xl bg-surface text-on-surface border border-outline-variant/30 flex items-center justify-center hover:bg-surface-container-high transition-all" title="Ouvrir Menu">
+                    <span class="material-symbols-outlined text-2xl">menu</span>
+                </button>
+                <!-- Search bar with gold focus ring -->
+                <div class="magazine-search-pill flex-1">
+                    <span class="material-symbols-outlined search-icon" style="color: #765b00;">search</span>
+                    <input placeholder="Rechercher un produit..." type="text" id="pos-product-search" oninput="filterPosProducts(this.value)"/>
+                </div>
             </div>
 
             <!-- Session Stats Live Summary Chip -->
-            <div class="hidden md:flex items-center gap-3 px-4 py-2 bg-surface-container rounded-2xl border border-outline-variant/30">
+            <div class="hidden md:flex items-center gap-3 px-4 py-2 bg-surface-container rounded-2xl border border-outline-variant/30 mx-2">
                 <div class="flex items-center gap-1.5 text-xs font-bold text-[#5a4030]">
                     <span class="material-symbols-outlined text-base text-emerald-600">payments</span>
                     <span>Ventes Jour : <strong class="text-emerald-700 font-mono" id="topbar-sales-total">0 FCFA</strong></span>
@@ -212,9 +227,15 @@
                 </div>
             </div>
 
-            <!-- Cashier Identity & Status -->
-            <div class="flex items-center gap-4">
-                <span class="prestige-status-badge emerald">
+            <!-- Cashier Identity, Mobile Cart Button & Status -->
+            <div class="flex items-center gap-2 sm:gap-4">
+                <!-- Mobile Cart Trigger Button -->
+                <button onclick="openMobileCart()" class="lg:hidden relative p-2 rounded-xl bg-primary text-on-primary flex items-center justify-center shadow-md hover:brightness-95 transition-all">
+                    <span class="material-symbols-outlined text-xl">shopping_cart</span>
+                    <span id="mobile-topbar-cart-badge" class="absolute -top-1.5 -right-1.5 bg-rose-600 text-white font-black text-[10px] w-5 h-5 rounded-full flex items-center justify-center border-2 border-white">0</span>
+                </button>
+
+                <span class="prestige-status-badge emerald hidden sm:inline-flex">
                     <span class="status-pulse-dot emerald"></span>
                     <span id="pos-live-clock">18:00:00</span>
                 </span>
@@ -239,27 +260,27 @@
                 <div class="flex flex-col lg:flex-row gap-gutter h-full">
 
                     <!-- LEFT 2/3 COLUMN: PRODUCTS CATALOG & CATEGORIES -->
-                    <div class="flex-[2] flex flex-col gap-stack-md bg-surface-container rounded-2xl shadow-sm p-4 border border-outline-variant/30">
+                    <div class="flex-1 lg:flex-[2] flex flex-col gap-stack-md bg-surface-container rounded-2xl shadow-sm p-3 sm:p-4 border border-outline-variant/30">
                         <!-- Category Tabs -->
-                        <div class="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-hide" id="category-pills">
-                            <button onclick="filterPosCategory('all', this)" class="category-filter-btn px-5 py-2 rounded-full bg-primary text-on-primary font-label-md text-xs font-bold whitespace-nowrap shadow-sm hover:brightness-95 transition-all">Tous</button>
-                            <button onclick="filterPosCategory('pains', this)" class="category-filter-btn px-5 py-2 rounded-full bg-surface text-on-surface font-label-md text-xs font-bold whitespace-nowrap hover:bg-surface-container-high transition-all">Pains</button>
-                            <button onclick="filterPosCategory('viennoiseries', this)" class="category-filter-btn px-5 py-2 rounded-full bg-surface text-on-surface font-label-md text-xs font-bold whitespace-nowrap hover:bg-surface-container-high transition-all">Viennoiseries</button>
-                            <button onclick="filterPosCategory('patisseries', this)" class="category-filter-btn px-5 py-2 rounded-full bg-surface text-on-surface font-label-md text-xs font-bold whitespace-nowrap hover:bg-surface-container-high transition-all">Pâtisseries</button>
-                            <button onclick="filterPosCategory('boissons', this)" class="category-filter-btn px-5 py-2 rounded-full bg-surface text-on-surface font-label-md text-xs font-bold whitespace-nowrap hover:bg-surface-container-high transition-all">Boissons</button>
-                            <button onclick="filterPosCategory('traiteur', this)" class="category-filter-btn px-5 py-2 rounded-full bg-surface text-on-surface font-label-md text-xs font-bold whitespace-nowrap hover:bg-surface-container-high transition-all">Snacks & Traiteur</button>
+                        <div class="flex items-center gap-1.5 sm:gap-2 overflow-x-auto pb-2 scrollbar-hide" id="category-pills">
+                            <button onclick="filterPosCategory('all', this)" class="category-filter-btn px-4 sm:px-5 py-2 rounded-full bg-primary text-on-primary font-label-md text-xs font-bold whitespace-nowrap shadow-sm hover:brightness-95 transition-all">Tous</button>
+                            <button onclick="filterPosCategory('pains', this)" class="category-filter-btn px-4 sm:px-5 py-2 rounded-full bg-surface text-on-surface font-label-md text-xs font-bold whitespace-nowrap hover:bg-surface-container-high transition-all">Pains</button>
+                            <button onclick="filterPosCategory('viennoiseries', this)" class="category-filter-btn px-4 sm:px-5 py-2 rounded-full bg-surface text-on-surface font-label-md text-xs font-bold whitespace-nowrap hover:bg-surface-container-high transition-all">Viennoiseries</button>
+                            <button onclick="filterPosCategory('patisseries', this)" class="category-filter-btn px-4 sm:px-5 py-2 rounded-full bg-surface text-on-surface font-label-md text-xs font-bold whitespace-nowrap hover:bg-surface-container-high transition-all">Pâtisseries</button>
+                            <button onclick="filterPosCategory('boissons', this)" class="category-filter-btn px-4 sm:px-5 py-2 rounded-full bg-surface text-on-surface font-label-md text-xs font-bold whitespace-nowrap hover:bg-surface-container-high transition-all">Boissons</button>
+                            <button onclick="filterPosCategory('traiteur', this)" class="category-filter-btn px-4 sm:px-5 py-2 rounded-full bg-surface text-on-surface font-label-md text-xs font-bold whitespace-nowrap hover:bg-surface-container-high transition-all">Snacks & Traiteur</button>
                         </div>
 
-                        <!-- Product Grid -->
-                        <div class="flex-1 overflow-y-auto pr-1" style="max-height: calc(100vh - 240px);">
-                            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3.5" id="pos-products-grid">
+                        <!-- Product Grid (Responsive 2 cols on mobile, 3 on md, 4 on lg) -->
+                        <div class="flex-1 overflow-y-auto pr-1" style="max-height: calc(100vh - 210px);">
+                            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2.5 sm:gap-3.5" id="pos-products-grid">
                                 <!-- Products loaded via loadPosProducts() in js/caissiere.js -->
                             </div>
                         </div>
                     </div>
 
-                    <!-- RIGHT 1/3 COLUMN: TICKET & CART -->
-                    <div class="flex-1 flex flex-col bg-surface rounded-2xl shadow-md overflow-hidden min-w-[320px] max-w-[400px] border border-outline-variant/30">
+                    <!-- RIGHT 1/3 COLUMN: TICKET & CART (DESKTOP) -->
+                    <div class="hidden lg:flex flex-1 flex-col bg-surface rounded-2xl shadow-md overflow-hidden min-w-[320px] max-w-[400px] border border-outline-variant/30">
                         <!-- Cart Header -->
                         <div class="p-4 bg-surface-container-low border-b border-outline-variant/20 flex items-center justify-between">
                             <div class="flex items-center gap-2">
@@ -374,6 +395,90 @@
 
         </main>
     </div>
+
+    <!-- MOBILE FLOATING CART BAR (APPEARS WHEN ITEMS IN CART ON MOBILE) -->
+    <div id="pos-mobile-floating-cart" onclick="openMobileCart()" class="pos-floating-cart-bar hidden lg:hidden no-print">
+        <div class="flex items-center gap-2.5">
+            <div class="w-8 h-8 rounded-full bg-amber-400 text-black flex items-center justify-center font-bold text-xs shadow-md">
+                <span id="mobile-floating-count">0</span>
+            </div>
+            <div>
+                <div class="text-[11px] font-bold text-amber-200">Ticket en cours</div>
+                <div class="text-sm font-black font-mono" id="mobile-floating-total">0 FCFA</div>
+            </div>
+        </div>
+        <div class="flex items-center gap-1 text-xs font-extrabold text-amber-400 bg-amber-950/70 px-3 py-1.5 rounded-xl border border-amber-500/40">
+            <span>Encaisser</span>
+            <span class="material-symbols-outlined text-base">arrow_forward</span>
+        </div>
+    </div>
+
+    <!-- MOBILE CART DRAWER (BOTTOM SHEET) -->
+    <div id="pos-mobile-cart-drawer" class="mobile-cart-drawer-backdrop hidden lg:hidden no-print" onclick="if(event.target === this) closeMobileCart()">
+        <div class="mobile-cart-drawer-card p-4">
+            <div class="flex items-center justify-between pb-3 border-b border-outline-variant/20">
+                <div class="flex items-center gap-2">
+                    <span class="material-symbols-outlined text-primary text-xl">receipt</span>
+                    <h3 class="font-headline-md font-bold text-base text-on-surface">Ticket En Cours</h3>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button onclick="clearPosCart()" class="p-1.5 text-on-surface-variant hover:text-error text-xs font-bold flex items-center gap-1">
+                        <span class="material-symbols-outlined text-base">delete_sweep</span> Vider
+                    </button>
+                    <button onclick="closeMobileCart()" class="p-1 text-on-surface-variant hover:text-on-surface text-xl font-bold">✕</button>
+                </div>
+            </div>
+
+            <!-- Mobile Cart Items List -->
+            <div class="overflow-y-auto py-3 flex flex-col gap-2 max-h-[42vh]" id="mobile-pos-cart-items">
+                <!-- Synchronized items -->
+            </div>
+
+            <!-- Mobile Totals & Checkout Actions -->
+            <div class="pt-3 border-t border-outline-variant/30 flex flex-col gap-2.5">
+                <div class="flex justify-between items-center text-sm font-bold">
+                    <span>TOTAL À PAYER :</span>
+                    <span class="text-primary font-black text-xl font-mono" id="mobile-pos-total">0 FCFA</span>
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                    <button onclick="checkoutPos('especes'); closeMobileCart();" class="btn-modal-submit-green" style="padding: 12px 6px; font-size: 11px; flex-direction: column; gap: 2px;">
+                        <span class="material-symbols-outlined text-xl">payments</span>
+                        <span class="font-extrabold">Espèces (Cash)</span>
+                    </button>
+                    <button onclick="checkoutPos('wave'); closeMobileCart();" class="btn-modal-submit-gold" style="padding: 12px 6px; font-size: 11px; flex-direction: column; gap: 2px;">
+                        <span class="material-symbols-outlined text-xl">qr_code_scanner</span>
+                        <span class="font-extrabold">Wave Mobile</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MOBILE BOTTOM NAVIGATION BAR (FIXED AT BOTTOM FOR THUMB NAVIGATION) -->
+    <nav class="pos-mobile-bottom-bar lg:hidden no-print">
+        <button onclick="showPosView('terminal'); setActiveMobileTab(this);" class="pos-mobile-tab-btn active" id="mobile-tab-terminal">
+            <span class="material-symbols-outlined">point_of_sale</span>
+            <span>Caisse</span>
+        </button>
+        <button onclick="showPosView('pickups'); setActiveMobileTab(this);" class="pos-mobile-tab-btn" id="mobile-tab-pickups">
+            <span class="material-symbols-outlined">delivery_dining</span>
+            <span>Retraits</span>
+            <span id="mobile-tab-pickup-badge" class="absolute top-1 right-2 bg-amber-500 text-black font-black text-[9px] w-4 h-4 rounded-full flex items-center justify-center">0</span>
+        </button>
+        <button onclick="openPinModal()" class="pos-mobile-tab-btn" id="mobile-tab-pin">
+            <span class="material-symbols-outlined">dialpad</span>
+            <span>Code PIN</span>
+        </button>
+        <button onclick="openMobileCart()" class="pos-mobile-tab-btn" id="mobile-tab-cart">
+            <span class="material-symbols-outlined">shopping_bag</span>
+            <span>Ticket</span>
+            <span id="mobile-tab-cart-badge" class="absolute top-1 right-2 bg-rose-600 text-white font-black text-[9px] w-4 h-4 rounded-full flex items-center justify-center">0</span>
+        </button>
+        <button onclick="openClosureModal()" class="pos-mobile-tab-btn" id="mobile-tab-closure">
+            <span class="material-symbols-outlined">account_balance</span>
+            <span>Bilan Z</span>
+        </button>
+    </nav>
 
     <!-- PIN VERIFICATION MODAL WITH TACTILE NUMPAD -->
     <div id="pinModal" class="prestige-modal-backdrop hidden">
