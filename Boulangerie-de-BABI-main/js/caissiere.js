@@ -315,16 +315,21 @@ function renderPosProductsGrid(searchTerm = '') {
     }
 
     grid.innerHTML = filtered.map(p => `
-        <button onclick="addToPosCart('${p.id}', '${p.name.replace(/'/g, "\\'")}', ${p.price}, '${p.image}')" class="pos-product-item flex flex-col bg-surface rounded-xl sm:rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all group relative text-left border border-outline-variant/30 hover:border-primary active:scale-[0.98]">
-            <div class="aspect-[4/3] w-full relative overflow-hidden bg-surface-container-high">
+        <button onclick="addToPosCart('${p.id}', '${p.name.replace(/'/g, "\\'")}', ${p.price}, '${p.image}')" class="pos-product-item flex flex-col rounded-2xl overflow-hidden group relative text-left">
+            <div class="aspect-[4/3] w-full relative overflow-hidden pos-product-img-box">
                 <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" src="${p.image}" alt="${p.name}" loading="lazy" onerror="this.onerror=null; this.src='assets/Croissant.png';"/>
-                <div class="absolute top-1.5 right-1.5 sm:top-2 sm:right-2 bg-surface/95 backdrop-blur-md px-1.5 sm:px-2 py-0.5 rounded-md sm:rounded-lg font-mono text-[10.5px] sm:text-xs font-black text-on-surface shadow-sm border border-outline-variant/40">${p.price.toLocaleString()} F</div>
+                <div class="pos-price-badge-vip absolute top-2 right-2 px-2.5 py-0.5 rounded-lg font-mono text-[11px] sm:text-xs font-black">${p.price.toLocaleString()} F</div>
             </div>
-            <div class="p-2 sm:p-2.5 flex-1 flex flex-col justify-between gap-1">
-                <h3 class="font-headline-sm text-xs sm:text-[13px] font-bold text-on-surface line-clamp-1 leading-snug">${p.name}</h3>
-                <div class="flex items-center justify-between text-[10px] sm:text-[11px] text-on-surface-variant font-semibold">
-                    <span>Stock : <strong class="text-primary font-mono">${p.stock || 30}</strong></span>
-                    <span class="material-symbols-outlined text-sm sm:text-base text-primary/80 group-hover:translate-x-0.5 transition-transform">add_circle</span>
+            <div class="p-2.5 sm:p-3 flex-1 flex flex-col justify-between gap-1.5 bg-white">
+                <h3 class="font-headline-sm text-xs sm:text-[13.5px] font-extrabold text-[#1a0c06] line-clamp-1 leading-snug tracking-tight">${p.name}</h3>
+                <div class="flex items-center justify-between text-[10.5px] sm:text-[11px] text-[#786558] font-semibold pt-1 border-t border-[rgba(212,175,55,0.15)]">
+                    <span class="flex items-center gap-1">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                        Stock : <strong class="text-[#765b00] font-mono">${p.stock || 30}</strong>
+                    </span>
+                    <div class="w-6 h-6 rounded-full bg-[#fbf8f1] border border-[#f5b800]/50 text-[#765b00] flex items-center justify-center group-hover:bg-[#f5b800] group-hover:text-black transition-all shadow-sm">
+                        <span class="material-symbols-outlined text-sm font-bold">add</span>
+                    </div>
                 </div>
             </div>
         </button>
