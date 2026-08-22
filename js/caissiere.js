@@ -135,32 +135,133 @@ function showPosView(viewName) {
     }
 }
 
+const realPosProductImages = {
+    "Chill": "assets/chill.png",
+    "Youyou": "assets/youzou.png",
+    "Word Cola": "assets/world cola.png",
+    "Youki Orange": "assets/youki moka cafe.png",
+    "Youki Pomme": "assets/youki pomme.png",
+    "Énergie Malt": "assets/energie malt .png",
+    "Energie Malt": "assets/energie malt .png",
+    "Orangina": "assets/Orangina.png",
+    "Sprite": "assets/sprite.png",
+    "Jus Naturel (Petit)": "assets/Jus Naturel (Petit).png",
+    "Jus Naturel (Petit Format)": "assets/Jus Naturel (Petit).png",
+    "Jus Naturel (Moyen)": "assets/Jus Naturel (Moyen).png",
+    "Jus Naturel (Moyen Format)": "assets/Jus Naturel (Moyen).png",
+    "Jus Naturel (Grand)": "assets/Jus Naturel (Grand).png",
+    "Jus Naturel (Bouteille 1.5L)": "assets/Jus Naturel (Grand).png",
+    "Eau Minérale (Petite)": "assets/bouteille celeste.png",
+    "Eau Minérale (Grande)": "assets/bouteille celeste.png",
+    "Dégué": "assets/jus de bissap.png",
+    "Passion (Grand Format)": "assets/jus de passion.png",
+    "Passion (Petite Bouteille)": "assets/jus de passion.png",
+    "Baobab": "assets/jus de baobab.png",
+    "Baobab (Petit)": "assets/jus de baobab petit.png",
+    "Bissap": "assets/jus de bissap.png",
+    "Gingembre": "assets/jus de gingembre.png",
+    "Tamarin": "assets/jus de tamari.png",
+    "Cocktail": "assets/cocktail.png",
+    "Citron": "assets/jus de citron.png",
+    "Chocolat Chaud": "assets/Chocolat Chaud.png",
+    "Baguette 150": "assets/baguette 150.png",
+    "Baguette 200": "assets/baguette 200.png",
+    "Baguette Tradition": "assets/baguette 200.png",
+    "Ficelle": "assets/baguette 150.png",
+    "Pain Complet (Grand)": "assets/Pain Complet (Grand).png",
+    "Pain Complet (Petit)": "assets/pain complet 2.png",
+    "Pain Sans Sel": "assets/pain sans sel.png",
+    "Petit Pain (50F)": "assets/pain individuel.png",
+    "Petit Pain (100F)": "assets/pain individuel.png",
+    "Biscotte": "assets/biscottes.png",
+    "Charaphe au Raisin": "assets/charaphe au raisin.png",
+    "Chausson aux Pommes": "assets/chausson aux pommes.png",
+    "Choco Suisse": "assets/choco suisse.png",
+    "Cookies (l'unité)": "assets/cookies.png",
+    "Lot de Cookies": "assets/cookies.png",
+    "Croissant": "assets/Croissant.png",
+    "Croissant Pur Beurre": "assets/Croissant.png",
+    "Flan": "assets/Flan.png",
+    "Pain au Chocolat": "assets/pain au chocolat.png",
+    "Pain aux Raisins": "assets/pain au raisin.png",
+    "Palmiers": "assets/palmier.png",
+    "Torsade": "assets/torsade.png",
+    "Madeleine": "assets/madeleine unite.png",
+    "Madeleines (l'unité)": "assets/madeleine unite.png",
+    "Lot de Madeleines": "assets/lots de madeleine.png",
+    "Gâteau (10 000F)": "assets/Gateau1.png",
+    "Gâteau (15 000F)": "assets/Gateau1.1.png",
+    "Gâteau (20 000F)": "assets/Gateau1.2.png",
+    "Gâteau (25 000F)": "assets/gateau2.png",
+    "Gâteau de Mariage": "assets/gateau de mariiage.png",
+    "Bûche de Noël (7000F)": "assets/buche de noel.png",
+    "Bûche de Noël (5000F)": "assets/buche de noel.png",
+    "Moka": "assets/moka1.png",
+    "Cup Cake": "assets/moka1.1.png",
+    "Cake (300F)": "assets/cake.png",
+    "Cake (700F)": "assets/cake1.png",
+    "Crêpe au Nutella": "assets/crepe au nutella.png",
+    "Crêpe à la Vanille": "assets/crepe a la vanille.png",
+    "Crêpe Suzette": "assets/Crêpe Suzette.png",
+    "Fondant au Chocolat": "assets/Fondant au Chocolat.png",
+    "Glace": "assets/glace.png",
+    "Pain Cabré": "assets/cabre.png",
+    "Pain Marbré": "assets/marbre.png",
+    "Pain Amour": "assets/pain complet.png",
+    "Pain Canadien": "assets/pain complet 3.png",
+    "Pain de Mie": "assets/pain de mie.png",
+    "Pain Parisien": "assets/baguette 150.png",
+    "Suzette": "assets/pain individuel.png"
+};
+
+function resolveProductImage(name, rawImage, category) {
+    if (realPosProductImages[name]) return realPosProductImages[name];
+    for (const [k, v] of Object.entries(realPosProductImages)) {
+        if (name && name.toLowerCase().includes(k.toLowerCase())) return v;
+    }
+    if (rawImage && (rawImage.endsWith('.png') || rawImage.endsWith('.jpg') || rawImage.endsWith('.jpeg'))) {
+        return rawImage;
+    }
+    const cat = (category || '').toLowerCase();
+    if (cat.includes('boisson') || cat.includes('jus')) return 'assets/jus de baobab.png';
+    if (cat.includes('viennois')) return 'assets/Croissant.png';
+    if (cat.includes('patiss') || cat.includes('pâtiss')) return 'assets/Gateau1.png';
+    if (cat.includes('traiteur') || cat.includes('snack')) return 'assets/Pizza.png';
+    return 'assets/baguette 200.png';
+}
+
 // -------------------------------------------------------------
 // 2. PRODUCT CATALOG & SEARCH
 // -------------------------------------------------------------
 async function loadPosProducts() {
     try {
-        // Try local static products.json first
         const res = await fetch('data/products.json');
         if (res.ok) {
             const data = await res.json();
             const productList = Array.isArray(data) ? data : (data.products || []);
             if (productList.length > 0) {
-                posProducts = productList.map(p => ({
-                    id: p.id || p._id || p.nom,
-                    name: p.nom || p.name,
-                    price: p.prix || p.price,
-                    category: (p.categorie || p.category || 'pains').toLowerCase(),
-                    image: p.image || 'assets/baguette 200.png',
-                    stock: p.stock !== undefined ? p.stock : 30
-                }));
+                posProducts = productList.map(p => {
+                    const pName = p.nom || p.name;
+                    const pCat = (p.categorie || p.category || 'pains').toLowerCase();
+                    return {
+                        id: p.id || p._id || pName,
+                        name: pName,
+                        price: p.prix || p.price,
+                        category: pCat,
+                        image: resolveProductImage(pName, p.image, pCat),
+                        stock: p.stock !== undefined ? p.stock : 30
+                    };
+                });
                 renderPosProductsGrid();
                 return;
             }
         }
     } catch (_) {}
 
-    posProducts = [...FALLBACK_POS_PRODUCTS];
+    posProducts = FALLBACK_POS_PRODUCTS.map(p => ({
+        ...p,
+        image: resolveProductImage(p.name, p.image, p.category)
+    }));
     renderPosProductsGrid();
 }
 

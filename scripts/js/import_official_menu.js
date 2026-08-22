@@ -1,4 +1,4 @@
-const { initDB } = require('./db.js');
+const { initDB } = require('../../db.js');
 
 const menuItems = [
     // === BOISSONS ===
