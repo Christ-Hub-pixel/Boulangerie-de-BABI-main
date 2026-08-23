@@ -71,17 +71,24 @@
                     </a>
                 </li>
                 <li>
+                    <a href="#cashiers" onclick="switchAdminSection('cashiers'); return false;" class="saas-nav-item" id="nav-cashiers" style="background: rgba(245, 158, 11, 0.08); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.2);">
+                        <span class="material-symbols-outlined saas-nav-icon" style="color: #f59e0b;">point_of_sale</span>
+                        <span style="font-weight: 700;">Caissières & Postes</span>
+                        <span class="saas-badge-pill" id="sidebar-online-cashiers-badge" style="background: #16a34a; color: #fff; font-size: 9px; margin-left: auto; padding: 2px 6px;">0 en ligne</span>
+                    </a>
+                </li>
+                <li>
                     <div class="saas-nav-item" style="display: flex; justify-content: space-between; align-items: center;" onclick="toggleUsersMenu()">
                         <div style="display: flex; align-items: center; gap: 12px;">
                             <span class="material-symbols-outlined saas-nav-icon">group</span>
-                            <span>Personnel & Utilisateurs</span>
+                            <span>Personnel & Clients</span>
                         </div>
                         <span class="material-symbols-outlined text-xs" id="usersMenuArrow">expand_more</span>
                     </div>
                     <ul class="saas-nav-submenu" id="usersSubmenu">
-                        <li><a href="#users" onclick="switchAdminSection('users'); return false;" class="saas-subnav-item">• Tous les Utilisateurs</a></li>
+                        <li><a href="#cashiers" onclick="switchAdminSection('cashiers'); return false;" class="saas-subnav-item">• 👩‍💼 Gestion des Caissières</a></li>
+                        <li><a href="#users" onclick="switchAdminSection('users'); return false;" class="saas-subnav-item">• Tous les Collaborateurs</a></li>
                         <li><a href="#users" onclick="switchAdminSection('users'); filterUsersRole('gerante'); return false;" class="saas-subnav-item">• Gérantes Fournil</a></li>
-                        <li><a href="#users" onclick="switchAdminSection('users'); filterUsersRole('caissiere'); return false;" class="saas-subnav-item">• Caissières POS</a></li>
                         <li><a href="#users" onclick="switchAdminSection('users'); filterUsersRole('client'); return false;" class="saas-subnav-item">• Clients Fidélité</a></li>
                     </ul>
                 </li>
@@ -592,7 +599,87 @@
             </div>
 
             <!-- =============================================================
-                 SECTION 6: PERSONNEL & UTILISATEURS
+                 SECTION: CAISSIÈRES & POSTES POS (CONTRÔLE ADMINISTRATEUR EXCLUSIF)
+                 ============================================================= -->
+            <div id="section-cashiers" class="admin-tab-section">
+                <!-- 3 Top Cashier Mini KPI Cards -->
+                <section class="saas-kpi-grid mb-4" style="padding-top: 0;">
+                    <div class="saas-kpi-card" style="border-left: 4px solid #f59e0b;">
+                        <div class="saas-kpi-icon-box yellow">
+                            <span class="material-symbols-outlined text-2xl">point_of_sale</span>
+                        </div>
+                        <div>
+                            <span class="saas-kpi-label">Caissières Validées</span>
+                            <div class="saas-kpi-value" id="cashier-total-count">0</div>
+                            <span class="saas-kpi-badge">Créées par l'Admin</span>
+                        </div>
+                    </div>
+
+                    <div class="saas-kpi-card" style="border-left: 4px solid #16a34a;">
+                        <div class="saas-kpi-icon-box green">
+                            <span class="material-symbols-outlined text-2xl">sensors</span>
+                        </div>
+                        <div>
+                            <span class="saas-kpi-label">Caissières En Ligne</span>
+                            <div class="saas-kpi-value" id="cashier-online-count" style="color: #16a34a;">0</div>
+                            <span class="saas-kpi-badge positive"><span class="saas-dot-online"></span> Session Active POS</span>
+                        </div>
+                    </div>
+
+                    <div class="saas-kpi-card" style="border-left: 4px solid #ef4444;">
+                        <div class="saas-kpi-icon-box pink">
+                            <span class="material-symbols-outlined text-2xl">block</span>
+                        </div>
+                        <div>
+                            <span class="saas-kpi-label">Comptes Suspendus</span>
+                            <div class="saas-kpi-value" id="cashier-suspended-count">0</div>
+                            <span class="saas-kpi-badge" style="color: #ef4444;">Accès Verrouillé</span>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Live Cashier Control Table -->
+                <div class="saas-card">
+                    <div class="saas-card-header flex-wrap gap-3">
+                        <div>
+                            <h3 class="saas-card-title">Supervision & Contrôle des Profils Caissières</h3>
+                            <p class="saas-card-subtitle">Seul l'Administrateur peut créer, valider, autoriser, modifier ou déconnecter à distance une caissière.</p>
+                        </div>
+                        <div class="d-flex align-items-center gap-2">
+                            <button type="button" class="btn-sm btn-primary-gold" onclick="openCreateCashierModal()">
+                                <i class="fa-solid fa-user-plus me-1"></i> + Créer un Profil Caissière & Valider
+                            </button>
+                            <button type="button" class="btn-sm btn-outline-primary" onclick="loadCashiersData()">
+                                <i class="fa-solid fa-rotate me-1"></i> Actualiser
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="saas-table-wrapper" style="max-height: 600px; overflow-y: auto;">
+                        <table class="saas-table" id="cashiers-control-table">
+                            <thead>
+                                <tr>
+                                    <th>Caissière</th>
+                                    <th>Caisse Assignée</th>
+                                    <th>Identifiant / Email</th>
+                                    <th>Téléphone</th>
+                                    <th>Code PIN</th>
+                                    <th>Autorisation Compte</th>
+                                    <th>Statut Session</th>
+                                    <th>Prise de Poste</th>
+                                    <th style="text-align: right;">Contrôle Administrateur</th>
+                                </tr>
+                            </thead>
+                            <tbody id="cashiers-full-tbody">
+                                <tr><td colspan="9" class="text-center py-4 text-muted">Chargement des profils caissières...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- =============================================================
+                 SECTION 6: PERSONNEL & CLIENTS
                  ============================================================= -->
             <div id="section-users" class="admin-tab-section">
                 <div class="saas-card">
@@ -904,6 +991,133 @@
                 <div class="prestige-modal-actions">
                     <button type="button" onclick="closeChangePasswordModal()" class="btn-modal-cancel">Annuler</button>
                     <button type="submit" class="btn-modal-submit-gold">Enregistrer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal 7: Créer un Profil Caissière (Exclusivité Administrateur) -->
+    <div id="createCashierModal" class="prestige-modal-backdrop hidden">
+        <div class="prestige-modal-card" style="max-width: 520px;">
+            <div class="prestige-modal-header" style="background: linear-gradient(135deg, #f59e0b, #d97706); color: #fff;">
+                <div class="d-flex align-items-center gap-2">
+                    <i class="fa-solid fa-cash-register fs-5 text-white"></i>
+                    <h3 class="prestige-modal-title text-white mb-0">+ Créer & Valider un Profil Caissière</h3>
+                </div>
+                <button type="button" onclick="closeCreateCashierModal()" class="prestige-modal-close-btn text-white">✕</button>
+            </div>
+            <form onsubmit="handleCreateCashierSubmit(event)" style="display: flex; flex-direction: column; gap: 12px; padding: 16px 0;">
+                <p class="small text-muted mb-1 px-4">Seul l'administrateur est habilité à créer et activer un accès au terminal de caisse tactile.</p>
+                
+                <div class="prestige-form-group">
+                    <label class="prestige-form-label">Nom de Famille * :</label>
+                    <input type="text" id="new-cashier-nom" class="prestige-form-input" placeholder="Ex: Kouassi" required/>
+                </div>
+
+                <div class="prestige-form-group">
+                    <label class="prestige-form-label">Prénom * :</label>
+                    <input type="text" id="new-cashier-prenom" class="prestige-form-input" placeholder="Ex: Awa" required/>
+                </div>
+
+                <div class="prestige-form-group">
+                    <label class="prestige-form-label">Identifiant / Email Professionnel * :</label>
+                    <input type="email" id="new-cashier-email" class="prestige-form-input" placeholder="Ex: caisse.riviera@babi.ci" required/>
+                </div>
+
+                <div class="prestige-form-group">
+                    <label class="prestige-form-label">Téléphone Mobile (Format Wave) * :</label>
+                    <input type="text" id="new-cashier-phone" class="prestige-form-input" placeholder="+225 07 05 06 07 08" required/>
+                </div>
+
+                <div class="prestige-form-group">
+                    <label class="prestige-form-label">Poste de Caisse Assigné * :</label>
+                    <select id="new-cashier-caisse" class="prestige-form-input">
+                        <option value="Caisse 1 - Riviera">🥖 Caisse 1 - Riviera (Principale)</option>
+                        <option value="Caisse 2 - Plateau">🥐 Caisse 2 - Plateau (Comptoir)</option>
+                        <option value="Caisse 3 - Drive Express">🛵 Caisse 3 - Drive & Retraits</option>
+                        <option value="Caisse 4 - Zone 4">🍰 Caisse 4 - Zone 4 (Pâtisserie)</option>
+                    </select>
+                </div>
+
+                <div class="prestige-form-group">
+                    <label class="prestige-form-label">Code PIN Caisse (4 Chiffres) * :</label>
+                    <input type="text" id="new-cashier-pin" class="prestige-form-input" placeholder="Ex: 1234" maxlength="6" value="1234" required/>
+                    <small class="text-muted">Utilisé pour le déverrouillage tactile rapide du terminal POS.</small>
+                </div>
+
+                <div class="prestige-form-group">
+                    <label class="prestige-form-label">Mot de Passe de Secours :</label>
+                    <input type="password" id="new-cashier-pass" class="prestige-form-input" value="caisse123" required/>
+                </div>
+
+                <div class="prestige-modal-actions">
+                    <button type="button" onclick="closeCreateCashierModal()" class="btn-modal-cancel">Annuler</button>
+                    <button type="submit" class="btn-modal-submit-gold" style="background: linear-gradient(135deg, #f59e0b, #d97706); border:none;">
+                        <i class="fa-solid fa-circle-check me-1"></i> Valider & Autoriser la Caissière
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal 8: Modifier Profil Caissière & Réassigner Caisse -->
+    <div id="editCashierModal" class="prestige-modal-backdrop hidden">
+        <div class="prestige-modal-card" style="max-width: 520px;">
+            <div class="prestige-modal-header">
+                <div class="d-flex align-items-center gap-2">
+                    <i class="fa-solid fa-user-pen fs-5 text-warning"></i>
+                    <h3 class="prestige-modal-title mb-0">Modifier Profil Caissière & Caisse</h3>
+                </div>
+                <button type="button" onclick="closeEditCashierModal()" class="prestige-modal-close-btn">✕</button>
+            </div>
+            <form onsubmit="handleEditCashierSubmit(event)" style="display: flex; flex-direction: column; gap: 12px; padding: 16px 0;">
+                <input type="hidden" id="edit-cashier-id"/>
+
+                <div class="prestige-form-group">
+                    <label class="prestige-form-label">Nom de Famille :</label>
+                    <input type="text" id="edit-cashier-nom" class="prestige-form-input" required/>
+                </div>
+
+                <div class="prestige-form-group">
+                    <label class="prestige-form-label">Prénom :</label>
+                    <input type="text" id="edit-cashier-prenom" class="prestige-form-input" required/>
+                </div>
+
+                <div class="prestige-form-group">
+                    <label class="prestige-form-label">Identifiant / Email :</label>
+                    <input type="email" id="edit-cashier-email" class="prestige-form-input" required/>
+                </div>
+
+                <div class="prestige-form-group">
+                    <label class="prestige-form-label">Téléphone :</label>
+                    <input type="text" id="edit-cashier-phone" class="prestige-form-input"/>
+                </div>
+
+                <div class="prestige-form-group">
+                    <label class="prestige-form-label">Poste de Caisse Assigné :</label>
+                    <select id="edit-cashier-caisse" class="prestige-form-input">
+                        <option value="Caisse 1 - Riviera">🥖 Caisse 1 - Riviera (Principale)</option>
+                        <option value="Caisse 2 - Plateau">🥐 Caisse 2 - Plateau (Comptoir)</option>
+                        <option value="Caisse 3 - Drive Express">🛵 Caisse 3 - Drive & Retraits</option>
+                        <option value="Caisse 4 - Zone 4">🍰 Caisse 4 - Zone 4 (Pâtisserie)</option>
+                    </select>
+                </div>
+
+                <div class="prestige-form-group">
+                    <label class="prestige-form-label">Code PIN Caisse :</label>
+                    <input type="text" id="edit-cashier-pin" class="prestige-form-input" maxlength="6"/>
+                </div>
+
+                <div class="prestige-form-group">
+                    <label class="prestige-form-label">Nouveau Mot de Passe (laisser vide pour ne pas changer) :</label>
+                    <input type="password" id="edit-cashier-pass" class="prestige-form-input" placeholder="Optionnel"/>
+                </div>
+
+                <div class="prestige-modal-actions">
+                    <button type="button" onclick="closeEditCashierModal()" class="btn-modal-cancel">Annuler</button>
+                    <button type="submit" class="btn-modal-submit-gold">
+                        <i class="fa-solid fa-save me-1"></i> Enregistrer les Modifications
+                    </button>
                 </div>
             </form>
         </div>

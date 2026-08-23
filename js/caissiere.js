@@ -52,8 +52,9 @@ document.addEventListener('DOMContentLoaded', () => {
     refreshPickupQueue();
     updateSessionStats();
     renderHistoryTable();
-    updateCashierHeaderUI();
+    initCashierAuthGuard();
     setInterval(updateClock, 1000);
+    setInterval(verifyCashierSessionGuard, 2500); // Heartbeat session check
     
     // Instant sync across tabs when orders are placed
     window.addEventListener('storage', (e) => {
@@ -1690,61 +1691,307 @@ function submitCashMovement() {
     showPosToast(`💵 Mouvement enregistré : ${type === 'in' ? '+' : '−'}${amount.toLocaleString()} FCFA (${reason})`, 'success');
 }
 
-// --- SWITCH CASHIER MODAL ---
+// ================================================================
+// 👩‍💼 GESTION SESSION CAISSIÈRE, PIN PAD & CONTRÔLE ADMINISTRATEUR
+// ================================================================
+
+let currentCashierSession = null;
+let currentCashierToken = null;
+let lockPinInput = '';
+let availableCashiersList = [];
+
+function getActiveCashier() {
+    if (currentCashierSession) return currentCashierSession;
+    try {
+        const stored = localStorage.getItem('babi_cashier_session');
+        if (stored) {
+            currentCashierSession = JSON.parse(stored);
+            return currentCashierSession;
+        }
+    } catch (_) {}
+    return {
+        id: 1,
+        nom: 'Kouassi',
+        prenom: 'Awa',
+        email: 'caisse.riviera@babi.ci',
+        caisse_assignee: 'Caisse 1 - Riviera',
+        code_pin: '1234',
+        avatar: 'assets/caissiere.png'
+    };
+}
+
+// 1. Initialiser le garde de session au chargement
+async function initCashierAuthGuard() {
+    try {
+        const token = localStorage.getItem('babi_cashier_token');
+        const session = localStorage.getItem('babi_cashier_session');
+
+        if (!token || !session) {
+            showPosLockScreen();
+            return;
+        }
+
+        currentCashierSession = JSON.parse(session);
+        currentCashierToken = token;
+        updateCashierHeaderUI();
+
+        // Vérifier l'état auprès du backend
+        await verifyCashierSessionGuard();
+    } catch (_) {
+        showPosLockScreen();
+    }
+}
+
+// 2. Vérification périodique de session (Heartbeat Guard)
+async function verifyCashierSessionGuard() {
+    try {
+        const token = currentCashierToken || localStorage.getItem('babi_cashier_token');
+        const cashier = currentCashierSession || JSON.parse(localStorage.getItem('babi_cashier_session') || '{}');
+
+        if (!token && !cashier.id) return;
+
+        const res = await fetch(`${API_ROOT}/api/cashier/session-check?token=${encodeURIComponent(token || '')}&cashier_id=${cashier.id || ''}`);
+        if (!res.ok) return;
+
+        const data = await res.json();
+        if (data.valid === false) {
+            handleAdminRemoteDisconnect(data.message || "Votre session a été clôturée à distance par l'administrateur.");
+        }
+    } catch (_) {}
+}
+
+// 3. Gestionnaire des événements temps réel (BroadcastChannel)
+function handleCaissiereGlobalSync(data) {
+    if (!data) return;
+
+    if (data.type === 'CASHIER_FORCE_LOGOUT') {
+        const current = getActiveCashier();
+        if (!data.cashier_id || String(data.cashier_id) === String(current.id)) {
+            handleAdminRemoteDisconnect("🔴 Votre session a été déconnectée à distance par l'administrateur.");
+        }
+    } else if (data.type === 'CASHIER_CREATED' || data.type === 'CASHIER_UPDATED') {
+        loadValidCashiersIntoSelect();
+    }
+}
+
+// 4. Déconnexion à distance ordonnée par l'Administrateur
+function handleAdminRemoteDisconnect(reason) {
+    playPosAudio('buzz');
+
+    // Nettoyer la session locale
+    localStorage.removeItem('babi_cashier_token');
+    localStorage.removeItem('babi_cashier_session');
+    currentCashierSession = null;
+    currentCashierToken = null;
+
+    showPosLockScreen(reason || "Votre session a été déconnectée à distance par l'administrateur.");
+}
+
+// 5. Afficher et masquer le Lock Screen
+async function showPosLockScreen(alertMsg = '') {
+    const modal = document.getElementById('posLockScreenModal');
+    if (!modal) return;
+
+    const alertEl = document.getElementById('pos-lock-alert');
+    const alertTextEl = document.getElementById('pos-lock-alert-text');
+    if (alertMsg) {
+        if (alertEl) alertEl.classList.remove('hidden');
+        if (alertTextEl) alertTextEl.textContent = alertMsg;
+    } else {
+        if (alertEl) alertEl.classList.add('hidden');
+    }
+
+    clearLockPin();
+    modal.classList.remove('hidden');
+    await loadValidCashiersIntoSelect();
+}
+
+function hidePosLockScreen() {
+    const modal = document.getElementById('posLockScreenModal');
+    if (modal) modal.classList.add('hidden');
+}
+
+// 6. Charger la liste des caissières créées et validées par l'Admin
+async function loadValidCashiersIntoSelect() {
+    const select = document.getElementById('pos-lock-cashier-select');
+    if (!select) return;
+
+    try {
+        const res = await fetch(`${API_ROOT}/api/admin/cashiers`);
+        if (res.ok) {
+            const list = await res.json();
+            availableCashiersList = list || [];
+        }
+    } catch (_) {}
+
+    if (availableCashiersList.length === 0) {
+        availableCashiersList = [
+            { id: 1, nom: 'Kouassi', prenom: 'Awa', email: 'caisse.riviera@babi.ci', caisse_assignee: 'Caisse 1 - Riviera', code_pin: '1234', statut: 'actif' },
+            { id: 2, nom: 'Koné', prenom: 'Fatou', email: 'caisse.plateau@babi.ci', caisse_assignee: 'Caisse 2 - Plateau', code_pin: '5678', statut: 'actif' }
+        ];
+    }
+
+    select.innerHTML = availableCashiersList
+        .filter(c => c.statut === 'actif')
+        .map(c => `
+            <option value="${c.id}" data-pin="${c.code_pin || '1234'}" data-email="${c.email}">
+                👩‍💼 ${escapeHtml(c.prenom || '')} ${escapeHtml(c.nom || '')} — ${escapeHtml(c.caisse_assignee || 'Caisse 1')} (${escapeHtml(c.email)})
+            </option>
+        `).join('');
+}
+
+function handleSelectedCashierChange() {
+    clearLockPin();
+}
+
+// 7. Saisie du Code PIN sur le NumPad Tactile
+function pressLockPin(digit) {
+    if (lockPinInput.length < 6) {
+        lockPinInput += digit;
+        updateLockPinDisplay();
+        playPosAudio('click');
+        if (lockPinInput.length === 4) {
+            setTimeout(submitLockPin, 250);
+        }
+    }
+}
+
+function clearLockPin() {
+    lockPinInput = '';
+    updateLockPinDisplay();
+}
+
+function updateLockPinDisplay() {
+    const display = document.getElementById('pos-lock-pin-display');
+    if (display) {
+        display.value = '•'.repeat(lockPinInput.length);
+    }
+}
+
+// 8. Validation du PIN et ouverture de session
+async function submitLockPin() {
+    if (!lockPinInput) {
+        showPosToast("Veuillez composer votre code PIN.", "warning");
+        return;
+    }
+
+    const select = document.getElementById('pos-lock-cashier-select');
+    const selectedId = select ? select.value : '';
+    const selectedOption = select ? select.options[select.selectedIndex] : null;
+    const selectedEmail = selectedOption ? selectedOption.getAttribute('data-email') : '';
+
+    try {
+        const res = await fetch(`${API_ROOT}/api/cashier/login`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: selectedEmail, pin_code: lockPinInput })
+        });
+        const data = await res.json();
+
+        if (!res.ok) {
+            playPosAudio('buzz');
+            const alertEl = document.getElementById('pos-lock-alert');
+            const alertTextEl = document.getElementById('pos-lock-alert-text');
+            if (alertEl) alertEl.classList.remove('hidden');
+            if (alertTextEl) alertTextEl.textContent = data.error || "Code PIN incorrect.";
+            clearLockPin();
+            return;
+        }
+
+        currentCashierSession = data.cashier;
+        currentCashierToken = data.token;
+        localStorage.setItem('babi_cashier_session', JSON.stringify(data.cashier));
+        localStorage.setItem('babi_cashier_token', data.token);
+
+        updateCashierHeaderUI();
+        hidePosLockScreen();
+        playPosAudio('chime');
+        showPosToast(`✨ Session ouverte : ${data.cashier.prenom} ${data.cashier.nom} (${data.cashier.caisse_assignee})`, 'success');
+    } catch (err) {
+        // Mode hors-ligne / fallback local
+        const expectedPin = selectedOption ? selectedOption.getAttribute('data-pin') : '1234';
+        if (lockPinInput === expectedPin) {
+            const cashier = availableCashiersList.find(c => String(c.id) === String(selectedId)) || {
+                id: 1,
+                nom: 'Kouassi',
+                prenom: 'Awa',
+                caisse_assignee: 'Caisse 1 - Riviera'
+            };
+            currentCashierSession = cashier;
+            currentCashierToken = `OFFLINE_SES_${Date.now()}`;
+            localStorage.setItem('babi_cashier_session', JSON.stringify(cashier));
+            localStorage.setItem('babi_cashier_token', currentCashierToken);
+            updateCashierHeaderUI();
+            hidePosLockScreen();
+            playPosAudio('chime');
+            showPosToast(`✨ Session locale ouverte : ${cashier.prenom} ${cashier.nom}`, 'success');
+        } else {
+            playPosAudio('buzz');
+            clearLockPin();
+            alert("Code PIN erroné.");
+        }
+    }
+}
+
+// 9. Mise à jour de l'affichage de l'identité caissière dans le header
+function updateCashierHeaderUI() {
+    const cashier = getActiveCashier();
+    const nameEl = document.getElementById('caissiere-name-badge');
+    const roleEl = document.getElementById('caissiere-role-badge');
+    const dropNameEl = document.getElementById('dropdown-cashier-name');
+    const dropRoleEl = document.getElementById('dropdown-cashier-role');
+    const headerAvatar = document.getElementById('pos-header-avatar');
+    const dropAvatar = document.getElementById('dropdown-cashier-avatar');
+
+    const fullName = `${cashier.prenom || ''} ${cashier.nom || ''}`.trim() || 'Awa Kouassi';
+    const caisseLabel = cashier.caisse_assignee || 'Caisse 1 - Riviera';
+    const avatarUrl = cashier.avatar || 'assets/caissiere.png';
+
+    if (nameEl) {
+        nameEl.innerHTML = `${escapeHtml(fullName)} <span class="bg-amber-400 text-black text-[9px] font-black px-1.5 py-0.2 rounded-md shadow-xs">VIP</span>`;
+    }
+    if (roleEl) {
+        roleEl.innerHTML = `Caissière • ${escapeHtml(caisseLabel)} 🥐`;
+    }
+    if (dropNameEl) dropNameEl.textContent = fullName;
+    if (dropRoleEl) dropRoleEl.textContent = `Caissière • ${caisseLabel}`;
+    if (headerAvatar) headerAvatar.src = avatarUrl;
+    if (dropAvatar) dropAvatar.src = avatarUrl;
+}
+
+// 10. Changement rapide de caissière
 function openSwitchCashierModal() {
     const menu = document.getElementById('posProfileDropdownMenu');
     if (menu) menu.classList.add('hidden');
-    renderCashierSelectList();
-    document.getElementById('posSwitchCashierModal').classList.remove('hidden');
+    showPosLockScreen();
 }
 
 function closeSwitchCashierModal() {
-    document.getElementById('posSwitchCashierModal').classList.add('hidden');
+    document.getElementById('posSwitchCashierModal')?.classList.add('hidden');
 }
 
-function renderCashierSelectList() {
-    const container = document.getElementById('cashier-select-list');
-    if (!container) return;
-    const current = getActiveCashier();
+// 11. Déconnexion volontaire par la caissière
+async function handleCashierLogout() {
+    if (confirm("Voulez-vous fermer votre session de caisse et verrouiller le terminal ?")) {
+        const cashier = getActiveCashier();
+        const token = currentCashierToken || localStorage.getItem('babi_cashier_token');
 
-    container.innerHTML = REGISTERED_CASHIERS.map(c => {
-        const isCurrent = c.id === current.id;
-        return `
-            <div onclick="switchActiveCashier('${c.id}')" class="p-3 rounded-2xl border ${isCurrent ? 'border-amber-400 bg-amber-50/80 shadow-xs' : 'border-outline-variant/30 bg-surface hover:bg-surface-container'} flex items-center justify-between cursor-pointer transition-all">
-                <div class="flex items-center gap-3">
-                    <img src="${c.avatar}" class="w-11 h-11 rounded-full border-2 ${isCurrent ? 'border-amber-500' : 'border-outline-variant'} object-cover" alt="${c.name}"/>
-                    <div>
-                        <div class="flex items-center gap-1.5">
-                            <strong class="text-xs font-bold text-on-surface">${c.name}</strong>
-                            <span class="bg-amber-400 text-black text-[9px] font-black px-1.5 py-0.2 rounded-md">${c.badge}</span>
-                        </div>
-                        <p class="text-[11px] text-on-surface-variant">${c.role}</p>
-                        <p class="text-[10px] text-amber-800 font-mono font-semibold">${c.shift}</p>
-                    </div>
-                </div>
-                ${isCurrent ? '<span class="material-symbols-outlined text-emerald-600 text-xl font-bold">check_circle</span>' : '<span class="material-symbols-outlined text-outline-variant text-base">radio_button_unchecked</span>'}
-            </div>
-        `;
-    }).join('');
-}
+        try {
+            await fetch(`${API_ROOT}/api/cashier/logout`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ cashier_id: cashier.id, token })
+            });
+        } catch (_) {}
 
-function switchActiveCashier(id) {
-    const selected = REGISTERED_CASHIERS.find(c => c.id === id);
-    if (selected) {
-        localStorage.setItem('babi_active_cashier', JSON.stringify(selected));
-        updateCashierHeaderUI();
-        closeSwitchCashierModal();
-        playPosAudio('chime');
-        showPosToast(`✨ Caissière connectée : ${selected.name} (${selected.badge})`, 'success');
+        localStorage.removeItem('babi_cashier_token');
+        localStorage.removeItem('babi_cashier_session');
+        currentCashierSession = null;
+        currentCashierToken = null;
+
+        showPosToast("Session de caisse clôturée.", "info");
+        showPosLockScreen();
     }
 }
 
-function handleCashierLogout() {
-    if (confirm("Voulez-vous fermer votre session de caisse et vous déconnecter ?")) {
-        showPosToast("Session de caisse clôturée avec succès.", "info");
-        setTimeout(() => {
-            window.location.href = "index.html";
-        }, 800);
-    }
-}
 

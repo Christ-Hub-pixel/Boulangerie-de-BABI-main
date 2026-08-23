@@ -6,6 +6,7 @@ const API_ROOT = (typeof window !== 'undefined' && (window.API_BASE_URL || (wind
 
 let allOrders = [];
 let allProducts = [];
+let allCashiers = [];
 let allUsers = [];
 let allTransactions = [];
 let allWavePayouts = [];
@@ -68,8 +69,9 @@ function switchAdminSection(sectionId) {
         'orders': { title: 'Commandes & Réservations', subtitle: 'Supervision et traitement des flux de commande en direct' },
         'wave-payouts': { title: 'Trésorerie & Wave Payouts (API v1)', subtitle: 'Gestion des virements de masse, salaires et remboursements automatiques' },
         'transactions': { title: 'Grand Livre des Transactions', subtitle: 'Journal comptable et scellements cryptographiques certifiés' },
+        'cashiers': { title: '👩‍💼 Caissières & Postes POS', subtitle: 'Gestion exclusive des profils, validation des accès et contrôle des sessions à distance' },
         'products': { title: 'Catalogue & Fournil', subtitle: 'Gestion des 48 produits, stocks et seuils d\'alerte' },
-        'users': { title: 'Personnel & Utilisateurs', subtitle: 'Comptes collaborateurs, gérantes et clients du Club Fidélité' },
+        'users': { title: 'Personnel & Clients', subtitle: 'Comptes collaborateurs, gérantes et clients du Club Fidélité' },
         'audit': { title: 'Sécurité & Audit Logs', subtitle: 'Détection IDS/IPS, intégrité Merkle et pare-feu anti-fraude' },
         'settings': { title: 'Paramètres & Configuration', subtitle: 'Clés Wave Business, signature HMAC-SHA256 et préférences' }
     };
@@ -81,6 +83,7 @@ function switchAdminSection(sectionId) {
     if (subEl) subEl.textContent = info.subtitle;
 
     // Actions spécifiques par onglet
+    if (sectionId === 'cashiers') loadCashiersData();
     if (sectionId === 'wave-payouts') loadWavePayoutHistory();
     if (sectionId === 'audit') loadSecurityAuditLogs();
 
@@ -125,6 +128,7 @@ async function fetchAdminData() {
             loadStats(),
             loadOrders(),
             loadProducts(),
+            loadCashiersData(),
             loadUsers(),
             loadTransactions()
         ]);
@@ -1157,3 +1161,272 @@ function handleAdminLogout() {
         window.location.href = 'index.html';
     }
 }
+
+// ================================================================
+// 8. 👩‍💼 GESTION CENTRALE DES CAISSIÈRES & CONTRÔLE DES SESSIONS POS
+// ================================================================
+
+async function loadCashiersData() {
+    try {
+        const res = await fetch(`${API_ROOT}/api/admin/cashiers`);
+        if (!res.ok) return;
+        const cashiers = await res.json();
+        allCashiers = cashiers || [];
+
+        // Calcul des métriques caissières
+        const total = allCashiers.length;
+        const onlineCount = allCashiers.filter(c => c.is_online === 1).length;
+        const suspendedCount = allCashiers.filter(c => c.statut === 'suspendu').length;
+
+        // Mise à jour des KPI cards
+        const totalEl = document.getElementById('cashier-total-count');
+        const onlineEl = document.getElementById('cashier-online-count');
+        const suspEl = document.getElementById('cashier-suspended-count');
+        const badgeEl = document.getElementById('sidebar-online-cashiers-badge');
+
+        if (totalEl) totalEl.textContent = total;
+        if (onlineEl) onlineEl.textContent = onlineCount;
+        if (suspEl) suspEl.textContent = suspendedCount;
+        if (badgeEl) badgeEl.textContent = `${onlineCount} en ligne`;
+
+        const tbody = document.getElementById('cashiers-full-tbody');
+        if (!tbody) return;
+
+        if (allCashiers.length === 0) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="9" class="text-center py-5 text-muted">
+                        <i class="fa-solid fa-cash-register fs-3 text-warning d-block mb-2"></i>
+                        Aucune caissière enregistrée. Cliquez sur <strong>"+ Créer un Profil Caissière & Valider"</strong> pour attribuer un poste POS.
+                    </td>
+                </tr>
+            `;
+            return;
+        }
+
+        tbody.innerHTML = allCashiers.map(c => {
+            const isOnline = c.is_online === 1;
+            const isSuspended = c.statut === 'suspendu';
+
+            const statusCompteBadge = isSuspended
+                ? `<span class="saas-badge-pill danger"><i class="fa-solid fa-lock me-1"></i> Suspendu</span>`
+                : `<span class="saas-badge-pill active"><i class="fa-solid fa-circle-check me-1"></i> Validé (Actif)</span>`;
+
+            const sessionBadge = isOnline
+                ? `<span class="badge bg-success text-white px-2 py-1 rounded-pill fw-bold" style="font-size:11px;"><span class="saas-dot-online me-1"></span> EN LIGNE (POS)</span>`
+                : `<span class="badge bg-secondary-subtle text-secondary px-2 py-1 rounded-pill fw-bold" style="font-size:11px;">⚪ Hors Ligne</span>`;
+
+            const dateLogin = c.derniere_connexion ? new Date(c.derniere_connexion).toLocaleString('fr-FR', { dateStyle: 'short', timeStyle: 'short' }) : 'Jamais';
+
+            return `
+                <tr>
+                    <td>
+                        <div class="d-flex align-items-center gap-2">
+                            <img src="${c.avatar || 'assets/caissiere.png'}" style="width: 38px; height: 38px; border-radius: 9999px; object-fit: cover; border: 2px solid ${isOnline ? '#16a34a' : '#cbd5e1'};">
+                            <div>
+                                <strong style="color: #0f172a; font-size: 13.5px;">${escapeHtml(c.prenom || '')} ${escapeHtml(c.nom || '')}</strong>
+                                <div style="font-size: 11px; color: #64748b;">ID #${c.id}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <span class="badge bg-warning-subtle text-dark border border-warning-subtle fw-bold px-2 py-1" style="font-size:11.5px;">
+                            ${escapeHtml(c.caisse_assignee || 'Caisse 1 - Riviera')}
+                        </span>
+                    </td>
+                    <td style="font-family: monospace; color: #0f172a;">${escapeHtml(c.email || '')}</td>
+                    <td style="font-family: monospace; color: #64748b;">${escapeHtml(c.telephone || '—')}</td>
+                    <td>
+                        <div class="d-flex align-items-center gap-1">
+                            <code class="px-2 py-0.5 rounded bg-light border font-mono fw-bold" style="letter-spacing: 2px;">${escapeHtml(c.code_pin || '1234')}</code>
+                        </div>
+                    </td>
+                    <td>${statusCompteBadge}</td>
+                    <td>${sessionBadge}</td>
+                    <td class="small text-muted font-mono">${dateLogin}</td>
+                    <td style="text-align: right;">
+                        <div class="d-inline-flex gap-1">
+                            ${isOnline ? `
+                                <button type="button" class="btn-xs btn-outline-danger" onclick="forceLogoutCashier(${c.id}, '${escapeHtml(c.prenom)} ${escapeHtml(c.nom)}')" title="Déconnecter à distance immédiatement">
+                                    <i class="fa-solid fa-power-off me-1"></i> Déconnecter
+                                </button>
+                            ` : ''}
+
+                            <button type="button" class="btn-xs ${isSuspended ? 'btn-outline-primary' : 'btn-outline-danger'}" onclick="toggleCashierStatus(${c.id})" title="${isSuspended ? 'Réactiver le compte' : 'Suspendre et bloquer l\'accès'}">
+                                <i class="fa-solid ${isSuspended ? 'fa-unlock text-success' : 'fa-lock'}"></i>
+                                ${isSuspended ? 'Activer' : 'Bloquer'}
+                            </button>
+
+                            <button type="button" class="btn-xs btn-outline-primary" onclick="openEditCashierModal(${c.id})" title="Modifier profil et caisse assignée">
+                                <i class="fa-solid fa-pen-to-square"></i>
+                            </button>
+
+                            <button type="button" class="btn-xs btn-outline-danger" onclick="deleteCashier(${c.id}, '${escapeHtml(c.prenom)} ${escapeHtml(c.nom)}')" title="Supprimer définitivement">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `;
+        }).join('');
+    } catch (e) {
+        console.error("Erreur chargement caissières:", e);
+    }
+}
+
+// 1. Création de Caissière (Modal)
+function openCreateCashierModal() {
+    document.getElementById('createCashierModal')?.classList.remove('hidden');
+}
+
+function closeCreateCashierModal() {
+    document.getElementById('createCashierModal')?.classList.add('hidden');
+}
+
+async function handleCreateCashierSubmit(e) {
+    e.preventDefault();
+    const nom = document.getElementById('new-cashier-nom')?.value;
+    const prenom = document.getElementById('new-cashier-prenom')?.value;
+    const email = document.getElementById('new-cashier-email')?.value;
+    const telephone = document.getElementById('new-cashier-phone')?.value;
+    const caisse_assignee = document.getElementById('new-cashier-caisse')?.value;
+    const code_pin = document.getElementById('new-cashier-pin')?.value;
+    const mot_de_passe = document.getElementById('new-cashier-pass')?.value;
+
+    try {
+        const res = await fetch(`${API_ROOT}/api/admin/cashiers`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ nom, prenom, email, telephone, caisse_assignee, code_pin, mot_de_passe })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || "Erreur lors de la création");
+
+        showAdminToast(`✅ Profil Caissière créé & validé avec succès pour ${prenom} ${nom} (${caisse_assignee}) !`, 'success');
+        closeCreateCashierModal();
+        loadCashiersData();
+
+        // Diffuser mise à jour globale
+        try {
+            const b = new BroadcastChannel('babi_global_sync');
+            b.postMessage({ type: 'CASHIER_CREATED', cashier: data.cashier });
+        } catch (_) {}
+    } catch (err) {
+        alert(err.message);
+    }
+}
+
+// 2. Modification de Caissière (Modal)
+function openEditCashierModal(id) {
+    const cashier = allCashiers.find(c => c.id === id);
+    if (!cashier) return;
+
+    document.getElementById('edit-cashier-id').value = cashier.id;
+    document.getElementById('edit-cashier-nom').value = cashier.nom || '';
+    document.getElementById('edit-cashier-prenom').value = cashier.prenom || '';
+    document.getElementById('edit-cashier-email').value = cashier.email || '';
+    document.getElementById('edit-cashier-phone').value = cashier.telephone || '';
+    document.getElementById('edit-cashier-caisse').value = cashier.caisse_assignee || 'Caisse 1 - Riviera';
+    document.getElementById('edit-cashier-pin').value = cashier.code_pin || '1234';
+    document.getElementById('edit-cashier-pass').value = '';
+
+    document.getElementById('editCashierModal')?.classList.remove('hidden');
+}
+
+function closeEditCashierModal() {
+    document.getElementById('editCashierModal')?.classList.add('hidden');
+}
+
+async function handleEditCashierSubmit(e) {
+    e.preventDefault();
+    const id = document.getElementById('edit-cashier-id')?.value;
+    const nom = document.getElementById('edit-cashier-nom')?.value;
+    const prenom = document.getElementById('edit-cashier-prenom')?.value;
+    const email = document.getElementById('edit-cashier-email')?.value;
+    const telephone = document.getElementById('edit-cashier-phone')?.value;
+    const caisse_assignee = document.getElementById('edit-cashier-caisse')?.value;
+    const code_pin = document.getElementById('edit-cashier-pin')?.value;
+    const mot_de_passe = document.getElementById('edit-cashier-pass')?.value;
+
+    try {
+        const res = await fetch(`${API_ROOT}/api/admin/cashiers/${id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ nom, prenom, email, telephone, caisse_assignee, code_pin, mot_de_passe })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || "Erreur modification");
+
+        showAdminToast("Profil caissière mis à jour avec succès !", 'success');
+        closeEditCashierModal();
+        loadCashiersData();
+    } catch (err) {
+        alert(err.message);
+    }
+}
+
+// 3. Déconnexion à distance forcée (Force Logout)
+async function forceLogoutCashier(id, name) {
+    if (!confirm(`Confirmez-vous la déconnexion forcée immédiate de ${name} du terminal de caisse ? Sa session sera immédiatement verrouillée.`)) {
+        return;
+    }
+
+    try {
+        const res = await fetch(`${API_ROOT}/api/admin/cashiers/${id}/force-logout`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' }
+        });
+        const data = await res.json();
+
+        // Émettre un signal instantané sur le bus de diffusion
+        try {
+            const b = new BroadcastChannel('babi_global_sync');
+            b.postMessage({ type: 'CASHIER_FORCE_LOGOUT', cashier_id: id });
+        } catch (_) {}
+
+        showAdminToast(`🔴 ${name} a été déconnectée du terminal de caisse.`, 'danger');
+        loadCashiersData();
+    } catch (err) {
+        alert("Erreur lors de la déconnexion : " + err.message);
+    }
+}
+
+// 4. Suspendre / Activer le compte caissière
+async function toggleCashierStatus(id) {
+    try {
+        const res = await fetch(`${API_ROOT}/api/admin/cashiers/${id}/toggle-status`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' }
+        });
+        const data = await res.json();
+
+        if (data.statut === 'suspendu') {
+            try {
+                const b = new BroadcastChannel('babi_global_sync');
+                b.postMessage({ type: 'CASHIER_FORCE_LOGOUT', cashier_id: id });
+            } catch (_) {}
+            showAdminToast(`⛔ Compte caissière suspendu. Accès bloqué.`, 'danger');
+        } else {
+            showAdminToast(`✅ Compte caissière réactivé avec succès.`, 'success');
+        }
+        loadCashiersData();
+    } catch (err) {
+        alert("Erreur changement statut : " + err.message);
+    }
+}
+
+// 5. Supprimer profil caissière
+async function deleteCashier(id, name) {
+    if (!confirm(`Êtes-vous sûr de vouloir supprimer définitivement le profil caissière de ${name} ?`)) {
+        return;
+    }
+
+    try {
+        await fetch(`${API_ROOT}/api/admin/cashiers/${id}`, { method: 'DELETE' });
+        showAdminToast(`Profil de ${name} supprimé.`, 'info');
+        loadCashiersData();
+    } catch (err) {
+        alert("Erreur suppression : " + err.message);
+    }
+}
+

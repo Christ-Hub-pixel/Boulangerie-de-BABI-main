@@ -301,6 +301,26 @@ async function initDB() {
         await db.run("ALTER TABLE orders ADD COLUMN security_flags TEXT");
     } catch (e) {}
 
+    // Cashier Session and Control Migrations
+    try {
+        await db.run("ALTER TABLE users ADD COLUMN statut TEXT DEFAULT 'actif'");
+    } catch (e) {}
+    try {
+        await db.run("ALTER TABLE users ADD COLUMN caisse_assignee TEXT DEFAULT 'Caisse 1 - Riviera'");
+    } catch (e) {}
+    try {
+        await db.run("ALTER TABLE users ADD COLUMN code_pin TEXT DEFAULT '1234'");
+    } catch (e) {}
+    try {
+        await db.run("ALTER TABLE users ADD COLUMN is_online INTEGER DEFAULT 0");
+    } catch (e) {}
+    try {
+        await db.run("ALTER TABLE users ADD COLUMN session_token TEXT");
+    } catch (e) {}
+    try {
+        await db.run("ALTER TABLE users ADD COLUMN derniere_connexion DATETIME");
+    } catch (e) {}
+
     // Seed default users for the 4 roles if not already present
     const defaultUsers = [
         { nom: 'Diallo', prenom: 'Amadou', email: 'client@babi.ci', telephone: '0701020304', mot_de_passe: 'client123', role: 'client', avatar: 'assets/avatar_client.png' },

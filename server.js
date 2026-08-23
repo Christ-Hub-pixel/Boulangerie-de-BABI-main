@@ -332,6 +332,263 @@ app.post('/api/auth/register', async (req, res) => {
     }
 });
 
+// ================================================================
+// 👩‍💼 GESTION CENTRALE DES CAISSIÈRES & SESSIONS PAR L'ADMINISTRATEUR
+// ================================================================
+
+// 1. Liste complète des caissières avec état de session en direct
+app.get('/api/admin/cashiers', async (req, res) => {
+    try {
+        const cashiers = await db.all(
+            `SELECT id, nom, prenom, email, telephone, role, avatar, statut, 
+                    caisse_assignee, code_pin, is_online, session_token, derniere_connexion, created_at 
+             FROM users 
+             WHERE role = 'caissiere' 
+             ORDER BY id DESC`
+        );
+        res.json(cashiers);
+    } catch (err) {
+        res.status(500).json({ error: "Erreur lors de la récupération des caissières : " + err.message });
+    }
+});
+
+// 2. Création et validation d'un profil caissière par l'Administrateur
+app.post('/api/admin/cashiers', async (req, res) => {
+    try {
+        const { nom, prenom, email, telephone, caisse_assignee, code_pin, mot_de_passe } = req.body;
+        if (!nom || !email) {
+            return res.status(400).json({ error: "Le nom et l'identifiant/email sont obligatoires." });
+        }
+
+        const existing = await db.get("SELECT id FROM users WHERE email = ?", [email.trim().toLowerCase()]);
+        if (existing) {
+            return res.status(400).json({ error: "Un profil existe déjà avec cet email/identifiant." });
+        }
+
+        const rawPassword = mot_de_passe || 'caisse123';
+        const hashedPassword = secureAuthService.hashPassword(rawPassword);
+        const pin = code_pin || '1234';
+        const caisse = caisse_assignee || 'Caisse 1 - Riviera';
+
+        const result = await db.run(
+            `INSERT INTO users (nom, prenom, email, telephone, mot_de_passe, role, avatar, statut, caisse_assignee, code_pin, is_online)
+             VALUES (?, ?, ?, ?, ?, 'caissiere', 'assets/caissiere.png', 'actif', ?, ?, 0)`,
+            [nom.trim(), prenom ? prenom.trim() : '', email.trim().toLowerCase(), telephone || '', hashedPassword, caisse, pin]
+        );
+
+        const newCashier = await db.get("SELECT id, nom, prenom, email, telephone, role, avatar, statut, caisse_assignee, code_pin, is_online FROM users WHERE id = ?", [result.lastID]);
+        
+        await recordSecurityAudit('ADMIN_CREATED_CASHIER', String(newCashier.id), 0, 'FAIBLE', req, {
+            admin: 'Super Admin',
+            cashier_name: `${newCashier.prenom} ${newCashier.nom}`,
+            caisse: newCashier.caisse_assignee
+        });
+
+        res.status(201).json({
+            success: true,
+            cashier: newCashier,
+            message: `Profil caissière validé avec succès pour ${newCashier.prenom} ${newCashier.nom} (${newCashier.caisse_assignee}) !`
+        });
+    } catch (err) {
+        res.status(500).json({ error: "Erreur création caissière : " + err.message });
+    }
+});
+
+// 3. Modification d'un profil caissière (Nom, Caisse assignée, PIN, Mot de passe)
+app.put('/api/admin/cashiers/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { nom, prenom, email, telephone, caisse_assignee, code_pin, mot_de_passe, statut } = req.body;
+
+        const cashier = await db.get("SELECT * FROM users WHERE id = ? AND role = 'caissiere'", [id]);
+        if (!cashier) {
+            return res.status(404).json({ error: "Profil caissière introuvable." });
+        }
+
+        let updatedPassword = cashier.mot_de_passe;
+        if (mot_de_passe && mot_de_passe.trim().length > 0) {
+            updatedPassword = secureAuthService.hashPassword(mot_de_passe.trim());
+        }
+
+        await db.run(
+            `UPDATE users 
+             SET nom = ?, prenom = ?, email = ?, telephone = ?, caisse_assignee = ?, code_pin = ?, mot_de_passe = ?, statut = ?
+             WHERE id = ?`,
+            [
+                nom || cashier.nom,
+                prenom !== undefined ? prenom : cashier.prenom,
+                email ? email.trim().toLowerCase() : cashier.email,
+                telephone || cashier.telephone,
+                caisse_assignee || cashier.caisse_assignee,
+                code_pin || cashier.code_pin,
+                updatedPassword,
+                statut || cashier.statut,
+                id
+            ]
+        );
+
+        res.json({ success: true, message: "Profil caissière mis à jour avec succès." });
+    } catch (err) {
+        res.status(500).json({ error: "Erreur modification caissière : " + err.message });
+    }
+});
+
+// 4. Déconnexion à distance forcée par l'Administrateur (Force Logout)
+app.post('/api/admin/cashiers/:id/force-logout', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const cashier = await db.get("SELECT id, nom, prenom, email, caisse_assignee FROM users WHERE id = ? AND role = 'caissiere'", [id]);
+        if (!cashier) {
+            return res.status(404).json({ error: "Profil caissière introuvable." });
+        }
+
+        // Invalider immédiatement la session en base
+        await db.run("UPDATE users SET is_online = 0, session_token = NULL WHERE id = ?", [id]);
+
+        await recordSecurityAudit('ADMIN_CASHIER_FORCE_LOGOUT', String(id), 10, 'FAIBLE', req, {
+            cashier_name: `${cashier.prenom} ${cashier.nom}`,
+            caisse: cashier.caisse_assignee
+        });
+
+        res.json({
+            success: true,
+            message: `La caissière ${cashier.prenom} ${cashier.nom} (${cashier.caisse_assignee}) a été déconnectée à distance par l'administrateur.`
+        });
+    } catch (err) {
+        res.status(500).json({ error: "Erreur lors de la déconnexion : " + err.message });
+    }
+});
+
+// 5. Basculer l'état (Activer / Suspendre)
+app.post('/api/admin/cashiers/:id/toggle-status', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const cashier = await db.get("SELECT id, nom, prenom, statut FROM users WHERE id = ? AND role = 'caissiere'", [id]);
+        if (!cashier) {
+            return res.status(404).json({ error: "Profil caissière introuvable." });
+        }
+
+        const newStatut = cashier.statut === 'actif' ? 'suspendu' : 'actif';
+        // Si suspendu, forcer la déconnexion
+        if (newStatut === 'suspendu') {
+            await db.run("UPDATE users SET statut = ?, is_online = 0, session_token = NULL WHERE id = ?", [newStatut, id]);
+        } else {
+            await db.run("UPDATE users SET statut = ? WHERE id = ?", [newStatut, id]);
+        }
+
+        res.json({
+            success: true,
+            statut: newStatut,
+            message: `Le profil de ${cashier.prenom} ${cashier.nom} est maintenant ${newStatut.toUpperCase()}.`
+        });
+    } catch (err) {
+        res.status(500).json({ error: "Erreur changement statut : " + err.message });
+    }
+});
+
+// 6. Suppression définitive d'un profil caissière
+app.delete('/api/admin/cashiers/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        await db.run("DELETE FROM users WHERE id = ? AND role = 'caissiere'", [id]);
+        res.json({ success: true, message: "Profil caissière supprimé." });
+    } catch (err) {
+        res.status(500).json({ error: "Erreur suppression caissière : " + err.message });
+    }
+});
+
+// 7. Connexion caisse dédiée (Email/Password ou PIN Pad)
+app.post('/api/cashier/login', async (req, res) => {
+    try {
+        const { email, pin_code, mot_de_passe } = req.body;
+        let cashier = null;
+
+        if (email) {
+            cashier = await db.get("SELECT * FROM users WHERE (email = ? OR telephone = ?) AND role = 'caissiere'", [email.trim().toLowerCase(), email.trim()]);
+            if (cashier && mot_de_passe) {
+                const valid = secureAuthService.verifyPassword(mot_de_passe, cashier.mot_de_passe);
+                if (!valid) cashier = null;
+            }
+        } else if (pin_code) {
+            cashier = await db.get("SELECT * FROM users WHERE code_pin = ? AND role = 'caissiere' AND statut = 'actif' LIMIT 1", [pin_code.trim()]);
+        }
+
+        if (!cashier) {
+            return res.status(401).json({ error: "Identifiant, mot de passe ou code PIN incorrect." });
+        }
+
+        if (cashier.statut !== 'actif') {
+            return res.status(403).json({ error: "⛔ Ce compte caissière a été suspendu par l'administrateur. Veuillez contacter la direction." });
+        }
+
+        // Générer token de session caisse unique
+        const token = `CASHIER_SES_${Date.now()}_${Math.random().toString(36).substring(2, 10)}`;
+        await db.run("UPDATE users SET is_online = 1, session_token = ?, derniere_connexion = CURRENT_TIMESTAMP WHERE id = ?", [token, cashier.id]);
+
+        delete cashier.mot_de_passe;
+
+        res.json({
+            success: true,
+            cashier,
+            token,
+            message: `Session ouverte pour ${cashier.prenom} ${cashier.nom} (${cashier.caisse_assignee})`
+        });
+    } catch (err) {
+        res.status(500).json({ error: "Erreur connexion caisse : " + err.message });
+    }
+});
+
+// 8. Vérification en temps réel de session caisse (Heartbeat / Guard)
+app.get('/api/cashier/session-check', async (req, res) => {
+    try {
+        const authHeader = req.headers.authorization || '';
+        const token = authHeader.replace('Bearer ', '').trim() || req.query.token;
+        const cashierId = req.query.cashier_id;
+
+        if (!token && !cashierId) {
+            return res.json({ valid: false, reason: 'NO_CREDENTIALS' });
+        }
+
+        let cashier;
+        if (token) {
+            cashier = await db.get("SELECT id, nom, prenom, statut, is_online, session_token, caisse_assignee FROM users WHERE session_token = ? AND role = 'caissiere'", [token]);
+        } else if (cashierId) {
+            cashier = await db.get("SELECT id, nom, prenom, statut, is_online, session_token, caisse_assignee FROM users WHERE id = ? AND role = 'caissiere'", [cashierId]);
+        }
+
+        if (!cashier) {
+            return res.json({ valid: false, reason: 'CASHIER_NOT_FOUND' });
+        }
+
+        if (cashier.statut !== 'actif') {
+            return res.json({ valid: false, reason: 'ACCOUNT_SUSPENDED', message: "Profil caissière suspendu par l'administrateur." });
+        }
+
+        if (cashier.is_online === 0) {
+            return res.json({ valid: false, reason: 'ADMIN_FORCE_LOGOUT', message: "Votre session a été clôturée à distance par l'administrateur." });
+        }
+
+        res.json({ valid: true, cashier });
+    } catch (err) {
+        res.json({ valid: true });
+    }
+});
+
+// 9. Clôture de session caisse par la caissière
+app.post('/api/cashier/logout', async (req, res) => {
+    try {
+        const { cashier_id, token } = req.body;
+        if (cashier_id) {
+            await db.run("UPDATE users SET is_online = 0, session_token = NULL WHERE id = ?", [cashier_id]);
+        } else if (token) {
+            await db.run("UPDATE users SET is_online = 0, session_token = NULL WHERE session_token = ?", [token]);
+        }
+        res.json({ success: true, message: "Session de caisse fermée avec succès." });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
 // ==========================================
 // 🥖 2. PRODUCTS API
 // ==========================================
