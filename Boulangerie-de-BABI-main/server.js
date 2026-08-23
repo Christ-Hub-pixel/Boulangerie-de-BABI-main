@@ -106,6 +106,11 @@ app.use((req, res, next) => {
     next();
 });
 
+// Serve Mobile App PWA & Flutter Web
+app.get(['/app', '/app/'], (req, res) => {
+    res.sendFile(path.join(__dirname, 'app.html'));
+});
+
 app.use(express.static(__dirname));
 
 let db;

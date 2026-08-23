@@ -45,9 +45,26 @@
       window.addEventListener('load', forceFavicon);
       setInterval(forceFavicon, 2000);
     })();
+
+    // 🌐 BABI Mobile App Real-time Global Sync Bridge
+    (function() {
+      try {
+        const globalSyncChan = new BroadcastChannel('babi_global_sync');
+        globalSyncChan.onmessage = function(e) {
+          if (!e.data) return;
+          window.dispatchEvent(new CustomEvent('babi_mobile_sync', { detail: e.data }));
+        };
+        window.babiPostMobileSync = function(eventType, payload) {
+          globalSyncChan.postMessage({ type: eventType, payload: payload, timestamp: Date.now() });
+          try {
+            localStorage.setItem('babi_last_sync_event', JSON.stringify({ type: eventType, payload: payload, timestamp: Date.now() }));
+          } catch(e) {}
+        };
+      } catch (err) {}
+    })();
   </script>
 
-  <title>Boulangerie de Babi</title>
+  <title>Boulangerie de Babi - Application Mobile Officielle</title>
   <link rel="manifest" href="manifest.json">
   <style id="splash-screen-style">
     html {
