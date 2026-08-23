@@ -72,6 +72,18 @@ document.addEventListener('DOMContentLoaded', () => {
         };
     } catch (_) {}
 
+    // Unlock Audio Context on first interaction
+    const unlockAudio = () => {
+        try {
+            const ctx = new (window.AudioContext || window.webkitAudioContext)();
+            ctx.resume();
+        } catch (_) {}
+        document.removeEventListener('click', unlockAudio);
+        document.removeEventListener('touchstart', unlockAudio);
+    };
+    document.addEventListener('click', unlockAudio);
+    document.addEventListener('touchstart', unlockAudio);
+
     schedulePickupPolling();
 });
 
@@ -79,7 +91,7 @@ function schedulePickupPolling() {
     setTimeout(async () => {
         await refreshPickupQueue();
         schedulePickupPolling();
-    }, 2500); // 2.5 seconds real-time poll
+    }, 1500); // 1.5 seconds ultra-fast real-time poll
 }
 
 // Live Clock
@@ -91,14 +103,29 @@ function updateClock() {
     }
 }
 
-// POS Audio Synthesizer
+// POS Audio Synthesizer (Crystal Clear Web Audio)
 function playPosAudio(type = 'beep') {
     try {
         const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        if (ctx.state === 'suspended') {
+            ctx.resume();
+        }
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
 
-        if (type === 'beep') {
+        if (type === 'chime' || type === 'new_order') {
+            // Melodic 3-tone luxury chime
+            const now = ctx.currentTime;
+            osc.frequency.setValueAtTime(587.33, now); // D5
+            osc.frequency.setValueAtTime(880, now + 0.14); // A5
+            osc.frequency.setValueAtTime(1174.66, now + 0.28); // D6
+            gain.gain.setValueAtTime(0.4, now);
+            gain.gain.exponentialRampToValueAtTime(0.01, now + 0.7);
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start();
+            osc.stop(now + 0.75);
+        } else if (type === 'beep') {
             osc.frequency.setValueAtTime(880, ctx.currentTime); // A5 note
             gain.gain.setValueAtTime(0.2, ctx.currentTime);
             osc.connect(gain);
@@ -1072,9 +1099,9 @@ async function refreshPickupQueue() {
 
     // Check for incoming new orders to notify cashier with chime & toast
     if (previousPickupCount !== -1 && newLivePickups.length > previousPickupCount) {
-        const newest = newLivePickups.find(o => !knownOrderIds.has(o.id));
+        const newest = newLivePickups.find(o => !knownOrderIds.has(o.id)) || newLivePickups[0];
         if (newest) {
-            playPosAudio('beep');
+            playPosAudio('chime');
             showIncomingOrderNotification(newest);
         }
     }
@@ -1095,6 +1122,21 @@ async function refreshPickupQueue() {
         mobileBadge.style.display = livePickups.length > 0 ? 'flex' : 'none';
     }
 
+    // Update Real-Time Incoming Order Banner on Cashier Screen
+    const banner = document.getElementById('pos-incoming-alert-banner');
+    if (banner) {
+        if (livePickups.length > 0) {
+            banner.classList.remove('hidden');
+            const desc = document.getElementById('pos-banner-order-desc');
+            if (desc) {
+                const first = livePickups[0];
+                desc.innerText = `${livePickups.length} commande(s) prête(s) • Dernier : #${first.id} (${first.customer_name || 'Client'}) • PIN: #${first.pin_code}`;
+            }
+        } else {
+            banner.classList.add('hidden');
+        }
+    }
+
     renderPickupCards();
 }
 
@@ -1113,7 +1155,7 @@ function showIncomingOrderNotification(order) {
         </div>
         <div class="flex-1 min-w-0">
             <div class="flex items-center justify-between gap-2">
-                <strong class="text-amber-300 text-[11px] uppercase font-mono tracking-wider font-black">Nouvelle Commande !</strong>
+                <strong class="text-amber-300 text-[11px] uppercase font-mono tracking-wider font-black">🔔 Nouvelle Commande Reçue !</strong>
                 <span class="text-[10px] bg-emerald-600 text-white font-extrabold px-2 py-0.5 rounded-full font-mono">PIN #${order.pin_code}</span>
             </div>
             <p class="text-white font-black text-xs truncate mt-0.5">${order.customer_name} • ${order.total_price.toLocaleString()} FCFA</p>

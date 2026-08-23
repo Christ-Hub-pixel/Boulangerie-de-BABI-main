@@ -256,6 +256,21 @@
             
             <!-- VIEW 1: TERMINAL CAISSE TACTILE -->
             <div id="pos-view-terminal" class="pos-main-view p-container-padding flex flex-col gap-stack-md sm:gap-stack-lg">
+                <!-- Real-time incoming order banner -->
+                <div id="pos-incoming-alert-banner" class="hidden p-3.5 bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500 text-black font-extrabold rounded-2xl shadow-md flex items-center justify-between animate-pulse cursor-pointer hover:brightness-105 transition-all" onclick="showPosView('pickups')">
+                    <div class="flex items-center gap-3">
+                        <span class="w-8 h-8 rounded-xl bg-black text-amber-400 flex items-center justify-center font-black text-sm">🔔</span>
+                        <div>
+                            <span class="text-xs font-black tracking-wide uppercase">Nouvelle commande en attente de retrait !</span>
+                            <span id="pos-banner-order-desc" class="text-xs font-bold block opacity-90">1 commande payée prête à être remise</span>
+                        </div>
+                    </div>
+                    <span class="px-3 py-1.5 bg-black text-amber-300 font-extrabold text-xs rounded-xl flex items-center gap-1">
+                        <span>Voir les retraits</span>
+                        <span class="material-symbols-outlined text-sm">arrow_forward</span>
+                    </span>
+                </div>
+
                 <div class="flex flex-col md:flex-row gap-3 sm:gap-4 h-full">
 
                     <!-- LEFT 2/3 COLUMN: PRODUCTS CATALOG & CATEGORIES -->
