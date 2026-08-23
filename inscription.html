@@ -210,14 +210,17 @@
                         </div>
 
                         <div class="form-group-login">
-                            <label>Numéro de téléphone *</label>
+                            <label>Numéro de téléphone <span class="text-danger fw-bold">* (Obligatoire)</span></label>
                             <div class="phone-input-group">
                                 <div class="country-select d-flex align-items-center">
                                     <span class="flag-ci"></span>
                                     <span style="font-weight: 700; color: #1e293b;">+225</span>
                                 </div>
-                                <input type="tel" placeholder="07 04 38 92 01" required>
+                                <input type="tel" id="registerPhoneInput" placeholder="07 04 38 92 01" required>
                             </div>
+                            <small class="text-muted" style="font-size: 11px; margin-top: 4px; display: block;">
+                                <i class="fa-solid fa-circle-info text-warning me-1"></i> Requis pour recevoir votre code PIN et le suivi par SMS/Wave.
+                            </small>
                         </div>
 
                         <div class="form-group-login">

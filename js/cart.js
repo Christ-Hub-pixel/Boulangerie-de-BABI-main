@@ -206,7 +206,7 @@ function updateCartSummary(totalQty, subtotal, deliveryCost) {
             </div>
             
             <a href="checkout.html" class="btn btn-warning w-100 fw-bold py-3 fs-6 rounded-pill shadow ${subtotal === 0 ? 'disabled opacity-50' : ''}" 
-                style="background:#fb923c; border:none; color:#2b160c;" id="checkoutBtn">
+                style="background:#fb923c; border:none; color:#2b160c;" id="checkoutBtn" onclick="return handleCheckoutButtonClick(event)">
                 <i class="fa-solid fa-lock me-2"></i>PASSER LA COMMANDE
             </a>
             
@@ -216,3 +216,17 @@ function updateCartSummary(totalQty, subtotal, deliveryCost) {
         `;
     }
 }
+
+function handleCheckoutButtonClick(e) {
+    if (typeof isStoreOpen === 'function' && !isStoreOpen()) {
+        if (e) e.preventDefault();
+        if (typeof showStoreClosedModal === 'function') {
+            showStoreClosedModal('cart_checkout');
+        } else {
+            alert("🌙 La Boulangerie de BABI est actuellement fermée (Horaires : 05h45 à 23h00). Réouverture à 05h45 pour la fournée de pain chaud !");
+        }
+        return false;
+    }
+    return true;
+}
+

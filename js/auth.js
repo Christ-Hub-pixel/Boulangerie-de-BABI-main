@@ -282,9 +282,22 @@ document.addEventListener('DOMContentLoaded', () => {
                 const prenom = inputs[0] ? inputs[0].value.trim() : '';
                 const nom = inputs[1] ? inputs[1].value.trim() : '';
                 const email = inputs[2] ? inputs[2].value.trim() : '';
-                const phone = inputs[3] ? inputs[3].value.trim() : '';
+                const phoneInput = inputs[3];
+                const phone = phoneInput ? phoneInput.value.trim() : '';
                 const password = inputs[4] ? inputs[4].value : 'client123';
                 
+                // 📱 VALIDATION STRICTE DU NUMÉRO DE TÉLÉPHONE
+                const cleanPhone = phone.replace(/\D/g, '');
+                if (!phone || cleanPhone.length < 8) {
+                    alert("⚠️ Le numéro de téléphone est strictement obligatoire pour créer votre compte et recevoir vos notifications de commande (au moins 8 à 10 chiffres).");
+                    if (phoneInput) {
+                        phoneInput.focus();
+                        phoneInput.style.borderColor = '#dc2626';
+                        phoneInput.style.boxShadow = '0 0 0 3px rgba(220, 38, 38, 0.2)';
+                    }
+                    return;
+                }
+
                 try {
                     const res = await fetch(`${API_ROOT}/api/auth/register`, {
                         method: 'POST',
@@ -294,15 +307,21 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (res.ok) {
                         const data = await res.json();
                         localStorage.setItem('babi_user', JSON.stringify(data.user));
-                        alert("Compte créé avec succès !");
+                        alert("🎉 Compte créé avec succès ! Bienvenue chez Boulangerie de BABI.");
                         window.location.href = data.redirectUrl || 'compte.html';
                         return;
+                    } else {
+                        const errData = await res.json();
+                        if (errData && errData.error) {
+                            alert("Erreur : " + errData.error);
+                            return;
+                        }
                     }
                 } catch(err) {}
 
                 const user = { prenom, nom, email, phone, role: 'client', points: 50 };
                 localStorage.setItem('babi_user', JSON.stringify(user));
-                alert("Compte créé avec succès ! Bienvenue " + (prenom || 'chez nous') + ".");
+                alert("🎉 Compte créé avec succès ! Bienvenue " + (prenom || 'chez nous') + ".");
                 window.location.href = 'compte.html';
             });
         }

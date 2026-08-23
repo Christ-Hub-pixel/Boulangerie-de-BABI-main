@@ -206,8 +206,14 @@
         <div class="container">
             <div class="row align-items-center gy-4">
                 <div class="col-md-8 d-flex align-items-center gap-4">
-                    <div class="profile-avatar-wrapper" id="profileAvatarBox">
-                        <i class="fa-solid fa-user" id="profileAvatarIcon"></i>
+                    <div class="position-relative">
+                        <div class="profile-avatar-wrapper" id="profileAvatarBox" style="cursor: pointer;" onclick="document.getElementById('avatarFileInput').click()" title="Changer ma photo de profil (Galerie / Fichiers)">
+                            <i class="fa-solid fa-user" id="profileAvatarIcon"></i>
+                        </div>
+                        <button type="button" class="btn btn-warning btn-sm rounded-circle position-absolute bottom-0 end-0 p-1 shadow-sm d-flex align-items-center justify-content-center" style="width: 32px; height: 32px; border: 2px solid #fff; background: #ea580c; color: #fff;" onclick="document.getElementById('avatarFileInput').click()" title="Choisir une photo dans ma galerie">
+                            <i class="fa-solid fa-camera" style="font-size: 13px;"></i>
+                        </button>
+                        <input type="file" id="avatarFileInput" accept="image/*" style="display: none;" onchange="handleAvatarFileSelect(event)">
                     </div>
                     <div>
                         <div class="d-flex align-items-center gap-2 mb-1 flex-wrap">
@@ -383,11 +389,12 @@
             document.getElementById('userCodeFidelite').innerText = code;
             document.getElementById('pointsProgressBar').style.width = Math.min((points / 500) * 100, 100) + '%';
 
-            // If user has a Google photo
-            if (user.photoURL) {
+            // If user has a photo
+            const avatarPhoto = user.photoURL || user.photo_url;
+            if (avatarPhoto) {
                 const avatarBox = document.getElementById('profileAvatarBox');
                 if (avatarBox) {
-                    avatarBox.innerHTML = `<img src="${user.photoURL}" alt="${fullName}">`;
+                    avatarBox.innerHTML = `<img src="${avatarPhoto}" alt="${fullName}" style="width:100%; height:100%; object-fit:cover;">`;
                 }
             }
 
@@ -456,15 +463,71 @@
             container.innerHTML = html;
         }
 
+        function handleAvatarFileSelect(event) {
+            const file = event.target.files && event.target.files[0];
+            if (!file) return;
+
+            if (!file.type.startsWith('image/')) {
+                alert('Veuillez sélectionner un fichier image valide.');
+                return;
+            }
+
+            if (file.size > 5 * 1024 * 1024) {
+                alert('L\'image est trop volumineuse (maximum 5 Mo).');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const dataUrl = e.target.result;
+                const avatarBox = document.getElementById('profileAvatarBox');
+                if (avatarBox) {
+                    avatarBox.innerHTML = `<img src="${dataUrl}" alt="Photo de profil" style="width:100%; height:100%; object-fit:cover;">`;
+                }
+
+                // Update local storage
+                try {
+                    let user = JSON.parse(localStorage.getItem('babi_user') || localStorage.getItem('user') || '{}');
+                    user.photoURL = dataUrl;
+                    user.photo_url = dataUrl;
+                    localStorage.setItem('babi_user', JSON.stringify(user));
+                    localStorage.setItem('user', JSON.stringify(user));
+
+                    // Show success toast
+                    const toast = document.createElement('div');
+                    toast.className = 'position-fixed bottom-0 end-0 p-3';
+                    toast.style.zIndex = '9999';
+                    toast.innerHTML = `
+                        <div class="toast show align-items-center text-white bg-success border-0 shadow-lg rounded-3" role="alert">
+                            <div class="d-flex">
+                                <div class="toast-body d-flex align-items-center gap-2">
+                                    <i class="fa-solid fa-circle-check fs-5"></i>
+                                    <span>Photo de profil mise à jour depuis votre galerie ! 📸</span>
+                                </div>
+                                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+                            </div>
+                        </div>
+                    `;
+                    document.body.appendChild(toast);
+                    setTimeout(() => toast.remove(), 4000);
+                } catch (err) {
+                    console.error('Erreur sauvegarde photo:', err);
+                }
+            };
+            reader.readAsDataURL(file);
+        }
+
         function logout() {
             localStorage.removeItem('babi_token');
             localStorage.removeItem('auth_token');
             localStorage.removeItem('babi_user');
+            localStorage.removeItem('user');
             if (typeof firebase !== 'undefined' && firebase.auth) {
                 try { firebase.auth().signOut(); } catch(_) {}
             }
             window.location.href = 'connexion.html';
         }
     </script>
+    <script src="js/store_schedule.js"></script>
 </body>
 </html>

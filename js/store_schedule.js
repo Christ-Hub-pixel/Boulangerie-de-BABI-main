@@ -1,17 +1,22 @@
 // ================================================================
 // BOULANGERIE DE BABI — STORE HOURS & ORDER RESTRICTION CONTROLLER
-// Store Hours: 05h45 to 23h00 (Abidjan Local Time)
+// Store Hours: 05h45 to 23h00 (Abidjan Local Time GMT)
 // Programmes de sortie de pain : 06h00, 09h00, 14h00, 17h00, 18h00
 // ================================================================
 
-function isStoreOpen() {
+function getAbidjanTime() {
     const now = new Date();
-    const hours = now.getHours();
-    const minutes = now.getMinutes();
-    const timeInMinutes = hours * 60 + minutes;
+    // Côte d'Ivoire est sur le fuseau horaire GMT / UTC+0
+    const hours = now.getUTCHours();
+    const minutes = now.getUTCMinutes();
+    return { hours, minutes, totalMinutes: hours * 60 + minutes };
+}
+
+function isStoreOpen() {
+    const { totalMinutes } = getAbidjanTime();
     const openInMinutes = 5 * 60 + 45;  // 05:45 = 345 min
     const closeInMinutes = 23 * 60;     // 23:00 = 1380 min
-    return timeInMinutes >= openInMinutes && timeInMinutes < closeInMinutes;
+    return totalMinutes >= openInMinutes && totalMinutes < closeInMinutes;
 }
 
 function getStoreOpeningMessage() {
@@ -19,72 +24,140 @@ function getStoreOpeningMessage() {
         return {
             open: true,
             title: "☀️ La Boulangerie de BABI est Ouverte !",
-            message: "Nos fours tournent à plein régime ! Sorties de pain chauds : 06h00, 09h00, 14h00, 17h00 et 18h00."
+            message: "Nos fours tournent à plein régime (05h45 - 23h00) ! Sorties de pain chauds : 06h00, 09h00, 14h00, 17h00 et 18h00."
         };
     } else {
         return {
             open: false,
-            title: "🥐 La Boulangerie est actuellement fermée (05h45 - 23h00)",
-            message: "Nos fours se préparent pour vous accueillir dès 05h45 du matin ! Les commandes en ligne sont temporairement suspendues et réouvriront à 05h45."
+            title: "🌙 La Boulangerie est actuellement fermée (05h45 - 23h00)",
+            message: "Nos maîtres boulangers se préparent pour vous accueillir dès 05h45 du matin ! Les commandes en ligne réouvriront à 05h45."
         };
     }
 }
 
-function showStoreClosedModal() {
+function showStoreClosedModal(actionContext = 'action') {
     let modalEl = document.getElementById('storeClosedModal');
     if (!modalEl) {
         modalEl = document.createElement('div');
         modalEl.id = 'storeClosedModal';
-        modalEl.className = 'modal fade';
-        modalEl.tabIndex = -1;
+        modalEl.style.cssText = `
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(15, 23, 42, 0.75);
+            backdrop-filter: blur(8px);
+            z-index: 999999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            animation: fadeIn 0.25s ease-out;
+        `;
+
         modalEl.innerHTML = `
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
-                <div class="modal-header border-0 text-white p-4" style="background: linear-gradient(135deg, #2b160c, #422212);">
-                    <div class="d-flex align-items-center gap-2">
-                        <div class="bg-warning text-dark rounded-circle p-2 d-flex align-items-center justify-content-center" style="width:40px;height:40px;">
-                            <i class="fa-solid fa-moon fs-5"></i>
+            <div style="background: #ffffff; width: 100%; max-width: 480px; border-radius: 24px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35); overflow: hidden; border: 1.5px solid #fed7aa; animation: slideUp 0.3s ease-out;">
+                <!-- Header -->
+                <div style="background: linear-gradient(135deg, #1f1008 0%, #431d0e 100%); color: #fff; padding: 24px; position: relative; border-bottom: 3px solid #f59e0b;">
+                    <div style="display: flex; align-items: center; gap: 14px;">
+                        <div style="width: 48px; height: 48px; border-radius: 50%; background: #fef3c7; color: #d97706; display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);">
+                            <i class="fa-solid fa-moon"></i>
                         </div>
                         <div>
-                            <h5 class="modal-title fw-bold mb-0" style="font-family:'Playfair Display', serif;">Boulangerie Fermée</h5>
-                            <small class="text-warning">Horaires : 05h45 - 23h00</small>
+                            <h4 style="margin: 0; font-family: 'Playfair Display', Georgia, serif; font-size: 20px; font-weight: 800; color: #ffffff;">Fournil Actuellement Fermé</h4>
+                            <span style="display: inline-block; margin-top: 3px; font-size: 12px; font-weight: 700; color: #fbbf24; background: rgba(245, 158, 11, 0.18); padding: 2px 8px; border-radius: 6px;">
+                                <i class="fa-regular fa-clock me-1"></i> Horaires : 05h45 – 23h00 (7j/7)
+                            </span>
                         </div>
                     </div>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                    <button type="button" onclick="closeStoreClosedModal()" style="position: absolute; top: 16px; right: 16px; background: rgba(255,255,255,0.15); border: none; color: #fff; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center;">✕</button>
                 </div>
-                <div class="modal-body p-4 text-center">
-                    <div class="mb-3 text-warning display-4">
-                        <i class="fa-solid fa-clock"></i>
+
+                <!-- Body -->
+                <div style="padding: 24px; text-align: center; color: #1e293b;">
+                    <div style="font-size: 42px; margin-bottom: 12px;">🥖🌙</div>
+                    <h5 style="font-weight: 800; font-size: 17px; color: #1f1008; margin-bottom: 8px;">
+                        Nos fours se préparent pour demain matin !
+                    </h5>
+                    <p style="font-size: 13.5px; color: #64748b; line-height: 1.6; margin-bottom: 18px;">
+                        Il est actuellement tard la nuit à Abidjan. Nos maîtres boulangers sont au repos et commenceront à pétrir la pâte dès l'aube pour la première fournée de <strong>06h00</strong>.
+                    </p>
+
+                    <!-- Horaires details card -->
+                    <div style="background: #fffbeb; border: 1px solid #fde68a; border-radius: 14px; padding: 14px; text-align: left; font-size: 12.5px; margin-bottom: 20px;">
+                        <div style="font-weight: 700; color: #92400e; margin-bottom: 6px; display: flex; align-items: center; gap: 6px;">
+                            <i class="fa-solid fa-circle-info"></i> Informations de service :
+                        </div>
+                        <div style="color: #451a03; margin-bottom: 4px;">• <strong>Ouverture du fournil :</strong> Dès 05h45 du matin</div>
+                        <div style="color: #451a03; margin-bottom: 4px;">• <strong>Fermeture du fournil :</strong> À 23h00</div>
+                        <div style="color: #b45309; font-weight: 600; margin-top: 6px;">
+                            <i class="fa-solid fa-fire text-danger"></i> Sorties de pain chaud : 06h00 • 09h00 • 14h00 • 17h00 • 18h00
+                        </div>
                     </div>
-                    <h5 class="fw-bold mb-2" style="color: #2b160c;">Les commandes en ligne réouvrent à 05h45 !</h5>
-                    <p class="text-muted small mb-3">Nos boulangers préparent la pâte fraîche et allument les fours dès l'aube. Vous pourrez valider votre panier dès 05h45 du matin.</p>
-                    <div class="p-3 bg-light rounded-3 text-start small border mb-3">
-                        <div class="fw-bold text-dark"><i class="fa-solid fa-circle-info text-warning me-1"></i> Horaires de la boutique :</div>
-                        <div class="text-muted ms-3">• Lundi à Dimanche : 05h45 – 23h00</div>
-                        <div class="fw-bold text-dark mt-2"><i class="fa-solid fa-fire text-danger me-1"></i> Sorties de pain chauds :</div>
-                        <div class="text-muted ms-3">• 06h00 • 09h00 • 14h00 • 17h00 • 18h00</div>
+
+                    <div style="display: flex; gap: 10px;">
+                        <button type="button" onclick="closeStoreClosedModal()" style="flex: 1; padding: 12px 18px; border-radius: 12px; border: none; background: linear-gradient(135deg, #f59e0b, #ea580c); color: #ffffff; font-weight: 800; font-size: 14px; cursor: pointer; box-shadow: 0 4px 14px rgba(234, 88, 12, 0.35);">
+                            <i class="fa-solid fa-check me-1"></i> J'ai compris
+                        </button>
                     </div>
-                </div>
-                <div class="modal-footer border-0 p-3 bg-light">
-                    <button type="button" class="btn btn-warning w-100 fw-bold rounded-pill py-2" style="background:#fb923c; border:none; color:#2b160c;" data-bs-dismiss="modal">
-                        J'ai compris
-                    </button>
                 </div>
             </div>
-        </div>`;
+        `;
         document.body.appendChild(modalEl);
+    } else {
+        modalEl.style.display = 'flex';
     }
-    const bsModal = new bootstrap.Modal(modalEl);
-    bsModal.show();
 }
 
-function removeNavbarStoreBadges() {
-    document.querySelectorAll('.store-status-badge').forEach(el => {
-        el.style.display = 'none';
-        el.remove();
-    });
+function closeStoreClosedModal() {
+    const modalEl = document.getElementById('storeClosedModal');
+    if (modalEl) {
+        modalEl.style.display = 'none';
+    }
+}
+
+function checkStoreBeforeAction(actionName, onAllowedCallback) {
+    if (isStoreOpen()) {
+        if (typeof onAllowedCallback === 'function') {
+            onAllowedCallback();
+        }
+    } else {
+        showStoreClosedModal(actionName);
+    }
+}
+
+function renderStoreStatusBanner() {
+    const isClosed = !isStoreOpen();
+    let banner = document.getElementById('babiStoreClosedGlobalBanner');
+    
+    if (isClosed) {
+        if (!banner) {
+            banner = document.createElement('div');
+            banner.id = 'babiStoreClosedGlobalBanner';
+            banner.style.cssText = `
+                background: linear-gradient(90deg, #1f1008, #431d0e);
+                color: #fed7aa;
+                padding: 8px 16px;
+                font-size: 12.5px;
+                font-weight: 600;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 10px;
+                border-bottom: 2px solid #f59e0b;
+                position: relative;
+                z-index: 1050;
+                text-align: center;
+            `;
+            banner.innerHTML = `
+                <span><i class="fa-solid fa-moon text-warning me-1"></i> Le fournil est actuellement <strong>fermé</strong> (Horaires : <strong>05h45 – 23h00</strong>). Réouverture à 05h45 !</span>
+                <button type="button" onclick="showStoreClosedModal('banner')" style="background: rgba(245, 158, 11, 0.25); border: 1px solid #fbbf24; color: #fbbf24; border-radius: 6px; padding: 2px 8px; font-size: 11px; font-weight: 700; cursor: pointer;">Détails</button>
+            `;
+            document.body.insertBefore(banner, document.body.firstChild);
+        }
+    } else {
+        if (banner) banner.remove();
+    }
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    removeNavbarStoreBadges();
+    renderStoreStatusBanner();
 });

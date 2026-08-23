@@ -144,6 +144,51 @@ class AiRealtimeOrchestratorService {
     releaseOrderLock(orderId) {
         this.orderLocks.delete(orderId);
     }
+
+    /**
+     * 🥖 Diffuse l'ajout d'un nouveau produit en temps réel à tous les clients, caisses, admins et mobile
+     */
+    broadcastProductCreated(product) {
+        return this.publishEvent('PRODUCT_CREATED', {
+            action: 'created',
+            product,
+            timestamp: new Date().toISOString()
+        }, ['*']);
+    }
+
+    /**
+     * ✏️ Diffuse la mise à jour d'un produit (prix, nom, photo, stock) en temps réel
+     */
+    broadcastProductUpdated(product) {
+        return this.publishEvent('PRODUCT_UPDATED', {
+            action: 'updated',
+            product,
+            timestamp: new Date().toISOString()
+        }, ['*']);
+    }
+
+    /**
+     * 👁️ Diffuse le changement de statut (actif/désactivé) d'un produit en temps réel
+     */
+    broadcastProductStatusChanged(productId, isActive) {
+        return this.publishEvent('PRODUCT_STATUS_CHANGED', {
+            action: 'status_changed',
+            productId,
+            isActive: Number(isActive) === 1,
+            timestamp: new Date().toISOString()
+        }, ['*']);
+    }
+
+    /**
+     * 🗑️ Diffuse la suppression d'un produit en temps réel
+     */
+    broadcastProductDeleted(productId) {
+        return this.publishEvent('PRODUCT_DELETED', {
+            action: 'deleted',
+            productId,
+            timestamp: new Date().toISOString()
+        }, ['*']);
+    }
 }
 
 module.exports = new AiRealtimeOrchestratorService();

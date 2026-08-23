@@ -321,6 +321,17 @@ async function initDB() {
         await db.run("ALTER TABLE users ADD COLUMN derniere_connexion DATETIME");
     } catch (e) {}
 
+    // Product Status and Stock Migrations
+    try {
+        await db.run("ALTER TABLE products ADD COLUMN is_active INTEGER DEFAULT 1");
+    } catch (e) {}
+    try {
+        await db.run("ALTER TABLE products ADD COLUMN stock INTEGER DEFAULT 50");
+    } catch (e) {}
+    try {
+        await db.run("ALTER TABLE products ADD COLUMN seuil_alerte INTEGER DEFAULT 10");
+    } catch (e) {}
+
     // Initial clean state: No hardcoded dummy users or employees. 
     // Accounts are created exclusively by the Administrator or registered legitimately.
 

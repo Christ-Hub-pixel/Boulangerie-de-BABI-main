@@ -781,7 +781,8 @@ async function updateOrderStatusFromModal(orderId, newStatus) {
 }
 
 // ================================================================
-// 5. PRODUCTS & USERS MANAGEMENT
+// ================================================================
+// 5. PRODUCTS & USERS MANAGEMENT (CRUD COMPLET DU CATALOGUE)
 // ================================================================
 async function loadProducts() {
     try {
@@ -795,54 +796,263 @@ async function loadProducts() {
         const tbody = document.getElementById('products-full-tbody');
         if (!tbody) return;
 
-        tbody.innerHTML = allProducts.map(p => `
-            <tr>
-                <td><img src="${p.image_url || 'assets/product_baguette.png'}" style="width: 38px; height: 38px; border-radius: 8px; object-fit: cover;"></td>
-                <td><strong>${escapeHtml(p.nom || p.title)}</strong></td>
-                <td><span class="badge bg-light text-dark border">${escapeHtml(p.categorie || p.category || 'Pain')}</span></td>
-                <td><strong>${(p.prix || 0).toLocaleString()} FCFA</strong></td>
-                <td><span class="fw-bold ${(p.stock || 50) <= 5 ? 'text-danger' : 'text-success'}">${p.stock || 50} unités</span></td>
-                <td class="text-muted small">${p.seuil_alerte || 5} un.</td>
-                <td><span class="saas-badge-pill active">Disponible</span></td>
-                <td style="text-align: right;">
-                    <button type="button" class="btn-xs btn-outline-danger" onclick="handleDeleteProduct(${p.id})"><i class="fa-solid fa-trash"></i></button>
+        if (allProducts.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="8" class="text-center py-4 text-muted">Aucun produit dans le catalogue. Cliquez sur "+ Ajouter un Produit".</td></tr>`;
+            return;
+        }
+
+        tbody.innerHTML = allProducts.map(p => {
+            const isActive = p.is_active === 1 || p.is_active === undefined || p.is_active === true || p.is_active === '1';
+            const imgSrc = p.image || p.image_url || 'assets/product_baguette.png';
+            const stockQty = p.stock != null ? p.stock : 50;
+            const alertThreshold = p.seuil_alerte != null ? p.seuil_alerte : 10;
+            const isLowStock = stockQty <= alertThreshold;
+
+            return `
+            <tr style="${!isActive ? 'opacity: 0.65; background: #fafafa;' : ''}">
+                <td>
+                    <img src="${imgSrc}" style="width: 44px; height: 44px; border-radius: 10px; object-fit: cover; border: 1px solid #e2e8f0; box-shadow: 0 2px 4px rgba(0,0,0,0.06);" onerror="this.src='assets/product_baguette.png'">
+                </td>
+                <td>
+                    <div style="font-weight: 700; color: #1e293b;">${escapeHtml(p.nom || p.title)}</div>
+                    ${p.description ? `<small class="text-muted text-truncate d-block" style="max-width: 200px; font-size: 11px;">${escapeHtml(p.description)}</small>` : ''}
+                </td>
+                <td><span class="badge bg-light text-dark border px-2 py-1">${escapeHtml(p.categorie || p.category || 'Pain')}</span></td>
+                <td><strong style="color: #b45309;">${(Number(p.prix) || 0).toLocaleString()} FCFA</strong></td>
+                <td>
+                    <span class="fw-bold ${isLowStock ? 'text-danger' : 'text-success'}">
+                        ${stockQty} unités
+                    </span>
+                    ${isLowStock ? `<span class="badge bg-danger ms-1" style="font-size: 9px;">Bas</span>` : ''}
+                </td>
+                <td class="text-muted small">${alertThreshold} un.</td>
+                <td>
+                    ${isActive 
+                        ? `<span class="saas-badge-pill active" style="background:#ecfdf5; color:#065f46; border:1px solid #a7f3d0; font-size:11px; padding:3px 8px; border-radius:12px;"><i class="fa-solid fa-circle-check me-1 text-success"></i> Actif</span>`
+                        : `<span class="saas-badge-pill inactive" style="background:#fef2f2; color:#991b1b; border:1px solid #fecaca; font-size:11px; padding:3px 8px; border-radius:12px;"><i class="fa-solid fa-ban me-1 text-danger"></i> Désactivé</span>`
+                    }
+                </td>
+                <td style="text-align: right; white-space: nowrap;">
+                    <button type="button" class="btn-xs btn-outline-primary me-1" onclick="openEditProductModal(${p.id})" title="Modifier le produit">
+                        <i class="fa-solid fa-pen-to-square"></i>
+                    </button>
+                    <button type="button" class="btn-xs ${isActive ? 'btn-outline-warning' : 'btn-outline-success'} me-1" onclick="handleToggleProductStatus(${p.id})" title="${isActive ? 'Désactiver (Masquer)' : 'Activer (Rendre visible)'}">
+                        <i class="fa-solid ${isActive ? 'fa-eye-slash' : 'fa-eye'}"></i>
+                    </button>
+                    <button type="button" class="btn-xs btn-outline-danger" onclick="handleDeleteProduct(${p.id})" title="Supprimer définitivement">
+                        <i class="fa-solid fa-trash"></i>
+                    </button>
                 </td>
             </tr>
-        `).join('');
-    } catch (_) {}
+            `;
+        }).join('');
+    } catch (err) {
+        console.error("Erreur chargement produits:", err);
+    }
 }
 
-function openAddProductModal() { document.getElementById('addProductModal')?.classList.remove('hidden'); }
-function closeAddProductModal() { document.getElementById('addProductModal')?.classList.add('hidden'); }
+// 🖼️ GESTION DU SÉLECTEUR DE PHOTO PRODUIT (GALERIE & FICHIERS)
+function handleProductImageSelect(event, modalType) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const base64Data = e.target.result;
+        const previewEl = document.getElementById(`${modalType}-prod-preview-img`);
+        const hiddenDataEl = document.getElementById(`${modalType}-prod-image-data`);
+        
+        if (previewEl) previewEl.src = base64Data;
+        if (hiddenDataEl) hiddenDataEl.value = base64Data;
+    };
+    reader.readAsDataURL(file);
+}
+
+// 🟢 MODAL AJOUT PRODUIT
+function openAddProductModal() {
+    const form = document.getElementById('addProductModal');
+    if (!form) return;
+    
+    // Reset form fields
+    const nameEl = document.getElementById('new-prod-name');
+    const priceEl = document.getElementById('new-prod-price');
+    const stockEl = document.getElementById('new-prod-stock');
+    const alertEl = document.getElementById('new-prod-alert');
+    const descEl = document.getElementById('new-prod-desc');
+    const previewEl = document.getElementById('new-prod-preview-img');
+    const dataEl = document.getElementById('new-prod-image-data');
+    const fileEl = document.getElementById('new-prod-file');
+
+    if (nameEl) nameEl.value = '';
+    if (priceEl) priceEl.value = '';
+    if (stockEl) stockEl.value = '50';
+    if (alertEl) alertEl.value = '10';
+    if (descEl) descEl.value = '';
+    if (previewEl) previewEl.src = 'assets/product_baguette.png';
+    if (dataEl) dataEl.value = 'assets/product_baguette.png';
+    if (fileEl) fileEl.value = '';
+
+    form.classList.remove('hidden');
+}
+
+function closeAddProductModal() {
+    document.getElementById('addProductModal')?.classList.add('hidden');
+}
 
 async function handleCreateProduct(e) {
     e.preventDefault();
-    const nom = document.getElementById('new-prod-name')?.value;
+    const nom = document.getElementById('new-prod-name')?.value.trim();
     const categorie = document.getElementById('new-prod-category')?.value;
     const prix = Number(document.getElementById('new-prod-price')?.value);
-    const stock = Number(document.getElementById('new-prod-stock')?.value);
+    const stock = Number(document.getElementById('new-prod-stock')?.value) || 50;
+    const seuil_alerte = Number(document.getElementById('new-prod-alert')?.value) || 10;
+    const description = document.getElementById('new-prod-desc')?.value.trim() || '';
+    const image = document.getElementById('new-prod-image-data')?.value || 'assets/product_baguette.png';
+
+    if (!nom || !prix || !categorie) {
+        alert("Veuillez remplir tous les champs obligatoires (Nom, Catégorie, Prix).");
+        return;
+    }
 
     try {
         const res = await fetch(`${API_ROOT}/api/products`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ nom, categorie, prix, stock, seuil_alerte: 5, image_url: 'assets/product_baguette.png' })
+            body: JSON.stringify({ nom, categorie, prix, stock, seuil_alerte, description, image })
         });
         if (res.ok) {
-            showAdminToast("Produit ajouté avec succès au catalogue !", 'success');
+            showAdminToast(`🎉 Produit "${nom}" ajouté avec succès au catalogue !`, 'success');
             closeAddProductModal();
-            loadProducts();
+            await loadProducts();
+        } else {
+            const err = await res.json();
+            alert("Erreur : " + (err.error || "Impossible d'ajouter le produit."));
         }
-    } catch (_) {}
+    } catch (err) {
+        alert("Erreur de connexion : " + err.message);
+    }
 }
 
-async function handleDeleteProduct(id) {
-    if (!confirm("Voulez-vous supprimer ce produit du catalogue ?")) return;
+// ✏️ MODAL MODIFICATION PRODUIT
+function openEditProductModal(productId) {
+    const product = allProducts.find(p => p.id === productId || String(p.id) === String(productId));
+    if (!product) {
+        alert("Produit introuvable.");
+        return;
+    }
+
+    const modal = document.getElementById('editProductModal');
+    if (!modal) return;
+
+    document.getElementById('edit-prod-id').value = product.id;
+    document.getElementById('edit-prod-name').value = product.nom || product.title || '';
+    
+    // Category mapping
+    const catSelect = document.getElementById('edit-prod-category');
+    if (catSelect) {
+        const catVal = (product.categorie || product.category || 'pain').toLowerCase();
+        for (let opt of catSelect.options) {
+            if (opt.value === catVal || catVal.includes(opt.value)) {
+                catSelect.value = opt.value;
+                break;
+            }
+        }
+    }
+
+    document.getElementById('edit-prod-price').value = product.prix || 0;
+    document.getElementById('edit-prod-stock').value = product.stock != null ? product.stock : 50;
+    document.getElementById('edit-prod-alert').value = product.seuil_alerte != null ? product.seuil_alerte : 10;
+    
+    const isActive = product.is_active === 1 || product.is_active === undefined || product.is_active === true || product.is_active === '1';
+    document.getElementById('edit-prod-status').value = isActive ? '1' : '0';
+    document.getElementById('edit-prod-desc').value = product.description || '';
+    
+    const imgSrc = product.image || product.image_url || 'assets/product_baguette.png';
+    document.getElementById('edit-prod-preview-img').src = imgSrc;
+    document.getElementById('edit-prod-image-data').value = imgSrc;
+    document.getElementById('edit-prod-file').value = '';
+
+    modal.classList.remove('hidden');
+}
+
+function closeEditProductModal() {
+    document.getElementById('editProductModal')?.classList.add('hidden');
+}
+
+async function handleUpdateProduct(e) {
+    e.preventDefault();
+    const id = document.getElementById('edit-prod-id')?.value;
+    const nom = document.getElementById('edit-prod-name')?.value.trim();
+    const categorie = document.getElementById('edit-prod-category')?.value;
+    const prix = Number(document.getElementById('edit-prod-price')?.value);
+    const stock = Number(document.getElementById('edit-prod-stock')?.value) || 0;
+    const seuil_alerte = Number(document.getElementById('edit-prod-alert')?.value) || 10;
+    const is_active = Number(document.getElementById('edit-prod-status')?.value);
+    const description = document.getElementById('edit-prod-desc')?.value.trim() || '';
+    const image = document.getElementById('edit-prod-image-data')?.value;
+
+    if (!id || !nom || !prix || !categorie) {
+        alert("Veuillez remplir les informations requises.");
+        return;
+    }
+
     try {
-        await fetch(`${API_ROOT}/api/products/${id}`, { method: 'DELETE' });
-        showAdminToast("Produit retiré du catalogue.", 'info');
-        loadProducts();
-    } catch (_) {}
+        const res = await fetch(`${API_ROOT}/api/products/${id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ nom, categorie, prix, stock, seuil_alerte, is_active, description, image })
+        });
+        if (res.ok) {
+            showAdminToast(`✨ Produit "${nom}" mis à jour avec succès !`, 'success');
+            closeEditProductModal();
+            await loadProducts();
+        } else {
+            const err = await res.json();
+            alert("Erreur : " + (err.error || "Impossible de modifier le produit."));
+        }
+    } catch (err) {
+        alert("Erreur de communication : " + err.message);
+    }
+}
+
+// 👁️ / ⏸️ BASCULER LE STATUT ACTIF / DÉSACTIVÉ D'UN PRODUIT
+async function handleToggleProductStatus(id) {
+    try {
+        const res = await fetch(`${API_ROOT}/api/products/${id}/toggle-status`, {
+            method: 'PATCH'
+        });
+        if (res.ok) {
+            const data = await res.json();
+            showAdminToast(data.message || "Statut du produit modifié.", 'info');
+            await loadProducts();
+        } else {
+            alert("Erreur lors de la modification du statut.");
+        }
+    } catch (err) {
+        console.error(err);
+    }
+}
+
+// 🗑️ SUPPRIMER UN PRODUIT
+async function handleDeleteProduct(id) {
+    const product = allProducts.find(p => p.id === id || String(p.id) === String(id));
+    const prodName = product ? (product.nom || product.title) : 'ce produit';
+
+    if (!confirm(`⚠️ Êtes-vous certain de vouloir supprimer définitivement "${prodName}" du catalogue et des stocks ?`)) {
+        return;
+    }
+    
+    try {
+        const res = await fetch(`${API_ROOT}/api/products/${id}`, { method: 'DELETE' });
+        if (res.ok) {
+            showAdminToast(`🗑️ "${prodName}" a été retiré du catalogue.`, 'info');
+            await loadProducts();
+        } else {
+            alert("Erreur lors de la suppression du produit.");
+        }
+    } catch (err) {
+        alert("Erreur : " + err.message);
+    }
 }
 
 // Users
@@ -1557,5 +1767,56 @@ async function askAdminAiCopilot(promptText) {
     } catch (_) {}
     return { reply: "Le copilote IA BABI analyse actuellement les indicateurs de performance." };
 }
+
+// 👁️ BASCULE D'AFFICHAGE DES MOTS DE PASSE ADMIN & CAISSIÈRE
+function togglePasswordVisibility(inputId, btnOrIcon) {
+    const input = document.getElementById(inputId);
+    if (!input) return;
+    const icon = btnOrIcon ? (btnOrIcon.querySelector ? btnOrIcon.querySelector('i') || btnOrIcon : btnOrIcon) : null;
+    
+    if (input.type === 'password') {
+        input.type = 'text';
+        if (icon) {
+            icon.classList.remove('fa-eye-slash');
+            icon.classList.add('fa-eye');
+            icon.style.color = '#ea580c';
+        }
+    } else {
+        input.type = 'password';
+        if (icon) {
+            icon.classList.remove('fa-eye');
+            icon.classList.add('fa-eye-slash');
+            icon.style.color = '#64748b';
+        }
+    }
+}
+
+// 📱 GESTION DE LA NAVIGATION MOBILE & SMARTPHONE DU DASHBOARD ADMIN
+window.toggleMobileSidebar = function() {
+    const sidebar = document.getElementById('saasSidebar') || document.querySelector('.saas-sidebar');
+    const backdrop = document.getElementById('saasSidebarBackdrop') || document.querySelector('.saas-sidebar-backdrop');
+    if (sidebar) {
+        const isOpen = sidebar.classList.toggle('mobile-open');
+        if (backdrop) {
+            backdrop.classList.toggle('active', isOpen);
+        }
+    }
+};
+
+// Auto-fermeture de la sidebar mobile lors du clic sur un lien de navigation
+document.addEventListener('DOMContentLoaded', () => {
+    const navLinks = document.querySelectorAll('.saas-nav-item, .saas-subnav-item');
+    navLinks.forEach(link => {
+        link.addEventListener('click', () => {
+            if (window.innerWidth < 1024) {
+                const sidebar = document.getElementById('saasSidebar');
+                const backdrop = document.getElementById('saasSidebarBackdrop');
+                if (sidebar) sidebar.classList.remove('mobile-open');
+                if (backdrop) backdrop.classList.remove('active');
+            }
+        });
+    });
+});
+
 
 

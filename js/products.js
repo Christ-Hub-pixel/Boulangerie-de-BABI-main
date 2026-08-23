@@ -184,12 +184,13 @@ async function loadProducts() {
         const apiUrl = (window.API_BASE_URL || (window.location.hostname.includes('boulangeriedebabi.com') ? 'https://api.boulangeriedebabi.com' : 'http://localhost:5000')) + '/api/products';
         const response = await fetch(apiUrl);
         if (response.ok) {
-            allProducts = await response.json();
+            const rawProducts = await response.json();
+            allProducts = rawProducts.filter(p => p.is_active !== 0 && p.is_active !== '0' && p.is_active !== false);
         } else {
             throw new Error("API status not ok");
         }
     } catch(err) {
-        allProducts = FALLBACK_PRODUCTS;
+        allProducts = FALLBACK_PRODUCTS.filter(p => p.is_active !== 0 && p.is_active !== '0');
     }
     
     // Sort all products alphabetically (A-Z) by name
@@ -513,5 +514,10 @@ window.clearCatalogSearch = function() {
 };
 
 document.addEventListener('DOMContentLoaded', () => {
+    loadProducts();
+});
+
+// 📡 Synchronisation temps réel du catalogue
+window.addEventListener('babi:products:updated', (e) => {
     loadProducts();
 });

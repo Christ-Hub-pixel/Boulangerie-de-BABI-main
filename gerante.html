@@ -93,23 +93,31 @@
 </head>
 <body class="bg-background font-body-md text-on-surface antialiased">
 
+    <!-- MOBILE BACKDROP OVERLAY -->
+    <div id="geranteSidebarBackdrop" class="prestige-sidebar-backdrop" onclick="toggleGeranteMobileSidebar()"></div>
+
     <!-- SIDEBAR (PRESTIGE DARK CHOCOLATE & GOLD) -->
-    <aside class="fixed left-0 top-0 h-full w-72 prestige-sidebar z-50 flex flex-col p-5">
-        <!-- Official Brand Banner -->
-        <a href="index.html" class="babi-brand-banner-prestige mb-4">
-            <div class="babi-logo-badge">
-                <img src="assets/logo.png" alt="Logo BB"/>
-            </div>
-            <div class="babi-brand-texts">
-                <span class="babi-brand-title">Boulangerie</span>
-                <span class="babi-brand-subtitle">
-                    de Babi
-                    <span class="babi-ci-flag">
-                        <span class="c1"></span><span class="c2"></span><span class="c3"></span>
+    <aside class="fixed left-0 top-0 h-full w-72 prestige-sidebar z-50 flex flex-col p-5" id="geranteSidebar">
+        <!-- Official Brand Banner & Mobile Close -->
+        <div class="flex items-center justify-between mb-4">
+            <a href="index.html" class="babi-brand-banner-prestige flex-1">
+                <div class="babi-logo-badge">
+                    <img src="assets/logo.png" alt="Logo BB"/>
+                </div>
+                <div class="babi-brand-texts">
+                    <span class="babi-brand-title">Boulangerie</span>
+                    <span class="babi-brand-subtitle">
+                        de Babi
+                        <span class="babi-ci-flag">
+                            <span class="c1"></span><span class="c2"></span><span class="c3"></span>
+                        </span>
                     </span>
-                </span>
-            </div>
-        </a>
+                </div>
+            </a>
+            <button type="button" onclick="toggleGeranteMobileSidebar()" class="lg:hidden text-amber-300 hover:text-white p-2 rounded-lg ml-2" aria-label="Fermer le menu">
+                <span class="material-symbols-outlined text-2xl">close</span>
+            </button>
+        </div>
 
         <!-- Navigation Links -->
         <nav class="flex-1 flex flex-col gap-1 overflow-y-auto pr-1">
@@ -158,6 +166,17 @@
     <div class="pl-72">
         <!-- TOPBAR PRESTIGE LUXURY -->
         <header class="prestige-topbar">
+            <!-- Mobile Menu Toggle & Title -->
+            <div class="flex items-center gap-3">
+                <button type="button" class="prestige-mobile-hamburger-btn" onclick="toggleGeranteMobileSidebar()" aria-label="Ouvrir le menu Fournil">
+                    <span class="material-symbols-outlined text-2xl">menu</span>
+                </button>
+                <div class="lg:hidden flex flex-col">
+                    <span class="font-bold text-xs text-amber-800">Portail Gérance & Fournil</span>
+                    <span class="text-[10px] text-gray-500">Boulangerie de BABI</span>
+                </div>
+            </div>
+
             <!-- Search bar with gold focus ring -->
             <div class="magazine-search-pill" style="max-width: 480px;">
                 <span class="material-symbols-outlined search-icon" style="color: #765b00;">search</span>
@@ -1205,6 +1224,7 @@
 
     <!-- SCRIPTS -->
     <script src="js/gerante.js"></script>
+    <script src="js/realtime_sync.js"></script>
     <script src="js/store_schedule.js"></script>
     <script src="js/anti_hacker_client.js"></script>
 </body>

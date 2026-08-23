@@ -302,8 +302,9 @@ app.post('/api/auth/login', async (req, res) => {
 app.post('/api/auth/register', async (req, res) => {
     try {
         const { nom, prenom, email, telephone, mot_de_passe } = req.body;
-        if (!email || !mot_de_passe || !nom) {
-            return res.status(400).json({ error: "Nom, email et mot de passe obligatoires." });
+        const cleanPhone = (telephone || '').replace(/\D/g, '');
+        if (!email || !mot_de_passe || !nom || !telephone || cleanPhone.length < 8) {
+            return res.status(400).json({ error: "Nom, email, mot de passe et numéro de téléphone valide (min 8-10 chiffres) obligatoires." });
         }
 
         const existing = await db.get("SELECT id FROM users WHERE email = ?", [email.trim().toLowerCase()]);
@@ -316,7 +317,7 @@ app.post('/api/auth/register', async (req, res) => {
 
         const result = await db.run(
             "INSERT INTO users (nom, prenom, email, telephone, mot_de_passe, role, avatar) VALUES (?, ?, ?, ?, ?, 'client', 'assets/avatar_client.png')",
-            [nom.trim(), prenom ? prenom.trim() : '', email.trim().toLowerCase(), telephone || '', hashedPassword]
+            [nom.trim(), prenom ? prenom.trim() : '', email.trim().toLowerCase(), telephone.trim(), hashedPassword]
         );
 
         const newUser = await db.get("SELECT id, nom, prenom, email, telephone, role, avatar FROM users WHERE id = ?", [result.lastID]);
@@ -665,13 +666,21 @@ app.delete('/api/users/:id', async (req, res) => {
 });
 
 // ==========================================
-// 🥖 2. PRODUCTS API
+// 🥖 2. PRODUCTS API (ADMIN CATALOGUE CRUD)
 // ==========================================
 
-// Get all products
+// Get all products with stock & active status
 app.get('/api/products', async (req, res) => {
     try {
-        const products = await db.all("SELECT * FROM products ORDER BY id DESC");
+        const products = await db.all(`
+            SELECT p.*, 
+                   COALESCE(s.quantite_disponible, p.stock, 50) as stock, 
+                   COALESCE(s.seuil_alerte, p.seuil_alerte, 10) as seuil_alerte, 
+                   COALESCE(p.is_active, 1) as is_active
+            FROM products p
+            LEFT JOIN stocks s ON p.id = s.product_id
+            ORDER BY p.id DESC
+        `);
         res.json(products);
     } catch (err) {
         res.status(500).json({ error: err.message });
@@ -681,39 +690,113 @@ app.get('/api/products', async (req, res) => {
 // Add new product
 app.post('/api/products', async (req, res) => {
     try {
-        const { nom, prix, categorie, image, description } = req.body;
+        const { nom, prix, categorie, image, image_url, description, stock, seuil_alerte } = req.body;
         if (!nom || !prix || !categorie) {
             return res.status(400).json({ error: "Nom, prix et catégorie obligatoires." });
         }
-        const img = image || "assets/product_baguette.png";
+        const img = image || image_url || "assets/product_baguette.png";
+        const stockQty = Number(stock) || 50;
+        const alertThreshold = Number(seuil_alerte) || 10;
+        const numPrice = Number(prix);
+
         const result = await db.run(
-            "INSERT INTO products (nom, prix, categorie, image, description) VALUES (?, ?, ?, ?, ?)",
-            [nom, prix, categorie, img, description || '']
+            "INSERT INTO products (nom, prix, categorie, image, description, stock, seuil_alerte, is_active) VALUES (?, ?, ?, ?, ?, ?, ?, 1)",
+            [nom.trim(), numPrice, categorie.trim(), img, description || '', stockQty, alertThreshold]
         );
         
-        // Also add stock entry
+        // Also add or sync stock entry
         await db.run(
-            "INSERT INTO stocks (product_id, nom_produit, categorie, quantite_disponible, seuil_alerte, unite, prix_unitaire) VALUES (?, ?, ?, 40, 10, 'pièce', ?)",
-            [result.lastID, nom, categorie, prix]
+            "INSERT INTO stocks (product_id, nom_produit, categorie, quantite_disponible, seuil_alerte, unite, prix_unitaire) VALUES (?, ?, ?, ?, ?, 'pièce', ?)",
+            [result.lastID, nom.trim(), categorie.trim(), stockQty, alertThreshold, numPrice]
         );
 
-        res.status(201).json({ success: true, id: result.lastID });
+        const createdProduct = await db.get("SELECT p.*, s.quantite_disponible as stock, s.seuil_alerte FROM products p LEFT JOIN stocks s ON p.id = s.product_id WHERE p.id = ?", [result.lastID]);
+
+        // 📡 Diffusion simultanée en temps réel vers tous les clients Web & Mobile
+        try {
+            aiRealtimeOrchestrator.broadcastProductCreated(createdProduct || { id: result.lastID, nom: nom.trim(), prix: numPrice, categorie: categorie.trim(), image: img, stock: stockQty, is_active: 1 });
+        } catch (_) {}
+
+        res.status(201).json({ success: true, id: result.lastID, product: createdProduct, message: "Produit ajouté avec succès." });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
 });
 
-// Update product
+// Update product (Nom, Prix, Catégorie, Photo, Stock, Description, Statut)
 app.put('/api/products/:id', async (req, res) => {
     try {
-        const { nom, prix, categorie, image, description } = req.body;
-        await db.run(
-            "UPDATE products SET nom = ?, prix = ?, categorie = ?, image = ?, description = ? WHERE id = ?",
-            [nom, prix, categorie, image, description, req.params.id]
-        );
-        // Sync stock product name / price
-        await db.run("UPDATE stocks SET nom_produit = ?, categorie = ?, prix_unitaire = ? WHERE product_id = ?", [nom, categorie, prix, req.params.id]);
-        res.json({ success: true });
+        const { nom, prix, categorie, image, image_url, description, stock, seuil_alerte, is_active } = req.body;
+        const prodId = req.params.id;
+        const img = image || image_url;
+        const numPrice = Number(prix);
+        const stockQty = stock != null ? Number(stock) : 50;
+        const alertThreshold = seuil_alerte != null ? Number(seuil_alerte) : 10;
+        const activeState = is_active != null ? Number(is_active) : 1;
+
+        if (img) {
+            await db.run(
+                `UPDATE products 
+                 SET nom = ?, prix = ?, categorie = ?, image = ?, description = ?, stock = ?, seuil_alerte = ?, is_active = ? 
+                 WHERE id = ?`,
+                [nom.trim(), numPrice, categorie.trim(), img, description || '', stockQty, alertThreshold, activeState, prodId]
+            );
+        } else {
+            await db.run(
+                `UPDATE products 
+                 SET nom = ?, prix = ?, categorie = ?, description = ?, stock = ?, seuil_alerte = ?, is_active = ? 
+                 WHERE id = ?`,
+                [nom.trim(), numPrice, categorie.trim(), description || '', stockQty, alertThreshold, activeState, prodId]
+            );
+        }
+
+        // Sync stock product name / price / quantity
+        const existingStock = await db.get("SELECT id FROM stocks WHERE product_id = ?", [prodId]);
+        if (existingStock) {
+            await db.run(
+                "UPDATE stocks SET nom_produit = ?, categorie = ?, prix_unitaire = ?, quantite_disponible = ?, seuil_alerte = ? WHERE product_id = ?", 
+                [nom.trim(), categorie.trim(), numPrice, stockQty, alertThreshold, prodId]
+            );
+        } else {
+            await db.run(
+                "INSERT INTO stocks (product_id, nom_produit, categorie, quantite_disponible, seuil_alerte, unite, prix_unitaire) VALUES (?, ?, ?, ?, ?, 'pièce', ?)",
+                [prodId, nom.trim(), categorie.trim(), stockQty, alertThreshold, numPrice]
+            );
+        }
+
+        const updatedProduct = await db.get("SELECT p.*, s.quantite_disponible as stock, s.seuil_alerte FROM products p LEFT JOIN stocks s ON p.id = s.product_id WHERE p.id = ?", [prodId]);
+
+        // 📡 Diffusion simultanée en temps réel vers tous les clients Web & Mobile
+        try {
+            aiRealtimeOrchestrator.broadcastProductUpdated(updatedProduct || { id: Number(prodId), nom: nom.trim(), prix: numPrice, categorie: categorie.trim(), stock: stockQty, is_active: activeState });
+        } catch (_) {}
+
+        res.json({ success: true, product: updatedProduct, message: "Produit mis à jour avec succès." });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Toggle product status (Activer / Désactiver)
+app.patch('/api/products/:id/toggle-status', async (req, res) => {
+    try {
+        const product = await db.get("SELECT id, is_active FROM products WHERE id = ?", [req.params.id]);
+        if (!product) {
+            return res.status(404).json({ error: "Produit introuvable." });
+        }
+        const newStatus = (product.is_active === 0) ? 1 : 0;
+        await db.run("UPDATE products SET is_active = ? WHERE id = ?", [newStatus, req.params.id]);
+
+        // 📡 Diffusion simultanée en temps réel vers tous les clients Web & Mobile
+        try {
+            aiRealtimeOrchestrator.broadcastProductStatusChanged(req.params.id, newStatus);
+        } catch (_) {}
+
+        res.json({ 
+            success: true, 
+            is_active: newStatus, 
+            message: newStatus === 1 ? "Produit activé avec succès." : "Produit désactivé avec succès." 
+        });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
@@ -724,7 +807,13 @@ app.delete('/api/products/:id', async (req, res) => {
     try {
         await db.run("DELETE FROM products WHERE id = ?", [req.params.id]);
         await db.run("DELETE FROM stocks WHERE product_id = ?", [req.params.id]);
-        res.json({ success: true });
+
+        // 📡 Diffusion simultanée en temps réel vers tous les clients Web & Mobile
+        try {
+            aiRealtimeOrchestrator.broadcastProductDeleted(req.params.id);
+        } catch (_) {}
+
+        res.json({ success: true, message: "Produit supprimé du catalogue avec succès." });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
@@ -1285,6 +1374,27 @@ app.post('/api/payments/webhook/wave', async (req, res) => {
         console.error("Webhook processing error:", err);
         res.status(500).json({ success: false, error: err.message });
     }
+});
+
+// ⏰ 5. Horaires d'Ouverture du Fournil (05h45 - 23h00 GMT Abidjan)
+app.get('/api/bakery/status', (req, res) => {
+    const now = new Date();
+    const utcHours = now.getUTCHours();
+    const utcMinutes = now.getUTCMinutes();
+    const totalMinutes = utcHours * 60 + utcMinutes;
+    const isOpen = totalMinutes >= (5 * 60 + 45) && totalMinutes < (23 * 60);
+
+    res.json({
+        success: true,
+        isOpen,
+        openingTime: "05:45",
+        closingTime: "23:00",
+        timezone: "Africa/Abidjan (GMT)",
+        currentAbidjanTime: `${String(utcHours).padStart(2, '0')}:${String(utcMinutes).padStart(2, '0')}`,
+        message: isOpen 
+            ? "Le fournil est ouvert ! Fours allumés et fournées régulières." 
+            : "Le fournil est actuellement fermé (05h45 - 23h00). Réouverture à 05h45 pour la première fournée de pain chaud !"
+    });
 });
 
 // ⚡ 5. Instant Confirmation Endpoint (For Sandbox / Fast Real-Time Confirmation)

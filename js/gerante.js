@@ -1944,5 +1944,17 @@ async function askGeranteAiCopilot(promptText) {
     return { reply: "Le copilote IA BABI analyse actuellement les flux du fournil." };
 }
 
+// 📱 Gestion de la navigation mobile et tablette du Dashboard Gérante
+window.toggleGeranteMobileSidebar = function() {
+    const sidebar = document.getElementById('geranteSidebar') || document.querySelector('.prestige-sidebar');
+    const backdrop = document.getElementById('geranteSidebarBackdrop');
+    if (sidebar) {
+        const isOpen = sidebar.classList.toggle('mobile-open');
+        if (backdrop) {
+            backdrop.classList.toggle('active', isOpen);
+        }
+    }
+};
+
 
 

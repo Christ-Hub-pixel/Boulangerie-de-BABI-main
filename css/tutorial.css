@@ -1,0 +1,267 @@
+/* ================================================================
+   BABI INTERACTIVE DEMONSTRATIVE TUTORIAL & COACH MARKS STYLING
+   Luxury Gold & Obsidian Palette with Dynamic Spotlight & Pulse
+   ================================================================ */
+
+#babi-tutorial-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 999999;
+    pointer-events: auto;
+    transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Darkened backdrop with dynamic cut-out */
+.babi-tutorial-backdrop {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(15, 23, 42, 0.82);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    transition: clip-path 0.4s ease-out;
+}
+
+/* Spotlight Highlight Box */
+.babi-tutorial-spotlight {
+    position: absolute;
+    border-radius: 14px;
+    box-shadow: 0 0 0 9999px rgba(15, 23, 42, 0.82),
+                0 0 30px rgba(245, 158, 11, 0.8),
+                inset 0 0 15px rgba(245, 158, 11, 0.4);
+    border: 3px solid #f59e0b;
+    pointer-events: none;
+    transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    z-index: 1000000;
+    animation: babiSpotlightPulse 2s infinite ease-in-out;
+}
+
+@keyframes babiSpotlightPulse {
+    0%, 100% {
+        border-color: #f59e0b;
+        box-shadow: 0 0 0 9999px rgba(15, 23, 42, 0.82), 0 0 25px rgba(245, 158, 11, 0.85);
+    }
+    50% {
+        border-color: #fbbf24;
+        box-shadow: 0 0 0 9999px rgba(15, 23, 42, 0.82), 0 0 45px rgba(251, 191, 36, 0.95);
+    }
+}
+
+/* Floating Coach Mark Card */
+.babi-tutorial-card {
+    position: absolute;
+    background: #ffffff;
+    border-radius: 20px;
+    padding: 22px;
+    width: 90%;
+    max-width: 380px;
+    box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(245, 158, 11, 0.2);
+    border: 2px solid #fed7aa;
+    z-index: 1000002;
+    transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+    color: #1e293b;
+    animation: babiCardSlideIn 0.35s ease-out;
+}
+
+@keyframes babiCardSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(12px) scale(0.96);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.babi-tutorial-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+}
+
+.babi-tutorial-step-badge {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    color: #ffffff;
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.babi-tutorial-title {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 17px;
+    font-weight: 800;
+    color: #1f1008;
+    margin: 0 0 8px 0;
+    line-height: 1.3;
+}
+
+.babi-tutorial-text {
+    font-size: 13.5px;
+    color: #475569;
+    line-height: 1.55;
+    margin-bottom: 16px;
+}
+
+.babi-tutorial-instruction {
+    background: #fffbeb;
+    border: 1px solid #fde68a;
+    border-radius: 12px;
+    padding: 10px 12px;
+    font-size: 12.5px;
+    color: #92400e;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.babi-tutorial-instruction .pointing-finger {
+    font-size: 18px;
+    animation: fingerBounce 1.2s infinite ease-in-out;
+}
+
+@keyframes fingerBounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-4px); }
+}
+
+.babi-tutorial-progress {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 14px;
+}
+
+.babi-tutorial-dot {
+    flex: 1;
+    height: 4px;
+    background: #e2e8f0;
+    border-radius: 4px;
+    transition: background 0.3s ease;
+}
+
+.babi-tutorial-dot.active {
+    background: #f59e0b;
+}
+
+.babi-tutorial-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.babi-tutorial-btn-skip {
+    background: transparent;
+    border: none;
+    color: #94a3b8;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 6px 10px;
+    border-radius: 8px;
+    transition: color 0.2s;
+}
+
+.babi-tutorial-btn-skip:hover {
+    color: #475569;
+    background: #f1f5f9;
+}
+
+.babi-tutorial-btn-action {
+    background: linear-gradient(135deg, #f59e0b, #ea580c);
+    color: #ffffff;
+    border: none;
+    border-radius: 12px;
+    padding: 10px 18px;
+    font-size: 13px;
+    font-weight: 800;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    box-shadow: 0 4px 12px rgba(234, 88, 12, 0.35);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.babi-tutorial-btn-action:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(234, 88, 12, 0.45);
+}
+
+/* Target Element Highlighter when clicked directly */
+.babi-target-active {
+    position: relative !important;
+    z-index: 1000001 !important;
+    pointer-events: auto !important;
+    cursor: pointer !important;
+    box-shadow: 0 0 0 4px #f59e0b !important;
+    border-radius: 12px !important;
+    animation: targetPulse 1.5s infinite ease-in-out !important;
+}
+
+@keyframes targetPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.03); }
+}
+
+/* Floating Launch Button on Bottom Corner */
+#babi-tutorial-launcher-btn {
+    position: fixed;
+    bottom: 24px;
+    left: 24px;
+    z-index: 99990;
+    background: linear-gradient(135deg, #1f1008, #431d0e);
+    color: #fed7aa;
+    border: 1.5px solid #f59e0b;
+    border-radius: 30px;
+    padding: 10px 18px;
+    font-size: 13px;
+    font-weight: 800;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+#babi-tutorial-launcher-btn:hover {
+    transform: translateY(-3px) scale(1.04);
+    box-shadow: 0 12px 28px rgba(245, 158, 11, 0.4);
+    color: #ffffff;
+    border-color: #fbbf24;
+}
+
+/* Celebratory Modal at the end */
+.babi-tutorial-celebration {
+    text-align: center;
+    padding: 10px;
+}
+
+.babi-tutorial-celebration .trophy-icon {
+    font-size: 54px;
+    margin-bottom: 12px;
+    animation: celebrationBounce 1s ease-out;
+}
+
+@keyframes celebrationBounce {
+    0% { transform: scale(0.3) rotate(-20deg); }
+    50% { transform: scale(1.2) rotate(10deg); }
+    100% { transform: scale(1) rotate(0deg); }
+}

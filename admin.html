@@ -771,7 +771,12 @@
                         </div>
                         <div class="prestige-form-group">
                             <label class="prestige-form-label">Clé Secrète de Signature (HMAC-SHA256) :</label>
-                            <input type="password" class="prestige-form-input" value="wave_sn_AKS_XXXXXXXXXXXXXXXXXXXXX" id="settings-signing-secret"/>
+                            <div class="position-relative" style="display: flex; align-items: center;">
+                                <input type="password" class="prestige-form-input" value="wave_sn_AKS_XXXXXXXXXXXXXXXXXXXXX" id="settings-signing-secret" style="padding-right: 42px;"/>
+                                <button type="button" class="btn-toggle-eye" onclick="togglePasswordVisibility('settings-signing-secret', this)" style="position: absolute; right: 10px; background: none; border: none; cursor: pointer; color: #64748b; font-size: 16px; padding: 4px;" title="Afficher/Masquer la clé secrète">
+                                    <i class="fa-regular fa-eye-slash"></i>
+                                </button>
+                            </div>
                             <small class="text-muted">Utilisée pour signer l'en-tête Wave-Signature (t={timestamp},v1={signature}).</small>
                         </div>
                         <div class="d-flex align-items-center gap-2">
@@ -892,37 +897,165 @@
 
     <!-- Modal 4: Ajouter un Produit -->
     <div id="addProductModal" class="prestige-modal-backdrop hidden">
-        <div class="prestige-modal-card" style="max-width: 500px;">
+        <div class="prestige-modal-card" style="max-width: 540px; max-height: 90vh; overflow-y: auto;">
             <div class="prestige-modal-header">
-                <h3 class="prestige-modal-title">+ Ajouter un Produit au Fournil</h3>
+                <h3 class="prestige-modal-title"><i class="fa-solid fa-plus-circle text-warning me-2"></i>Ajouter un Produit au Fournil</h3>
                 <button type="button" onclick="closeAddProductModal()" class="prestige-modal-close-btn">✕</button>
             </div>
-            <form onsubmit="handleCreateProduct(event)" style="display: flex; flex-direction: column; gap: 12px; padding: 12px 0;">
+            <form onsubmit="handleCreateProduct(event)" style="display: flex; flex-direction: column; gap: 14px; padding: 12px 0;">
+                <!-- Photo du produit -->
+                <div class="prestige-form-group">
+                    <label class="prestige-form-label"><i class="fa-solid fa-camera text-warning me-1"></i> Photo du Produit :</label>
+                    <div style="display: flex; align-items: center; gap: 14px; background: #fffbeb; border: 1.5px dashed #f59e0b; border-radius: 12px; padding: 12px;">
+                        <img id="new-prod-preview-img" src="assets/product_baguette.png" style="width: 65px; height: 65px; border-radius: 10px; object-fit: cover; border: 1px solid #ddd; background: #fff;" alt="Aperçu"/>
+                        <div style="flex: 1;">
+                            <input type="file" id="new-prod-file" accept="image/*" style="display: none;" onchange="handleProductImageSelect(event, 'new')"/>
+                            <button type="button" class="btn-sm btn-primary-gold" onclick="document.getElementById('new-prod-file').click()" style="cursor: pointer;">
+                                <i class="fa-solid fa-cloud-arrow-up me-1"></i> Choisir une photo
+                            </button>
+                            <div style="font-size: 11px; color: #64748b; margin-top: 4px;">PNG, JPG, WebP ou GIF depuis votre appareil</div>
+                        </div>
+                    </div>
+                    <input type="hidden" id="new-prod-image-data" value="assets/product_baguette.png"/>
+                </div>
+
                 <div class="prestige-form-group">
                     <label class="prestige-form-label">Nom du Produit * :</label>
                     <input type="text" id="new-prod-name" class="prestige-form-input" placeholder="Ex: Baguette Tradition Spéciale" required/>
                 </div>
-                <div class="prestige-form-group">
-                    <label class="prestige-form-label">Catégorie * :</label>
-                    <select id="new-prod-category" class="prestige-form-input">
-                        <option value="pain">🥖 Pains & Baguettes</option>
-                        <option value="viennoiserie">🥐 Viennoiseries</option>
-                        <option value="patisserie">🍰 Pâtisseries</option>
-                        <option value="jus">🥤 Jus Naturels</option>
-                        <option value="snack">🍕 Snacks & Pizzas</option>
-                    </select>
+
+                <div class="row g-2">
+                    <div class="col-6">
+                        <div class="prestige-form-group">
+                            <label class="prestige-form-label">Catégorie * :</label>
+                            <select id="new-prod-category" class="prestige-form-input">
+                                <option value="pain">🥖 Pains & Baguettes</option>
+                                <option value="viennoiserie">🥐 Viennoiseries</option>
+                                <option value="patisserie">🍰 Pâtisseries</option>
+                                <option value="jus">🥤 Jus Naturels</option>
+                                <option value="snack">🍕 Snacks & Pizzas</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="prestige-form-group">
+                            <label class="prestige-form-label">Prix Unitaire (FCFA) * :</label>
+                            <input type="number" id="new-prod-price" class="prestige-form-input" placeholder="Ex: 500" required min="50" step="50"/>
+                        </div>
+                    </div>
                 </div>
-                <div class="prestige-form-group">
-                    <label class="prestige-form-label">Prix Unitaire (FCFA) * :</label>
-                    <input type="number" id="new-prod-price" class="prestige-form-input" placeholder="Ex: 500" required/>
+
+                <div class="row g-2">
+                    <div class="col-6">
+                        <div class="prestige-form-group">
+                            <label class="prestige-form-label">Stock Initial :</label>
+                            <input type="number" id="new-prod-stock" class="prestige-form-input" placeholder="50" value="50" min="0"/>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="prestige-form-group">
+                            <label class="prestige-form-label">Seuil d'Alerte :</label>
+                            <input type="number" id="new-prod-alert" class="prestige-form-input" placeholder="10" value="10" min="1"/>
+                        </div>
+                    </div>
                 </div>
+
                 <div class="prestige-form-group">
-                    <label class="prestige-form-label">Stock Initial * :</label>
-                    <input type="number" id="new-prod-stock" class="prestige-form-input" placeholder="Ex: 50" value="50" required/>
+                    <label class="prestige-form-label">Description du Produit :</label>
+                    <textarea id="new-prod-desc" class="prestige-form-input" rows="2" placeholder="Description artisanale, ingrédients, etc."></textarea>
                 </div>
+
                 <div class="prestige-modal-actions">
                     <button type="button" onclick="closeAddProductModal()" class="btn-modal-cancel">Annuler</button>
-                    <button type="submit" class="btn-modal-submit-gold">Enregistrer le Produit</button>
+                    <button type="submit" class="btn-modal-submit-gold"><i class="fa-solid fa-check me-1"></i> Enregistrer le Produit</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal 4 bis: Modifier un Produit -->
+    <div id="editProductModal" class="prestige-modal-backdrop hidden">
+        <div class="prestige-modal-card" style="max-width: 540px; max-height: 90vh; overflow-y: auto;">
+            <div class="prestige-modal-header">
+                <h3 class="prestige-modal-title"><i class="fa-solid fa-pen-to-square text-warning me-2"></i>Modifier le Produit</h3>
+                <button type="button" onclick="closeEditProductModal()" class="prestige-modal-close-btn">✕</button>
+            </div>
+            <form onsubmit="handleUpdateProduct(event)" style="display: flex; flex-direction: column; gap: 14px; padding: 12px 0;">
+                <input type="hidden" id="edit-prod-id"/>
+                
+                <!-- Photo du produit -->
+                <div class="prestige-form-group">
+                    <label class="prestige-form-label"><i class="fa-solid fa-camera text-warning me-1"></i> Photo du Produit :</label>
+                    <div style="display: flex; align-items: center; gap: 14px; background: #fffbeb; border: 1.5px dashed #f59e0b; border-radius: 12px; padding: 12px;">
+                        <img id="edit-prod-preview-img" src="assets/product_baguette.png" style="width: 65px; height: 65px; border-radius: 10px; object-fit: cover; border: 1px solid #ddd; background: #fff;" alt="Aperçu"/>
+                        <div style="flex: 1;">
+                            <input type="file" id="edit-prod-file" accept="image/*" style="display: none;" onchange="handleProductImageSelect(event, 'edit')"/>
+                            <button type="button" class="btn-sm btn-primary-gold" onclick="document.getElementById('edit-prod-file').click()" style="cursor: pointer;">
+                                <i class="fa-solid fa-cloud-arrow-up me-1"></i> Remplacer la photo
+                            </button>
+                            <div style="font-size: 11px; color: #64748b; margin-top: 4px;">PNG, JPG, WebP ou GIF depuis votre appareil</div>
+                        </div>
+                    </div>
+                    <input type="hidden" id="edit-prod-image-data"/>
+                </div>
+
+                <div class="prestige-form-group">
+                    <label class="prestige-form-label">Nom du Produit * :</label>
+                    <input type="text" id="edit-prod-name" class="prestige-form-input" placeholder="Nom du produit" required/>
+                </div>
+
+                <div class="row g-2">
+                    <div class="col-6">
+                        <div class="prestige-form-group">
+                            <label class="prestige-form-label">Catégorie * :</label>
+                            <select id="edit-prod-category" class="prestige-form-input">
+                                <option value="pain">🥖 Pains & Baguettes</option>
+                                <option value="viennoiserie">🥐 Viennoiseries</option>
+                                <option value="patisserie">🍰 Pâtisseries</option>
+                                <option value="jus">🥤 Jus Naturels</option>
+                                <option value="snack">🍕 Snacks & Pizzas</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="prestige-form-group">
+                            <label class="prestige-form-label">Prix Unitaire (FCFA) * :</label>
+                            <input type="number" id="edit-prod-price" class="prestige-form-input" placeholder="Ex: 500" required min="50" step="50"/>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row g-2">
+                    <div class="col-6">
+                        <div class="prestige-form-group">
+                            <label class="prestige-form-label">Stock Actuel :</label>
+                            <input type="number" id="edit-prod-stock" class="prestige-form-input" min="0"/>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="prestige-form-group">
+                            <label class="prestige-form-label">Seuil d'Alerte :</label>
+                            <input type="number" id="edit-prod-alert" class="prestige-form-input" min="1"/>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="prestige-form-group">
+                    <label class="prestige-form-label">Statut du Produit :</label>
+                    <select id="edit-prod-status" class="prestige-form-input">
+                        <option value="1">🟢 Actif (Visible au catalogue & En vente)</option>
+                        <option value="0">🔴 Désactivé (Masqué du catalogue)</option>
+                    </select>
+                </div>
+
+                <div class="prestige-form-group">
+                    <label class="prestige-form-label">Description du Produit :</label>
+                    <textarea id="edit-prod-desc" class="prestige-form-input" rows="2" placeholder="Description du produit"></textarea>
+                </div>
+
+                <div class="prestige-modal-actions">
+                    <button type="button" onclick="closeEditProductModal()" class="btn-modal-cancel">Annuler</button>
+                    <button type="submit" class="btn-modal-submit-gold"><i class="fa-solid fa-save me-1"></i> Mettre à jour</button>
                 </div>
             </form>
         </div>
@@ -958,7 +1091,12 @@
                 </div>
                 <div class="prestige-form-group">
                     <label class="prestige-form-label">Mot de Passe Temporaire * :</label>
-                    <input type="password" id="new-user-pass" class="prestige-form-input" value="Babi2026!" required/>
+                    <div class="position-relative" style="display: flex; align-items: center;">
+                        <input type="password" id="new-user-pass" class="prestige-form-input" value="Babi2026!" style="padding-right: 42px;" required/>
+                        <button type="button" class="btn-toggle-eye" onclick="togglePasswordVisibility('new-user-pass', this)" style="position: absolute; right: 10px; background: none; border: none; cursor: pointer; color: #64748b; font-size: 16px; padding: 4px;" title="Afficher/Masquer le mot de passe">
+                            <i class="fa-regular fa-eye-slash"></i>
+                        </button>
+                    </div>
                 </div>
                 <div class="prestige-modal-actions">
                     <button type="button" onclick="closeAddUserModal()" class="btn-modal-cancel">Annuler</button>
@@ -978,15 +1116,30 @@
             <form onsubmit="handlePasswordChange(event)" style="display: flex; flex-direction: column; gap: 12px; margin: 8px 0;">
                 <div class="prestige-form-group">
                     <label class="prestige-form-label">Ancien mot de passe :</label>
-                    <input type="password" id="old-password" class="prestige-form-input" required/>
+                    <div class="position-relative" style="display: flex; align-items: center;">
+                        <input type="password" id="old-password" class="prestige-form-input" style="padding-right: 42px;" required/>
+                        <button type="button" class="btn-toggle-eye" onclick="togglePasswordVisibility('old-password', this)" style="position: absolute; right: 10px; background: none; border: none; cursor: pointer; color: #64748b; font-size: 16px; padding: 4px;" title="Afficher/Masquer le mot de passe">
+                            <i class="fa-regular fa-eye-slash"></i>
+                        </button>
+                    </div>
                 </div>
                 <div class="prestige-form-group">
                     <label class="prestige-form-label">Nouveau mot de passe :</label>
-                    <input type="password" id="new-password" class="prestige-form-input" required/>
+                    <div class="position-relative" style="display: flex; align-items: center;">
+                        <input type="password" id="new-password" class="prestige-form-input" style="padding-right: 42px;" required/>
+                        <button type="button" class="btn-toggle-eye" onclick="togglePasswordVisibility('new-password', this)" style="position: absolute; right: 10px; background: none; border: none; cursor: pointer; color: #64748b; font-size: 16px; padding: 4px;" title="Afficher/Masquer le mot de passe">
+                            <i class="fa-regular fa-eye-slash"></i>
+                        </button>
+                    </div>
                 </div>
                 <div class="prestige-form-group">
                     <label class="prestige-form-label">Confirmer le nouveau mot de passe :</label>
-                    <input type="password" id="confirm-password" class="prestige-form-input" required/>
+                    <div class="position-relative" style="display: flex; align-items: center;">
+                        <input type="password" id="confirm-password" class="prestige-form-input" style="padding-right: 42px;" required/>
+                        <button type="button" class="btn-toggle-eye" onclick="togglePasswordVisibility('confirm-password', this)" style="position: absolute; right: 10px; background: none; border: none; cursor: pointer; color: #64748b; font-size: 16px; padding: 4px;" title="Afficher/Masquer le mot de passe">
+                            <i class="fa-regular fa-eye-slash"></i>
+                        </button>
+                    </div>
                 </div>
                 <div class="prestige-modal-actions">
                     <button type="button" onclick="closeChangePasswordModal()" class="btn-modal-cancel">Annuler</button>
@@ -1046,7 +1199,12 @@
 
                 <div class="prestige-form-group">
                     <label class="prestige-form-label">Mot de Passe de Secours :</label>
-                    <input type="password" id="new-cashier-pass" class="prestige-form-input" placeholder="Mot de passe sécurisé (optionnel)" />
+                    <div class="position-relative" style="display: flex; align-items: center;">
+                        <input type="password" id="new-cashier-pass" class="prestige-form-input" placeholder="Mot de passe sécurisé (optionnel)" style="padding-right: 42px;" />
+                        <button type="button" class="btn-toggle-eye" onclick="togglePasswordVisibility('new-cashier-pass', this)" style="position: absolute; right: 10px; background: none; border: none; cursor: pointer; color: #64748b; font-size: 16px; padding: 4px;" title="Afficher/Masquer le mot de passe">
+                            <i class="fa-regular fa-eye-slash"></i>
+                        </button>
+                    </div>
                 </div>
 
                 <div class="prestige-modal-actions">
@@ -1108,7 +1266,12 @@
 
                 <div class="prestige-form-group">
                     <label class="prestige-form-label">Nouveau Mot de Passe (laisser vide pour ne pas changer) :</label>
-                    <input type="password" id="edit-cashier-pass" class="prestige-form-input" placeholder="Optionnel"/>
+                    <div class="position-relative" style="display: flex; align-items: center;">
+                        <input type="password" id="edit-cashier-pass" class="prestige-form-input" placeholder="Optionnel" style="padding-right: 42px;"/>
+                        <button type="button" class="btn-toggle-eye" onclick="togglePasswordVisibility('edit-cashier-pass', this)" style="position: absolute; right: 10px; background: none; border: none; cursor: pointer; color: #64748b; font-size: 16px; padding: 4px;" title="Afficher/Masquer le mot de passe">
+                            <i class="fa-regular fa-eye-slash"></i>
+                        </button>
+                    </div>
                 </div>
 
                 <div class="prestige-modal-actions">
@@ -1156,6 +1319,7 @@
 
     <!-- Scripts -->
     <script src="js/admin.js"></script>
+    <script src="js/realtime_sync.js"></script>
     <script src="js/anti_hacker_client.js"></script>
 </body>
 </html>

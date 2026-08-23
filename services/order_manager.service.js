@@ -24,8 +24,9 @@ class OrderManagerService {
             delivery_address = 'Fournil Riviera'
         } = orderData;
 
-        if (!customer_name || !customer_phone) {
-            throw new Error("Nom et numéro de téléphone du client obligatoires.");
+        const cleanPhone = (customer_phone || '').replace(/\D/g, '');
+        if (!customer_name || !customer_phone || cleanPhone.length < 8) {
+            throw new Error("Nom et numéro de téléphone portable valide obligatoires (au moins 8 à 10 chiffres pour Wave / SMS).");
         }
 
         const rawItems = Array.isArray(items) ? items : (typeof items === 'string' ? JSON.parse(items || '[]') : []);

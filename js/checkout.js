@@ -185,6 +185,16 @@ function setupCheckoutFormEvents() {
 }
 
 async function submitBabiOrder() {
+    // ⏰ 1. VÉRIFICATION DES HORAIRES DU FOURNIL (05h45 - 23h00)
+    if (typeof isStoreOpen === 'function' && !isStoreOpen()) {
+        if (typeof showStoreClosedModal === 'function') {
+            showStoreClosedModal('checkout');
+        } else {
+            alert("🌙 La Boulangerie de BABI est actuellement fermée (Horaires : 05h45 à 23h00). Réouverture à 05h45 !");
+        }
+        return;
+    }
+
     const items = typeof getCartItems === 'function' ? getCartItems() : [];
     if (!items || items.length === 0) {
         alert('Votre panier est vide. Veuillez ajouter des produits avant de confirmer.');
@@ -194,13 +204,35 @@ async function submitBabiOrder() {
     let user = {};
     try { user = JSON.parse(localStorage.getItem('babi_user') || '{}'); } catch(_) {}
 
-    const fullName = (clientNameInput && clientNameInput.value.trim()) || user.name || 'Client Comptoir BABI';
-    const phone = (clientPhoneInput && clientPhoneInput.value.trim()) || user.phone || '';
+    const fullName = (clientNameInput && clientNameInput.value.trim()) || user.name || (user.prenom ? (user.prenom + ' ' + (user.nom || '')) : 'Client Comptoir BABI');
+    const phone = (clientPhoneInput && clientPhoneInput.value.trim()) || user.phone || user.telephone || '';
 
-    if (!phone) {
-        alert('Veuillez renseigner votre numéro de téléphone (Wave / SMS).');
-        if (clientPhoneInput) clientPhoneInput.focus();
+    // 📱 2. VALIDATION STRICTE ET OBLIGATOIRE DU NUMÉRO DE TÉLÉPHONE
+    const cleanPhone = phone.replace(/\D/g, '');
+    const alertBox = document.getElementById('checkoutAlertBox');
+
+    if (!phone || cleanPhone.length < 8) {
+        if (alertBox) {
+            alertBox.className = 'alert alert-danger fw-bold shadow-sm mb-3 d-flex align-items-center gap-2';
+            alertBox.innerHTML = '<i class="fa-solid fa-circle-exclamation fs-5"></i> <span>Le numéro de téléphone est strictement obligatoire pour valider votre commande et recevoir vos alertes Wave / SMS (au moins 8 à 10 chiffres).</span>';
+            alertBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        } else {
+            alert("⚠️ Le numéro de téléphone est strictement obligatoire pour valider la commande (au moins 8 à 10 chiffres).");
+        }
+        if (clientPhoneInput) {
+            clientPhoneInput.focus();
+            clientPhoneInput.classList.add('is-invalid');
+            clientPhoneInput.style.borderColor = '#dc3545';
+        }
         return;
+    } else {
+        if (alertBox) {
+            alertBox.className = 'd-none';
+        }
+        if (clientPhoneInput) {
+            clientPhoneInput.classList.remove('is-invalid');
+            clientPhoneInput.style.borderColor = '';
+        }
     }
 
     const pickupSlot = pickupSlotSelect ? pickupSlotSelect.value : 'Dès que possible (~15-20 min)';
