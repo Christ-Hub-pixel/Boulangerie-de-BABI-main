@@ -853,6 +853,18 @@ async function loadUsers() {
         const tbody = document.getElementById('users-full-tbody');
         if (!tbody) return;
 
+        if (allUsers.length === 0) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="6" class="text-center py-5 text-muted">
+                        <i class="fa-solid fa-users-slash fs-3 text-secondary d-block mb-2"></i>
+                        Aucun utilisateur enregistré pour le moment. Cliquez sur <strong>"+ Créer un Compte Collaborateur"</strong> pour enregistrer un profil.
+                    </td>
+                </tr>
+            `;
+            return;
+        }
+
         tbody.innerHTML = allUsers.map(u => `
             <tr>
                 <td>

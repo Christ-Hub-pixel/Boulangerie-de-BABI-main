@@ -589,6 +589,77 @@ app.post('/api/cashier/logout', async (req, res) => {
     }
 });
 
+// ================================================================
+// 👥 GESTION COMPLÈTE DES UTILISATEURS & COLLABORATEURS
+// ================================================================
+
+// 1. Liste de tous les utilisateurs (Clients, Caissières, Gérantes, Admins)
+app.get('/api/users', async (req, res) => {
+    try {
+        const users = await db.all(
+            `SELECT id, nom, prenom, email, telephone, role, avatar, statut, caisse_assignee, code_pin, is_online, derniere_connexion, created_at 
+             FROM users 
+             ORDER BY id DESC`
+        );
+        res.json(users);
+    } catch (err) {
+        res.status(500).json({ error: "Erreur récupération utilisateurs : " + err.message });
+    }
+});
+
+// 2. Création d'un utilisateur / collaborateur par l'Admin
+app.post('/api/users', async (req, res) => {
+    try {
+        const { nom, prenom, email, telephone, mot_de_passe, role, caisse_assignee, code_pin } = req.body;
+        if (!nom || !email) {
+            return res.status(400).json({ error: "Le nom et l'email sont obligatoires." });
+        }
+
+        const existing = await db.get("SELECT id FROM users WHERE email = ?", [email.trim().toLowerCase()]);
+        if (existing) {
+            return res.status(400).json({ error: "Un utilisateur avec cet email existe déjà." });
+        }
+
+        const rawPassword = mot_de_passe || 'Babi2026!';
+        const hashedPassword = secureAuthService.hashPassword(rawPassword);
+        const assignedRole = role || 'client';
+        const pin = code_pin || '1234';
+        const caisse = caisse_assignee || 'Caisse 1 - Riviera';
+
+        const result = await db.run(
+            `INSERT INTO users (nom, prenom, email, telephone, mot_de_passe, role, avatar, statut, caisse_assignee, code_pin, is_online)
+             VALUES (?, ?, ?, ?, ?, ?, 'assets/avatar_client.png', 'actif', ?, ?, 0)`,
+            [nom.trim(), prenom ? prenom.trim() : '', email.trim().toLowerCase(), telephone || '', hashedPassword, assignedRole, caisse, pin]
+        );
+
+        const newUser = await db.get("SELECT id, nom, prenom, email, telephone, role, avatar, statut, caisse_assignee, code_pin, is_online FROM users WHERE id = ?", [result.lastID]);
+
+        await recordSecurityAudit('ADMIN_CREATED_USER', String(newUser.id), 0, 'FAIBLE', req, {
+            email: newUser.email,
+            role: newUser.role
+        });
+
+        res.status(201).json({
+            success: true,
+            user: newUser,
+            message: `Compte ${newUser.role.toUpperCase()} créé avec succès !`
+        });
+    } catch (err) {
+        res.status(500).json({ error: "Erreur création utilisateur : " + err.message });
+    }
+});
+
+// 3. Suppression d'un utilisateur
+app.delete('/api/users/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        await db.run("DELETE FROM users WHERE id = ?", [id]);
+        res.json({ success: true, message: "Utilisateur supprimé avec succès." });
+    } catch (err) {
+        res.status(500).json({ error: "Erreur suppression : " + err.message });
+    }
+});
+
 // ==========================================
 // 🥖 2. PRODUCTS API
 // ==========================================

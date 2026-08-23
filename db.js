@@ -321,45 +321,8 @@ async function initDB() {
         await db.run("ALTER TABLE users ADD COLUMN derniere_connexion DATETIME");
     } catch (e) {}
 
-    // Seed default users for the 4 roles if not already present
-    const defaultUsers = [
-        { nom: 'Diallo', prenom: 'Amadou', email: 'client@babi.ci', telephone: '0701020304', mot_de_passe: 'client123', role: 'client', avatar: 'assets/avatar_client.png' },
-        { nom: 'Kouassi', prenom: 'Awa', email: 'caisse@babi.ci', telephone: '0705060708', mot_de_passe: 'caisse123', role: 'caissiere', avatar: 'assets/avatar_caissiere.png' },
-        { nom: 'Traoré', prenom: 'Mariam', email: 'gerante@babi.ci', telephone: '0709101112', mot_de_passe: 'gerante123', role: 'gerante', avatar: 'assets/avatar_gerante.png' },
-        { nom: 'Bakayoko', prenom: 'Ibrahim', email: 'admin@babi.ci', telephone: '0704389201', mot_de_passe: 'admin123', role: 'admin', avatar: 'assets/avatar_admin.png' }
-    ];
-
-    for (const u of defaultUsers) {
-        const existing = await db.get("SELECT id FROM users WHERE email = ?", [u.email]);
-        if (!existing) {
-            await db.run(
-                "INSERT INTO users (nom, prenom, email, telephone, mot_de_passe, role, avatar) VALUES (?, ?, ?, ?, ?, ?, ?)",
-                [u.nom, u.prenom, u.email, u.telephone, u.mot_de_passe, u.role, u.avatar]
-            );
-        } else {
-            // Update role if exists
-            await db.run("UPDATE users SET role = ?, prenom = ? WHERE email = ?", [u.role, u.prenom, u.email]);
-        }
-    }
-
-    // Seed default employees if empty
-    const empCount = await db.get("SELECT COUNT(*) as count FROM employees");
-    if (empCount.count === 0) {
-        const defaultEmployees = [
-            { nom: 'Traoré', prenom: 'Mariam', poste: 'Gérante & Direction Fournil', telephone: '0709101112', email: 'gerante@babi.ci', statut_presence: 'present', date_embauche: '2023-03-01' },
-            { nom: 'Kouassi', prenom: 'Awa', poste: 'Caissière Principale (Caisse 1)', telephone: '0705060708', email: 'caisse@babi.ci', statut_presence: 'present', date_embauche: '2023-06-15' },
-            { nom: 'Yao', prenom: 'Michel', poste: 'Maître Boulanger Chef Fournil', telephone: '0708899001', email: 'michel.yao@babi.ci', statut_presence: 'present', date_embauche: '2022-11-10' },
-            { nom: 'Soro', prenom: 'Fatou', poste: 'Pâtissière & Traiteur', telephone: '0702233445', email: 'fatou.soro@babi.ci', statut_presence: 'present', date_embauche: '2023-09-01' },
-            { nom: 'Koffi', prenom: 'Jean', poste: 'Vendeur & Accueil Comptoir', telephone: '0706817977', email: 'jean.koffi@babi.ci', statut_presence: 'present', date_embauche: '2024-01-08' }
-        ];
-
-        for (const emp of defaultEmployees) {
-            await db.run(
-                "INSERT INTO employees (nom, prenom, poste, telephone, email, statut_presence, date_embauche) VALUES (?, ?, ?, ?, ?, ?, ?)",
-                [emp.nom, emp.prenom, emp.poste, emp.telephone, emp.email, emp.statut_presence, emp.date_embauche]
-            );
-        }
-    }
+    // Initial clean state: No hardcoded dummy users or employees. 
+    // Accounts are created exclusively by the Administrator or registered legitimately.
 
     // Seed default products & stocks from data/products.json if products table is empty
     const prodCount = await db.get("SELECT COUNT(*) as count FROM products");
