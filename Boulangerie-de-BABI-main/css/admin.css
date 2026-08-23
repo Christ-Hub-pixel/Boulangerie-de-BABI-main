@@ -236,7 +236,7 @@ body {
 }
 
 /* =============================================================
-   MAIN WORKSPACE & TOPBAR
+   MAIN WORKSPACE & TOPBAR (RESPONSIVE)
    ============================================================= */
 .saas-main-area {
     margin-left: 250px;
@@ -245,10 +245,12 @@ body {
     flex-direction: column;
     min-height: 100vh;
     background-color: var(--saas-bg);
+    width: calc(100% - 250px);
+    transition: margin-left 0.3s ease, width 0.3s ease;
 }
 
 .saas-topbar {
-    height: 64px;
+    min-height: 64px;
     background-color: #ffffff;
     border-bottom: 1px solid var(--saas-border);
     display: flex;
@@ -258,6 +260,25 @@ body {
     position: sticky;
     top: 0;
     z-index: 40;
+    gap: 12px;
+}
+
+.saas-hamburger-btn {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    color: #0f172a;
+    cursor: pointer;
+    width: 38px;
+    height: 38px;
+    border-radius: 8px;
+    transition: all 0.15s ease;
+}
+
+.saas-hamburger-btn:hover {
+    background: #e2e8f0;
 }
 
 .saas-topbar-title {
@@ -288,6 +309,7 @@ body {
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
     cursor: pointer;
     transition: all 0.15s ease;
+    white-space: nowrap;
 }
 
 .saas-date-pill:hover {
@@ -298,6 +320,7 @@ body {
 .saas-notif-btn {
     width: 38px;
     height: 38px;
+    min-width: 38px;
     border-radius: 8px;
     background: #ffffff;
     border: 1px solid #e2e8f0;
@@ -333,23 +356,34 @@ body {
 }
 
 /* =============================================================
-   6 TOP KPI MICRO-CARDS GRID
+   6 TOP KPI MICRO-CARDS GRID (PERFECT RESPONSIVE)
    ============================================================= */
 .saas-kpi-grid {
     display: grid;
-    grid-template-columns: repeat(6, 1fr);
+    grid-template-columns: repeat(3, 1fr);
     gap: 16px;
-    padding: 24px 28px 12px 28px;
+    padding: 20px 28px 12px 28px;
 }
 
-@media (max-width: 1280px) {
+@media (min-width: 1650px) {
     .saas-kpi-grid {
-        grid-template-columns: repeat(3, 1fr);
+        grid-template-columns: repeat(6, 1fr);
     }
 }
-@media (max-width: 768px) {
+
+@media (max-width: 1100px) {
     .saas-kpi-grid {
         grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+        padding: 16px 20px 10px 20px;
+    }
+}
+
+@media (max-width: 640px) {
+    .saas-kpi-grid {
+        grid-template-columns: 1fr;
+        gap: 10px;
+        padding: 14px;
     }
 }
 
@@ -357,24 +391,25 @@ body {
     background: #ffffff;
     border: 1px solid #e2e8f0;
     border-radius: 12px;
-    padding: 16px;
+    padding: 16px 18px;
     display: flex;
     align-items: center;
-    gap: 12px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+    gap: 14px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.03);
     transition: all 0.2s ease;
+    min-height: 86px;
 }
 
 .saas-kpi-card:hover {
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06);
     transform: translateY(-1.5px);
 }
 
 .saas-kpi-icon-box {
-    width: 44px;
-    height: 44px;
-    min-width: 44px;
-    border-radius: 10px;
+    width: 46px;
+    height: 46px;
+    min-width: 46px;
+    border-radius: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -388,52 +423,74 @@ body {
 .saas-kpi-icon-box.pink { background: #fce7f3; color: #db2777; }
 
 .saas-kpi-label {
-    font-size: 10.5px;
+    font-size: 11px;
     font-weight: 800;
     color: #64748b;
     letter-spacing: 0.5px;
     text-transform: uppercase;
+    line-height: 1.3;
 }
 
 .saas-kpi-value {
-    font-size: 18px;
-    font-weight: 800;
+    font-size: 20px;
+    font-weight: 900;
     color: #0f172a;
     line-height: 1.2;
-    margin: 2px 0 1px 0;
+    margin: 3px 0 2px 0;
+    white-space: nowrap;
 }
 
 .saas-kpi-badge {
     font-size: 11px;
     font-weight: 700;
+    color: #64748b;
+}
+
+.saas-kpi-badge.positive {
     color: #16a34a;
 }
 
 /* =============================================================
-   DASHBOARD 3-COLUMNS SECTIONS (CHARTS, FEEDS, TABLES)
+   DASHBOARD SECTIONS & CHARTS (FLEXIBLE RESPONSIVE)
    ============================================================= */
 .saas-dashboard-row {
-    display: grid;
-    grid-template-columns: 1.2fr 1fr 1fr;
+    display: flex;
     gap: 20px;
     padding: 12px 28px;
+    width: 100%;
 }
 
-@media (max-width: 1200px) {
+@media (max-width: 1100px) {
     .saas-dashboard-row {
-        grid-template-columns: 1fr;
+        flex-direction: column;
+        padding: 12px 20px;
+        gap: 16px;
+    }
+}
+
+@media (max-width: 640px) {
+    .saas-dashboard-row {
+        padding: 10px 14px;
+        gap: 12px;
     }
 }
 
 .saas-card {
     background: #ffffff;
     border: 1px solid #e2e8f0;
-    border-radius: 12px;
+    border-radius: 14px;
     padding: 20px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.03);
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    width: 100%;
+}
+
+@media (max-width: 640px) {
+    .saas-card {
+        padding: 14px;
+        border-radius: 12px;
+    }
 }
 
 .saas-card-header {
@@ -447,6 +504,73 @@ body {
     font-size: 14px;
     font-weight: 800;
     color: #0f172a;
+}
+
+.saas-card-subtitle {
+    font-size: 12px;
+    color: #64748b;
+    margin-top: 2px;
+}
+
+/* =============================================================
+   SIDEBAR RESPONSIVE DRAWER ON TABLETS & MOBILES
+   ============================================================= */
+@media (max-width: 1024px) {
+    .saas-sidebar {
+        transform: translateX(-100%);
+        transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        z-index: 1000;
+        box-shadow: none;
+    }
+
+    .saas-sidebar.mobile-open {
+        transform: translateX(0);
+        box-shadow: 0 0 50px rgba(0, 0, 0, 0.6);
+    }
+
+    .saas-sidebar-backdrop {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(15, 23, 42, 0.65);
+        backdrop-filter: blur(4px);
+        z-index: 999;
+        opacity: 0;
+        transition: opacity 0.25s ease;
+    }
+
+    .saas-sidebar-backdrop.active {
+        display: block;
+        opacity: 1;
+    }
+
+    .saas-main-area {
+        margin-left: 0 !important;
+        width: 100% !important;
+    }
+
+    .saas-topbar {
+        padding: 0 16px;
+    }
+
+    .saas-hamburger-btn {
+        display: flex !important;
+    }
+}
+
+@media (max-width: 768px) {
+    .saas-topbar {
+        padding: 8px 12px;
+        min-height: 56px;
+    }
+
+    .saas-topbar-subtitle {
+        display: none;
+    }
+
+    .saas-date-pill span:last-child {
+        display: none;
+    }
 }
 
 .saas-chart-legend {
@@ -3092,4 +3216,149 @@ img.profile-avatar, .profile-avatar, img.logo-avatar, .logo-avatar {
     color: #0f172a !important;
     border-color: #94a3b8 !important;
 }
+
+/* =============================================================
+   PRESTIGE MODALS & RESPONSIVE FORMS
+   ============================================================= */
+.prestige-modal-backdrop {
+    position: fixed !important;
+    inset: 0 !important;
+    background: rgba(15, 23, 42, 0.7) !important;
+    backdrop-filter: blur(6px) !important;
+    z-index: 9999 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 16px !important;
+    animation: fadeInModal 0.2s ease-out;
+}
+
+.prestige-modal-backdrop.hidden {
+    display: none !important;
+}
+
+@keyframes fadeInModal {
+    from { opacity: 0; transform: scale(0.96); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+.prestige-modal-card {
+    background: #ffffff !important;
+    border-radius: 16px !important;
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.3) !important;
+    width: 100% !important;
+    max-width: 540px !important;
+    max-height: 90vh !important;
+    overflow-y: auto !important;
+    border: 1px solid rgba(226, 232, 240, 0.8) !important;
+}
+
+.prestige-modal-header {
+    padding: 18px 22px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    border-bottom: 1px solid #f1f5f9 !important;
+}
+
+.prestige-modal-title {
+    font-size: 16px !important;
+    font-weight: 800 !important;
+    color: #0f172a !important;
+    margin: 0 !important;
+}
+
+.prestige-modal-close-btn {
+    background: none !important;
+    border: none !important;
+    font-size: 18px !important;
+    cursor: pointer !important;
+    color: #64748b !important;
+    width: 32px !important;
+    height: 32px !important;
+    border-radius: 9999px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    transition: background 0.15s ease !important;
+}
+
+.prestige-modal-close-btn:hover {
+    background: rgba(0, 0, 0, 0.06) !important;
+}
+
+.prestige-form-group {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 6px !important;
+    padding: 0 22px !important;
+}
+
+.prestige-form-label {
+    font-size: 12px !important;
+    font-weight: 700 !important;
+    color: #334155 !important;
+}
+
+.prestige-form-input {
+    width: 100% !important;
+    padding: 10px 14px !important;
+    border: 1px solid #cbd5e1 !important;
+    border-radius: 10px !important;
+    font-size: 13px !important;
+    font-family: inherit !important;
+    color: #0f172a !important;
+    background: #ffffff !important;
+    transition: all 0.2s ease !important;
+    outline: none !important;
+}
+
+.prestige-form-input:focus {
+    border-color: #c2850c !important;
+    box-shadow: 0 0 0 3px rgba(194, 133, 12, 0.15) !important;
+}
+
+.prestige-modal-actions {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-end !important;
+    gap: 10px !important;
+    padding: 14px 22px !important;
+    border-top: 1px solid #f1f5f9 !important;
+}
+
+.btn-modal-cancel {
+    padding: 8px 18px !important;
+    background: #f1f5f9 !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 9999px !important;
+    font-size: 12.5px !important;
+    font-weight: 700 !important;
+    color: #475569 !important;
+    cursor: pointer !important;
+    transition: all 0.15s ease !important;
+}
+
+.btn-modal-cancel:hover {
+    background: #e2e8f0 !important;
+}
+
+.btn-modal-submit-gold {
+    padding: 8px 20px !important;
+    background: linear-gradient(135deg, #c2850c 0%, #a16207 100%) !important;
+    color: #ffffff !important;
+    border: none !important;
+    border-radius: 9999px !important;
+    font-size: 12.5px !important;
+    font-weight: 700 !important;
+    cursor: pointer !important;
+    box-shadow: 0 4px 12px rgba(194, 133, 12, 0.25) !important;
+    transition: all 0.15s ease !important;
+}
+
+.btn-modal-submit-gold:hover {
+    transform: translateY(-1px) !important;
+    box-shadow: 0 6px 16px rgba(194, 133, 12, 0.35) !important;
+}
+
 

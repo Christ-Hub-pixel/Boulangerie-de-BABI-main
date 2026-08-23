@@ -84,8 +84,29 @@ function switchAdminSection(sectionId) {
     if (sectionId === 'wave-payouts') loadWavePayoutHistory();
     if (sectionId === 'audit') loadSecurityAuditLogs();
 
+    // Auto-close mobile drawer if open
+    closeMobileSidebar();
+
     // Scroll to top
     window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function toggleMobileSidebar() {
+    const sidebar = document.getElementById('saasSidebar');
+    const backdrop = document.getElementById('saasSidebarBackdrop');
+    if (sidebar) {
+        sidebar.classList.toggle('mobile-open');
+    }
+    if (backdrop) {
+        backdrop.classList.toggle('active');
+    }
+}
+
+function closeMobileSidebar() {
+    const sidebar = document.getElementById('saasSidebar');
+    const backdrop = document.getElementById('saasSidebarBackdrop');
+    if (sidebar) sidebar.classList.remove('mobile-open');
+    if (backdrop) backdrop.classList.remove('active');
 }
 
 function initAdminNavigation() {

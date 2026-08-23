@@ -20,10 +20,13 @@
 <body>
 
     <div class="saas-layout-wrapper">
+        <!-- Backdrop for mobile drawer -->
+        <div class="saas-sidebar-backdrop" id="saasSidebarBackdrop" onclick="toggleMobileSidebar()"></div>
+
         <!-- =============================================================
              SAAS DARK SLATE SIDEBAR NAVIGATION
              ============================================================= -->
-        <aside class="saas-sidebar">
+        <aside class="saas-sidebar" id="saasSidebar">
             <!-- Brand Header -->
             <div class="saas-sidebar-brand">
                 <img src="assets/logo.png" alt="Logo BABI" class="saas-brand-logo"/>
@@ -124,7 +127,11 @@
         <main class="saas-main-area">
             <!-- Topbar Header -->
             <header class="saas-topbar">
-                <div style="display: flex; align-items: center; gap: 16px;">
+                <div style="display: flex; align-items: center; gap: 14px;">
+                    <!-- Mobile Hamburger Button -->
+                    <button type="button" class="saas-hamburger-btn" id="mobileSidebarToggle" onclick="toggleMobileSidebar()" aria-label="Ouvrir le menu">
+                        <span class="material-symbols-outlined text-2xl">menu</span>
+                    </button>
                     <div>
                         <h1 class="saas-topbar-title" id="current-section-title">Tableau de bord</h1>
                         <span class="saas-topbar-subtitle" id="current-section-subtitle">Vue d'ensemble et contrôle en direct de la Boulangerie de BABI</span>
