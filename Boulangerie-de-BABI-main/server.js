@@ -838,12 +838,32 @@ app.get('/api/payments/status/:paymentId', async (req, res) => {
     try {
         const paymentId = req.params.paymentId;
         let payment = await db.get("SELECT * FROM payments WHERE id = ? OR order_id = ?", [paymentId, paymentId]);
+        
         if (!payment) {
+            const cleanOrderId = String(paymentId || '').replace(/^ORD-/, '');
+            const order = await db.get("SELECT * FROM orders WHERE id = ? OR id = ?", [paymentId, cleanOrderId]);
+            if (order) {
+                const pinRecord = await db.get("SELECT * FROM pickup_codes WHERE order_id = ? OR order_id = ?", [order.id, `ORD-${order.id}`]);
+                const isPaid = order.status === 'PAID' || order.status === 'PREPARING' || order.status === 'READY_FOR_PICKUP' || order.payment_status === 'paye';
+                return res.json({
+                    success: true,
+                    paymentId: `PAY-${order.id}`,
+                    orderId: order.id,
+                    status: isPaid ? 'PAID' : 'PENDING',
+                    amount: order.total_amount || order.total_price || 0,
+                    currency: 'XOF',
+                    provider: order.payment_method || 'wave',
+                    isPaid: isPaid,
+                    orderStatus: order.status,
+                    pickupPin: (isPaid && (pinRecord || order.code_pin)) ? (pinRecord ? pinRecord.pin_code : order.code_pin) : null,
+                    updatedAt: order.updated_at
+                });
+            }
             return res.status(404).json({ success: false, error: "Transaction introuvable." });
         }
 
         const order = await db.get("SELECT * FROM orders WHERE id = ?", [payment.order_id]);
-        const pinRecord = await db.get("SELECT * FROM pickup_codes WHERE order_id = ?", [payment.order_id]);
+        const pinRecord = await db.get("SELECT * FROM pickup_codes WHERE order_id = ? OR order_id = ?", [payment.order_id, `ORD-${payment.order_id}`]);
 
         res.json({
             success: true,
@@ -855,7 +875,7 @@ app.get('/api/payments/status/:paymentId', async (req, res) => {
             provider: payment.provider,
             isPaid: payment.status === 'PAID',
             orderStatus: order ? order.status : 'UNKNOWN',
-            pickupPin: (payment.status === 'PAID' && pinRecord) ? pinRecord.pin_code : null,
+            pickupPin: (payment.status === 'PAID' && (pinRecord || (order && order.code_pin))) ? (pinRecord ? pinRecord.pin_code : order.code_pin) : null,
             updatedAt: payment.updated_at
         });
     } catch (err) {
