@@ -1,263 +1,131 @@
 # 🥖 Architecture Technique du Projet — Boulangerie de BABI
 
-> **Plateforme E-Commerce & Suivi de Livraison GPS en Temps Réel**  
+> **Plateforme E-Commerce & Click & Collect Omnicanal avec Backend Ultra-Intelligent (BBE v3.0)**  
 > **Localisation Officielle :** Riviera, Abidjan, Côte d'Ivoire  
 > **Téléphones Officiels :** Fixe `27 22 56 41 23` | Mobiles `07 04 38 92 01` / `07 06 81 79 77`  
 
 ---
 
-## 📌 1. Vue d'Ensemble & Stack Technique
+## 📌 1. Vue d'Ensemble & Modèle Économique
 
-La plateforme **Boulangerie de BABI** est une application web e-commerce moderne, rapide, 100% responsive et optimisée pour l'écosystème ivoirien (Mobile Money, livraison à domicile à Abidjan, suivi GPS par scooter, tickets de caisse thermiques).
+La plateforme **Boulangerie de BABI** est un écosystème commercial haut de gamme optimisé pour Abidjan, reposant sur un modèle **100% Click & Collect / Retrait Express au Fournil** :
 
-### 🛠️ Technologies Utilisées :
-- **Frontend Core :** HTML5 sémantique, CSS3 (Vanilla + Bootstrap 5.3)
-- **Typographie & Design System :** Google Fonts (*Playfair Display*, *Outfit*, *Inter*), FontAwesome 6
-- **Logique Client :** JavaScript ES6+ (Architecture Modulaire)
-- **Stockage Client :** Dual LocalStorage (*babi_cart_items*, *babi_cart*, *babi_wishlist*, *babi_current_order*)
-- **Cartographie & GPS :** OpenStreetMap, Leaflet.js, Leaflet Routing Machine, Google Maps Embed
-- **Backend & Persistence :** Node.js, Express.js, SQLite3 (`database.sqlite`)
+1. **📱 Réservation en Ligne (Mobile App & Web PWA)** :
+   - Le client réserve son pain ou ses viennoiseries depuis chez lui.
+   - **Moyen de paiement exclusif en ligne : Wave Mobile Money** (garantit 0% de faux engagements et élimine l'attente).
+   - Génération instantanée d'un **Code PIN unique confidentiel**.
+
+2. **🏬 Retrait Express au Fournil (Comptoir Dédié)** :
+   - Le client se présente au comptoir sans faire la queue.
+   - La caissière saisit le code PIN sur son terminal tactile POS pour valider la remise.
+
+3. **💵 Ventes Directes en Boutique (Clients sur place)** :
+   - Les clients venus physiquement faire la queue peuvent régler en Espèces (Cash) ou Wave directement à la caisse.
 
 ---
 
 ## 📐 2. SCHÉMAS VISUELS DE L'ARCHITECTURE (DIAGRAMMES)
 
-### 📊 Schéma 1 : Architecture Globale du Système
+### 📊 Schéma 1 : Architecture Globale du Système Connecté
 
 ```mermaid
 flowchart TB
-    subgraph CLIENT["📱 CLIENT WEB & MOBILE"]
-        UI["🎨 Interface Utilisateur (HTML5 / Bootstrap 5 / CSS3)"]
-        STORE["💾 Dual LocalStorage (Panier, Favoris, Historique)"]
-        SW["⚡ Progressive Web App (PWA Service Worker)"]
+    subgraph CLIENT["📱 CLIENT (Mobile App Flutter & Web PWA)"]
+        UI["🎨 Interface Client (Catalogue, Panier, Accords Gourmands)"]
+        WAVE_PAY["🌊 Paiement Exclusif Wave Mobile Money"]
+        PIN_GEN["🔑 Code PIN Unique de Retrait"]
     end
 
-    subgraph LOGIC["⚙️ MODULES JAVASCRIPT FRONTEND"]
-        PRODUCTS["🥖 products.js (Catalogue, Filtres & Tri A-Z/Prix)"]
-        CART["🛒 cart_actions.js (Panier & Sanitisation Prix)"]
-        WISHLIST["❤️ wishlist.js (Favoris & Badges en direct)"]
-        SCHEDULE["⏰ store_schedule.js (Contrôleur Horaires 06h-20h)"]
-        GPS_TRACK["🛵 suivi.js (Animation Livreur & Ticket Thermique)"]
-        CHECKOUT_JS["📋 checkout.js (Formulaire, Mobile Money & PIN)"]
+    subgraph BABI_BRAIN["🧠 BACKEND ULTRA-INTELLIGENT (BABI Brain Engine v3.0)"]
+        ORCH["📡 Hub d'Orchestration Temps Réel"]
+        PIN_VAL["🔐 Validateur Universel de PIN & Anti-Fraude"]
+        AI_BAKE["🍞 Prédiction des Fournées & Pain Chaud"]
+        AI_STOCK["📦 Conseiller Stocks & Anti-Gaspillage"]
+        AI_BI["📈 Business Intelligence & Prévisions CA"]
+        SQLITE[("🗄️ Base de Données SQLite (database.sqlite)")]
     end
 
-    subgraph BACKEND["🌐 SERVEUR BACKEND & BDD"]
-        EXPRESS["🚀 Serveur Node.js / Express (server.js)"]
-        SQLITE[("🗄️ Base SQLite3 (database.sqlite)")]
-        JSON_DB["📄 Data Canonique (data/products.json)"]
+    subgraph STATIONS["🏬 POSTES DE TRAVAIL EN BOUTIQUE"]
+        CAISSE["💻 Caissière (POS Comptoir) : Alerte en direct & Validation PIN"]
+        GERANTE["👩‍💼 Gérante : Impact stocks & planification fournil"]
+        ADMIN["👔 Direction : Cockpit financier & contrôle des caisses"]
     end
 
-    subgraph EXTERNAL["🌍 SERVICES EXTERNES & GPS"]
-        OSM["🗺️ OpenStreetMap / Leaflet Maps Engine"]
-        GMAPS["📍 Google Maps API Embed (Riviera)"]
-        MOMO["💳 Passerelles Mobile Money (Wave & Orange Money)"]
-    end
+    CLIENT -->|1. Commande & Paiement Wave| ORCH
+    ORCH -->|2. Dispatch instantané| CAISSE
+    ORCH -->|2. Dispatch instantané| GERANTE
+    ORCH -->|2. Dispatch instantané| ADMIN
 
-    UI <--> STORE
-    UI <--> LOGIC
-    PRODUCTS <--> JSON_DB
-    CHECKOUT_JS <--> MOMO
-    GPS_TRACK <--> OSM
-    EXPRESS <--> SQLITE
-    LOGIC <--> EXPRESS
+    CAISSE -->|3. Saisie du Code PIN au comptoir| PIN_VAL
+    PIN_VAL -->|4. Validation atomique & clôture| ORCH
+    ORCH -->|5. Confirmation immédiate sur smartphone| CLIENT
 ```
 
 ---
 
-### 🔄 Schéma 2 : Diagramme du Cycle de Commande & Contrôle des Horaires (06h - 20h)
+### 🔄 Schéma 2 : Parcours de Commande en Ligne & Retrait Express
 
 ```mermaid
 sequenceDiagram
     autonumber
-    actor C as Client Abidjan
-    participant W as Interface Web (cart.html / checkout.html)
-    participant S as Contrôleur (store_schedule.js)
-    participant M as Modal Alerte Restriction
-    participant B as Backend Order Engine
-    actor L as Livreur Scooter (livreur.html)
+    actor C as Client Abidjan (Chez lui)
+    participant App as App Mobile / Web PWA
+    participant Backend as BABI Brain Engine
+    actor K as Caissière au Comptoir (POS)
 
-    C->>W: Clique sur "PASSER LA COMMANDE"
-    W->>S: Appel isStoreOpen() (Vérifie Heure d'Abidjan)
+    C->>App: Consulte le catalogue & statut Pain Chaud
+    C->>App: Ajoute les produits au panier
+    C->>App: Choisit l'heure de retrait au fournil
+    C->>App: Règle OBLIGATOIREMENT par Wave Mobile Money
+    App->>Backend: Validation du paiement Wave & Création commande
+    Backend-->>App: Émission du Code PIN confidentiel (ex: #7890)
+    Backend->>K: Notification sonore & affichage de la commande à préparer
     
-    alt Horaires Fermés (23h00 - 05h45)
-        S-->>W: Retourne false (Store Closed)
-        W->>M: Affiche Pop-up "Boulangerie Fermée - Réouverture à 05h45"
-        M-->>C: Bloque la soumission jusqu'à 05h45
-    else Horaires Ouverts (05h45 - 23h00)
-        S-->>W: Retourne true (Store Open)
-        W->>C: Affiche le Formulaire de Caisse (Mobile Money / Cash)
-        C->>W: Valide la commande & Sélectionne le paiement
-        W->>B: Soumet l'ordre & Génère le Code PIN confidentiel
-        B-->>W: Redirige vers suivi.html (Suivi GPS en Direct)
-        B-->>L: Notifie l'App Livreur (livreur.html)
-    end
+    Note over C,K: Le client se déplace au Fournil Riviera
+    C->>K: Donne son Code PIN au comptoir Click & Collect
+    K->>Backend: Saisie du Code PIN sur le terminal tactile
+    Backend-->>K: Validation instantanée & Affichage des articles
+    K->>C: Remise immédiate du sachet sans faire la queue
+    K->>Backend: Clôture de la commande & Impression du reçu thermique
 ```
 
 ---
 
-### 🛵 Schéma 3 : Interaction GPS Livreur & Client (Leaflet & Verification Code PIN)
-
-```mermaid
-flowchart LR
-    subgraph DEPART["🥐 POINT DE DEPART"]
-        BAKERY["Boulangerie de BABI\nRiviera\n(5.3772845, -3.9272566)"]
-    end
-
-    subgraph TRAJET["🛵 DEPLACEMENT GPS COMPASS"]
-        SCOOTER["Livreur Koffi (Scooter)\nTracé Leaflet Routing Machine\nPosition GPS en temps réel"]
-    end
-
-    subgraph ARRIVEE["📍 DESTINATION CLIENT"]
-        CLIENT_HOME["Adresse Client Abidjan\nEx: Riviera / Angré / Marcory"]
-        PIN["Code Confidentiel (ex: 6005)\nCommunique uniquement à la livraison"]
-    end
-
-    BAKERY -->|Prise du paquet chaud| SCOOTER
-    SCOOTER -->|Navigation Leaflet| CLIENT_HOME
-    CLIENT_HOME -->|Saisie Code PIN dans livreur.html| VERIFY{Code Correct?}
-    VERIFY -->|Oui| SUCCESS["🟢 Statut : LIVRÉ ! Ticket thermique 80mm imprimé"]
-    VERIFY -->|Non| RETRY["🔴 Code Incorrect - Réessayer"]
-```
-
----
-
-### 🧾 Schéma 4 : Visualisation du Blueprint du Ticket Thermique 80mm
+### 🧾 Schéma 3 : Ticket Thermique 80mm de Caisse
 
 ```text
 +--------------------------------------------------+
 |              BOULANGERIE DE BABI                 |
-|         TEL: 2722564123 / 0704389201            |
-|                     Recu                         |
+|         Riviera, Abidjan - Côte d'Ivoire         |
+|           TEL: 27 22 56 41 23 / 07 04 38 92 01   |
 |--------------------------------------------------|
-| Receipt: 2512                                    |
-| Date: 22 juil. 2026 12:07:54                     |
-| Terminal: ONLINE-WEB                             |
-| Caissier(e): CAISSES 1                           |
+| Ticket N°: #1042                                 |
+| Date: 23 août 2026 à 18:30:15                    |
+| Mode: CLICK & COLLECT (Paiement Wave Vérifié)    |
+| Opérateur: Caissière Caisse 1                    |
+| Code Retrait: #7890 (Validé & Scellé)            |
 |--------------------------------------------------|
 | Article                  Prix     Qte    Valeur  |
 |--------------------------------------------------|
-| PAIN AU CHOCOLAT        F 500     x2     F 1 000 |
-| CROISSANT               F 500     x2     F 1 000 |
-| JUS DE BAOBAB (PETIT)   F 300     x1     F   300 |
+| BAGUETTE TRADITION      F 400     x2     F   800 |
+| CROISSANT PUR BEURRE    F 600     x3     F 1 800 |
+| JUS DE BISSAP MAISON    F 1000    x1     F 1 000 |
 |--------------------------------------------------|
-| Items count: 5                                   |
-| Total TTC                                F 2 300 |
-| Paiement (Mobile Money)                  F 2 300 |
+| TOTAL PAYÉ (WAVE) :                     F 3 600  |
+| RETRAIT FOURNIL :                       GRATUIT  |
 |--------------------------------------------------|
-|     Merci de votre visite a la Boulangerie       |
-|               de Babi ! A bientot !              |
+|        MERCI DE VOTRE VISITE ET À BIENTÔT !      |
+|             BOULANGERIE DE BABI RIVIERA          |
 +--------------------------------------------------+
 ```
 
 ---
 
-## 🏗️ 3. Structure & Arborescence du Projet
+## 🛠️ 3. Structure des 4 Rôles de la Plateforme
 
-```text
-Boulangerie de BABI/
-├── 📄 index.html               # Vitrine principale, Carrousel HD, Four en direct, Produits phares
-├── 📄 produits.html            # Catalogue complet (+80 produits) avec filtres & tri par prix
-├── 📄 cart.html                # Panier interactif unifié avec gestion des quantités & codes promo
-├── 📄 checkout.html            # Caisse & Prise de commande (Communes d'Abidjan, Mobile Money, Cash)
-├── 📄 suivi.html               # Suivi de livraison GPS en direct + Reçu thermique imprimable 80mm
-├── 📄 favoris.html             # Galerie des produits coups de cœur enregistrés
-├── 📄 livreur.html             # Cockpit GPS du livreur (Style Uber Eats) avec validation par code PIN
-├── 📄 fidelite.html            # Espace Club Fidélité (Cumul de points & Niveaux VIP)
-├── 📄 contact.html             # Formulaire de contact & Carte Google Maps officielle (Riviera)
-├── 📄 apropos.html             # Histoire & Savoir-faire artisanal de la boulangerie
-├── 📄 connexion.html           # Page de connexion avec fond intérieur boulangerie sombre
-├── 📄 inscription.html         # Page de création de compte client
-├── 📄 admin.html               # Tableau de bord d'administration des commandes et stocks
-├── 📄 meunu_officiel.md        # Document officiel des produits et tarifs de la boulangerie
-├── 📄 ARCHITECTURE.md          # Présente architecture technique & schémas du projet
-│
-├── 📁 assets/                  # Photos HD des produits réels, logos & bannières
-│   ├── logo.png                # Logo officiel BB (Le Pain de Babi)
-│   ├── interieur_bakery.png    # Fond sombre d'ambiance d'intérieur de boutique
-│   └── *.png                   # Visuels des pains, viennoiseries, pâtisseries, jus naturels
-│
-├── 📁 css/                     # Feuilles de style CSS
-│   ├── global.css              # Variables de charte graphique (Chocolat & Ambre), resets, navbar & footers
-│   ├── animations.css          # Effets de survol, micro-animations, pulse et transitions
-│   ├── auth.css                # Styles spécifiques aux bannières de connexion/inscription
-│   └── contact.css             # Styles de la page de contact et détails d'accès
-│
-├── 📁 js/                      # Modules JavaScript Frontend
-│   ├── products.js             # Chargeur du catalogue, filtrage par catégorie & tri (A-Z, Prix)
-│   ├── cart_actions.js         # Gestionnaire d'état du panier (Dual LocalStorage & Nettoyage prix)
-│   ├── wishlist.js             # Gestionnaire des favoris (Ajout/Retrait & Badges en direct)
-│   ├── store_schedule.js       # Gestionnaire des horaires d'ouverture (06h-20h) & Restriction de commande
-│   ├── suivi.js                # Déplacement GPS animé du livreur Leaflet & Impression ticket thermique
-│   ├── checkout.js             # Validation de commande, calcul des frais et génération de code PIN
-│   ├── script.js               # Utilitaires globaux, affichage des mots de passe & animations
-│   ├── auth.js                 # Logique d'authentification client
-│   └── pwa.js                  # Progressive Web App Service Worker registration
-│
-├── 📁 data/                    # Données applicatives
-│   └── products.json           # Base de données canonique des 87 produits de la boulangerie
-│
-├── 📁 scripts/                 # Scripts d'automatisation et de maintenance
-│   ├── 📁 python/              # Scripts Python utilitaires de traitement d'images & HTML
-│   └── 📁 js/                  # Scripts JS de migration et de peuplement BDD
-│
-├── 📄 server.js                # Serveur Backend Node.js / Express
-└── 📄 database.sqlite          # Base de données SQLite pour l'historique des commandes
-```
-
----
-
-## 🌐 4. Modules Applicatifs & Fonctionnalités Clés
-
-### 🥖 A. Catalogue & Recherche Intelligente (`js/products.js`)
-- **Tri Alphabétique & Par Prix :** Tri par défaut de A à Z, dynamique par prix croissant/décroissant et nouveautés.
-- **Filtrage Thématique :** Pains, Viennoiseries, Pâtisseries, Jus Naturels, Boissons, Glaces.
-- **Liaison des Visuels Réels :** Association automatique des photos d'actifs réelles aux produits (*Baguettes 150/200, Croissants, Youki, Énergie Malt, Jus de Baobab, Bissap, etc.*).
-
-### 🛒 B. Panier Unifié & Persistance (`js/cart_actions.js`)
-- **Dual LocalStorage Sync :** Synchronisation simultanée entre `babi_cart_items` (tableau riche) et `babi_cart` (compatibilité legacy).
-- **Sanitisation Numérique :** Nettoyage automatique des chaînes de prix (`replace(/[^0-9.]/g, '')`) pour éliminer tout risque de `NaN`.
-- **Badges Temps Réel :** Mise à jour instantanée des compteurs de panier sur l'ensemble des pages.
-
-### ❤️ C. Gestion des Favoris (`js/wishlist.js` & `favoris.html`)
-- **Boutons Cœur Dynamiques :** Bascule instantanée de l'état favori avec retour visuel toast.
-- **Page Galerie Dédiée (`favoris.html`) :** Vue synthétique des coups de cœur avec bouton d'ajout direct au panier.
-
-### ⏰ D. Contrôleur des Horaires Boutique (`js/store_schedule.js`)
-- **Plage d'Ouverture :** `05h45` à `23h00` (Heure d'Abidjan).
-- **Programmes de Sortie de Pain :** `06h00`, `09h00`, `14h00`, `17h00`, `18h00`.
-- **Restriction Automatique :** En dehors de cette plage, le passage de commande est bloqué et déclenche une fenêtre pop-up explicative (*"Les commandes réouvrent à 05h45"*).
-
-### 🛵 E. Suivi GPS Livreur & Reçu Thermique (`suivi.html` & `js/suivi.js`)
-- **Animation de Scooter en Direct :** Déplacement du livreur de **Riviera** vers l'adresse du client sur carte OpenStreetMap.
-- **Code de Livraison Sécurisé :** Code PIN confidentiel à 4 chiffres généré pour la remise du colis.
-- **Impression du Ticket Thermique Officiel :** Génération du reçu au format caisse thermique **80mm** (Logo BB, numéro de reçu, caissier, détails des articles et montants).
-
-### 📱 F. Cockpit GPS Livreur (`livreur.html`)
-- **Interface Style Uber Driver :** Guidage d'itinéraire Leaflet Routing, affichage des coordonnées client, bouton d'appel direct et validation par code PIN.
-
-### 📦 G. Algorithme Kilométrique de Livraison & Barème (`checkout.html` & `js/checkout.js`)
-- **Calculateur Kilométrique Officiel (`calculateDeliveryFeeByKm(km)`) :** Calcul automatique des kilomètres depuis la boulangerie (Riviera : `5.37728, -3.92726`) à partir de 500 FCFA :
-  - `km <= 3.0 km` : **500 FCFA** (Tarif de base / proximité : Riviera, Palmeraie, Anono... — *"3 km est égal à 500"*)
-  - `3.0 km < km <= 5.0 km` : **1 000 FCFA** (Cocody étendu : Deux-Plateaux, Angré...)
-  - `5.0 km < km <= 8.0 km` : **1 500 FCFA** (Plateau, Adjamé, Marcory Zone 4...)
-  - `8.0 km < km <= 12.0 km` : **2 000 FCFA** (Koumassi, Treichville, Bingerville, Attécoubé...)
-  - `km > 12.0 km` : **2 500 FCFA** (Yopougon, Abobo, Port-Bouët...)
-- **Formule GPS Haversine :** Calcul mathématique exact en kilomètres (`computeHaversineDistance()`) lors de la capture GPS Porte-à-Porte.
-
----
-
-## 📞 5. Coordonnées & Données Métier Officielles
-
-- **Raison Sociale :** Boulangerie de BABI
-- **Adresse Physiques :** Riviera, Abidjan - Côte d'Ivoire (GPS : `5.3772845, -3.9272566`)
-- **Numéros Téléphoniques Officiels :**
-  - ☎️ **Fixe :** `27 22 56 41 23`
-  - 📱 **Mobile 1 :** `07 04 38 92 01`
-  - 📱 **Mobile 2 :** `07 06 81 79 77`
-- **Horaires d'Ouverture Boutique :**
-  - **Lundi à Dimanche :** `05h45 – 23h00`
-- **Programmes de Sortie de Pain :**
-  - `06h00` • `09h00` • `14h00` • `17h00` • `18h00`
-
----
-*Document avec Schémas Visuels généré pour le projet Boulangerie de BABI.*
+| Rôle | Interface | Responsabilités | Mode de Paiement |
+| :--- | :--- | :--- | :--- |
+| **Client** | `index.html`, `produits.html`, `cart.html`, `checkout.html`, `suivi.html`, App Mobile Flutter | Consultation, réservations, pain chaud en direct, suivi PIN. | **Wave Mobile Money Exclusif** |
+| **Caissière** | `caissiere.html` & `js/caissiere.js` | Réception en direct des commandes, validation PIN, encaissement sur place. | Validation PIN + Ventes Espèces/Wave |
+| **Gérante** | `gerante.html` & `js/gerante.js` | Pilotage des fournées, alertes de stocks, mode anti-gaspillage. | Consultation |
+| **Administrateur** | `admin.html` & `js/admin.js` | Cockpit financier, gestion des accès caissières, audit de sécurité. | Trésorerie & Payouts |
