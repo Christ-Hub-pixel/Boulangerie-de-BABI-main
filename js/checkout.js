@@ -227,7 +227,7 @@ async function submitBabiOrder() {
                 user_id: user.id || null,
                 items: items,
                 pickup_slot: pickupSlot,
-                pickup_point: 'Riviera (Fournil BABI)',
+                pickup_point: 'Riviera (En face de l\'école Jules Verne)',
                 notes: orderNotes,
                 delivery_type: 'click_collect'
             })
@@ -429,7 +429,7 @@ function showPaymentSuccessInModal(order, pickupPin) {
                     </span>
                     <div class="babi-pin-digits">${pin}</div>
                     <p class="text-muted small mb-0 fw-semibold">
-                        À présenter à la caissière de la Riviera pour récupérer votre commande.
+                        À présenter à la caissière de la Riviera (en face de l'école Jules Verne) pour récupérer votre commande.
                     </p>
                 </div>
 
@@ -482,7 +482,7 @@ window.generateWhatsAppOrderUrl = function(order) {
     msg += `👤 *Client :* ${order.clientName || 'Client'}\n`;
     msg += `📞 *Téléphone :* ${order.phone || ''}\n`;
     msg += `⚡ *Mode :* Retrait en Boutique (Click & Collect)\n`;
-    msg += `📍 *Lieu de Retrait :* Riviera (Fournil BABI)\n`;
+    msg += `📍 *Lieu de Retrait :* Riviera (En face de l'école Jules Verne)\n`;
     msg += `⏰ *Créneau :* ${order.pickupSlot || 'Dès que possible (~15-20 min)'}\n`;
     msg += `💳 *Paiement :* ${order.payment_method || 'Mobile Money'} (${order.payment_status === 'paye' ? '✅ PAYÉ' : '⏳ À régler au comptoir'})\n`;
     if (order.confCode) {

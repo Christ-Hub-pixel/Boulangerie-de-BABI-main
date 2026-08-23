@@ -9828,7 +9828,7 @@ l=l==null?h:J.by(l)
 if(l==null)l="Wave C\xf4te d'Ivoire"
 k=a.i(0,"shop")
 k=k==null?h:J.by(k)
-if(k==null)k="Fournil Riviera 3 \u2022 Rond-point"
+if(k==null)k="Fournil Riviera \u2022 Jules Verne"
 j=t.kc.a(a.i(0,"items"))
 if(j==null)j=h
 else{j=J.eB(j,new A.aul(),t.a)
@@ -58160,7 +58160,7 @@ n=q?B.cf:B.dh
 m=q?B.cf.M(0.8):B.dh.M(0.8)
 l=q?B.vY.M(0.4):B.T2.M(0.4)
 l=A.I(j,j,B.i,j,j,new A.N(n,j,j,j,A.a([new A.ag(2,B.v,m,B.o,8),new A.ag(4,B.v,l,B.o,14)],t.V),j,B.a1),j,10,j,j,j,j,10)
-n=q?"OUVERT ACTUELLEMENT (05h45 - 23h00) \u2022 Retrait Express Riviera 2 \ud83e\udd56":"FERM\xc9 ACTUELLEMENT \u2022 R\xe9ouverture \xe0 05h45 au comptoir Riviera \ud83e\udd56"
+n=q?"OUVERT ACTUELLEMENT (05h45 - 23h00) \u2022 Retrait Express Riviera Jules Verne \ud83e\udd56":"FERM\xc9 ACTUELLEMENT \u2022 R\xe9ouverture \xe0 05h45 au comptoir Riviera \ud83e\udd56"
 g.push(A.I(j,A.X(A.a([l,B.bv,new A.hj(1,B.ct,A.p(n,j,j,j,j,j,A.bg(j,j,q?B.bK:B.Tx,j,j,j,j,j,j,j,j,11.5,j,j,B.z,j,j,!0,j,0.2,j,j,j,j,j,j),B.af,j,j),j)],h),B.j,B.an,B.e,0,j,j),B.i,j,j,new A.N(p,j,new A.dy(B.q,B.q,new A.aG(o,1,B.C,-1),B.q),j,j,j,B.n),j,j,j,B.WI,j,j,1/0))
 if(k.gEH())g.push(k.amy(i))
 g.push(B.au)
@@ -60174,7 +60174,7 @@ l=new A.cb(Date.now(),0,!1)
 k=J.eB(a,new A.auq(),t.nf)
 j=A.Z(k,k.$ti.h("ak.E"))
 i=j
-h=new A.eE(n,"Aujourd'hui",""+A.fG(l)+":"+B.c.d_(B.k.k(A.Bf(l)),2,"0"),"En pr\xe9paration","in_prep",e,2,m,c,"Fournil Riviera 3 \u2022 Rond-point",i,l)
+h=new A.eE(n,"Aujourd'hui",""+A.fG(l)+":"+B.c.d_(B.k.k(A.Bf(l)),2,"0"),"En pr\xe9paration","in_prep",e,2,m,c,"Fournil Riviera \u2022 Jules Verne",i,l)
 k=A.a([h],t.F6)
 B.b.E(k,p.f)
 p.sbF(k)
@@ -60806,7 +60806,7 @@ $0(){return this.a.a41(this.b,this.c)},
 $S:0}
 A.un.prototype={
 a2(){var s="https://www.google.com/maps/place/5%C2%B022'38.2%22N+3%C2%B055'38.1%22W/@5.3772845,-3.9272566,17z",r=t.N,q=t.z
-return new A.a2B(A.a([A.D(["id","babi_riviera","name","Fournil Principal Riviera (Abidjan)","address","Riviera 3, Abidjan (5\xb022'38.2\"N 3\xb055'38.1\"W)","distance","Fournil Principal","hours","05:45 - 23:00","isOpen",!0,"phone","+225 01 61 40 70 64","mapUrl",s],r,q),A.D(["id","babi_zone4","name","Boulangerie Babi Zone 4","address","Rue du Dr Fleming, Zone 4 C, Marcory","distance","Marcory","hours","06:00 - 23:00","isOpen",!0,"phone","+225 07 04 38 92 01","mapUrl",s],r,q),A.D(["id","babi_cocody","name","Fournil Cocody Centre","address","Avenue Jean Mermoz, Cocody Cit\xe9","distance","Cocody","hours","05:30 - 22:00","isOpen",!0,"phone","+225 07 06 81 79 77","mapUrl",s],r,q)],t.H7))}}
+return new A.a2B(A.a([A.D(["id","babi_riviera","name","Fournil Riviera (En face de l'école Jules Verne)","address","Riviera, Abidjan (5\xb022'38.2\"N 3\xb055'38.1\"W)","distance","Fournil Unique","hours","05:45 - 23:00","isOpen",!0,"phone","+225 07 04 38 92 01","mapUrl",s],r,q)],t.H7))}}
 A.a2B.prototype={
 ak(){var s,r
 this.aF()
