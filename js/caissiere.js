@@ -64,6 +64,14 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // Global Real-time Sync Bus
+    try {
+        const globalSyncChan = new BroadcastChannel('babi_global_sync');
+        globalSyncChan.onmessage = (e) => {
+            handleCaissiereGlobalSync(e.data);
+        };
+    } catch (_) {}
+
     try {
         const orderChannel = new BroadcastChannel('babi_orders_sync');
         orderChannel.onmessage = () => {
@@ -268,10 +276,9 @@ function resolveProductImage(name, rawImage, category) {
     return 'assets/baguette 200.png';
 }
 
-// -------------------------------------------------------------
-// 2. PRODUCT CATALOG & SEARCH
-// -------------------------------------------------------------
 async function loadPosProducts() {
+    const adjustments = JSON.parse(localStorage.getItem('babi_pos_stock_adjustments') || '{}');
+
     try {
         const res = await fetch('data/products.json');
         if (res.ok) {
@@ -281,13 +288,15 @@ async function loadPosProducts() {
                 posProducts = productList.map(p => {
                     const pName = p.nom || p.name;
                     const pCat = (p.categorie || p.category || 'pains').toLowerCase();
+                    const baseStock = p.stock !== undefined ? p.stock : 30;
+                    const adj = adjustments[pName] !== undefined ? adjustments[pName] : 0;
                     return {
                         id: p.id || p._id || pName,
                         name: pName,
                         price: p.prix || p.price,
                         category: pCat,
                         image: resolveProductImage(pName, p.image, pCat),
-                        stock: p.stock !== undefined ? p.stock : 30
+                        stock: Math.max(0, baseStock + adj)
                     };
                 });
                 renderPosProductsGrid();
@@ -296,10 +305,14 @@ async function loadPosProducts() {
         }
     } catch (_) {}
 
-    posProducts = FALLBACK_POS_PRODUCTS.map(p => ({
-        ...p,
-        image: resolveProductImage(p.name, p.image, p.category)
-    }));
+    posProducts = FALLBACK_POS_PRODUCTS.map(p => {
+        const adj = adjustments[p.name] !== undefined ? adjustments[p.name] : 0;
+        return {
+            ...p,
+            image: resolveProductImage(p.name, p.image, p.category),
+            stock: Math.max(0, (p.stock || 25) + adj)
+        };
+    });
     renderPosProductsGrid();
 }
 
@@ -593,7 +606,7 @@ function finalizeSale(methodLabel, total, given = null, change = 0) {
     playPosAudio('success');
 
     const ticketId = 'POS-' + Math.floor(1000 + Math.random() * 9000);
-    const cashierName = 'Awa Kouassi';
+    const cashierName = (typeof getActiveCashier === 'function' ? getActiveCashier().name : 'Awa Kouassi');
     const orderData = {
         id: ticketId,
         customer_name: 'Client Comptoir',
@@ -602,6 +615,7 @@ function finalizeSale(methodLabel, total, given = null, change = 0) {
         items_summary: posCart.map(i => `${i.qty}x ${i.name}`).join(', '),
         total_price: total,
         total_amount: total,
+        total: total,
         mode_paiement: methodLabel,
         montant_recu: given !== null ? given : total,
         monnaie_rendue: change,
@@ -610,10 +624,31 @@ function finalizeSale(methodLabel, total, given = null, change = 0) {
         created_at: new Date().toISOString()
     };
 
-    // Save in localStorage babi_orders
+    // Save in localStorage babi_orders & babi_history_sales
     const savedOrders = JSON.parse(localStorage.getItem('babi_orders') || '[]');
     savedOrders.unshift(orderData);
     localStorage.setItem('babi_orders', JSON.stringify(savedOrders));
+
+    const salesHistory = JSON.parse(localStorage.getItem('babi_history_sales') || '[]');
+    salesHistory.unshift(orderData);
+    localStorage.setItem('babi_history_sales', JSON.stringify(salesHistory));
+
+    // Deduct stock in local adjustments
+    let stockAdjustments = JSON.parse(localStorage.getItem('babi_pos_stock_adjustments') || '{}');
+    posCart.forEach(item => {
+        stockAdjustments[item.name] = (stockAdjustments[item.name] || 0) - item.qty;
+    });
+    localStorage.setItem('babi_pos_stock_adjustments', JSON.stringify(stockAdjustments));
+
+    // Broadcast globally to Gérante, Admin and all open dashboards
+    broadcastGlobalSync('POS_SALE_COMPLETED', {
+        orderId: ticketId,
+        total: total,
+        items: posCart,
+        method: methodLabel,
+        cashier: cashierName,
+        time: new Date().toLocaleTimeString('fr-FR')
+    });
 
     // Clear cart and show thermal receipt
     clearPosCart();
@@ -626,6 +661,35 @@ function finalizeSale(methodLabel, total, given = null, change = 0) {
     if (ticketEl) {
         const num = parseInt(ticketEl.innerText.replace('#', ''), 10) + 1;
         ticketEl.innerText = '#' + num;
+    }
+}
+
+function broadcastGlobalSync(eventType, payload = {}) {
+    try {
+        const channel = new BroadcastChannel('babi_global_sync');
+        channel.postMessage({ type: eventType, payload, timestamp: Date.now() });
+    } catch (_) {}
+    try {
+        localStorage.setItem('babi_last_sync_event', JSON.stringify({ type: eventType, payload, timestamp: Date.now() }));
+    } catch (_) {}
+}
+
+function handleCaissiereGlobalSync(eventData) {
+    if (!eventData || !eventData.type) return;
+    const { type, payload } = eventData;
+
+    if (type === 'FOURNIL_RAYON_ADDED') {
+        playPosAudio('chime');
+        showPosToast(`🥖 Fournil : +${payload.quantity} ${payload.productName} mis en rayon !`, 'success');
+        loadPosProducts();
+    } else if (type === 'EVENT_ORDER_UPDATED' || type === 'ORDER_PAID' || type === 'NEW_ONLINE_ORDER') {
+        playPosAudio('chime');
+        refreshPickupQueue();
+        updateSessionStats();
+        renderHistoryTable();
+        showPosToast(`🔔 Nouvelle commande client reçue !`, 'info');
+    } else if (type === 'STOCK_UPDATED') {
+        loadPosProducts();
     }
 }
 

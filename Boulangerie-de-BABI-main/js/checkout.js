@@ -455,6 +455,11 @@ function saveOrderLocally(order) {
             const syncChan = new BroadcastChannel('babi_orders_sync');
             syncChan.postMessage({ type: 'NEW_ORDER', order });
         } catch (_) {}
+        try {
+            const globalChan = new BroadcastChannel('babi_global_sync');
+            globalChan.postMessage({ type: 'NEW_ONLINE_ORDER', payload: order, timestamp: Date.now() });
+        } catch (_) {}
+        localStorage.setItem('babi_last_sync_event', JSON.stringify({ type: 'NEW_ONLINE_ORDER', payload: order, timestamp: Date.now() }));
     } catch (_) {}
 }
 

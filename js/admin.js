@@ -15,6 +15,20 @@ document.addEventListener('DOMContentLoaded', () => {
     initSaasCharts();
     fetchAdminData();
 
+    // Global Real-time Sync Bus
+    try {
+        const globalChan = new BroadcastChannel('babi_global_sync');
+        globalChan.onmessage = (e) => {
+            fetchAdminData();
+        };
+    } catch (_) {}
+
+    window.addEventListener('storage', (e) => {
+        if (!e.key || e.key.includes('orders') || e.key.includes('sales') || e.key.includes('babi') || e.key.includes('sync')) {
+            fetchAdminData();
+        }
+    });
+
     // Auto refresh orders every 10 seconds
     setInterval(fetchAdminData, 10000);
 

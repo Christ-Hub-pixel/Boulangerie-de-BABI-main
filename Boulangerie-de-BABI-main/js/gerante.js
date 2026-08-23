@@ -61,10 +61,51 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     } catch(e) {}
 
-    // 3. Charger les données complémentaires en arrière-plan
+    // 3. Global Real-time Sync Bus across Fournil, POS Caissière, Admin & Client
+    try {
+        const globalChan = new BroadcastChannel('babi_global_sync');
+        globalChan.onmessage = (e) => {
+            handleGeranteGlobalSync(e.data);
+        };
+    } catch (_) {}
+
+    window.addEventListener('storage', (e) => {
+        if (!e.key || e.key.includes('orders') || e.key.includes('sales') || e.key.includes('babi') || e.key.includes('sync')) {
+            renderGeranteFinance();
+            renderGeranteEventOrders();
+            calculateManualKPIs();
+        }
+    });
+
+    // 4. Charger les données complémentaires en arrière-plan
     loadDashboardData();
     setInterval(loadDashboardData, 15000);
 });
+
+function broadcastGlobalSync(eventType, payload = {}) {
+    try {
+        const channel = new BroadcastChannel('babi_global_sync');
+        channel.postMessage({ type: eventType, payload, timestamp: Date.now() });
+    } catch (_) {}
+    try {
+        localStorage.setItem('babi_last_sync_event', JSON.stringify({ type: eventType, payload, timestamp: Date.now() }));
+    } catch (_) {}
+}
+
+function handleGeranteGlobalSync(eventData) {
+    if (!eventData || !eventData.type) return;
+    const { type, payload } = eventData;
+
+    if (type === 'POS_SALE_COMPLETED' || type === 'NEW_ONLINE_ORDER' || type === 'ORDER_PAID') {
+        renderGeranteFinance();
+        calculateManualKPIs();
+        showBabiToast(`💰 Vente enregistrée : ${(payload.total || 0).toLocaleString()} FCFA (${payload.method || 'Caisse'})`, 'info');
+    } else if (type === 'EVENT_ORDER_UPDATED') {
+        renderGeranteEventOrders();
+    } else if (type === 'STOCK_UPDATED') {
+        renderGeranteInventory();
+    }
+}
 
 async function loadDashboardData() {
     try {
@@ -1268,11 +1309,31 @@ function changeBatchStatus(id, newStatus) {
     if (batch) {
         batch.status = newStatus;
         saveManualBatches(batches);
+
         if (newStatus === 'en_rayon') {
-            showBabiToast(`🥖 ${batch.quantity}x ${batch.name} sont maintenant disponibles en rayon !`, 'success');
+            // Update stock available for POS and Boutique
+            let stockEntries = JSON.parse(localStorage.getItem('babi_pos_stock_adjustments') || '{}');
+            stockEntries[batch.name] = (stockEntries[batch.name] || 0) + parseInt(batch.quantity || 0);
+            localStorage.setItem('babi_pos_stock_adjustments', JSON.stringify(stockEntries));
+
+            broadcastGlobalSync('FOURNIL_RAYON_ADDED', {
+                productName: batch.name,
+                quantity: batch.quantity,
+                baker: batch.baker,
+                time: new Date().toLocaleTimeString('fr-FR')
+            });
+
+            showBabiToast(`🥖 ${batch.quantity}x ${batch.name} mis en rayon et synchronisés avec la caisse POS !`, 'success');
         } else if (newStatus === 'en_cuisson') {
+            broadcastGlobalSync('FOURNIL_BATCH_BAKING', {
+                productName: batch.name,
+                oven: batch.oven
+            });
             showBabiToast(`🔥 ${batch.name} est au four (${batch.oven}) !`, 'info');
         }
+
+        renderManualPlanning();
+        calculateManualKPIs();
     }
 }
 

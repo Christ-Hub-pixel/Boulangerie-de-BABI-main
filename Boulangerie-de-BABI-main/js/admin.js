@@ -1,5 +1,7 @@
 // JS Admin Dashboard Logic
 
+const API_ROOT = (typeof window !== 'undefined' && (window.API_BASE_URL || (window.location.hostname.includes('boulangeriedebabi.com') ? 'https://api.boulangeriedebabi.com' : 'http://localhost:5000'))) || 'http://localhost:5000';
+
 let allOrders = [];
 let allProducts = [];
 let allUsers = [];
@@ -12,6 +14,20 @@ let paymentsDonutChartInstance = null;
 document.addEventListener('DOMContentLoaded', () => {
     initSaasCharts();
     fetchAdminData();
+
+    // Global Real-time Sync Bus
+    try {
+        const globalChan = new BroadcastChannel('babi_global_sync');
+        globalChan.onmessage = (e) => {
+            fetchAdminData();
+        };
+    } catch (_) {}
+
+    window.addEventListener('storage', (e) => {
+        if (!e.key || e.key.includes('orders') || e.key.includes('sales') || e.key.includes('babi') || e.key.includes('sync')) {
+            fetchAdminData();
+        }
+    });
 
     // Auto refresh orders every 10 seconds
     setInterval(fetchAdminData, 10000);
@@ -226,8 +242,65 @@ async function fetchAdminData() {
         loadOrders(),
         loadEventOrders(),
         loadProducts(),
-        loadUsers()
+        loadUsers(),
+        loadPaymentAnalyticsAndTransactions()
     ]);
+}
+
+async function loadPaymentAnalyticsAndTransactions() {
+    try {
+        const [analyticsRes, txRes] = await Promise.all([
+            fetch(`${API_ROOT}/api/admin/payments/analytics`).catch(() => null),
+            fetch(`${API_ROOT}/api/admin/payments/transactions`).catch(() => null)
+        ]);
+
+        if (analyticsRes && analyticsRes.ok) {
+            const analytics = await analyticsRes.json();
+            const grossEl = document.getElementById('stat-gross-revenue');
+            const commEl = document.getElementById('stat-commissions');
+            const netEl = document.getElementById('stat-net-revenue');
+            const paidCountEl = document.getElementById('stat-paid-count');
+
+            if (grossEl) grossEl.innerText = (analytics.gross_revenue || 0).toLocaleString() + ' FCFA';
+            if (commEl) commEl.innerText = (analytics.commission_fee || 0).toLocaleString() + ' FCFA';
+            if (netEl) netEl.innerText = (analytics.net_to_bakery || 0).toLocaleString() + ' FCFA';
+            if (paidCountEl) paidCountEl.innerText = analytics.paid_count || 0;
+        }
+
+        if (txRes && txRes.ok) {
+            const txData = await txRes.json();
+            const transactions = txData.transactions || [];
+            renderTransactionsTable(transactions);
+        }
+    } catch (e) {
+        console.error("Erreur lors du chargement des transactions:", e);
+    }
+}
+
+function renderTransactionsTable(transactions) {
+    const tbody = document.getElementById('transactions-tbody') || document.querySelector('#transactions table tbody');
+    if (!tbody || !Array.isArray(transactions) || transactions.length === 0) return;
+
+    tbody.innerHTML = transactions.map(t => {
+        const isPaid = t.status === 'PAID';
+        const badgeClass = isPaid ? 'active' : (t.status === 'FAILED' ? 'danger' : 'warning');
+        const badgeLabel = isPaid ? 'Payé' : (t.status === 'FAILED' ? 'Échec' : 'En attente');
+        const pinBadge = t.pickup_pin ? `<span class="badge bg-danger text-white ms-1 px-2 py-0.5" style="font-size:10px; font-family:monospace;">PIN ${t.pickup_pin}</span>` : '';
+
+        return `
+            <tr>
+                <td style="font-family: monospace; color: #64748b;">#${t.payment_id || 'TRX'}</td>
+                <td><strong>${t.customer_name || 'Client'}</strong><br><small class="text-muted">${t.customer_phone || ''}</small></td>
+                <td><strong>${(t.amount || 0).toLocaleString()} FCFA</strong></td>
+                <td><span class="saas-badge-wave">🌊 ${t.provider || 'Wave'}</span></td>
+                <td>
+                    <span class="saas-badge-pill ${badgeClass}">${badgeLabel}</span>
+                    ${pinBadge}
+                </td>
+                <td class="small text-muted">${t.created_at ? new Date(t.created_at).toLocaleString('fr-FR') : 'N/A'}</td>
+            </tr>
+        `;
+    }).join('');
 }
 
 // =============================================================
@@ -277,7 +350,7 @@ async function loadOrders() {
         if (localSaved) {
             allOrders = JSON.parse(localSaved);
         } else {
-            const res = await fetch(API_BASE_URL + '/orders');
+            const res = await fetch(`${API_ROOT}/api/orders`);
             if (res.ok) {
                 const data = await res.json();
                 allOrders = Array.isArray(data) ? data : (data.data || []);
@@ -361,7 +434,7 @@ async function loadProducts() {
         if (localSaved) {
             allProducts = JSON.parse(localSaved);
         } else {
-            const res = await fetch(API_BASE_URL + '/products');
+            const res = await fetch(`${API_ROOT}/api/products`);
             if (res.ok) {
                 const prods = await res.json();
                 allProducts = Array.isArray(prods) && prods.length ? prods : DEFAULT_PRODUCTS;
@@ -748,7 +821,7 @@ async function loadUsers() {
     if (!tbody) return;
 
     try {
-        const res = await fetch(API_BASE_URL + '/users');
+        const res = await fetch(`${API_ROOT}/api/users`);
         const users = await res.json();
         allUsers = Array.isArray(users) ? users : (users.data || []);
 
@@ -977,7 +1050,7 @@ function getBadgeClass(status) {
 
 async function updateStatus(orderId, newStatus) {
     try {
-        await fetch(`/api/orders/${orderId}/status`, {
+        await fetch(`${API_ROOT}/api/orders/${orderId}/status`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ status: newStatus })
@@ -1005,7 +1078,7 @@ function filterOrdersTable() {
 // Load products catalog table
 async function loadProducts() {
     try {
-        const res = await fetch(API_BASE_URL + '/products');
+        const res = await fetch(`${API_ROOT}/api/products`);
         allProducts = await res.json();
         renderProductsTable(allProducts);
     } catch (err) {
@@ -1050,7 +1123,7 @@ async function handleAddProduct(e) {
     const image = document.getElementById('prod-img').value || 'assets/product_baguette.png';
 
     try {
-        await fetch(API_BASE_URL + '/products', {
+        await fetch(`${API_ROOT}/api/products`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ nom, prix, categorie, image })
@@ -1074,7 +1147,7 @@ async function handleAddProduct(e) {
 async function deleteProduct(id) {
     if (!confirm("Voulez-vous vraiment supprimer ce produit du catalogue ?")) return;
     try {
-        await fetch(`/api/products/${id}`, { method: 'DELETE' });
+        await fetch(`${API_ROOT}/api/products/${id}`, { method: 'DELETE' });
         fetchAdminData();
     } catch (err) {
         console.error("Erreur suppression produit:", err);
@@ -1084,7 +1157,7 @@ async function deleteProduct(id) {
 // Load registered users
 async function loadUsers() {
     try {
-        const res = await fetch(API_BASE_URL + '/users');
+        const res = await fetch(`${API_ROOT}/api/users`);
         allUsers = await res.json();
 
         const tbody = document.getElementById('users-tbody');
@@ -1313,7 +1386,7 @@ async function triggerAdminSupport(orderId) {
     const customMsg = prompt("Entrez le message à transmettre au client :", defaultMsg);
     if (customMsg !== null) {
         try {
-            await fetch(`/api/orders/${orderId}/support-message`, {
+            await fetch(`${API_ROOT}/api/orders/${orderId}/support-message`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ message: customMsg, status: 'support_en_cours' })
@@ -1330,7 +1403,7 @@ async function triggerAdminRefund(orderId) {
     const reason = prompt("Indiquez la raison du remboursement (ex: Rupture de stock, Problème de livraison) :", "Rupture de stock / Annulation admin");
     if (reason !== null) {
         try {
-            const res = await fetch(API_BASE_URL + '/payments/refund', {
+            const res = await fetch(`${API_ROOT}/api/payments/refund`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ order_id: orderId, reason: reason })
@@ -1571,7 +1644,7 @@ async function fetchSecurityAuditLogs() {
     
     // 1. Fetch SOC Metrics
     try {
-        const socRes = await fetch(API_BASE_URL + '/v1/security/soc-metrics');
+        const socRes = await fetch(`${API_ROOT}/api/v1/security/soc-metrics`);
         if (socRes.ok) {
             const socData = await socRes.json();
             const merkleBlocksEl = document.getElementById('soc-merkle-blocks');
@@ -1607,7 +1680,7 @@ async function fetchSecurityAuditLogs() {
     const logContainer = document.getElementById('security-logs');
     if (logContainer) {
         try {
-            const res = await fetch(API_BASE_URL + '/security/audit-logs');
+            const res = await fetch(`${API_ROOT}/api/security/audit-logs`);
             const data = await res.json();
             if (data.logs && data.logs.length > 0) {
                 logContainer.innerHTML = data.logs.map(log => {
@@ -1630,7 +1703,7 @@ async function fetchSecurityAuditLogs() {
     if (!tbody) return;
 
     try {
-        const res = await fetch(API_BASE_URL + '/security/audit-logs');
+        const res = await fetch(`${API_ROOT}/api/security/audit-logs`);
         const data = await res.json();
 
         if (!data.logs || data.logs.length === 0) {
@@ -2004,7 +2077,6 @@ function exportAccountingCSV() {
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
 }
-
 
 
 
