@@ -185,7 +185,7 @@ class PickupPinService {
         const expectedPin = pinRecord ? pinRecord.pin_code : (order.code_pin || '7412');
 
         // 4. Vérification si déjà consommé
-        if ((pinRecord && pinRecord.is_used === 1) || order.status === 'PICKED_UP') {
+        if ((pinRecord && pinRecord.is_used === 1) || order.status === 'PICKED_UP' || order.status === 'terminee' || order.status === 'livre') {
             return {
                 success: false,
                 isAlreadyUsed: true,
@@ -232,10 +232,10 @@ class PickupPinService {
             );
         }
 
-        // 7. Passage du statut de commande à PICKED_UP
+        // 7. Passage du statut de commande à PICKED_UP / terminee
         await db.run(
             `UPDATE orders 
-             SET status = 'PICKED_UP', updated_at = CURRENT_TIMESTAMP 
+             SET status = 'terminee', updated_at = CURRENT_TIMESTAMP 
              WHERE id = ?`,
             [order.id]
         );
@@ -247,6 +247,18 @@ class PickupPinService {
             [order.id, String(cashierId || 'N/A'), JSON.stringify({ cashierName, validatedAt: nowIso })]
         );
 
+        // 9. Diffusion temps réel vers Caissière, Gérante, Admin et Smartphone Client
+        try {
+            const aiRealtimeOrchestrator = require('./ai_realtime_orchestrator.service.js');
+            aiRealtimeOrchestrator.broadcastPinValidated({
+                orderId: order.id,
+                pinCode: cleanPin,
+                validatedByName: cashierName
+            });
+        } catch (e) {
+            console.warn('[PickupPinService] Erreur broadcast orchestrator:', e.message);
+        }
+
         return {
             success: true,
             orderId: order.id,
@@ -254,7 +266,7 @@ class PickupPinService {
             totalAmount: order.total_amount || order.total_price,
             validatedAt: nowIso,
             validatedByName: cashierName,
-            status: 'PICKED_UP',
+            status: 'terminee',
             message: "Retrait validé avec succès ! La commande a été remise au client."
         };
     }

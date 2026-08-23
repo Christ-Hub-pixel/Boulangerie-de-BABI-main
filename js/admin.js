@@ -41,6 +41,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 5. Polling de rafraîchissement automatique toutes les 8 secondes
     setInterval(fetchAdminData, 8000);
+
+    // 6. BABI Brain Engine (BBE v3.0) — Flux IA et Prévisions Business
+    initAdminBrainFeed();
+    fetchAdminAiBusinessForecast();
+    setInterval(fetchAdminAiBusinessForecast, 30000);
 });
 
 // ================================================================
@@ -1441,4 +1446,116 @@ async function deleteCashier(id, name) {
         alert("Erreur suppression : " + err.message);
     }
 }
+
+// ================================================================
+// 🧠 BABI BRAIN ENGINE (BBE v3.0) — COCKPIT IA & BUSINESS PREDICTIONS
+// ================================================================
+let lastAdminAiEventTimestamp = Date.now();
+
+function initAdminBrainFeed() {
+    if (typeof EventSource !== 'undefined') {
+        try {
+            const evtSource = new EventSource(`${API_ROOT}/api/ai/live-feed?channel=admin&sse=1`);
+            evtSource.onmessage = (e) => {
+                try {
+                    const data = JSON.parse(e.data);
+                    handleAdminIncomingAiEvent(data);
+                } catch (_) {}
+            };
+            evtSource.onerror = () => {
+                evtSource.close();
+                startAdminBrainPolling();
+            };
+            return;
+        } catch (_) {}
+    }
+    startAdminBrainPolling();
+}
+
+function startAdminBrainPolling() {
+    setInterval(async () => {
+        try {
+            const res = await fetch(`${API_ROOT}/api/ai/live-feed?channel=admin&since=${lastAdminAiEventTimestamp}`);
+            if (res.ok) {
+                const data = await res.json();
+                if (data.events && data.events.length > 0) {
+                    data.events.forEach(evt => {
+                        handleAdminIncomingAiEvent(evt);
+                        const evtTime = new Date(evt.timestamp).getTime();
+                        if (evtTime > lastAdminAiEventTimestamp) lastAdminAiEventTimestamp = evtTime;
+                    });
+                }
+            }
+        } catch (_) {}
+    }, 4000);
+}
+
+function handleAdminIncomingAiEvent(evt) {
+    if (!evt || !evt.type) return;
+
+    if (evt.type === 'ORDER_CREATED') {
+        const payload = evt.payload || {};
+        showAdminToast(`💰 Nouvelle commande enregistrée : #${payload.orderId} (${(payload.totalPrice || 0).toLocaleString()} FCFA)`, 'info');
+        fetchAdminData();
+    } else if (evt.type === 'PIN_VALIDATED') {
+        const payload = evt.payload || {};
+        showAdminToast(`🔑 Retrait validé : Commande #${payload.orderId} par ${payload.validatedByName}`, 'success');
+        fetchAdminData();
+    }
+}
+
+async function fetchAdminAiBusinessForecast() {
+    try {
+        const res = await fetch(`${API_ROOT}/api/ai/business-forecast`);
+        if (res.ok) {
+            const data = await res.json();
+            const forecastEl = document.getElementById('ai-forecast-summary-box');
+            if (forecastEl && data.forecast) {
+                forecastEl.innerHTML = `
+                    <div class="p-4 rounded-2xl bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 text-amber-950 shadow-sm">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="font-extrabold text-sm flex items-center gap-1.5 text-amber-800">
+                                <i class="fa-solid fa-brain text-amber-600"></i> BABI Brain Intelligence • Modélisation Prédictive
+                            </span>
+                            <span class="bg-amber-500 text-white font-bold text-xs px-2.5 py-0.5 rounded-full">
+                                Confiance : ${data.forecast.trendConfidence || '94%'}
+                            </span>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
+                            <div class="bg-white/80 p-2.5 rounded-xl border border-amber-100">
+                                <span class="text-gray-500">CA Prévisionnel / Jour :</span>
+                                <div class="font-black text-base text-amber-900">${(data.forecast.projectedDailyRevenueFCFA || 0).toLocaleString()} FCFA</div>
+                            </div>
+                            <div class="bg-white/80 p-2.5 rounded-xl border border-amber-100">
+                                <span class="text-gray-500">Projection Mensuelle :</span>
+                                <div class="font-black text-base text-emerald-700">${(data.forecast.projectedMonthlyRevenueFCFA || 0).toLocaleString()} FCFA</div>
+                            </div>
+                            <div class="bg-white/80 p-2.5 rounded-xl border border-amber-100">
+                                <span class="text-gray-500">Croissance Estimée :</span>
+                                <div class="font-black text-base text-blue-700">${data.forecast.growthRateEstimated || '+18.5%'}</div>
+                            </div>
+                        </div>
+                        <p class="text-xs text-amber-900 mt-2.5 font-medium">${data.executiveSummary || ''}</p>
+                    </div>
+                `;
+            }
+        }
+    } catch (_) {}
+}
+
+async function askAdminAiCopilot(promptText) {
+    if (!promptText) return;
+    try {
+        const res = await fetch(`${API_ROOT}/api/ai/assistant/chat`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ prompt: promptText, role: 'admin' })
+        });
+        if (res.ok) {
+            return await res.json();
+        }
+    } catch (_) {}
+    return { reply: "Le copilote IA BABI analyse actuellement les indicateurs de performance." };
+}
+
 

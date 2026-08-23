@@ -72,7 +72,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 4. Charger les données complémentaires en arrière-plan
     loadDashboardData();
+    initGeranteBrainFeed();
+    fetchGeranteBakingAiForecast();
+    fetchGeranteStockAiInsights();
     setInterval(loadDashboardData, 15000);
+    setInterval(fetchGeranteBakingAiForecast, 30000);
 });
 
 function broadcastGlobalSync(eventType, payload = {}) {
@@ -1828,5 +1832,117 @@ function handleLogout() {
         window.location.href = "index.html";
     }
 }
+
+// ================================================================
+// 🧠 BABI BRAIN ENGINE (BBE v3.0) — PILOTAGE IA FOURNIL & GÉRANCE
+// ================================================================
+let lastGeranteAiEventTimestamp = Date.now();
+
+function initGeranteBrainFeed() {
+    if (typeof EventSource !== 'undefined') {
+        try {
+            const evtSource = new EventSource(`${API_ROOT}/api/ai/live-feed?channel=manager&sse=1`);
+            evtSource.onmessage = (e) => {
+                try {
+                    const data = JSON.parse(e.data);
+                    handleGeranteIncomingAiEvent(data);
+                } catch (_) {}
+            };
+            evtSource.onerror = () => {
+                evtSource.close();
+                startGeranteBrainPolling();
+            };
+            return;
+        } catch (_) {}
+    }
+    startGeranteBrainPolling();
+}
+
+function startGeranteBrainPolling() {
+    setInterval(async () => {
+        try {
+            const res = await fetch(`${API_ROOT}/api/ai/live-feed?channel=manager&since=${lastGeranteAiEventTimestamp}`);
+            if (res.ok) {
+                const data = await res.json();
+                if (data.events && data.events.length > 0) {
+                    data.events.forEach(evt => {
+                        handleGeranteIncomingAiEvent(evt);
+                        const evtTime = new Date(evt.timestamp).getTime();
+                        if (evtTime > lastGeranteAiEventTimestamp) lastGeranteAiEventTimestamp = evtTime;
+                    });
+                }
+            }
+        } catch (_) {}
+    }, 3000);
+}
+
+function handleGeranteIncomingAiEvent(evt) {
+    if (!evt || !evt.type) return;
+
+    if (evt.type === 'ORDER_CREATED') {
+        const payload = evt.payload || {};
+        showBabiToast(`🍞 Nouvelle commande à préparer : #${payload.orderId} (${(payload.items || []).length} articles)`, 'info');
+        renderGeranteEventOrders();
+        calculateManualKPIs();
+    } else if (evt.type === 'PIN_VALIDATED') {
+        const payload = evt.payload || {};
+        showBabiToast(`✅ Commande #${payload.orderId} remise au client par la caisse.`, 'success');
+        renderGeranteEventOrders();
+        calculateManualKPIs();
+    }
+}
+
+async function fetchGeranteBakingAiForecast() {
+    try {
+        const res = await fetch(`${API_ROOT}/api/ai/baking-forecast`);
+        if (res.ok) {
+            const data = await res.json();
+            const bannerEl = document.getElementById('baking-ai-banner');
+            if (bannerEl && data.liveStatus) {
+                bannerEl.innerHTML = `
+                    <div class="p-3.5 rounded-2xl flex items-center justify-between text-white font-bold shadow-md" style="background: linear-gradient(135deg, ${data.liveStatus.badgeColor}, #1e293b);">
+                        <div class="flex items-center gap-2.5">
+                            <span class="text-2xl">🥖</span>
+                            <div>
+                                <div class="text-xs uppercase tracking-wider opacity-90">BABI AI Fournil • Riviera</div>
+                                <div class="text-sm font-black">${data.liveStatus.bannerMessage}</div>
+                            </div>
+                        </div>
+                        <span class="px-3 py-1 bg-white/20 rounded-full text-xs font-mono">${data.liveStatus.currentTimeAbidjan} GMT</span>
+                    </div>
+                `;
+            }
+        }
+    } catch (_) {}
+}
+
+async function fetchGeranteStockAiInsights() {
+    try {
+        const res = await fetch(`${API_ROOT}/api/ai/stock-insights`);
+        if (res.ok) {
+            const data = await res.json();
+            const adviceEl = document.getElementById('stock-ai-advice');
+            if (adviceEl) {
+                adviceEl.innerText = data.operationalAdvice || 'Stocks sous contrôle optimal.';
+            }
+        }
+    } catch (_) {}
+}
+
+async function askGeranteAiCopilot(promptText) {
+    if (!promptText) return;
+    try {
+        const res = await fetch(`${API_ROOT}/api/ai/assistant/chat`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ prompt: promptText, role: 'gerante' })
+        });
+        if (res.ok) {
+            return await res.json();
+        }
+    } catch (_) {}
+    return { reply: "Le copilote IA BABI analyse actuellement les flux du fournil." };
+}
+
 
 

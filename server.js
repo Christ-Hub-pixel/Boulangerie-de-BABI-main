@@ -20,6 +20,14 @@ const orderManager = require('./services/order_manager.service.js');
 const paymentManager = require('./services/payment_manager.service.js');
 const pickupPinService = require('./services/pickup_pin.service.js');
 
+// 🧠 BABI Brain Engine (BBE v3.0) — Services Cognitifs & Orchestration Temps Réel
+const aiRealtimeOrchestrator = require('./services/ai_realtime_orchestrator.service.js');
+const aiBakeryProduction = require('./services/ai_bakery_production.service.js');
+const aiRecommendation = require('./services/ai_recommendation.service.js');
+const aiInventoryAdvisor = require('./services/ai_inventory_advisor.service.js');
+const aiBusinessAnalytics = require('./services/ai_business_analytics.service.js');
+const aiAssistantCopilot = require('./services/ai_assistant_copilot.service.js');
+
 const app = express();
 const PORT = process.env.PORT || 5000;
 
@@ -1094,6 +1102,23 @@ app.post('/api/orders', async (req, res) => {
             }
         } catch (e) {}
 
+        // 📡 Notification & Dispatching Temps Réel vers Caissière, Gérante et Admin
+        try {
+            aiRealtimeOrchestrator.broadcastNewOrder({
+                id: customOrderId,
+                customer_name: customer_name || 'Client App BABI',
+                phone: effectivePhone,
+                total_price: cleanPrice,
+                type_retrait: type_retrait || 'comptoir',
+                code_pin: pin,
+                items: typeof items === 'string' ? JSON.parse(items) : (items || []),
+                source: 'mobile_app',
+                status: 'PAID'
+            });
+        } catch (err) {
+            console.warn('[Realtime] Erreur broadcast order:', err.message);
+        }
+
         res.status(201).json({ success: true, order_id: customOrderId, pin, code_pin: pin, pickup_pin: pin });
     } catch (err) {
         res.status(500).json({ error: err.message });
@@ -1130,6 +1155,24 @@ app.post('/api/orders/create', async (req, res) => {
     try {
         const order = await orderManager.createVerifiedOrder(db, req.body);
         await recordSecurityAudit('ORDER_CREATED_SERVER_VERIFIED', order.id, 0, 'FAIBLE', req, { totalAmount: order.total_amount, itemsCount: order.items.length });
+        
+        // 📡 Notification & Dispatching Temps Réel vers Caissière, Gérante et Admin
+        try {
+            aiRealtimeOrchestrator.broadcastNewOrder({
+                id: order.id,
+                customer_name: order.customer_name,
+                phone: order.customer_phone,
+                total_price: order.total_amount,
+                type_retrait: order.delivery_type || 'click_collect',
+                code_pin: order.code_pin,
+                items: order.items,
+                source: 'web_pwa',
+                status: order.status
+            });
+        } catch (err) {
+            console.warn('[Realtime] Erreur broadcast order:', err.message);
+        }
+
         res.status(201).json({
             success: true,
             order,
@@ -1838,6 +1881,181 @@ app.get('/api/stats', async (req, res) => {
         });
     } catch (err) {
         res.status(500).json({ error: err.message });
+    }
+});
+
+// ================================================================
+// 🧠 9. BABI BRAIN ENGINE (BBE v3.0) — COGNITIVE AI & REALTIME APIS
+// ================================================================
+
+// 📡 1. Live Real-Time Feed (SSE & Polling support for Cashier, Manager, Admin & Clients)
+app.get('/api/ai/live-feed', (req, res) => {
+    const channel = req.query.channel || 'all';
+    const since = Number(req.query.since || 0);
+    const isSSE = req.headers.accept === 'text/event-stream' || req.query.sse === '1';
+
+    if (isSSE) {
+        res.setHeader('Content-Type', 'text/event-stream');
+        res.setHeader('Cache-Control', 'no-cache');
+        res.setHeader('Connection', 'keep-alive');
+        res.setHeader('Access-Control-Allow-Origin', '*');
+        res.flushHeaders();
+
+        // Envoi initial des événements récents
+        const recents = aiRealtimeOrchestrator.getRecentEvents(channel, since, 10);
+        res.write(`data: ${JSON.stringify({ type: 'CONNECTED', channel, recentEvents: recents })}\n\n`);
+
+        const subscription = aiRealtimeOrchestrator.subscribe(channel, (envelope) => {
+            res.write(`data: ${JSON.stringify(envelope)}\n\n`);
+        });
+
+        // Heartbeat toutes les 25s pour garder la connexion active
+        const heartbeat = setInterval(() => {
+            res.write(`: heartbeat ${Date.now()}\n\n`);
+        }, 25000);
+
+        req.on('close', () => {
+            clearInterval(heartbeat);
+            subscription.unsubscribe();
+        });
+    } else {
+        // Mode Polling Standard
+        const events = aiRealtimeOrchestrator.getRecentEvents(channel, since, 30);
+        res.json({
+            success: true,
+            channel,
+            timestamp: new Date().toISOString(),
+            eventsCount: events.length,
+            events
+        });
+    }
+});
+
+// 🍞 2. Prédiction des Fournées & Statut du Pain Chaud en Direct
+app.get('/api/ai/baking-forecast', async (req, res) => {
+    try {
+        const forecast = await aiBakeryProduction.predictProductionNeeds(db);
+        res.json({ success: true, ...forecast });
+    } catch (err) {
+        res.status(500).json({ success: false, error: err.message });
+    }
+});
+
+// 🔥 3. Statut Rapide du Pain Chaud (Pour widgets homepage & app mobile)
+app.get('/api/ai/hot-bread', (req, res) => {
+    try {
+        const status = aiBakeryProduction.getLiveHotBreadStatus();
+        res.json({ success: true, ...status });
+    } catch (err) {
+        res.status(500).json({ success: false, error: err.message });
+    }
+});
+
+// 🛒 4. Moteur de Recommandations & Accords Gourmands
+app.get('/api/ai/recommendations', (req, res) => {
+    try {
+        let cartItems = [];
+        if (req.query.items) {
+            try {
+                cartItems = JSON.parse(req.query.items);
+            } catch (_) {
+                cartItems = [{ name: String(req.query.items) }];
+            }
+        }
+        const categoryFilter = req.query.category || null;
+        const limit = Number(req.query.limit) || 4;
+
+        const recommendations = aiRecommendation.getRecommendations(cartItems, categoryFilter, limit);
+        const prepTime = aiRecommendation.estimatePreparationTime(cartItems);
+
+        res.json({
+            success: true,
+            recommendations,
+            preparationEstimate: prepTime
+        });
+    } catch (err) {
+        res.status(500).json({ success: false, error: err.message });
+    }
+});
+
+// 📦 5. Conseiller de Stocks & Alertes de Réapprovisionnement
+app.get('/api/ai/stock-insights', async (req, res) => {
+    try {
+        const insights = await aiInventoryAdvisor.analyzeStockHealth(db);
+        res.json({ success: true, ...insights });
+    } catch (err) {
+        res.status(500).json({ success: false, error: err.message });
+    }
+});
+
+// 📈 6. Business Intelligence & Prévisions de Ventes
+app.get('/api/ai/business-forecast', async (req, res) => {
+    try {
+        const forecast = await aiBusinessAnalytics.generateBusinessForecast(db);
+        res.json({ success: true, ...forecast });
+    } catch (err) {
+        res.status(500).json({ success: false, error: err.message });
+    }
+});
+
+// 🌐 7. Synthèse Consolidée 360° du Cerveau BABI
+app.get('/api/ai/insights/summary', async (req, res) => {
+    try {
+        const summary = await aiAssistantCopilot.getConsolidatedSummary(db);
+        res.json({ success: true, ...summary });
+    } catch (err) {
+        res.status(500).json({ success: false, error: err.message });
+    }
+});
+
+// 🤖 8. Copilote Opérationnel Conversationnel (Chatbot Décisionnel)
+app.post('/api/ai/assistant/chat', async (req, res) => {
+    try {
+        const { prompt, role } = req.body;
+        if (!prompt) {
+            return res.status(400).json({ error: "Prompt / question requise." });
+        }
+        const response = await aiAssistantCopilot.handleAssistantChat(prompt, role || 'gerante', db);
+        res.json({ success: true, ...response });
+    } catch (err) {
+        res.status(500).json({ success: false, error: err.message });
+    }
+});
+
+// 🔑 9. Validation Universelle & Instantanée de Code PIN
+app.post('/api/pin/validate', async (req, res) => {
+    try {
+        const { pin, pin_code, code_pin, order_id, cashier_name, caissiere_nom } = req.body;
+        const enteredPin = pin || pin_code || code_pin;
+        const result = await pickupPinService.verifyAndConsumePin(db, order_id, enteredPin, {
+            name: cashier_name || caissiere_nom || 'Caissière en poste'
+        });
+
+        if (!result.success) {
+            await recordSecurityAudit('PIN_VALIDATION_FAILED', order_id || 'N/A', result.isLocked ? 90 : 35, result.isLocked ? 'ÉLEVÉ' : 'MODÉRÉ', req, result);
+            return res.status(400).json(result);
+        }
+
+        res.json({ success: true, ...result });
+    } catch (err) {
+        res.status(500).json({ success: false, error: err.message });
+    }
+});
+
+// 🔍 10. Recherche Prévisualisation de Commande par Code PIN
+app.post('/api/pin/lookup', async (req, res) => {
+    try {
+        const { pin, pin_code, code_pin } = req.body;
+        const enteredPin = pin || pin_code || code_pin;
+        const result = await pickupPinService.lookupOrderDetailsByPin(db, enteredPin);
+
+        if (!result.success) {
+            return res.status(404).json(result);
+        }
+
+        res.json({ success: true, ...result });
+    } catch (err) {
+        res.status(500).json({ success: false, error: err.message });
     }
 });
 

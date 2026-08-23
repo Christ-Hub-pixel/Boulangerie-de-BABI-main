@@ -95,6 +95,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.addEventListener('touchstart', unlockAudio);
 
     schedulePickupPolling();
+    initCaissiereBrainFeed();
 });
 
 function schedulePickupPolling() {
@@ -1938,5 +1939,66 @@ async function handleCashierLogout() {
         showPosLockScreen();
     }
 }
+
+// ================================================================
+// 🧠 BABI BRAIN ENGINE (BBE v3.0) — RÉCEPTION DES COMMANDES TEMPS RÉEL
+// ================================================================
+let lastAiEventTimestamp = Date.now();
+
+function initCaissiereBrainFeed() {
+    if (typeof EventSource !== 'undefined') {
+        try {
+            const evtSource = new EventSource(`${API_ROOT}/api/ai/live-feed?channel=cashier&sse=1`);
+            evtSource.onmessage = (e) => {
+                try {
+                    const data = JSON.parse(e.data);
+                    handleIncomingAiEvent(data);
+                } catch (_) {}
+            };
+            evtSource.onerror = () => {
+                evtSource.close();
+                startBrainPolling();
+            };
+            return;
+        } catch (_) {}
+    }
+    startBrainPolling();
+}
+
+function startBrainPolling() {
+    setInterval(async () => {
+        try {
+            const res = await fetch(`${API_ROOT}/api/ai/live-feed?channel=cashier&since=${lastAiEventTimestamp}`);
+            if (res.ok) {
+                const data = await res.json();
+                if (data.events && data.events.length > 0) {
+                    data.events.forEach(evt => {
+                        handleIncomingAiEvent(evt);
+                        const evtTime = new Date(evt.timestamp).getTime();
+                        if (evtTime > lastAiEventTimestamp) lastAiEventTimestamp = evtTime;
+                    });
+                }
+            }
+        } catch (_) {}
+    }, 2500);
+}
+
+function handleIncomingAiEvent(evt) {
+    if (!evt || !evt.type) return;
+    
+    if (evt.type === 'ORDER_CREATED') {
+        const payload = evt.payload || {};
+        playPosAudio('new_order');
+        showPosToast(`🔔 COMMANDE MOBILE : #${payload.orderId} (${payload.customerName}) — ${(payload.totalPrice || 0).toLocaleString()} F`, 'success');
+        refreshPickupQueue();
+        updateSessionStats();
+        renderHistoryTable();
+    } else if (evt.type === 'PIN_VALIDATED') {
+        refreshPickupQueue();
+        updateSessionStats();
+        renderHistoryTable();
+    }
+}
+
 
 
