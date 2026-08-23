@@ -2,7 +2,7 @@
 
 > **Document de Référence :** Parcours Client Click & Collect, Gestion Fournil & Comptoir  
 > **Modèle Économique :** Réservation 100% Wave en ligne, Préparation artisanale au Fournil & Retrait Express en Boutique (0 FCFA)  
-> **Localisation Officielle Unique :** Riviera (En face de l'école Jules Verne), Abidjan - Côte d'Ivoire  
+> **Localisation Officielle Unique :** Riviera, Abidjan - Côte d'Ivoire  
 
 ---
 
@@ -22,7 +22,7 @@ flowchart TD
     
     E --> F["🎫 GÉNÉRATION DU CODE PIN DE RETRAIT\n(Ex: Commande #1042 | Code PIN: 7890)"]
     
-    F --> G["🏪 PASSAGE À LA BOULANGERIE UNIQUE\n(Riviera - En face de l'école Jules Verne)"]
+    F --> G["🏪 PASSAGE À LA BOULANGERIE UNIQUE\n(Riviera, Abidjan)"]
     
     G --> H["🛍️ 6️⃣ COLIS RÉCUPÉRÉ AU COMPTOIR\n(Saisie du PIN par la caissière sans faire la queue !)"]
 ```
@@ -53,4 +53,4 @@ flowchart TD
 | **3. Payer & Réserver** | Règle par Wave Money et choisit l'heure de retrait | `checkout.html` | Paiement validé & créneau réservé |
 | **4. Préparation** | Suit l'état d'avancement au fournil | `suivi.html` | Notification : *« Prête au comptoir ! »* |
 | **5. Code PIN** | Reçoit son Code PIN confidentiel unique | `suivi.html` & WhatsApp | Pass PIN à 4 chiffres généré |
-| **6. Retrait au Fournil** | Vient à l'unique boutique de Riviera (Jules Verne) | Comptoir Retrait Express POS | Colis tout chaud remis en mains propres |
+| **6. Retrait au Fournil** | Vient à l'unique boutique de Riviera | Comptoir Retrait Express POS | Colis tout chaud remis en mains propres |
