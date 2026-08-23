@@ -191,13 +191,18 @@ async function submitBabiOrder() {
         return;
     }
 
-    const clientNameInput = document.getElementById('clientNameInput');
-    const clientPhoneInput = document.getElementById('clientPhoneInput');
-    const pickupSlotSelect = document.getElementById('pickupSlotSelect');
-    const notesInput = document.getElementById('orderNotesInput');
+    let user = {};
+    try { user = JSON.parse(localStorage.getItem('babi_user') || '{}'); } catch(_) {}
 
-    const fullName = (clientNameInput && clientNameInput.value.trim()) || 'Client Comptoir BABI';
-    const phone = (clientPhoneInput && clientPhoneInput.value.trim()) || '07 04 38 92 01';
+    const fullName = (clientNameInput && clientNameInput.value.trim()) || user.name || 'Client Comptoir BABI';
+    const phone = (clientPhoneInput && clientPhoneInput.value.trim()) || user.phone || '';
+
+    if (!phone) {
+        alert('Veuillez renseigner votre numéro de téléphone (Wave / SMS).');
+        if (clientPhoneInput) clientPhoneInput.focus();
+        return;
+    }
+
     const pickupSlot = pickupSlotSelect ? pickupSlotSelect.value : 'Dès que possible (~15-20 min)';
     const orderNotes = notesInput ? notesInput.value.trim() : '';
 
@@ -210,8 +215,6 @@ async function submitBabiOrder() {
     }
 
     try {
-        let user = {};
-        try { user = JSON.parse(localStorage.getItem('babi_user') || '{}'); } catch(_) {}
 
         // 1. Création de la commande côté backend avec recalcul strict des montants
         const orderRes = await fetch(`${API_ROOT}/api/orders/create`, {

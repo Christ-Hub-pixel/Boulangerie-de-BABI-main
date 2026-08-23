@@ -1,6 +1,0 @@
-<svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
-  <rect width="400" height="400" rx="60" fill="#FF7900"/>
-  <path d="M 120 170 L 190 170 L 190 240 M 110 250 L 190 170" stroke="#ffffff" stroke-width="32" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-  <path d="M 280 210 L 210 210 L 210 140 M 290 130 L 210 210" stroke="#ffffff" stroke-width="32" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-  <text x="200" y="335" font-family="'Inter', Arial, sans-serif" font-weight="900" font-size="38" fill="#ffffff" text-anchor="middle" letter-spacing="1">ORANGE MONEY</text>
-</svg>

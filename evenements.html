@@ -703,8 +703,12 @@
             const message = document.getElementById('customMessageInput').value.trim();
             const date = document.getElementById('eventDateInput').value;
             const time = document.getElementById('eventTimeSelect').value;
-            const name = document.getElementById('clientName').value.trim() || 'Client BABI';
-            const phone = document.getElementById('clientPhone').value.trim() || '07 04 38 92 01';
+
+            let user = {};
+            try { user = JSON.parse(localStorage.getItem('babi_user') || '{}'); } catch(_) {}
+
+            const name = document.getElementById('clientName').value.trim() || user.name || 'Client BABI';
+            const phone = document.getElementById('clientPhone').value.trim() || user.phone || '';
             const notes = document.getElementById('eventNotes').value.trim();
             const price = calculateCakePrice();
             const ref = 'BABI-EVT-' + Math.floor(100000 + Math.random() * 900000);
@@ -836,6 +840,12 @@
 
         function submitEventCakeOrder() {
             const data = buildEventOrderData();
+            if (!data.phone) {
+                alert('Veuillez renseigner votre numéro de téléphone (Wave / SMS) pour la réservation.');
+                const phoneInput = document.getElementById('clientPhone');
+                if (phoneInput) phoneInput.focus();
+                return;
+            }
 
             // Save to localStorage
             try {

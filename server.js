@@ -13,11 +13,7 @@ const securityHardener = require('./middlewares/security_hardener.js');
 const honeytokenService = require('./services/honeytoken.service.js');
 const zkPinValidator = require('./services/zk_pin_validator.service.js');
 const antiHackerShield = require('./middlewares/anti_hacker_shield.js');
-const secureAuthService = require('./services/secure_auth.service.js');
-const paymentGatewayService = require('./services/payment_gateway.service.js');
-
 // 💳 Architecture de Paiement Professionnelle & Modulaire
-const paymentProviderInterface = require('./services/payment_provider.interface.js');
 const wavePaymentProvider = require('./services/wave_payment_provider.js');
 const wavePayoutService = require('./services/wave_payout.service.js');
 const orderManager = require('./services/order_manager.service.js');
