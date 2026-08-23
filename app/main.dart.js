@@ -55701,16 +55701,16 @@ return new A.qG(s,A.bpi(new A.r3(q)))},
 $S:808}
 A.qG.prototype={
 j6(a,b){return this.aOC(a,b)},
-aOC(a7,a8){var s=0,r=A.y(t.a),q,p=2,o=[],n=this,m,l,k,j,i,h,g,f,e,d,c,b,a,a0,a1,a2,a3,a4,a5,a6
-var $async$j6=A.z(function(a9,b0){if(a9===1){o.push(b0)
-s=p}for(;;)switch(s){case 0:a4=B.c.b2(a7).toLowerCase()
+aOC(a6,a7){var s=0,r=A.y(t.a),q,p=2,o=[],n=this,m,l,k,j,i,h,g,f,e,d,c,b,a,a0,a1,a2,a3,a4,a5
+var $async$j6=A.z(function(a8,a9){if(a8===1){o.push(a9)
+s=p}for(;;)switch(s){case 0:a3=B.c.b2(a6).toLowerCase()
 p=4
 h=n.a
 g=t.N
 f=t.z
 s=7
-return A.n(h.x3("/auth/login",A.D(["email",a4,"mot_de_passe",a8],g,f)),$async$j6)
-case 7:m=b0
+return A.n(h.x3("/auth/login",A.D(["email",a3,"mot_de_passe",a7],g,f)),$async$j6)
+case 7:m=a9
 if(m!=null)e=J.c(J.b1(m,"success"),!0)||J.b1(m,"user")!=null
 else e=!1
 s=e?8:9
@@ -55737,45 +55737,41 @@ case 9:p=2
 s=6
 break
 case 4:p=3
-a5=o.pop()
+a4=o.pop()
 s=6
 break
 case 3:s=2
 break
 case 6:p=12
 s=15
-return A.n(n.b.Dr(a4,a8),$async$j6)
-case 15:j=b0
+return A.n(n.b.Dr(a3,a7),$async$j6)
+case 15:j=a9
 s=16
 return A.n(n.aDo(j.gCB()),$async$j6)
-case 16:i=b0
+case 16:i=a9
 if(J.c(J.b1(i,"success"),!0)){q=i
 s=1
 break}p=2
 s=14
 break
 case 12:p=11
-a6=o.pop()
+a5=o.pop()
 s=14
 break
 case 11:s=2
 break
-case 14:if(J.kC(a4,"caisse")){a="caissiere"
-a0="Awa Kouassi"
-a1="05 84 92 10 33"}else if(J.kC(a4,"gerante")||J.kC(a4,"direction")){a="gerante"
-a0="Mariam Traor\xe9"
-a1="07 59 18 22 40"}else if(J.kC(a4,"admin")){a="admin"
-a0="Ibrahim Bakayoko"
-a1="01 02 03 04 05"}else{if(J.kC(a4,"@")){a2=J.b5a(a4,"@")[0]
-a0=a2.length!==0?a2[0].toUpperCase()+B.c.bM(a2,1):"Client"}else a0="Client BABI"
-a="client"
-a1="07 01 23 45 67"}h=t.N
+case 14:if(J.kC(a3,"caisse")){a="caissiere"
+a0="Caissi\xe8re"}else if(J.kC(a3,"gerante")||J.kC(a3,"direction")){a="gerante"
+a0="G\xe9rante Fournil"}else if(J.kC(a3,"admin")){a="admin"
+a0="Administrateur"}else{if(J.kC(a3,"@")){a1=J.b5a(a3,"@")[0]
+a0=a1.length!==0?a1[0].toUpperCase()+B.c.bM(a1,1):"Client"}else a0="Client"
+a="client"}h=t.N
 g=t.K
-a3=A.D(["id",Date.now(),"nom",a0,"prenom",a0,"email",a4,"telephone",a1,"role",a,"points",50,"code_fidelite","BABI-"+(B.k.aL(Math.abs(B.c.gv(a0)),9000)+1000)],h,g)
+a2=A.D(["id",Date.now(),"nom",a0,"prenom",a0,"email",a3,"telephone","","role",a,"points",50,"code_fidelite","BABI-"+(B.k.aL(Math.abs(B.c.gv(a0)),9000)+1000)],h,g)
 k="babi_session_"+Date.now()
 s=17
 return A.n(n.a.ia(k),$async$j6)
-case 17:q=A.D(["success",!0,"data",A.D(["user",a3,"token",k],h,g),"message","Bienvenue "+a0+" !"],h,t.z)
+case 17:q=A.D(["success",!0,"data",A.D(["user",a2,"token",k],h,g),"message","Bienvenue "+a0+" !"],h,t.z)
 s=1
 break
 case 1:return A.w(q,r)
