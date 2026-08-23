@@ -19,6 +19,7 @@ const paymentGatewayService = require('./services/payment_gateway.service.js');
 // 💳 Architecture de Paiement Professionnelle & Modulaire
 const paymentProviderInterface = require('./services/payment_provider.interface.js');
 const wavePaymentProvider = require('./services/wave_payment_provider.js');
+const wavePayoutService = require('./services/wave_payout.service.js');
 const orderManager = require('./services/order_manager.service.js');
 const paymentManager = require('./services/payment_manager.service.js');
 const pickupPinService = require('./services/pickup_pin.service.js');
@@ -1270,11 +1271,140 @@ app.post('/api/webhooks/orange', async (req, res) => {
     }
 });
 
-// Refund API
+// ==========================================
+// 🌊 WAVE PAYOUT & VERIFICATION OFFICIAL API
+// ==========================================
+
+// 1. POST /api/wave/payout — Créer un paiement/virement Wave direct
+app.post('/api/wave/payout', async (req, res) => {
+    try {
+        const { mobile, receive_amount, name, client_reference, payment_reason, national_id, aggregated_merchant_id } = req.body;
+        const idempotencyKey = req.headers['idempotency-key'] || req.body.idempotency_key;
+
+        if (!mobile || !receive_amount) {
+            return res.status(400).json({ error: "Les champs 'mobile' et 'receive_amount' sont obligatoires." });
+        }
+
+        const result = await wavePayoutService.createPayout({
+            mobile,
+            receive_amount,
+            name,
+            client_reference,
+            payment_reason,
+            national_id,
+            aggregated_merchant_id,
+            idempotencyKey
+        });
+
+        await recordSecurityAudit('WAVE_PAYOUT_CREATED', client_reference || 'N/A', 0, 'FAIBLE', req, { mobile, amount: receive_amount });
+        res.status(result.status || 200).json(result.data);
+    } catch (err) {
+        res.status(err.status || 500).json({
+            code: err.code || 'wave_payout_error',
+            message: err.message,
+            details: err.details || null
+        });
+    }
+});
+
+// 2. GET /api/wave/payout/:id — Récupérer un paiement par identifiant pt-...
+app.get('/api/wave/payout/:id', async (req, res) => {
+    try {
+        const result = await wavePayoutService.getPayout(req.params.id);
+        res.status(result.status || 200).json(result.data);
+    } catch (err) {
+        res.status(err.status || 500).json({ error: err.message, code: err.code || 'wave_error' });
+    }
+});
+
+// 3. GET /api/wave/payouts/search — Rechercher un paiement par client_reference
+app.get('/api/wave/payouts/search', async (req, res) => {
+    try {
+        const { client_reference } = req.query;
+        if (!client_reference) {
+            return res.status(400).json({ error: "Paramètre 'client_reference' requis." });
+        }
+        const result = await wavePayoutService.searchPayoutsByClientReference(client_reference);
+        res.status(result.status || 200).json(result.data);
+    } catch (err) {
+        res.status(err.status || 500).json({ error: err.message, code: err.code || 'wave_error' });
+    }
+});
+
+// 4. POST /api/wave/payout-batch — Créer un lot de paiements groupés
+app.post('/api/wave/payout-batch', async (req, res) => {
+    try {
+        const { payouts } = req.body;
+        const idempotencyKey = req.headers['idempotency-key'] || req.body.idempotency_key;
+
+        if (!Array.isArray(payouts) || payouts.length === 0) {
+            return res.status(400).json({ error: "Le tableau 'payouts' est requis et ne doit pas être vide." });
+        }
+
+        const result = await wavePayoutService.createPayoutBatch(payouts, idempotencyKey);
+        await recordSecurityAudit('WAVE_PAYOUT_BATCH_CREATED', 'N/A', 0, 'FAIBLE', req, { count: payouts.length });
+        res.status(result.status || 200).json(result.data);
+    } catch (err) {
+        res.status(err.status || 500).json({ error: err.message, code: err.code || 'wave_error' });
+    }
+});
+
+// 5. GET /api/wave/payout-batch/:id — Récupérer le statut d'un lot pb-...
+app.get('/api/wave/payout-batch/:id', async (req, res) => {
+    try {
+        const result = await wavePayoutService.getPayoutBatch(req.params.id);
+        res.status(result.status || 200).json(result.data);
+    } catch (err) {
+        res.status(err.status || 500).json({ error: err.message, code: err.code || 'wave_error' });
+    }
+});
+
+// 6. POST /api/wave/payout/:id/reverse — Annuler/Inverser un paiement Wave sous 3 jours
+app.post('/api/wave/payout/:id/reverse', async (req, res) => {
+    try {
+        const idempotencyKey = req.headers['idempotency-key'];
+        const result = await wavePayoutService.reversePayout(req.params.id, idempotencyKey);
+        await recordSecurityAudit('WAVE_PAYOUT_REVERSED', req.params.id, 0, 'FAIBLE', req, { payoutId: req.params.id });
+        res.status(result.status || 200).json(result.data);
+    } catch (err) {
+        res.status(err.status || 500).json({ error: err.message, code: err.code || 'wave_error' });
+    }
+});
+
+// 7. POST /api/wave/verify_recipient — Vérifier l'éligibilité et la conformité d'un bénéficiaire
+app.post('/api/wave/verify_recipient', async (req, res) => {
+    try {
+        const result = await wavePayoutService.verifyRecipient(req.body);
+        res.status(result.status || 200).json(result.data);
+    } catch (err) {
+        res.status(err.status || 500).json({ error: err.message, code: err.code || 'wave_error' });
+    }
+});
+
+// Refund API (Avec versement Wave Payout automatique si téléphone disponible)
 app.post('/api/payments/refund', async (req, res) => {
     try {
         const { order_id, reason } = req.body;
         const refundTxId = 'REFUND_' + Date.now();
+
+        // Récupération des informations de la commande pour remboursement automatique
+        const order = await db.get("SELECT * FROM orders WHERE id = ? OR id LIKE ?", [order_id, `%${order_id}%`]);
+        let payoutInfo = null;
+
+        if (order && order.telephone && order.total_price) {
+            try {
+                const payoutRes = await wavePayoutService.createPayout({
+                    mobile: order.telephone,
+                    receive_amount: order.total_price,
+                    client_reference: `REF_${order.id}`,
+                    payment_reason: `Remboursement commande #${order.id}`,
+                    idempotencyKey: `IDEM_REF_${order.id}_${Date.now()}`
+                });
+                payoutInfo = payoutRes.data;
+            } catch (payoutErr) {
+                console.warn("[Auto-Payout Warning] Le remboursement Wave direct a échoué :", payoutErr.message);
+            }
+        }
 
         await db.run(
             `UPDATE orders 
@@ -1283,7 +1413,7 @@ app.post('/api/payments/refund', async (req, res) => {
                  support_message = ? 
              WHERE id = ? OR id LIKE ?`,
             [
-                `Remboursement de la commande effectué automatiquement via Mobile Money. Raison: ${reason || 'Commande annulée'}`,
+                `Remboursement de la commande effectué automatiquement via Wave Mobile Money. Raison: ${reason || 'Commande annulée'}`,
                 order_id,
                 `%${order_id}%`
             ]
@@ -1293,6 +1423,7 @@ app.post('/api/payments/refund', async (req, res) => {
             success: true,
             refund_id: refundTxId,
             status: 'rembourse',
+            payout: payoutInfo,
             message: `Remboursement effectué avec succès pour la commande ${order_id}.`
         });
     } catch (err) {
