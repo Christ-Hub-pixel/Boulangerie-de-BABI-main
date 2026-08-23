@@ -1312,11 +1312,92 @@ function renderHistoryTable() {
             </tr>
         `;
     }).join('');
+// -------------------------------------------------------------
+// 9. STATS & CLOSURE (Z DE CAISSE)
+// -------------------------------------------------------------
+let sessionStats = {
+    totalSales: 0,
+    cashSales: 0,
+    waveSales: 0,
+    ticketCount: 0
+};
+
+function updateSessionStats() {
+    let salesHistory = [];
+    try {
+        salesHistory = JSON.parse(localStorage.getItem('babi_history_sales') || '[]');
+    } catch(e) {}
+
+    let total = 0;
+    let cash = 0;
+    let wave = 0;
+
+    salesHistory.forEach(s => {
+        const amt = parseFloat(s.total_price || s.total_amount || s.total) || 0;
+        total += amt;
+        const method = (s.mode_paiement || s.payment_method || '').toLowerCase();
+        if (method.includes('espece') || method.includes('cash')) {
+            cash += amt;
+        } else {
+            wave += amt;
+        }
+    });
+
+    sessionStats = {
+        totalSales: total,
+        cashSales: cash,
+        waveSales: wave,
+        ticketCount: salesHistory.length
+    };
+
+    // Update Topbar Stats
+    const topSales = document.getElementById('topbar-sales-total');
+    if (topSales) topSales.innerText = `${total.toLocaleString('fr-FR')} FCFA`;
+    const topTickets = document.getElementById('topbar-ticket-count');
+    if (topTickets) topTickets.innerText = salesHistory.length;
+
+    // Update Dropdown Shift Stats
+    const dropSales = document.getElementById('dropdown-shift-sales');
+    if (dropSales) dropSales.innerText = `${total.toLocaleString('fr-FR')} F`;
+    const dropTickets = document.getElementById('dropdown-shift-tickets');
+    if (dropTickets) dropTickets.innerText = salesHistory.length;
+    const dropCash = document.getElementById('dropdown-shift-cash');
+    if (dropCash) dropCash.innerText = `${(cash + 50000).toLocaleString('fr-FR')} F`;
+
+    // Update Closure Modal Stats
+    const closureTotal = document.getElementById('closure-total');
+    if (closureTotal) closureTotal.innerText = `${total.toLocaleString('fr-FR')} FCFA`;
+    const closureCash = document.getElementById('closure-cash');
+    if (closureCash) closureCash.innerText = `${(cash + 50000).toLocaleString('fr-FR')} FCFA`;
+    const closureWave = document.getElementById('closure-wave');
+    if (closureWave) closureWave.innerText = `${wave.toLocaleString('fr-FR')} FCFA`;
+    const closureTickets = document.getElementById('closure-ticket-count');
+    if (closureTickets) closureTickets.innerText = salesHistory.length;
 }
 
-// -------------------------------------------------------------
-// 9. CLOSURE (Z DE CAISSE)
-// -------------------------------------------------------------
+function showPosToast(msg, type = 'info') {
+    let toast = document.getElementById('babi-pos-toast-msg');
+    if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'babi-pos-toast-msg';
+        document.body.appendChild(toast);
+    }
+    toast.className = `fixed bottom-6 right-6 z-[999999] px-4 py-3 rounded-2xl shadow-2xl font-bold text-xs flex items-center gap-2.5 transition-all transform duration-300 ${
+        type === 'success' ? 'bg-emerald-800 text-white border border-emerald-400' :
+        type === 'error' ? 'bg-rose-900 text-white border border-rose-400' :
+        'bg-[#2b160c] text-amber-300 border border-amber-400'
+    }`;
+    toast.innerHTML = `<span class="material-symbols-outlined text-base">${type === 'success' ? 'check_circle' : type === 'error' ? 'error' : 'info'}</span> <span>${msg}</span>`;
+    toast.style.opacity = '1';
+    toast.style.transform = 'translateY(0)';
+    setTimeout(() => {
+        if (toast) {
+            toast.style.opacity = '0';
+            toast.style.transform = 'translateY(8px)';
+        }
+    }, 3200);
+}
+
 function openClosureModal() {
     updateSessionStats();
     const dateEl = document.getElementById('closure-date');
@@ -1409,7 +1490,10 @@ function updateCashierHeaderUI() {
 }
 
 function togglePosProfileDropdown(event) {
-    if (event) event.stopPropagation();
+    if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+    }
     const menu = document.getElementById('posProfileDropdownMenu');
     const chevron = document.getElementById('posProfileChevron');
     if (!menu) return;
@@ -1417,24 +1501,18 @@ function togglePosProfileDropdown(event) {
     const isHidden = menu.classList.contains('hidden');
     if (isHidden) {
         // Refresh live shift stats before opening
-        const salesTotal = sessionStats ? sessionStats.totalSales : 0;
-        const ticketCount = sessionStats ? sessionStats.ticketCount : 0;
-        const cashTotal = (sessionStats ? sessionStats.cashSales : 0) + 50000; // Base cash drawer + sales
-
-        const elSales = document.getElementById('dropdown-shift-sales');
-        if (elSales) elSales.innerText = `${salesTotal.toLocaleString('fr-FR')} F`;
-        const elTickets = document.getElementById('dropdown-shift-tickets');
-        if (elTickets) elTickets.innerText = ticketCount;
-        const elCash = document.getElementById('dropdown-shift-cash');
-        if (elCash) elCash.innerText = `${cashTotal.toLocaleString('fr-FR')} F`;
-
+        updateSessionStats();
         menu.classList.remove('hidden');
         if (chevron) chevron.style.transform = 'rotate(180deg)';
+        playPosAudio('chime');
     } else {
         menu.classList.add('hidden');
         if (chevron) chevron.style.transform = 'rotate(0deg)';
     }
 }
+
+// Make globally accessible on window object
+window.togglePosProfileDropdown = togglePosProfileDropdown;
 
 // Close profile dropdown on outside click
 document.addEventListener('click', (e) => {

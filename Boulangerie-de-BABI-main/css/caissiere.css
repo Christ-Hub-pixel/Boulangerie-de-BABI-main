@@ -886,7 +886,7 @@ img.profile-avatar, .profile-avatar, img.logo-avatar, .logo-avatar {
     border: 1.5px solid #f5b800 !important;
     border-radius: 22px !important;
     box-shadow: 0 20px 48px rgba(43, 22, 12, 0.18), 0 4px 16px rgba(0,0,0,0.06) !important;
-    z-index: 1000 !important;
+    z-index: 999999 !important;
     overflow: hidden !important;
     animation: fadeInSlideDown 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
 }
