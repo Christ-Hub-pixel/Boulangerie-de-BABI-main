@@ -113,18 +113,29 @@
 
         <!-- Navigation Links -->
         <nav class="flex-1 flex flex-col gap-1 overflow-y-auto pr-1">
-            <div class="sidebar-section-title">PRODUCTION & FOURNIL</div>
+            <div class="sidebar-section-title">PILOTAGE GÉRANCE & FOURNIL</div>
             <a href="#" onclick="showGeranteTab('schedule'); return false;" class="prestige-nav-item active" id="nav-gerante-schedule">
                 <span class="material-symbols-outlined text-xl">table_restaurant</span>
                 <span class="flex-1">Planning Fournil</span>
+                <span id="badge-fournil-count" class="bg-amber-400 text-black text-[10px] font-black px-2 py-0.5 rounded-full font-mono">0</span>
+            </a>
+            <a href="#" onclick="showGeranteTab('events'); return false;" class="prestige-nav-item" id="nav-gerante-events">
+                <span class="material-symbols-outlined text-xl">cake</span>
+                <span class="flex-1">Gâteaux & Événements</span>
+                <span id="badge-events-count" class="bg-rose-500 text-white text-[10px] font-black px-2 py-0.5 rounded-full font-mono">0</span>
             </a>
             <a href="#" onclick="showGeranteTab('inventory'); return false;" class="prestige-nav-item" id="nav-gerante-inventory">
-                <span class="material-symbols-outlined text-xl">inventory</span>
-                <span class="flex-1">Ajustements Stock</span>
+                <span class="material-symbols-outlined text-xl">inventory_2</span>
+                <span class="flex-1">Matières Premières</span>
+                <span id="badge-stock-alert" class="hidden bg-rose-600 text-white text-[10px] font-black px-1.5 py-0.5 rounded-full">Alerte</span>
             </a>
             <a href="#" onclick="showGeranteTab('waste'); return false;" class="prestige-nav-item" id="nav-gerante-waste">
                 <span class="material-symbols-outlined text-xl">delete_sweep</span>
-                <span class="flex-1">Suivi des Pertes</span>
+                <span class="flex-1">Pertes & Hygiène</span>
+            </a>
+            <a href="#" onclick="showGeranteTab('finance'); return false;" class="prestige-nav-item" id="nav-gerante-finance">
+                <span class="material-symbols-outlined text-xl">bar_chart</span>
+                <span class="flex-1">Ventes & Recettes</span>
             </a>
 
             <!-- Quick Links & Shortcuts -->
@@ -241,12 +252,15 @@
 
         <!-- MAIN CONTENT -->
         <main class="relative bg-background min-h-screen" style="padding-top: 6.5rem;">
-            <div class="flex flex-col w-full h-full p-container-padding gap-stack-lg">
-
+            
+            <!-- ========================================================= -->
+            <!-- VUE 1 : PLANNING FOURNIL & CUISSONS DU JOUR               -->
+            <!-- ========================================================= -->
+            <div id="view-gerante-schedule" class="gerante-tab-view flex flex-col w-full h-full p-container-padding gap-stack-lg">
                 <!-- 4 Overview Cards (Saisies et Calculs Manuels Réels) -->
                 <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-gutter">
                     <!-- Card 1: Production -->
-                    <div class="magazine-card flex flex-col justify-between" style="min-height: 160px;">
+                    <div class="magazine-card flex flex-col justify-between" style="min-height: 155px;">
                         <div class="flex justify-between items-start">
                             <div class="flex flex-col">
                                 <span class="font-label-sm text-xs uppercase text-on-surface-variant font-bold">Production du Jour</span>
@@ -258,12 +272,12 @@
                         </div>
                         <div class="flex items-center gap-1.5 text-emerald-700 font-bold text-xs" id="kpi-production-sub">
                             <span class="material-symbols-outlined text-sm">edit_note</span>
-                            <span>Saisie manuelle des fournées</span>
+                            <span>Fournées saisies et planifiées</span>
                         </div>
                     </div>
 
                     <!-- Card 2: En Cuisson -->
-                    <div class="magazine-card flex flex-col justify-between" style="min-height: 160px;">
+                    <div class="magazine-card flex flex-col justify-between" style="min-height: 155px;">
                         <div class="flex justify-between items-start">
                             <div class="flex flex-col">
                                 <span class="font-label-sm text-xs uppercase text-on-surface-variant font-bold">En Cuisson Four</span>
@@ -279,10 +293,10 @@
                     </div>
 
                     <!-- Card 3: Pertes -->
-                    <div class="magazine-card flex flex-col justify-between" style="min-height: 160px;">
+                    <div class="magazine-card flex flex-col justify-between" style="min-height: 155px;">
                         <div class="flex justify-between items-start">
                             <div class="flex flex-col">
-                                <span class="font-label-sm text-xs uppercase text-on-surface-variant font-bold">Pertes Déclarées</span>
+                                <span class="font-label-sm text-xs uppercase text-on-surface-variant font-bold">Pertes & Casse</span>
                                 <span class="font-display-lg text-3xl font-bold text-rose-700 mt-1" id="kpi-pertes-count">0</span>
                             </div>
                             <div class="kpi-icon-medallion rose">
@@ -295,7 +309,7 @@
                     </div>
 
                     <!-- Card 4: Prochaine Fournée -->
-                    <div class="magazine-card flex flex-col justify-between" style="min-height: 160px;">
+                    <div class="magazine-card flex flex-col justify-between" style="min-height: 155px;">
                         <div class="flex justify-between items-start">
                             <div class="flex flex-col">
                                 <span class="font-label-sm text-xs uppercase text-on-surface-variant font-bold">Prochaine Fournée</span>
@@ -312,18 +326,23 @@
                     </div>
                 </section>
 
-                <!-- Main Content Grid -->
+                <!-- Main Content Grid Planning -->
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-gutter">
                     <!-- Left 2 Cols: Planning de Cuisson Dynamique -->
                     <section class="lg:col-span-2 magazine-card flex flex-col gap-5">
-                        <div class="flex justify-between items-center pb-2 border-b border-[var(--magazine-line)]">
+                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 pb-3 border-b border-[var(--magazine-line)]">
                             <div>
                                 <h2 class="font-headline-lg text-2xl text-on-surface font-bold">Planning de Cuisson du Jour</h2>
-                                <p class="text-xs text-on-surface-variant">Saisie manuelle des fournées, gestion des fours et sorties</p>
+                                <p class="text-xs text-on-surface-variant">Saisie manuelle des fournées, gestion des fours et mise en rayon</p>
                             </div>
-                            <button onclick="openBakingModal()" class="magazine-btn-primary">
-                                <span class="material-symbols-outlined text-sm">add</span> Ajouter Fournée
-                            </button>
+                            <div class="flex items-center gap-2 w-full sm:w-auto">
+                                <button onclick="printBakingTicket('TOUTES')" class="px-3.5 py-2 rounded-xl bg-surface border border-outline-variant/40 text-on-surface font-bold text-xs hover:bg-surface-container flex items-center gap-1.5 transition-all">
+                                    <span class="material-symbols-outlined text-base">print</span> Fiche A4
+                                </button>
+                                <button onclick="openBakingModal()" class="magazine-btn-primary flex-1 sm:flex-none">
+                                    <span class="material-symbols-outlined text-sm">add</span> Ajouter Fournée
+                                </button>
+                            </div>
                         </div>
 
                         <!-- Category Filters -->
@@ -350,7 +369,7 @@
                                 </div>
                                 <div>
                                     <h3 class="font-headline-md text-base font-bold mb-1 text-rose-950">Alerte Matières Premières</h3>
-                                    <p class="font-body-md text-xs mb-3 text-rose-900" id="stock-alert-text">Suivi manuel des réassorts et stocks critiques.</p>
+                                    <p class="font-body-md text-xs mb-3 text-rose-900" id="stock-alert-text">Farine T55 et Beurre AOP à surveiller.</p>
                                     <button onclick="openReassortModal()" class="btn-modal-submit-gold" style="height: 38px; font-size: 11px; padding: 0 16px; border-radius: 9999px;">
                                         <span class="material-symbols-outlined text-base">local_shipping</span> Commander Réassort
                                     </button>
@@ -403,41 +422,432 @@
                                 </div>
                                 <span class="material-symbols-outlined action-chevron">chevron_right</span>
                             </button>
-
-                            <!-- Action 4: Impression Bon Fournil -->
-                            <button onclick="printBakingTicket('TOUTES')" class="prestige-action-card">
-                                <div class="flex items-center gap-3">
-                                    <div class="action-icon-badge gold">
-                                        <span class="material-symbols-outlined text-xl">print</span>
-                                    </div>
-                                    <div>
-                                        <span class="action-title">Imprimer Bons du Jour (80mm)</span>
-                                        <span class="action-subtitle">Tickets de préparation & étiquettes</span>
-                                    </div>
-                                </div>
-                                <span class="material-symbols-outlined action-chevron">chevron_right</span>
-                            </button>
-                        </div>
-
-                        <!-- Visual Inspiration of the day -->
-                        <div class="rounded-2xl overflow-hidden h-44 relative group" style="border: 1px solid rgba(245, 184, 0, 0.35); box-shadow: 0 6px 20px rgba(43, 22, 12, 0.08);">
-                            <div class="bg-cover bg-center w-full h-full" style="background-image: url('assets/luxury_bakery_bg.jpg'); transform: scale(1.02); transition: transform 0.4s ease;"></div>
-                            <div class="absolute inset-0 flex flex-col justify-end p-4" style="background: linear-gradient(to top, rgba(20, 9, 4, 0.95) 0%, rgba(28, 14, 7, 0.75) 55%, rgba(0, 0, 0, 0.15) 100%);">
-                                <span style="color: #f5b800; font-size: 11px; font-weight: 900; letter-spacing: 0.12em; text-transform: uppercase; text-shadow: 0 2px 4px rgba(0,0,0,0.9); display: flex; align-items: center; gap: 6px;">
-                                    <span style="width: 6px; height: 6px; border-radius: 50%; background: #f5b800; display: inline-block;"></span> SAVOIR-FAIRE ARTISANAL
-                                </span>
-                                <span style="color: #ffffff; font-family: 'Libre Caslon Text', serif; font-size: 17px; font-weight: 700; text-shadow: 0 2px 8px rgba(0,0,0,0.95); margin-top: 4px; line-height: 1.25;">
-                                    L'Excellence du Fournil de Babi
-                                </span>
-                                <span style="color: rgba(255, 255, 255, 0.85); font-size: 11px; font-weight: 600; text-shadow: 0 1px 4px rgba(0,0,0,0.9); margin-top: 2px;">
-                                    Farines T55 sélectionnées & cuisson sur sole de pierre 🥖✨
-                                </span>
-                            </div>
                         </div>
                     </section>
                 </div>
-
             </div>
+
+            <!-- ========================================================= -->
+            <!-- VUE 2 : COMMANDES ÉVÉNEMENTS & GÂTEAUX PERSONNALISÉS      -->
+            <!-- ========================================================= -->
+            <div id="view-gerante-events" class="gerante-tab-view hidden flex flex-col w-full h-full p-container-padding gap-stack-lg">
+                <!-- 4 KPI Events -->
+                <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-gutter">
+                    <div class="magazine-card flex flex-col justify-between" style="min-height: 140px;">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <span class="font-label-sm text-xs uppercase text-on-surface-variant font-bold">Total Commandes Spéciales</span>
+                                <span class="font-display-lg text-3xl font-bold text-on-surface mt-1 block" id="kpi-events-total">0</span>
+                            </div>
+                            <div class="kpi-icon-medallion gold"><span class="material-symbols-outlined text-2xl">cake</span></div>
+                        </div>
+                        <span class="text-xs text-on-surface-variant font-semibold">Gâteaux sur-mesure & traiteur</span>
+                    </div>
+
+                    <div class="magazine-card flex flex-col justify-between" style="min-height: 140px;">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <span class="font-label-sm text-xs uppercase text-on-surface-variant font-bold">En Cours de Décoration</span>
+                                <span class="font-display-lg text-3xl font-bold text-amber-700 mt-1 block" id="kpi-events-progress">0</span>
+                            </div>
+                            <div class="kpi-icon-medallion amber"><span class="material-symbols-outlined text-2xl">palette</span></div>
+                        </div>
+                        <span class="text-xs text-amber-800 font-bold">Au laboratoire pâtisserie</span>
+                    </div>
+
+                    <div class="magazine-card flex flex-col justify-between" style="min-height: 140px;">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <span class="font-label-sm text-xs uppercase text-on-surface-variant font-bold">Prêts pour Retrait</span>
+                                <span class="font-display-lg text-3xl font-bold text-emerald-700 mt-1 block" id="kpi-events-ready">0</span>
+                            </div>
+                            <div class="kpi-icon-medallion emerald"><span class="material-symbols-outlined text-2xl">check_circle</span></div>
+                        </div>
+                        <span class="text-xs text-emerald-800 font-bold">En vitrine réfrigérée</span>
+                    </div>
+
+                    <div class="magazine-card flex flex-col justify-between" style="min-height: 140px;">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <span class="font-label-sm text-xs uppercase text-on-surface-variant font-bold">CA Événements Cumulé</span>
+                                <span class="font-display-lg text-2xl font-bold text-primary mt-1 block" id="kpi-events-ca">0 FCFA</span>
+                            </div>
+                            <div class="kpi-icon-medallion gold"><span class="material-symbols-outlined text-2xl">payments</span></div>
+                        </div>
+                        <span class="text-xs text-on-surface-variant font-semibold">Acomptes & soldes perçus</span>
+                    </div>
+                </section>
+
+                <!-- Tableau de Bord des Gâteaux Événements -->
+                <div class="magazine-card p-5 flex flex-col gap-4">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 pb-3 border-b border-[var(--magazine-line)]">
+                        <div>
+                            <h2 class="font-headline-lg text-xl font-bold text-on-surface">Registre des Commandes de Gâteaux & Traiteur</h2>
+                            <p class="text-xs text-on-surface-variant">Anniversaires, mariages, baptêmes et gâteaux personnalisés commandés en ligne</p>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button onclick="openNewEventOrderModal()" class="magazine-btn-primary">
+                                <span class="material-symbols-outlined text-sm">add</span> Saisir Commande Spéciale
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Filter pills -->
+                    <div class="flex gap-2 pb-1 overflow-x-auto">
+                        <button onclick="filterEventOrders('all', this)" class="magazine-period-btn active shrink-0">Toutes</button>
+                        <button onclick="filterEventOrders('pending', this)" class="magazine-period-btn shrink-0">À Préparer</button>
+                        <button onclick="filterEventOrders('decorating', this)" class="magazine-period-btn shrink-0">En Décoration</button>
+                        <button onclick="filterEventOrders('ready', this)" class="magazine-period-btn shrink-0">Prêtes</button>
+                        <button onclick="filterEventOrders('delivered', this)" class="magazine-period-btn shrink-0">Livrées</button>
+                    </div>
+
+                    <!-- Table Responsive -->
+                    <div class="overflow-x-auto rounded-xl border border-outline-variant/30">
+                        <table class="w-full text-left text-xs border-collapse">
+                            <thead class="bg-surface-container text-on-surface font-extrabold uppercase text-[11px] border-b border-outline-variant/30">
+                                <tr>
+                                    <th class="p-3">N° / Date Événement</th>
+                                    <th class="p-3">Client & Contact</th>
+                                    <th class="p-3">Gâteau / Formule</th>
+                                    <th class="p-3">Personnalisation</th>
+                                    <th class="p-3 text-right">Total / Acompte</th>
+                                    <th class="p-3 text-center">Statut Laboratoire</th>
+                                    <th class="p-3 text-center">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="gerante-events-tbody" class="divide-y divide-outline-variant/20 bg-surface">
+                                <!-- Injected by renderGeranteEventOrders() -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ========================================================= -->
+            <!-- VUE 3 : MATIÈRES PREMIÈRES & GESTION DES STOCKS           -->
+            <!-- ========================================================= -->
+            <div id="view-gerante-inventory" class="gerante-tab-view hidden flex flex-col w-full h-full p-container-padding gap-stack-lg">
+                <!-- 4 KPI Stocks -->
+                <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-gutter">
+                    <div class="magazine-card flex flex-col justify-between" style="min-height: 140px;">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <span class="font-label-sm text-xs uppercase text-on-surface-variant font-bold">Matières Suivies</span>
+                                <span class="font-display-lg text-3xl font-bold text-on-surface mt-1 block" id="kpi-stocks-total">12</span>
+                            </div>
+                            <div class="kpi-icon-medallion gold"><span class="material-symbols-outlined text-2xl">inventory_2</span></div>
+                        </div>
+                        <span class="text-xs text-on-surface-variant font-semibold">Farines, beurres, sucres & levures</span>
+                    </div>
+
+                    <div class="magazine-card flex flex-col justify-between" style="min-height: 140px;">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <span class="font-label-sm text-xs uppercase text-on-surface-variant font-bold">Stocks Critiques / Bas</span>
+                                <span class="font-display-lg text-3xl font-bold text-rose-700 mt-1 block" id="kpi-stocks-low">2</span>
+                            </div>
+                            <div class="kpi-icon-medallion rose"><span class="material-symbols-outlined text-2xl">warning</span></div>
+                        </div>
+                        <span class="text-xs text-rose-800 font-bold">Réassort recommandé</span>
+                    </div>
+
+                    <div class="magazine-card flex flex-col justify-between" style="min-height: 140px;">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <span class="font-label-sm text-xs uppercase text-on-surface-variant font-bold">Valeur Stock Fournil</span>
+                                <span class="font-display-lg text-2xl font-bold text-primary mt-1 block" id="kpi-stocks-value">1 850 000 F</span>
+                            </div>
+                            <div class="kpi-icon-medallion gold"><span class="material-symbols-outlined text-2xl">account_balance</span></div>
+                        </div>
+                        <span class="text-xs text-on-surface-variant font-semibold">Valorisation au prix d'achat</span>
+                    </div>
+
+                    <div class="magazine-card flex flex-col justify-between" style="min-height: 140px;">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <span class="font-label-sm text-xs uppercase text-on-surface-variant font-bold">Dernier Réassort Reçu</span>
+                                <span class="font-headline-md text-base font-bold text-emerald-800 mt-1 block">Hier 14:30</span>
+                            </div>
+                            <div class="kpi-icon-medallion emerald"><span class="material-symbols-outlined text-2xl">local_shipping</span></div>
+                        </div>
+                        <span class="text-xs text-emerald-800 font-bold">40 sacs Farine T55 livrés</span>
+                    </div>
+                </section>
+
+                <!-- Tableau Stocks Fournil -->
+                <div class="magazine-card p-5 flex flex-col gap-4">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 pb-3 border-b border-[var(--magazine-line)]">
+                        <div>
+                            <h2 class="font-headline-lg text-xl font-bold text-on-surface">Inventaire & Matières Premières Fournil</h2>
+                            <p class="text-xs text-on-surface-variant">Ajustements manuels des sacs, cartons et ingrédients du laboratoire</p>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button onclick="openReassortModal()" class="magazine-btn-primary">
+                                <span class="material-symbols-outlined text-sm">local_shipping</span> Commander Réassort
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="overflow-x-auto rounded-xl border border-outline-variant/30">
+                        <table class="w-full text-left text-xs border-collapse">
+                            <thead class="bg-surface-container text-on-surface font-extrabold uppercase text-[11px] border-b border-outline-variant/30">
+                                <tr>
+                                    <th class="p-3">Matière Première</th>
+                                    <th class="p-3">Catégorie</th>
+                                    <th class="p-3">Conditionnement</th>
+                                    <th class="p-3 text-center">Quantité Actuelle</th>
+                                    <th class="p-3 text-center">Seuil d'Alerte</th>
+                                    <th class="p-3 text-center">État Stock</th>
+                                    <th class="p-3 text-center">Ajustement Rapide</th>
+                                </tr>
+                            </thead>
+                            <tbody id="gerante-stocks-tbody" class="divide-y divide-outline-variant/20 bg-surface">
+                                <!-- Injected by renderGeranteInventory() -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ========================================================= -->
+            <!-- VUE 4 : PERTES, CASSE & REGISTRE SANITAIRE HACCP          -->
+            <!-- ========================================================= -->
+            <div id="view-gerante-waste" class="gerante-tab-view hidden flex flex-col w-full h-full p-container-padding gap-stack-lg">
+                <!-- 4 KPI Waste -->
+                <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-gutter">
+                    <div class="magazine-card flex flex-col justify-between" style="min-height: 140px;">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <span class="font-label-sm text-xs uppercase text-on-surface-variant font-bold">Pertes du Jour (Pièces)</span>
+                                <span class="font-display-lg text-3xl font-bold text-rose-700 mt-1 block" id="kpi-waste-qty">0 pcs</span>
+                            </div>
+                            <div class="kpi-icon-medallion rose"><span class="material-symbols-outlined text-2xl">delete_sweep</span></div>
+                        </div>
+                        <span class="text-xs text-rose-800 font-bold" id="kpi-waste-val">0 FCFA de perte</span>
+                    </div>
+
+                    <div class="magazine-card flex flex-col justify-between" style="min-height: 140px;">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <span class="font-label-sm text-xs uppercase text-on-surface-variant font-bold">Taux de Perte Fournil</span>
+                                <span class="font-display-lg text-3xl font-bold text-amber-700 mt-1 block" id="kpi-waste-rate">1.4%</span>
+                            </div>
+                            <div class="kpi-icon-medallion amber"><span class="material-symbols-outlined text-2xl">percent</span></div>
+                        </div>
+                        <span class="text-xs text-emerald-700 font-bold">Objectif &lt; 3% respecté ✅</span>
+                    </div>
+
+                    <div class="magazine-card flex flex-col justify-between" style="min-height: 140px;">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <span class="font-label-sm text-xs uppercase text-on-surface-variant font-bold">Contrôle Froid HACCP</span>
+                                <span class="font-display-lg text-2xl font-bold text-emerald-700 mt-1 block">100% Conforme</span>
+                            </div>
+                            <div class="kpi-icon-medallion cyan"><span class="material-symbols-outlined text-2xl">ac_unit</span></div>
+                        </div>
+                        <span class="text-xs text-emerald-800 font-bold">Frigos (+3.8°C) & Pousse (+24°C)</span>
+                    </div>
+
+                    <div class="magazine-card flex flex-col justify-between" style="min-height: 140px;">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <span class="font-label-sm text-xs uppercase text-on-surface-variant font-bold">Dons & Recyclage</span>
+                                <span class="font-display-lg text-3xl font-bold text-on-surface mt-1 block" id="kpi-waste-don">12 pcs</span>
+                            </div>
+                            <div class="kpi-icon-medallion gold"><span class="material-symbols-outlined text-2xl">volunteer_activism</span></div>
+                        </div>
+                        <span class="text-xs text-on-surface-variant font-semibold">Valorisation chapelure & dons</span>
+                    </div>
+                </section>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-gutter">
+                    <!-- Left 2 Cols: Registre des Invendus & Pertes -->
+                    <div class="lg:col-span-2 magazine-card p-5 flex flex-col gap-4">
+                        <div class="flex justify-between items-center pb-3 border-b border-[var(--magazine-line)]">
+                            <div>
+                                <h2 class="font-headline-lg text-xl font-bold text-on-surface">Journal des Déclarations de Pertes & Invendus</h2>
+                                <p class="text-xs text-on-surface-variant">Traçabilité quotidienne obligatoire des sorties hors vente</p>
+                            </div>
+                            <button onclick="openWasteModal()" class="magazine-btn-primary">
+                                <span class="material-symbols-outlined text-sm">add</span> Déclarer Perte
+                            </button>
+                        </div>
+
+                        <div class="overflow-x-auto rounded-xl border border-outline-variant/30">
+                            <table class="w-full text-left text-xs border-collapse">
+                                <thead class="bg-surface-container text-on-surface font-extrabold uppercase text-[11px] border-b border-outline-variant/30">
+                                    <tr>
+                                        <th class="p-3">Heure / Date</th>
+                                        <th class="p-3">Produit Concerné</th>
+                                        <th class="p-3 text-center">Quantité</th>
+                                        <th class="p-3">Motif de Déclaration</th>
+                                        <th class="p-3 text-right">Perte Estimée</th>
+                                        <th class="p-3">Déclarant</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="gerante-waste-tbody" class="divide-y divide-outline-variant/20 bg-surface">
+                                    <!-- Injected by renderGeranteWaste() -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Right Col: Registre Sanitaire Frigos & Pousse -->
+                    <div class="magazine-card p-5 flex flex-col gap-4">
+                        <div class="flex justify-between items-center pb-2 border-b border-[var(--magazine-line)]">
+                            <div>
+                                <h3 class="font-headline-md text-base font-bold text-on-surface">Relevés Thermiques HACCP</h3>
+                                <p class="text-[11px] text-on-surface-variant">Chambres froides & étuves</p>
+                            </div>
+                            <button onclick="openTempModal()" class="px-3 py-1.5 rounded-lg bg-surface border border-outline-variant/40 text-on-surface font-bold text-xs hover:bg-surface-container flex items-center gap-1">
+                                <span class="material-symbols-outlined text-sm">add</span> Saisir
+                            </button>
+                        </div>
+
+                        <div class="flex flex-col gap-3" id="gerante-temps-list">
+                            <!-- Injected by renderGeranteTemps() -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ========================================================= -->
+            <!-- VUE 5 : VENTES & RECETTES DU FOURNIL                       -->
+            <!-- ========================================================= -->
+            <div id="view-gerante-finance" class="gerante-tab-view hidden flex flex-col w-full h-full p-container-padding gap-stack-lg">
+                <!-- 4 KPI Finance -->
+                <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-gutter">
+                    <div class="magazine-card flex flex-col justify-between" style="min-height: 140px;">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <span class="font-label-sm text-xs uppercase text-on-surface-variant font-bold">Chiffre d'Affaires Global</span>
+                                <span class="font-display-lg text-3xl font-bold text-emerald-800 mt-1 block" id="kpi-fin-revenue">0 FCFA</span>
+                            </div>
+                            <div class="kpi-icon-medallion emerald"><span class="material-symbols-outlined text-2xl">account_balance_wallet</span></div>
+                        </div>
+                        <span class="text-xs text-emerald-800 font-bold">Caisse POS + Commandes en ligne</span>
+                    </div>
+
+                    <div class="magazine-card flex flex-col justify-between" style="min-height: 140px;">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <span class="font-label-sm text-xs uppercase text-on-surface-variant font-bold">Pièces Vendues</span>
+                                <span class="font-display-lg text-3xl font-bold text-on-surface mt-1 block" id="kpi-fin-items-sold">0 pcs</span>
+                            </div>
+                            <div class="kpi-icon-medallion gold"><span class="material-symbols-outlined text-2xl">shopping_cart_checkout</span></div>
+                        </div>
+                        <span class="text-xs text-on-surface-variant font-semibold">Sur 142 tickets clôturés</span>
+                    </div>
+
+                    <div class="magazine-card flex flex-col justify-between" style="min-height: 140px;">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <span class="font-label-sm text-xs uppercase text-on-surface-variant font-bold">Panier Moyen Client</span>
+                                <span class="font-display-lg text-3xl font-bold text-primary mt-1 block" id="kpi-fin-avg-basket">2 450 F</span>
+                            </div>
+                            <div class="kpi-icon-medallion amber"><span class="material-symbols-outlined text-2xl">analytics</span></div>
+                        </div>
+                        <span class="text-xs text-on-surface-variant font-semibold">+12% par rapport à hier</span>
+                    </div>
+
+                    <div class="magazine-card flex flex-col justify-between" style="min-height: 140px;">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <span class="font-label-sm text-xs uppercase text-on-surface-variant font-bold">Part Wave vs Espèces</span>
+                                <span class="font-display-lg text-2xl font-bold text-[#1EA5FC] mt-1 block" id="kpi-fin-wave-pct">68% Wave</span>
+                            </div>
+                            <div class="kpi-icon-medallion cyan"><span class="material-symbols-outlined text-2xl">qr_code_scanner</span></div>
+                        </div>
+                        <span class="text-xs text-on-surface-variant font-semibold">32% Paiements Espèces</span>
+                    </div>
+                </section>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-gutter">
+                    <!-- Top Ventes Fournil -->
+                    <div class="lg:col-span-2 magazine-card p-5 flex flex-col gap-4">
+                        <div class="flex justify-between items-center pb-3 border-b border-[var(--magazine-line)]">
+                            <div>
+                                <h2 class="font-headline-lg text-xl font-bold text-on-surface">Top Produits & Écoulement des Fournées</h2>
+                                <p class="text-xs text-on-surface-variant">Volumes produits vs vendus et taux de transformation</p>
+                            </div>
+                            <button onclick="printFinancialClosing()" class="magazine-btn-primary">
+                                <span class="material-symbols-outlined text-sm">print</span> Rapport de Clôture
+                            </button>
+                        </div>
+
+                        <div class="overflow-x-auto rounded-xl border border-outline-variant/30">
+                            <table class="w-full text-left text-xs border-collapse">
+                                <thead class="bg-surface-container text-on-surface font-extrabold uppercase text-[11px] border-b border-outline-variant/30">
+                                    <tr>
+                                        <th class="p-3">Produit</th>
+                                        <th class="p-3">Rayon</th>
+                                        <th class="p-3 text-center">Produit</th>
+                                        <th class="p-3 text-center">Vendu</th>
+                                        <th class="p-3 text-center">Taux Écoulement</th>
+                                        <th class="p-3 text-right">CA Généré</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="gerante-finance-tops-tbody" class="divide-y divide-outline-variant/20 bg-surface">
+                                    <!-- Injected by renderGeranteFinance() -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Répartition par Rayon -->
+                    <div class="magazine-card p-5 flex flex-col gap-4">
+                        <h3 class="font-headline-md text-base font-bold text-on-surface pb-2 border-b border-[var(--magazine-line)]">Répartition des Ventes</h3>
+                        
+                        <div class="flex flex-col gap-3 my-auto">
+                            <div>
+                                <div class="flex justify-between text-xs font-bold mb-1">
+                                    <span>🥖 Pains Tradition (Baguettes, Mie)</span>
+                                    <span class="font-mono text-primary">45%</span>
+                                </div>
+                                <div class="w-full bg-surface-dim rounded-full h-2.5 overflow-hidden">
+                                    <div class="bg-amber-600 h-full rounded-full" style="width: 45%;"></div>
+                                </div>
+                            </div>
+
+                            <div>
+                                <div class="flex justify-between text-xs font-bold mb-1">
+                                    <span>🥐 Viennoiseries Pur Beurre</span>
+                                    <span class="font-mono text-amber-700">32%</span>
+                                </div>
+                                <div class="w-full bg-surface-dim rounded-full h-2.5 overflow-hidden">
+                                    <div class="bg-amber-500 h-full rounded-full" style="width: 32%;"></div>
+                                </div>
+                            </div>
+
+                            <div>
+                                <div class="flex justify-between text-xs font-bold mb-1">
+                                    <span>🎂 Pâtisseries Fines & Gâteaux</span>
+                                    <span class="font-mono text-rose-700">18%</span>
+                                </div>
+                                <div class="w-full bg-surface-dim rounded-full h-2.5 overflow-hidden">
+                                    <div class="bg-rose-500 h-full rounded-full" style="width: 18%;"></div>
+                                </div>
+                            </div>
+
+                            <div>
+                                <div class="flex justify-between text-xs font-bold mb-1">
+                                    <span>🥤 Boissons & Jus Artisanaux</span>
+                                    <span class="font-mono text-emerald-700">5%</span>
+                                </div>
+                                <div class="w-full bg-surface-dim rounded-full h-2.5 overflow-hidden">
+                                    <div class="bg-emerald-500 h-full rounded-full" style="width: 5%;"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="p-3 bg-amber-50 rounded-xl border border-amber-200 text-amber-900 text-xs font-bold flex items-center gap-2">
+                            <span class="material-symbols-outlined text-amber-700">verified</span>
+                            <span>Marge brute globale estimée : <strong>64.2%</strong></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </main>
     </div>
 
