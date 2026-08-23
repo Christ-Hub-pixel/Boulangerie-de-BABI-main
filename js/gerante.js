@@ -24,19 +24,12 @@ const DEMO_ORDERS = [
     { id: 1050, client_nom: 'Sarah B.', telephone: '01 02 03 04 05', total: 5400, statut: 'pret_au_comptoir', items: [{ nom: 'Entremet Chocolat', qte: 2 }] }
 ];
 
-const DEMO_EMPLOYEES = [
-    { id: 1, nom: 'Traoré', prenom: 'Mariam', poste: 'Gérante Principale', statut_presence: 'present', heure_arrivee: '05h45' },
-    { id: 2, nom: 'Kouassi', prenom: 'Aya', poste: 'Caissière Caisse 1', statut_presence: 'present', heure_arrivee: '06h00' },
-    { id: 3, nom: 'Bakayoko', prenom: 'Jean-Luc', poste: 'Chef Boulanger', statut_presence: 'present', heure_arrivee: '04h30' },
-    { id: 4, nom: 'Diallo', prenom: 'Ibrahim', poste: 'Aide-Boulanger Fournil', statut_presence: 'present', heure_arrivee: '06h15' },
-    { id: 5, nom: 'N\'Guessan', prenom: 'Clarisse', poste: 'Aide-Pâtissière', statut_presence: 'pause', heure_arrivee: '05h30' },
-    { id: 6, nom: 'Yao', prenom: 'Patrick', poste: 'Apprenti Boulanger', statut_presence: 'absent', heure_arrivee: '--' }
-];
+const DEMO_EMPLOYEES = [];
 
 const DEMO_MOVEMENTS = [
-    { id: 1, nom_produit: 'Baguette Tradition', delta_quantite: 30, motif: 'Sortie fournil 09h00', date_mouvement: 'Aujourd\'hui 09h05', auteur: 'Boulanger Bakayoko' },
-    { id: 2, nom_produit: 'Pain au Chocolat', delta_quantite: -14, motif: 'Ventes Caisse Matinée', date_mouvement: 'Aujourd\'hui 10h12', auteur: 'Caissière Aya' },
-    { id: 3, nom_produit: 'Croissant Pur Beurre', delta_quantite: 25, motif: 'Sortie fournil 06h00', date_mouvement: 'Aujourd\'hui 06h10', auteur: 'Boulanger Bakayoko' }
+    { id: 1, nom_produit: 'Baguette Tradition', delta_quantite: 30, motif: 'Sortie fournil 09h00', date_mouvement: 'Aujourd\'hui 09h05', auteur: 'Boulangerie BABI' },
+    { id: 2, nom_produit: 'Pain au Chocolat', delta_quantite: -14, motif: 'Ventes Caisse Matinée', date_mouvement: 'Aujourd\'hui 10h12', auteur: 'Boulangerie BABI' },
+    { id: 3, nom_produit: 'Croissant Pur Beurre', delta_quantite: 25, motif: 'Sortie fournil 06h00', date_mouvement: 'Aujourd\'hui 06h10', auteur: 'Boulangerie BABI' }
 ];
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -57,7 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
     try {
         const user = JSON.parse(localStorage.getItem('babi_user'));
         if (user && document.getElementById('gerante-name-badge')) {
-            document.getElementById('gerante-name-badge').innerText = (user.prenom || 'Mamadou') + ' ' + (user.nom || 'Koné');
+            document.getElementById('gerante-name-badge').innerText = (user.prenom || 'Gérante') + ' ' + (user.nom || 'Fournil');
         }
     } catch(e) {}
 

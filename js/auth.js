@@ -235,18 +235,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 const idLower = identifiant.toLowerCase();
                 if (idLower.includes('caisse')) {
                     role = 'caissiere';
-                    prenom = 'Awa';
-                    nom = 'Kouassi';
+                    prenom = 'Caissière';
+                    nom = '';
                     redirect = 'caissiere.html';
                 } else if (idLower.includes('gerante') || idLower.includes('direction')) {
                     role = 'gerante';
-                    prenom = 'Mariam';
-                    nom = 'Traoré';
+                    prenom = 'Gérante';
+                    nom = 'Fournil';
                     redirect = 'gerante.html';
                 } else if (idLower.includes('admin')) {
                     role = 'admin';
-                    prenom = 'Ibrahim';
-                    nom = 'Bakayoko';
+                    prenom = 'Administrateur';
+                    nom = '';
                     redirect = 'admin.html';
                 } else {
                     if (idLower.includes('@')) {
@@ -307,34 +307,6 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
     }
+    }
 });
 
-// Helper pour tester rapidement les 4 rôles depuis la page connexion
-function autoFillDemo(role) {
-    const emailInput = document.querySelector('.lr-form input[type="text"]');
-    const pwdInput = document.querySelector('.lr-form input[type="password"]');
-
-    if (!emailInput || !pwdInput) return;
-
-    if (role === 'client') {
-        emailInput.value = 'client@babi.ci';
-        pwdInput.value = 'client123';
-    } else if (role === 'caissiere') {
-        emailInput.value = 'caisse@babi.ci';
-        pwdInput.value = 'caisse123';
-    } else if (role === 'gerante') {
-        emailInput.value = 'gerante@babi.ci';
-        pwdInput.value = 'gerante123';
-    } else if (role === 'admin') {
-        emailInput.value = 'admin@babi.ci';
-        pwdInput.value = 'admin123';
-    }
-
-    // Trigger visual highlight
-    emailInput.classList.add('border-warning');
-    pwdInput.classList.add('border-warning');
-    setTimeout(() => {
-        emailInput.classList.remove('border-warning');
-        pwdInput.classList.remove('border-warning');
-    }, 800);
-}

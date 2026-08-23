@@ -100,7 +100,7 @@ class PickupPinService {
                 customerName: order.customer_name || 'Client',
                 totalAmount: order.total_amount || order.total_price || 0,
                 validatedAt: (pinRecord && pinRecord.validated_at) ? pinRecord.validated_at : (order.updated_at || 'Aujourd\'hui'),
-                validatedBy: (pinRecord && pinRecord.validated_by_name) ? pinRecord.validated_by_name : 'Awa Kouassi (Caisse VIP)',
+                validatedBy: (pinRecord && pinRecord.validated_by_name) ? pinRecord.validated_by_name : 'Caissière en service',
                 error: `🛑 ALERTE SÉCURITÉ / FRAUDE : Le code PIN #${cleanPin} a DÉJÀ ÉTÉ UTILISÉ pour la commande #${order.id}. Remise déjà effectuée !`
             };
         }

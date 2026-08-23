@@ -26,7 +26,7 @@ async function testWavePayoutSuite() {
     const payoutRes = await wavePayoutService.createPayout({
         mobile: "0704389201",
         receive_amount: 5000,
-        name: "Awa Kouassi",
+        name: "Client Test Wave",
         client_reference: "REF-TEST-001",
         payment_reason: "Remboursement commande BABI"
     });
@@ -47,8 +47,8 @@ async function testWavePayoutSuite() {
 
     // Test 6: Create Batch Payout
     const batchRes = await wavePayoutService.createPayoutBatch([
-        { mobile: "0704389201", receive_amount: 1000, name: "Fatou" },
-        { mobile: "0501020304", receive_amount: 2500, name: "Mamadou" }
+        { mobile: "0704389201", receive_amount: 1000, name: "Destinataire Test 1" },
+        { mobile: "0501020304", receive_amount: 2500, name: "Destinataire Test 2" }
     ]);
     console.assert(batchRes.success === true, "createPayoutBatch failed");
     console.log("✅ 6. POST /v1/payout-batch : Succès ->", batchRes.data.id);
@@ -64,7 +64,7 @@ async function testWavePayoutSuite() {
     console.log("✅ 8. POST /v1/payout/:id/reverse (Annulation sous 3j) : Succès");
 
     // Test 9: Verify Recipient
-    const verifyRes = await wavePayoutService.verifyRecipient({ mobile: "0704389201", name: "Awa Kouassi", amount: 5000 });
+    const verifyRes = await wavePayoutService.verifyRecipient({ mobile: "0704389201", name: "Client Test Wave", amount: 5000 });
     console.assert(verifyRes.success === true, "verifyRecipient failed");
     console.log("✅ 9. POST /v1/verify_recipient/ : Succès");
 

@@ -607,7 +607,8 @@ function finalizeSale(methodLabel, total, given = null, change = 0) {
     playPosAudio('success');
 
     const ticketId = 'POS-' + Math.floor(1000 + Math.random() * 9000);
-    const cashierName = (typeof getActiveCashier === 'function' ? getActiveCashier().name : 'Awa Kouassi');
+    const active = (typeof getActiveCashier === 'function' ? getActiveCashier() : null);
+    const cashierName = (active && (active.nom || active.prenom) ? `${active.prenom || ''} ${active.nom || ''}`.trim() : 'Caissière en service');
     const orderData = {
         id: ticketId,
         customer_name: 'Client Comptoir',
@@ -726,7 +727,7 @@ function showThermalReceipt(data) {
             <div><strong>TICKET N° :</strong> #${data.id}</div>
             <div><strong>DATE :</strong> ${dateStr} à ${timeStr}</div>
             <div><strong>CAISSE :</strong> Caisse Principale 1</div>
-            <div><strong>OPÉRATEUR :</strong> ${data.caissiere || 'Awa Kouassi'}</div>
+            <div><strong>OPÉRATEUR :</strong> ${data.caissiere || 'Caissière en service'}</div>
         </div>
 
         <div style="border-top: 1.5px dashed #333; border-bottom: 1.5px dashed #333; padding: 6px 0; margin-bottom: 8px;">
@@ -840,11 +841,13 @@ async function previewPinOrder(pin) {
     const alreadyConsumed = consumedPins.find(c => String(c.pin) === cleanPin || (cleanPin.length === 4 && String(c.pin).padStart(4, '0') === cleanPin));
 
     if (alreadyConsumed) {
+        const active = (typeof getActiveCashier === 'function' ? getActiveCashier() : null);
+        const currentCName = (active && (active.nom || active.prenom) ? `${active.prenom || ''} ${active.nom || ''}`.trim() : 'Caissière en service');
         renderPinFraudWarning({
             orderId: alreadyConsumed.orderId || `BABI-${cleanPin}`,
             pin: cleanPin,
             consumedAt: alreadyConsumed.consumedAt || 'Précédemment',
-            cashier: alreadyConsumed.cashier || 'Awa Kouassi (Caisse VIP)'
+            cashier: alreadyConsumed.cashier || currentCName
         });
         return;
     }
@@ -872,11 +875,13 @@ async function previewPinOrder(pin) {
             } else if (res.status === 400 || res.status === 403 || res.status === 404) {
                 const data = await res.json().catch(() => ({}));
                 if (data.isFraudAlert || data.isAlreadyUsed) {
+                    const active = (typeof getActiveCashier === 'function' ? getActiveCashier() : null);
+                    const currentCName = (active && (active.nom || active.prenom) ? `${active.prenom || ''} ${active.nom || ''}`.trim() : 'Caissière en service');
                     renderPinFraudWarning({
                         orderId: data.orderId || `BABI-${cleanPin}`,
                         pin: cleanPin,
                         consumedAt: data.validatedAt || 'Aujourd\'hui',
-                        cashier: data.validatedBy || 'Awa Kouassi'
+                        cashier: data.validatedBy || currentCName
                     });
                     return;
                 }
@@ -904,11 +909,13 @@ async function previewPinOrder(pin) {
 
     if (matched) {
         if (matched.status === 'recupere' || matched.status === 'PICKED_UP' || matched.is_used === 1) {
+            const active = (typeof getActiveCashier === 'function' ? getActiveCashier() : null);
+            const currentCName = (active && (active.nom || active.prenom) ? `${active.prenom || ''} ${active.nom || ''}`.trim() : 'Caissière en service');
             renderPinFraudWarning({
                 orderId: matched.id || `BABI-${cleanPin}`,
                 pin: cleanPin,
                 consumedAt: matched.updated_at || 'Aujourd\'hui',
-                cashier: 'Awa Kouassi (Caisse VIP)'
+                cashier: currentCName
             });
             return;
         }
@@ -960,7 +967,7 @@ function renderPinFraudWarning(info) {
             </p>
             <div class="p-2.5 bg-white/95 rounded-xl border border-rose-200 space-y-1 font-mono text-[11px] text-rose-900">
                 <div class="flex justify-between"><span>📅 <strong>Heure de remise :</strong></span> <span>${info.consumedAt || 'Aujourd\'hui'}</span></div>
-                <div class="flex justify-between"><span>👤 <strong>Validé par :</strong></span> <span>${info.cashier || 'Awa Kouassi (Caisse VIP)'}</span></div>
+                <div class="flex justify-between"><span>👤 <strong>Validé par :</strong></span> <span>${info.cashier || 'Caissière en service'}</span></div>
                 <div class="pt-1 text-center font-sans font-black text-rose-700 text-[10px] tracking-wide uppercase border-t border-rose-100 mt-1">
                     ⛔ TENTATIVE DE DOUBLE RETRAIT BLOQUÉE PAR LE SYSTÈME
                 </div>
@@ -1005,6 +1012,8 @@ async function confirmOrderPickup(orderId, pin) {
     const cleanPin = String(pin || '').trim();
     const cleanOrderId = String(orderId || '').trim();
     const nowTime = new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    const active = (typeof getActiveCashier === 'function' ? getActiveCashier() : null);
+    const activeName = (active && (active.nom || active.prenom) ? `${active.prenom || ''} ${active.nom || ''}`.trim() : 'Caissière en service');
 
     // 1. Save to consumed PINs list for instant fraud blocking
     const consumedPins = JSON.parse(localStorage.getItem('babi_consumed_pins') || '[]');
@@ -1012,7 +1021,7 @@ async function confirmOrderPickup(orderId, pin) {
         pin: cleanPin,
         orderId: cleanOrderId,
         consumedAt: nowTime,
-        cashier: 'Awa Kouassi (Caisse VIP)'
+        cashier: activeName
     });
     localStorage.setItem('babi_consumed_pins', JSON.stringify(consumedPins));
 
@@ -1024,7 +1033,7 @@ async function confirmOrderPickup(orderId, pin) {
             body: JSON.stringify({
                 order_id: cleanOrderId,
                 pin: cleanPin,
-                cashier_name: 'Awa Kouassi'
+                cashier_name: activeName
             })
         });
     } catch (_) {}
@@ -1485,76 +1494,7 @@ function printClosureReport() {
 // -------------------------------------------------------------
 // 10. PRESTIGE CASHIER PROFILE & SESSION MANAGEMENT
 // -------------------------------------------------------------
-const REGISTERED_CASHIERS = [
-    {
-        id: 'awa',
-        name: 'Awa Kouassi',
-        role: 'Caissière Principale • BABI 🥐',
-        badge: 'VIP',
-        avatar: 'assets/caissiere.png',
-        pin: '1234',
-        shift: 'Matin & Journée (07h30 - 16h00)'
-    },
-    {
-        id: 'aya',
-        name: 'Aya Marie-Esther',
-        role: 'Caissière de Service • Comptoir 1',
-        badge: 'Titulaire',
-        avatar: 'assets/caissiere.png',
-        pin: '2222',
-        shift: 'Après-midi (14h00 - 21h30)'
-    },
-    {
-        id: 'sarah',
-        name: 'Sarah Bamba',
-        role: 'Caissière Polyvalente & Vente',
-        badge: 'Équipe',
-        avatar: 'assets/caissiere.png',
-        pin: '3333',
-        shift: 'Soirée & Week-end'
-    },
-    {
-        id: 'mamadou',
-        name: 'Mamadou Koné',
-        role: 'Chef Fournil & Superviseur Caisse',
-        badge: 'Superviseur',
-        avatar: 'assets/baker_profile.png',
-        pin: '9999',
-        shift: 'Direction Fournil'
-    }
-];
-
-function getActiveCashier() {
-    try {
-        const saved = JSON.parse(localStorage.getItem('babi_active_cashier'));
-        if (saved && saved.name) return saved;
-    } catch(e) {}
-    return REGISTERED_CASHIERS[0];
-}
-
-function updateCashierHeaderUI() {
-    const cashier = getActiveCashier();
-    const nameBadges = document.querySelectorAll('#caissiere-name-badge, #dropdown-cashier-name, #lock-screen-name');
-    nameBadges.forEach(el => {
-        if (el) {
-            if (el.id === 'caissiere-name-badge') {
-                el.innerHTML = `${cashier.name} <span class="bg-amber-400 text-black text-[9px] font-black px-1.5 py-0.2 rounded-md shadow-xs">${cashier.badge}</span>`;
-            } else {
-                el.innerText = cashier.name;
-            }
-        }
-    });
-
-    const roleBadges = document.querySelectorAll('#caissiere-role-badge, #dropdown-cashier-role');
-    roleBadges.forEach(el => {
-        if (el) el.innerText = cashier.role;
-    });
-
-    const avatars = document.querySelectorAll('#pos-header-avatar, #dropdown-cashier-avatar, #lock-screen-avatar');
-    avatars.forEach(el => {
-        if (el) el.src = cashier.avatar;
-    });
-}
+// Note: Dynamic cashier sessions are handled in Section "Gestion Session Caissière" below.
 
 function togglePosProfileDropdown(event) {
     if (event) {
@@ -1710,12 +1650,12 @@ function getActiveCashier() {
         }
     } catch (_) {}
     return {
-        id: 1,
-        nom: 'Kouassi',
-        prenom: 'Awa',
-        email: 'caisse.riviera@babi.ci',
-        caisse_assignee: 'Caisse 1 - Riviera',
-        code_pin: '1234',
+        id: null,
+        nom: '',
+        prenom: 'Caissière',
+        email: '',
+        caisse_assignee: 'Caisse POS',
+        code_pin: '',
         avatar: 'assets/caissiere.png'
     };
 }
@@ -1824,20 +1764,18 @@ async function loadValidCashiersIntoSelect() {
         }
     } catch (_) {}
 
-    if (availableCashiersList.length === 0) {
-        availableCashiersList = [
-            { id: 1, nom: 'Kouassi', prenom: 'Awa', email: 'caisse.riviera@babi.ci', caisse_assignee: 'Caisse 1 - Riviera', code_pin: '1234', statut: 'actif' },
-            { id: 2, nom: 'Koné', prenom: 'Fatou', email: 'caisse.plateau@babi.ci', caisse_assignee: 'Caisse 2 - Plateau', code_pin: '5678', statut: 'actif' }
-        ];
+    const activeList = (availableCashiersList || []).filter(c => c.statut === 'actif');
+
+    if (activeList.length === 0) {
+        select.innerHTML = `<option value="">⚠️ Aucune caissière active créée par l'administrateur</option>`;
+        return;
     }
 
-    select.innerHTML = availableCashiersList
-        .filter(c => c.statut === 'actif')
-        .map(c => `
-            <option value="${c.id}" data-pin="${c.code_pin || '1234'}" data-email="${c.email}">
-                👩‍💼 ${escapeHtml(c.prenom || '')} ${escapeHtml(c.nom || '')} — ${escapeHtml(c.caisse_assignee || 'Caisse 1')} (${escapeHtml(c.email)})
-            </option>
-        `).join('');
+    select.innerHTML = activeList.map(c => `
+        <option value="${c.id}" data-pin="${c.code_pin || ''}" data-email="${c.email}">
+            👩‍💼 ${escapeHtml(c.prenom || '')} ${escapeHtml(c.nom || '')} — ${escapeHtml(c.caisse_assignee || 'Caisse 1')} (${escapeHtml(c.email)})
+        </option>
+    `).join('');
 }
 
 function handleSelectedCashierChange() {
@@ -1880,6 +1818,11 @@ async function submitLockPin() {
     const selectedOption = select ? select.options[select.selectedIndex] : null;
     const selectedEmail = selectedOption ? selectedOption.getAttribute('data-email') : '';
 
+    if (!selectedEmail) {
+        showPosToast("Veuillez sélectionner un profil caissière valide.", "warning");
+        return;
+    }
+
     try {
         const res = await fetch(`${API_ROOT}/api/cashier/login`, {
             method: 'POST',
@@ -1908,28 +1851,25 @@ async function submitLockPin() {
         playPosAudio('chime');
         showPosToast(`✨ Session ouverte : ${data.cashier.prenom} ${data.cashier.nom} (${data.cashier.caisse_assignee})`, 'success');
     } catch (err) {
-        // Mode hors-ligne / fallback local
-        const expectedPin = selectedOption ? selectedOption.getAttribute('data-pin') : '1234';
-        if (lockPinInput === expectedPin) {
-            const cashier = availableCashiersList.find(c => String(c.id) === String(selectedId)) || {
-                id: 1,
-                nom: 'Kouassi',
-                prenom: 'Awa',
-                caisse_assignee: 'Caisse 1 - Riviera'
-            };
-            currentCashierSession = cashier;
-            currentCashierToken = `OFFLINE_SES_${Date.now()}`;
-            localStorage.setItem('babi_cashier_session', JSON.stringify(cashier));
-            localStorage.setItem('babi_cashier_token', currentCashierToken);
-            updateCashierHeaderUI();
-            hidePosLockScreen();
-            playPosAudio('chime');
-            showPosToast(`✨ Session locale ouverte : ${cashier.prenom} ${cashier.nom}`, 'success');
-        } else {
-            playPosAudio('buzz');
-            clearLockPin();
-            alert("Code PIN erroné.");
+        // Mode hors-ligne avec profil actif sélectionné
+        const expectedPin = selectedOption ? selectedOption.getAttribute('data-pin') : '';
+        if (expectedPin && lockPinInput === expectedPin) {
+            const cashier = availableCashiersList.find(c => String(c.id) === String(selectedId));
+            if (cashier) {
+                currentCashierSession = cashier;
+                currentCashierToken = `OFFLINE_SES_${Date.now()}`;
+                localStorage.setItem('babi_cashier_session', JSON.stringify(cashier));
+                localStorage.setItem('babi_cashier_token', currentCashierToken);
+                updateCashierHeaderUI();
+                hidePosLockScreen();
+                playPosAudio('chime');
+                showPosToast(`✨ Session locale ouverte : ${cashier.prenom} ${cashier.nom}`, 'success');
+                return;
+            }
         }
+        playPosAudio('buzz');
+        clearLockPin();
+        showPosToast("Code PIN erroné ou serveur indisponible.", "error");
     }
 }
 
@@ -1943,18 +1883,23 @@ function updateCashierHeaderUI() {
     const headerAvatar = document.getElementById('pos-header-avatar');
     const dropAvatar = document.getElementById('dropdown-cashier-avatar');
 
-    const fullName = `${cashier.prenom || ''} ${cashier.nom || ''}`.trim() || 'Awa Kouassi';
-    const caisseLabel = cashier.caisse_assignee || 'Caisse 1 - Riviera';
+    const hasRealName = Boolean(cashier && (cashier.nom || (cashier.prenom && cashier.prenom !== 'Caissière')));
+    const fullName = hasRealName ? `${cashier.prenom || ''} ${cashier.nom || ''}`.trim() : 'Caisse Tactile POS';
+    const caisseLabel = cashier.caisse_assignee || 'Caisse Principale';
     const avatarUrl = cashier.avatar || 'assets/caissiere.png';
 
     if (nameEl) {
-        nameEl.innerHTML = `${escapeHtml(fullName)} <span class="bg-amber-400 text-black text-[9px] font-black px-1.5 py-0.2 rounded-md shadow-xs">VIP</span>`;
+        if (hasRealName) {
+            nameEl.innerHTML = `${escapeHtml(fullName)} <span class="bg-amber-400 text-black text-[9px] font-black px-1.5 py-0.2 rounded-md shadow-xs">VIP</span>`;
+        } else {
+            nameEl.textContent = fullName;
+        }
     }
     if (roleEl) {
-        roleEl.innerHTML = `Caissière • ${escapeHtml(caisseLabel)} 🥐`;
+        roleEl.innerHTML = hasRealName ? `Caissière • ${escapeHtml(caisseLabel)} 🥐` : `Session Caisse • ${escapeHtml(caisseLabel)} 🥐`;
     }
     if (dropNameEl) dropNameEl.textContent = fullName;
-    if (dropRoleEl) dropRoleEl.textContent = `Caissière • ${caisseLabel}`;
+    if (dropRoleEl) dropRoleEl.textContent = hasRealName ? `Caissière • ${caisseLabel}` : `Terminal Tactile • ${caisseLabel}`;
     if (headerAvatar) headerAvatar.src = avatarUrl;
     if (dropAvatar) dropAvatar.src = avatarUrl;
 }

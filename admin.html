@@ -1041,13 +1041,13 @@
 
                 <div class="prestige-form-group">
                     <label class="prestige-form-label">Code PIN Caisse (4 Chiffres) * :</label>
-                    <input type="text" id="new-cashier-pin" class="prestige-form-input" placeholder="Ex: 1234" maxlength="6" value="1234" required/>
+                    <input type="text" id="new-cashier-pin" class="prestige-form-input" placeholder="Ex: 4829" maxlength="6" required/>
                     <small class="text-muted">Utilisé pour le déverrouillage tactile rapide du terminal POS.</small>
                 </div>
 
                 <div class="prestige-form-group">
                     <label class="prestige-form-label">Mot de Passe de Secours :</label>
-                    <input type="password" id="new-cashier-pass" class="prestige-form-input" value="caisse123" required/>
+                    <input type="password" id="new-cashier-pass" class="prestige-form-input" placeholder="Mot de passe sécurisé (optionnel)" />
                 </div>
 
                 <div class="prestige-modal-actions">
@@ -1128,9 +1128,9 @@
         <div style="display: flex; align-items: center; gap: 10px; padding-bottom: 12px; border-bottom: 1px solid #f1f5f9;">
             <img src="assets/chef_profile.png" style="width: 40px; height: 40px; border-radius: 9999px; object-fit: cover;" alt="Admin Principal"/>
             <div>
-                <h4 style="font-weight: 800; font-size: 13px; color: #0f172a; margin: 0;">Jean-Marc Konan</h4>
-                <span style="font-size: 11px; color: #d97706; font-weight: 700;">Super Administrateur</span>
-                <div style="font-size: 10.5px; color: #64748b; font-family: monospace;">admin@babi.com</div>
+                <h4 style="font-weight: 800; font-size: 13px; color: #0f172a; margin: 0;" id="dropdown-admin-name">Super Administrateur</h4>
+                <span style="font-size: 11px; color: #d97706; font-weight: 700;">Direction BABI</span>
+                <div style="font-size: 10.5px; color: #64748b; font-family: monospace;" id="dropdown-admin-email">admin@boulangeriedebabi.com</div>
             </div>
         </div>
         <div style="padding: 10px 0; display: flex; flex-direction: column; gap: 6px; border-bottom: 1px solid #f1f5f9;">

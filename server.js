@@ -365,10 +365,10 @@ app.post('/api/admin/cashiers', async (req, res) => {
             return res.status(400).json({ error: "Un profil existe déjà avec cet email/identifiant." });
         }
 
-        const rawPassword = mot_de_passe || 'caisse123';
+        const pin = code_pin || String(Math.floor(1000 + Math.random() * 9000));
+        const rawPassword = mot_de_passe || ('pin_' + pin);
         const hashedPassword = secureAuthService.hashPassword(rawPassword);
-        const pin = code_pin || '1234';
-        const caisse = caisse_assignee || 'Caisse 1 - Riviera';
+        const caisse = caisse_assignee || 'Caisse Principale';
 
         const result = await db.run(
             `INSERT INTO users (nom, prenom, email, telephone, mot_de_passe, role, avatar, statut, caisse_assignee, code_pin, is_online)
