@@ -235,17 +235,105 @@
                     <span id="pos-live-clock">18:00:00</span>
                 </span>
 
-                <!-- Cashier Profile Card -->
-                <div class="prestige-user-card shrink-0" title="Profil Caissière">
-                    <div class="relative flex items-center">
-                        <img alt="Profile" class="profile-avatar" src="assets/caissiere.png"/>
-                        <span class="online-status-dot"></span>
+                <!-- Cashier Profile Card & Interactive Session Dropdown -->
+                <div class="relative" id="posProfileWrapper">
+                    <div class="prestige-user-card shrink-0 cursor-pointer hover:shadow-md transition-all select-none" id="posProfileTriggerBtn" onclick="togglePosProfileDropdown(event)" title="Gérer la session de caisse">
+                        <div class="relative flex items-center">
+                            <img alt="Profile" id="pos-header-avatar" class="profile-avatar" src="assets/caissiere.png"/>
+                            <span class="online-status-dot"></span>
+                        </div>
+                        <div class="prestige-user-info hidden sm:flex">
+                            <span class="prestige-user-name flex items-center gap-1.5" id="caissiere-name-badge">
+                                Awa Kouassi <span class="bg-amber-400 text-black text-[9px] font-black px-1.5 py-0.2 rounded-md shadow-xs">VIP</span>
+                            </span>
+                            <span class="prestige-user-role" id="caissiere-role-badge">Caissière Principale • BABI 🥐</span>
+                        </div>
+                        <span class="material-symbols-outlined text-sm font-bold transition-transform text-[#765b00]" id="posProfileChevron">expand_more</span>
                     </div>
-                    <div class="prestige-user-info hidden lg:flex">
-                        <span class="prestige-user-name flex items-center gap-1.5" id="caissiere-name-badge">
-                            Awa Kouassi <span class="bg-amber-400 text-black text-[9px] font-black px-1.5 py-0.2 rounded-md shadow-xs">VIP</span>
-                        </span>
-                        <span class="prestige-user-role">Caissière Principale • BABI 🥐</span>
+
+                    <!-- Luxury POS Cashier Dropdown Modal Menu -->
+                    <div id="posProfileDropdownMenu" class="prestige-profile-dropdown hidden">
+                        <!-- Header Info -->
+                        <div class="profile-dropdown-header">
+                            <div class="flex items-center gap-3">
+                                <img src="assets/caissiere.png" id="dropdown-cashier-avatar" class="profile-avatar-lg" alt="Caissière"/>
+                                <div>
+                                    <div class="flex items-center gap-1.5">
+                                        <h4 class="font-bold text-sm text-on-surface" id="dropdown-cashier-name">Awa Kouassi</h4>
+                                        <span class="bg-amber-400 text-black text-[9px] font-black px-1.5 py-0.5 rounded-md shadow-xs">VIP</span>
+                                    </div>
+                                    <span class="text-xs text-amber-800 font-extrabold" id="dropdown-cashier-role">Caissière Principale • Caisse N°1</span>
+                                    <div class="text-[11px] text-emerald-700 font-bold flex items-center gap-1 mt-0.5">
+                                        <span class="w-2 h-2 rounded-full bg-emerald-500 inline-block animate-ping"></span>
+                                        <span>En service actif • Prise : 07h30</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Live Session Summary Mini Cards -->
+                            <div class="grid grid-cols-3 gap-1.5 mt-3 pt-3 border-t border-outline-variant/30 text-center">
+                                <div class="bg-white/80 rounded-xl p-1.5 border border-outline-variant/20 shadow-xs">
+                                    <span class="text-[9px] uppercase font-extrabold text-on-surface-variant block">Ventes Shift</span>
+                                    <strong class="font-mono text-xs font-black text-emerald-800" id="dropdown-shift-sales">0 F</strong>
+                                </div>
+                                <div class="bg-white/80 rounded-xl p-1.5 border border-outline-variant/20 shadow-xs">
+                                    <span class="text-[9px] uppercase font-extrabold text-on-surface-variant block">Tickets</span>
+                                    <strong class="font-mono text-xs font-black text-on-surface" id="dropdown-shift-tickets">0</strong>
+                                </div>
+                                <div class="bg-white/80 rounded-xl p-1.5 border border-outline-variant/20 shadow-xs">
+                                    <span class="text-[9px] uppercase font-extrabold text-on-surface-variant block">Tiroir Espèces</span>
+                                    <strong class="font-mono text-xs font-black text-amber-800" id="dropdown-shift-cash">50 000 F</strong>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Section: Contrôles Rapides Caissière -->
+                        <div class="profile-dropdown-section">
+                            <div class="profile-dropdown-section-title">ACTIONS RAPIDES DE CAISSE</div>
+                            <button type="button" onclick="openCashMovementModal()" class="profile-dropdown-item w-full text-left">
+                                <span class="material-symbols-outlined text-amber-700">payments</span>
+                                <div class="flex flex-col">
+                                    <span class="font-bold text-xs">Mouvement de Tiroir-Caisse</span>
+                                    <span class="text-[10px] text-on-surface-variant">Apport fond de caisse ou prélèvement</span>
+                                </div>
+                            </button>
+                            <button type="button" onclick="lockPosTerminal()" class="profile-dropdown-item w-full text-left">
+                                <span class="material-symbols-outlined text-amber-700">lock_clock</span>
+                                <div class="flex flex-col">
+                                    <span class="font-bold text-xs">Verrouiller Terminal (Pause)</span>
+                                    <span class="text-[10px] text-on-surface-variant">Sécuriser la caisse avec code PIN</span>
+                                </div>
+                            </button>
+                            <button type="button" onclick="openClosureModal()" class="profile-dropdown-item w-full text-left">
+                                <span class="material-symbols-outlined text-emerald-700">account_balance</span>
+                                <div class="flex flex-col">
+                                    <span class="font-bold text-xs">Clôture Journalière (Bilan Z)</span>
+                                    <span class="text-[10px] text-on-surface-variant">Arrêté des comptes et impression</span>
+                                </div>
+                            </button>
+                            <button type="button" onclick="openSwitchCashierModal()" class="profile-dropdown-item w-full text-left">
+                                <span class="material-symbols-outlined text-blue-700">switch_account</span>
+                                <div class="flex flex-col">
+                                    <span class="font-bold text-xs">Changer d'Utilisateur</span>
+                                    <span class="text-[10px] text-on-surface-variant">Passer le relais à une collègue</span>
+                                </div>
+                            </button>
+                        </div>
+
+                        <!-- Section: Accès Direction & Déconnexion -->
+                        <div class="profile-dropdown-section border-t border-outline-variant/30">
+                            <a href="gerante.html" class="profile-dropdown-item">
+                                <span class="material-symbols-outlined text-amber-800">table_restaurant</span>
+                                <div class="flex flex-col">
+                                    <span class="font-bold text-xs">Portail Gérance & Fournil</span>
+                                    <span class="text-[10px] text-on-surface-variant">Planning des cuissons en direct</span>
+                                </div>
+                            </a>
+                            <button type="button" onclick="handleCashierLogout()" class="profile-dropdown-item w-full text-left text-rose-700 hover:bg-rose-50">
+                                <span class="material-symbols-outlined text-rose-600">logout</span>
+                                <span class="font-bold text-xs">Fermer Session & Déconnexion</span>
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -657,6 +745,127 @@
                 <button type="button" onclick="confirmCashPayment()" class="btn-modal-submit-green">
                     <span class="material-symbols-outlined text-base font-bold">check_circle</span> Valider & Imprimer
                 </button>
+            </div>
+    <!-- 1. LOCK SCREEN POS MODAL WITH TACTILE PIN KEYPAD -->
+    <div id="posLockScreenModal" class="pos-lock-backdrop hidden">
+        <div class="max-w-xs w-full bg-[#2b160c] text-white p-6 rounded-3xl border-2 border-amber-400/60 shadow-2xl flex flex-col items-center text-center">
+            <!-- Avatar & Lock Icon -->
+            <div class="relative mb-3">
+                <img src="assets/caissiere.png" id="lock-screen-avatar" class="w-18 h-18 rounded-full border-3 border-amber-400 shadow-lg object-cover" alt="Avatar"/>
+                <div class="absolute -bottom-1 -right-1 w-7 h-7 rounded-full bg-amber-400 text-black flex items-center justify-center font-bold text-xs shadow-md">
+                    <span class="material-symbols-outlined text-sm">lock</span>
+                </div>
+            </div>
+
+            <h3 class="text-base font-black text-amber-300" id="lock-screen-name">Awa Kouassi</h3>
+            <p class="text-[11px] text-amber-100/70 mb-3">Terminal Caisse en Pause • Saisissez votre PIN</p>
+
+            <!-- PIN Display Dots -->
+            <div class="flex items-center justify-center gap-3 mb-4 py-2 px-4 bg-black/40 rounded-xl border border-amber-400/30 w-full">
+                <span class="w-3.5 h-3.5 rounded-full border border-amber-400 bg-transparent transition-all" id="lock-pin-dot-1"></span>
+                <span class="w-3.5 h-3.5 rounded-full border border-amber-400 bg-transparent transition-all" id="lock-pin-dot-2"></span>
+                <span class="w-3.5 h-3.5 rounded-full border border-amber-400 bg-transparent transition-all" id="lock-pin-dot-3"></span>
+                <span class="w-3.5 h-3.5 rounded-full border border-amber-400 bg-transparent transition-all" id="lock-pin-dot-4"></span>
+            </div>
+
+            <!-- PIN Keypad -->
+            <div class="grid grid-cols-3 gap-2 w-full mb-3">
+                <button type="button" onclick="appendLockPin('1')" class="py-3 rounded-xl bg-white/10 text-white font-bold text-lg hover:bg-amber-400 hover:text-black transition-all">1</button>
+                <button type="button" onclick="appendLockPin('2')" class="py-3 rounded-xl bg-white/10 text-white font-bold text-lg hover:bg-amber-400 hover:text-black transition-all">2</button>
+                <button type="button" onclick="appendLockPin('3')" class="py-3 rounded-xl bg-white/10 text-white font-bold text-lg hover:bg-amber-400 hover:text-black transition-all">3</button>
+                
+                <button type="button" onclick="appendLockPin('4')" class="py-3 rounded-xl bg-white/10 text-white font-bold text-lg hover:bg-amber-400 hover:text-black transition-all">4</button>
+                <button type="button" onclick="appendLockPin('5')" class="py-3 rounded-xl bg-white/10 text-white font-bold text-lg hover:bg-amber-400 hover:text-black transition-all">5</button>
+                <button type="button" onclick="appendLockPin('6')" class="py-3 rounded-xl bg-white/10 text-white font-bold text-lg hover:bg-amber-400 hover:text-black transition-all">6</button>
+                
+                <button type="button" onclick="appendLockPin('7')" class="py-3 rounded-xl bg-white/10 text-white font-bold text-lg hover:bg-amber-400 hover:text-black transition-all">7</button>
+                <button type="button" onclick="appendLockPin('8')" class="py-3 rounded-xl bg-white/10 text-white font-bold text-lg hover:bg-amber-400 hover:text-black transition-all">8</button>
+                <button type="button" onclick="appendLockPin('9')" class="py-3 rounded-xl bg-white/10 text-white font-bold text-lg hover:bg-amber-400 hover:text-black transition-all">9</button>
+                
+                <button type="button" onclick="clearLockPin()" class="py-3 rounded-xl bg-rose-900/40 text-rose-300 font-bold text-xs hover:bg-rose-800 transition-all flex items-center justify-center">⌫ Effacer</button>
+                <button type="button" onclick="appendLockPin('0')" class="py-3 rounded-xl bg-white/10 text-white font-bold text-lg hover:bg-amber-400 hover:text-black transition-all">0</button>
+                <button type="button" onclick="submitUnlockPin()" class="py-3 rounded-xl bg-emerald-600 text-white font-bold text-xs hover:bg-emerald-500 transition-all flex items-center justify-center">✓ OK</button>
+            </div>
+
+            <button type="button" onclick="unlockPosTerminalDirect()" class="text-[11px] text-amber-300 hover:underline mt-1 font-semibold">
+                Déverrouillage Rapide (Test / Démo)
+            </button>
+        </div>
+    </div>
+
+    <!-- 2. CASH MOVEMENT MODAL (FOND DE CAISSE / PRÉLÈVEMENT) -->
+    <div id="posCashMovementModal" class="prestige-modal-backdrop hidden">
+        <div class="prestige-modal-card max-w-md">
+            <div class="prestige-modal-header">
+                <div class="flex items-center gap-2.5">
+                    <div class="action-icon-badge gold" style="width: 36px; height: 36px; min-width: 36px; border-radius: 10px;">
+                        <span class="material-symbols-outlined text-xl">payments</span>
+                    </div>
+                    <div>
+                        <h3 class="prestige-modal-title">Mouvement de Tiroir-Caisse</h3>
+                        <span class="text-xs text-[#786558] font-bold">Apport Fond ou Prélèvement d'Espèces</span>
+                    </div>
+                </div>
+                <button onclick="closeCashMovementModal()" class="text-[#786558] hover:text-[#ba1a1a] text-2xl font-bold transition-colors">✕</button>
+            </div>
+
+            <div class="flex flex-col gap-3 py-2">
+                <div class="prestige-form-group">
+                    <label class="prestige-form-label">Type d'Opération :</label>
+                    <div class="grid grid-cols-2 gap-2">
+                        <label class="flex items-center gap-2 p-2.5 rounded-xl border border-emerald-300 bg-emerald-50 text-emerald-950 font-bold text-xs cursor-pointer">
+                            <input type="radio" name="cash_move_type" value="in" checked class="accent-emerald-600"/>
+                            <span>+ Apport Fond / Monnaie</span>
+                        </label>
+                        <label class="flex items-center gap-2 p-2.5 rounded-xl border border-rose-300 bg-rose-50 text-rose-950 font-bold text-xs cursor-pointer">
+                            <input type="radio" name="cash_move_type" value="out" class="accent-rose-600"/>
+                            <span>− Prélèvement Coffre</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="prestige-form-group">
+                    <label class="prestige-form-label">Montant (FCFA) :</label>
+                    <input type="number" id="cash-move-amount" placeholder="Ex: 20000" class="prestige-form-input font-bold font-mono text-lg"/>
+                </div>
+
+                <div class="prestige-form-group">
+                    <label class="prestige-form-label">Motif / Justification :</label>
+                    <input type="text" id="cash-move-reason" placeholder="Ex: Complément pièces de 100F et 500F" class="prestige-form-input text-xs"/>
+                </div>
+            </div>
+
+            <div class="prestige-modal-actions mt-3">
+                <button type="button" onclick="closeCashMovementModal()" class="btn-modal-cancel">Annuler</button>
+                <button type="button" onclick="submitCashMovement()" class="btn-modal-submit-gold">
+                    <span class="material-symbols-outlined text-base">check</span> Enregistrer
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. SWITCH CASHIER MODAL (CHANGER DE CAISSIÈRE) -->
+    <div id="posSwitchCashierModal" class="prestige-modal-backdrop hidden">
+        <div class="prestige-modal-card max-w-md">
+            <div class="prestige-modal-header">
+                <div class="flex items-center gap-2.5">
+                    <div class="action-icon-badge gold" style="width: 36px; height: 36px; min-width: 36px; border-radius: 10px;">
+                        <span class="material-symbols-outlined text-xl">switch_account</span>
+                    </div>
+                    <div>
+                        <h3 class="prestige-modal-title">Changer de Caissière</h3>
+                        <span class="text-xs text-[#786558] font-bold">Sélectionnez le compte pour ce terminal</span>
+                    </div>
+                </div>
+                <button onclick="closeSwitchCashierModal()" class="text-[#786558] hover:text-[#ba1a1a] text-2xl font-bold transition-colors">✕</button>
+            </div>
+
+            <div class="flex flex-col gap-2 py-2" id="cashier-select-list">
+                <!-- Injected dynamically via renderCashierSelectList() -->
+            </div>
+
+            <div class="prestige-modal-actions mt-2">
+                <button type="button" onclick="closeSwitchCashierModal()" class="btn-modal-cancel w-full">Fermer</button>
             </div>
         </div>
     </div>

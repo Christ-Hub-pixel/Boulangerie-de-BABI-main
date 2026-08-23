@@ -52,6 +52,7 @@ document.addEventListener('DOMContentLoaded', () => {
     refreshPickupQueue();
     updateSessionStats();
     renderHistoryTable();
+    updateCashierHeaderUI();
     setInterval(updateClock, 1000);
     
     // Instant sync across tabs when orders are placed
@@ -1332,3 +1333,274 @@ function closeClosureModal() {
 function printClosureReport() {
     window.print();
 }
+
+// -------------------------------------------------------------
+// 10. PRESTIGE CASHIER PROFILE & SESSION MANAGEMENT
+// -------------------------------------------------------------
+const REGISTERED_CASHIERS = [
+    {
+        id: 'awa',
+        name: 'Awa Kouassi',
+        role: 'Caissière Principale • BABI 🥐',
+        badge: 'VIP',
+        avatar: 'assets/caissiere.png',
+        pin: '1234',
+        shift: 'Matin & Journée (07h30 - 16h00)'
+    },
+    {
+        id: 'aya',
+        name: 'Aya Marie-Esther',
+        role: 'Caissière de Service • Comptoir 1',
+        badge: 'Titulaire',
+        avatar: 'assets/caissiere.png',
+        pin: '2222',
+        shift: 'Après-midi (14h00 - 21h30)'
+    },
+    {
+        id: 'sarah',
+        name: 'Sarah Bamba',
+        role: 'Caissière Polyvalente & Vente',
+        badge: 'Équipe',
+        avatar: 'assets/caissiere.png',
+        pin: '3333',
+        shift: 'Soirée & Week-end'
+    },
+    {
+        id: 'mamadou',
+        name: 'Mamadou Koné',
+        role: 'Chef Fournil & Superviseur Caisse',
+        badge: 'Superviseur',
+        avatar: 'assets/baker_profile.png',
+        pin: '9999',
+        shift: 'Direction Fournil'
+    }
+];
+
+function getActiveCashier() {
+    try {
+        const saved = JSON.parse(localStorage.getItem('babi_active_cashier'));
+        if (saved && saved.name) return saved;
+    } catch(e) {}
+    return REGISTERED_CASHIERS[0];
+}
+
+function updateCashierHeaderUI() {
+    const cashier = getActiveCashier();
+    const nameBadges = document.querySelectorAll('#caissiere-name-badge, #dropdown-cashier-name, #lock-screen-name');
+    nameBadges.forEach(el => {
+        if (el) {
+            if (el.id === 'caissiere-name-badge') {
+                el.innerHTML = `${cashier.name} <span class="bg-amber-400 text-black text-[9px] font-black px-1.5 py-0.2 rounded-md shadow-xs">${cashier.badge}</span>`;
+            } else {
+                el.innerText = cashier.name;
+            }
+        }
+    });
+
+    const roleBadges = document.querySelectorAll('#caissiere-role-badge, #dropdown-cashier-role');
+    roleBadges.forEach(el => {
+        if (el) el.innerText = cashier.role;
+    });
+
+    const avatars = document.querySelectorAll('#pos-header-avatar, #dropdown-cashier-avatar, #lock-screen-avatar');
+    avatars.forEach(el => {
+        if (el) el.src = cashier.avatar;
+    });
+}
+
+function togglePosProfileDropdown(event) {
+    if (event) event.stopPropagation();
+    const menu = document.getElementById('posProfileDropdownMenu');
+    const chevron = document.getElementById('posProfileChevron');
+    if (!menu) return;
+
+    const isHidden = menu.classList.contains('hidden');
+    if (isHidden) {
+        // Refresh live shift stats before opening
+        const salesTotal = sessionStats ? sessionStats.totalSales : 0;
+        const ticketCount = sessionStats ? sessionStats.ticketCount : 0;
+        const cashTotal = (sessionStats ? sessionStats.cashSales : 0) + 50000; // Base cash drawer + sales
+
+        const elSales = document.getElementById('dropdown-shift-sales');
+        if (elSales) elSales.innerText = `${salesTotal.toLocaleString('fr-FR')} F`;
+        const elTickets = document.getElementById('dropdown-shift-tickets');
+        if (elTickets) elTickets.innerText = ticketCount;
+        const elCash = document.getElementById('dropdown-shift-cash');
+        if (elCash) elCash.innerText = `${cashTotal.toLocaleString('fr-FR')} F`;
+
+        menu.classList.remove('hidden');
+        if (chevron) chevron.style.transform = 'rotate(180deg)';
+    } else {
+        menu.classList.add('hidden');
+        if (chevron) chevron.style.transform = 'rotate(0deg)';
+    }
+}
+
+// Close profile dropdown on outside click
+document.addEventListener('click', (e) => {
+    const wrapper = document.getElementById('posProfileWrapper');
+    const menu = document.getElementById('posProfileDropdownMenu');
+    const chevron = document.getElementById('posProfileChevron');
+    if (wrapper && !wrapper.contains(e.target) && menu && !menu.classList.contains('hidden')) {
+        menu.classList.add('hidden');
+        if (chevron) chevron.style.transform = 'rotate(0deg)';
+    }
+});
+
+// --- LOCK SCREEN POS ---
+let currentLockPin = '';
+
+function lockPosTerminal() {
+    const menu = document.getElementById('posProfileDropdownMenu');
+    if (menu) menu.classList.add('hidden');
+    currentLockPin = '';
+    updateLockPinDisplay();
+    document.getElementById('posLockScreenModal').classList.remove('hidden');
+    playPosAudio('chime');
+    showPosToast("🔒 Terminal Caisse Verrouillé (Pause)", "info");
+}
+
+function appendLockPin(digit) {
+    if (currentLockPin.length < 4) {
+        currentLockPin += digit;
+        updateLockPinDisplay();
+        playPosAudio('beep');
+        if (currentLockPin.length === 4) {
+            setTimeout(submitUnlockPin, 200);
+        }
+    }
+}
+
+function clearLockPin() {
+    currentLockPin = '';
+    updateLockPinDisplay();
+}
+
+function updateLockPinDisplay() {
+    for (let i = 1; i <= 4; i++) {
+        const dot = document.getElementById(`lock-pin-dot-${i}`);
+        if (dot) {
+            if (i <= currentLockPin.length) {
+                dot.style.background = '#f5b800';
+                dot.style.transform = 'scale(1.25)';
+            } else {
+                dot.style.background = 'transparent';
+                dot.style.transform = 'scale(1)';
+            }
+        }
+    }
+}
+
+function submitUnlockPin() {
+    const cashier = getActiveCashier();
+    // Accept cashier specific pin, or master pin '1234', or any 4 digits in demo mode
+    if (currentLockPin === cashier.pin || currentLockPin === '1234' || currentLockPin.length === 4) {
+        unlockPosTerminalDirect();
+        showPosToast(`✅ Session déverrouillée • Bon retour ${cashier.name} !`, 'success');
+    } else {
+        showPosToast("❌ Code PIN erroné", "error");
+        clearLockPin();
+    }
+}
+
+function unlockPosTerminalDirect() {
+    document.getElementById('posLockScreenModal').classList.add('hidden');
+    currentLockPin = '';
+    clearLockPin();
+}
+
+// --- CASH MOVEMENT MODAL ---
+function openCashMovementModal() {
+    const menu = document.getElementById('posProfileDropdownMenu');
+    if (menu) menu.classList.add('hidden');
+    document.getElementById('posCashMovementModal').classList.remove('hidden');
+}
+
+function closeCashMovementModal() {
+    document.getElementById('posCashMovementModal').classList.add('hidden');
+}
+
+function submitCashMovement() {
+    const type = document.querySelector('input[name="cash_move_type"]:checked')?.value || 'in';
+    const amount = parseFloat(document.getElementById('cash-move-amount')?.value) || 0;
+    const reason = document.getElementById('cash-move-reason')?.value.trim() || (type === 'in' ? 'Apport fond de caisse' : 'Prélèvement coffre');
+
+    if (amount <= 0) {
+        showPosToast("Veuillez saisir un montant valide", "error");
+        return;
+    }
+
+    const movements = JSON.parse(localStorage.getItem('babi_cash_movements') || '[]');
+    movements.unshift({
+        id: Date.now(),
+        type,
+        amount,
+        reason,
+        cashier: getActiveCashier().name,
+        time: new Date().toLocaleTimeString('fr-FR')
+    });
+    localStorage.setItem('babi_cash_movements', JSON.stringify(movements));
+
+    closeCashMovementModal();
+    playPosAudio('chime');
+    showPosToast(`💵 Mouvement enregistré : ${type === 'in' ? '+' : '−'}${amount.toLocaleString()} FCFA (${reason})`, 'success');
+}
+
+// --- SWITCH CASHIER MODAL ---
+function openSwitchCashierModal() {
+    const menu = document.getElementById('posProfileDropdownMenu');
+    if (menu) menu.classList.add('hidden');
+    renderCashierSelectList();
+    document.getElementById('posSwitchCashierModal').classList.remove('hidden');
+}
+
+function closeSwitchCashierModal() {
+    document.getElementById('posSwitchCashierModal').classList.add('hidden');
+}
+
+function renderCashierSelectList() {
+    const container = document.getElementById('cashier-select-list');
+    if (!container) return;
+    const current = getActiveCashier();
+
+    container.innerHTML = REGISTERED_CASHIERS.map(c => {
+        const isCurrent = c.id === current.id;
+        return `
+            <div onclick="switchActiveCashier('${c.id}')" class="p-3 rounded-2xl border ${isCurrent ? 'border-amber-400 bg-amber-50/80 shadow-xs' : 'border-outline-variant/30 bg-surface hover:bg-surface-container'} flex items-center justify-between cursor-pointer transition-all">
+                <div class="flex items-center gap-3">
+                    <img src="${c.avatar}" class="w-11 h-11 rounded-full border-2 ${isCurrent ? 'border-amber-500' : 'border-outline-variant'} object-cover" alt="${c.name}"/>
+                    <div>
+                        <div class="flex items-center gap-1.5">
+                            <strong class="text-xs font-bold text-on-surface">${c.name}</strong>
+                            <span class="bg-amber-400 text-black text-[9px] font-black px-1.5 py-0.2 rounded-md">${c.badge}</span>
+                        </div>
+                        <p class="text-[11px] text-on-surface-variant">${c.role}</p>
+                        <p class="text-[10px] text-amber-800 font-mono font-semibold">${c.shift}</p>
+                    </div>
+                </div>
+                ${isCurrent ? '<span class="material-symbols-outlined text-emerald-600 text-xl font-bold">check_circle</span>' : '<span class="material-symbols-outlined text-outline-variant text-base">radio_button_unchecked</span>'}
+            </div>
+        `;
+    }).join('');
+}
+
+function switchActiveCashier(id) {
+    const selected = REGISTERED_CASHIERS.find(c => c.id === id);
+    if (selected) {
+        localStorage.setItem('babi_active_cashier', JSON.stringify(selected));
+        updateCashierHeaderUI();
+        closeSwitchCashierModal();
+        playPosAudio('chime');
+        showPosToast(`✨ Caissière connectée : ${selected.name} (${selected.badge})`, 'success');
+    }
+}
+
+function handleCashierLogout() {
+    if (confirm("Voulez-vous fermer votre session de caisse et vous déconnecter ?")) {
+        showPosToast("Session de caisse clôturée avec succès.", "info");
+        setTimeout(() => {
+            window.location.href = "index.html";
+        }, 800);
+    }
+}
+
