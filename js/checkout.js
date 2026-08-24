@@ -466,8 +466,8 @@ function showPaymentSuccessInModal(order, pickupPin) {
                 </div>
 
                 <div class="d-grid gap-2">
-                    <a href="suivi.html?orderId=${encodeURIComponent(order.id)}&phone=${encodeURIComponent(order.phone || '')}&status=paid" class="babi-btn-checkout text-decoration-none">
-                        <i class="fa-solid fa-receipt me-2"></i>VOIR MON REÇU & SUIVRE MA COMMANDE
+                    <a href="compte.html?orderId=${encodeURIComponent(order.id)}" class="babi-btn-checkout text-decoration-none">
+                        <i class="fa-solid fa-receipt me-2"></i>VOIR MON REÇU & MES COMMANDES
                     </a>
                     
                     <button type="button" class="btn btn-light rounded-pill py-2.5 fw-bold text-muted border" onclick="navigator.clipboard.writeText('${pin}'); alert('Code PIN ${pin} copié dans le presse-papier !');">

@@ -209,7 +209,7 @@ async function submitCakeOrder(e) {
         if (res.ok) {
             closeCakeOrderModal();
             alert(`🎉 Félicitations ${name} ! Votre commande de gâteau d'exception #${data.orderId || ''} a été enregistrée avec succès. Notre maître pâtissier vous contactera sur WhatsApp au ${phone}.`);
-            window.location.href = `suivi.html?id=${data.orderId || ''}`;
+            window.location.href = `compte.html?id=${data.orderId || ''}`;
         } else {
             alert(data.error || "Erreur lors de l'enregistrement de la commande.");
         }

@@ -643,32 +643,10 @@ function openNewEventOrderModal() {
 // =============================================================
 function playFournilChime() {
     try {
-        const ctx = new (window.AudioContext || window.webkitAudioContext)();
-        
-        // Clochette harmonique 1
-        const osc1 = ctx.createOscillator();
-        const gain1 = ctx.createGain();
-        osc1.frequency.setValueAtTime(880, ctx.currentTime); // A5 Note
-        gain1.gain.setValueAtTime(0.4, ctx.currentTime);
-        gain1.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 1.2);
-        osc1.connect(gain1);
-        gain1.connect(ctx.destination);
-        osc1.start();
-        osc1.stop(ctx.currentTime + 1.2);
-
-        // Clochette harmonique 2
-        const osc2 = ctx.createOscillator();
-        const gain2 = ctx.createGain();
-        osc2.frequency.setValueAtTime(1320, ctx.currentTime + 0.1); // E6 Note
-        gain2.gain.setValueAtTime(0.3, ctx.currentTime + 0.1);
-        gain2.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 1.5);
-        osc2.connect(gain2);
-        gain2.connect(ctx.destination);
-        osc2.start(ctx.currentTime + 0.1);
-        osc2.stop(ctx.currentTime + 1.5);
-    } catch(e) {
-        console.log("Audio non autorisé sans interaction préalable");
-    }
+        if ('vibrate' in navigator) {
+            navigator.vibrate([50, 40, 50]);
+        }
+    } catch (_) {}
 }
 
 // =============================================================

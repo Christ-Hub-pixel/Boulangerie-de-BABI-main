@@ -114,50 +114,17 @@ function updateClock() {
     }
 }
 
-// POS Audio Synthesizer (Crystal Clear Web Audio)
+// POS Feedback Haptique (Vibration au lieu du son)
 function playPosAudio(type = 'beep') {
     try {
-        const ctx = new (window.AudioContext || window.webkitAudioContext)();
-        if (ctx.state === 'suspended') {
-            ctx.resume();
-        }
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-
-        if (type === 'chime' || type === 'new_order') {
-            // Melodic 3-tone luxury chime
-            const now = ctx.currentTime;
-            osc.frequency.setValueAtTime(587.33, now); // D5
-            osc.frequency.setValueAtTime(880, now + 0.14); // A5
-            osc.frequency.setValueAtTime(1174.66, now + 0.28); // D6
-            gain.gain.setValueAtTime(0.4, now);
-            gain.gain.exponentialRampToValueAtTime(0.01, now + 0.7);
-            osc.connect(gain);
-            gain.connect(ctx.destination);
-            osc.start();
-            osc.stop(now + 0.75);
-        } else if (type === 'beep') {
-            osc.frequency.setValueAtTime(880, ctx.currentTime); // A5 note
-            gain.gain.setValueAtTime(0.2, ctx.currentTime);
-            osc.connect(gain);
-            gain.connect(ctx.destination);
-            osc.start();
-            osc.stop(ctx.currentTime + 0.12);
-        } else if (type === 'success') {
-            osc.frequency.setValueAtTime(523.25, ctx.currentTime); // C5
-            osc.frequency.exponentialRampToValueAtTime(1046.5, ctx.currentTime + 0.25); // C6
-            gain.gain.setValueAtTime(0.3, ctx.currentTime);
-            osc.connect(gain);
-            gain.connect(ctx.destination);
-            osc.start();
-            osc.stop(ctx.currentTime + 0.28);
-        } else if (type === 'error') {
-            osc.frequency.setValueAtTime(220, ctx.currentTime);
-            gain.gain.setValueAtTime(0.4, ctx.currentTime);
-            osc.connect(gain);
-            gain.connect(ctx.destination);
-            osc.start();
-            osc.stop(ctx.currentTime + 0.35);
+        if ('vibrate' in navigator) {
+            if (type === 'error') {
+                navigator.vibrate([60, 40, 60]);
+            } else if (type === 'success' || type === 'chime') {
+                navigator.vibrate([45, 30, 45]);
+            } else {
+                navigator.vibrate(30);
+            }
         }
     } catch (_) {}
 }
