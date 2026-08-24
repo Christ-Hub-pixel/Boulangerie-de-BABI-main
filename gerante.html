@@ -185,10 +185,6 @@
 
             <!-- Profile Chef Fournil & Live Status -->
             <div class="flex items-center gap-3">
-                <button type="button" onclick="openHelpGuideModal()" class="prestige-help-pill-btn">
-                    <span class="material-symbols-outlined text-base">help</span>
-                    <span>Guide d'utilisation Express</span>
-                </button>
                 <span class="prestige-status-badge amber">
                     <span class="status-pulse-dot amber"></span>
                     <span>Fournil en Direct (Poste 1)</span>
@@ -1181,66 +1177,6 @@
                 <button type="button" onclick="closeReassortModal()" class="btn-modal-cancel">Annuler</button>
                 <button type="button" onclick="submitManualReassort()" class="btn-modal-submit-gold">
                     <span class="material-symbols-outlined text-base">send</span> Envoyer Bon de Commande
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- 6. GUIDE D'UTILISATION EXPRESS & MODE D'EMPLOI PAS-À-PAS -->
-    <div id="helpGuideModal" class="prestige-modal-backdrop hidden">
-        <div class="prestige-modal-card" style="max-width: 580px;">
-            <div class="prestige-modal-header">
-                <div class="flex items-center gap-3">
-                    <div class="action-icon-badge gold" style="width: 44px; height: 44px; min-width: 44px; border-radius: 14px; box-shadow: 0 4px 14px rgba(245, 184, 0, 0.35);">
-                        <span class="material-symbols-outlined text-2xl">menu_book</span>
-                    </div>
-                    <div>
-                        <h3 class="prestige-modal-title">Mode d'Emploi Fournil en 3 Étapes</h3>
-                        <span style="font-size: 11.5px; font-weight: 700; color: #765b00;">Simple, Rapide et Tactile pour toute l'équipe</span>
-                    </div>
-                </div>
-                <button type="button" onclick="closeHelpGuideModal()" class="prestige-modal-close-btn" title="Fermer">✕</button>
-            </div>
-
-            <!-- Étapes Visuelles Illustrées -->
-            <div class="flex flex-col gap-3 my-2">
-                <!-- Étape 1 -->
-                <div class="guide-step-card">
-                    <div class="guide-step-number">1</div>
-                    <div class="flex flex-col">
-                        <h4 class="text-sm font-extrabold text-[#2b160c]">Programmer une Fournée (1 Clic)</h4>
-                        <p class="text-xs text-[#786558] mt-0.5">
-                            Cliquez sur le bouton doré <strong>« + Ajouter Fournée »</strong> puis touchez la recette voulue (<em>🥖 Baguette, 🥐 Croissant, 🍫 Pain Choc</em>). La quantité et le four se remplissent immédiatement !
-                        </p>
-                    </div>
-                </div>
-
-                <!-- Étape 2 -->
-                <div class="guide-step-card">
-                    <div class="guide-step-number">2</div>
-                    <div class="flex flex-col">
-                        <h4 class="text-sm font-extrabold text-[#2b160c]">Gérer la Cuisson & Sortie</h4>
-                        <p class="text-xs text-[#786558] mt-0.5">
-                            Sur le planning : cliquez sur <strong>« ⏳ Enfourner »</strong> quand le pain entre au four, puis sur <strong>« ✅ Mettre en Rayon »</strong> dès que la fournée est cuite et disponible pour la caisse.
-                        </p>
-                    </div>
-                </div>
-
-                <!-- Étape 3 -->
-                <div class="guide-step-card">
-                    <div class="guide-step-number">3</div>
-                    <div class="flex flex-col">
-                        <h4 class="text-sm font-extrabold text-[#2b160c]">Fiche A4 & Relevés Frigos</h4>
-                        <p class="text-xs text-[#786558] mt-0.5">
-                            Touchez <strong>🖨️ Imprimer</strong> pour sortir la grande fiche A4 avec le logo BABI, ou cliquez sur <strong>« Relevé Sanitaire Frigos »</strong> pour enregistrer les températures du jour en 2 secondes.
-                        </p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="prestige-modal-actions">
-                <button type="button" onclick="closeHelpGuideModal()" class="btn-modal-submit-gold w-full">
-                    <span class="material-symbols-outlined text-base">check_circle</span> J'ai compris, c'est super simple !
                 </button>
             </div>
         </div>
