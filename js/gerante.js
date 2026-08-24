@@ -1086,15 +1086,6 @@ function closeReassortModal() {
     if (el) el.classList.add('hidden');
 }
 
-function openHelpGuideModal() {
-    const el = document.getElementById('helpGuideModal');
-    if (el) el.classList.remove('hidden');
-}
-function closeHelpGuideModal() {
-    const el = document.getElementById('helpGuideModal');
-    if (el) el.classList.add('hidden');
-}
-
 // =============================================================
 // ERGONOMIE & SAISIE RAPIDE EN 1 CLIC (PRESETS & QUANTITÉS)
 // =============================================================
