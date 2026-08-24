@@ -372,6 +372,30 @@
                             <button onclick="filterFourneesCategory('patisseries', this)" class="magazine-period-btn shrink-0">Pâtisseries</button>
                         </div>
 
+                        <!-- 🔮 CARTE IA PRÉDICTION DES FOURNÉES DU LENDEMAIN -->
+                        <div class="p-4 rounded-2xl border border-amber-200 bg-gradient-to-r from-amber-50 to-orange-50 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-xs">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-xl bg-amber-500 text-black flex items-center justify-center font-black shrink-0 shadow-sm">
+                                    <span class="material-symbols-outlined text-2xl">psychology</span>
+                                </div>
+                                <div>
+                                    <div class="flex items-center gap-2">
+                                        <h3 class="font-bold text-sm text-amber-950">Prévisions IA Fournil (Demain)</h3>
+                                        <span class="px-2 py-0.5 bg-amber-200 text-amber-900 font-extrabold text-[10px] rounded-full">ZÉRO GASPILLAGE</span>
+                                    </div>
+                                    <p class="text-xs text-amber-800" id="ai-tomorrow-summary">Calcul prédictif basé sur l'affluence météo et historique des ventes.</p>
+                                </div>
+                            </div>
+                            <div class="flex gap-2 w-full sm:w-auto">
+                                <button type="button" onclick="openTomorrowForecastModal()" class="px-3.5 py-2 bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs rounded-xl shadow-xs flex items-center gap-1.5 transition-all">
+                                    <span class="material-symbols-outlined text-base">visibility</span> Voir Prévisions
+                                </button>
+                                <button type="button" onclick="openSupplierPoModal()" class="px-3.5 py-2 bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs rounded-xl shadow-xs flex items-center gap-1.5 transition-all">
+                                    <span class="material-symbols-outlined text-base">shopping_cart_checkout</span> Bon Fournisseur
+                                </button>
+                            </div>
+                        </div>
+
                         <!-- Fournée Items Dynamiques -->
                         <div class="flex flex-col gap-3" id="fournees-list-container">
                             <!-- Rendu dynamique via JS -->
@@ -1217,6 +1241,113 @@
             <div class="prestige-modal-actions">
                 <button type="button" onclick="closeHelpGuideModal()" class="btn-modal-submit-gold w-full">
                     <span class="material-symbols-outlined text-base">check_circle</span> J'ai compris, c'est super simple !
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 🔮 MODAL IA PRÉVISION FOURNÉES DU LENDEMAIN -->
+    <div id="tomorrowForecastModal" class="prestige-modal-overlay hidden">
+        <div class="prestige-modal-box max-w-2xl">
+            <div class="prestige-modal-header flex justify-between items-center pb-3 border-b border-outline-variant/30">
+                <div class="flex items-center gap-2">
+                    <span class="material-symbols-outlined text-2xl text-amber-500">psychology</span>
+                    <h3 class="text-lg font-bold text-on-surface">Prévision IA des Fournées de Demain</h3>
+                </div>
+                <button type="button" onclick="closeTomorrowForecastModal()" class="text-on-surface-variant hover:text-on-surface font-bold text-lg">✕</button>
+            </div>
+
+            <div class="py-4 space-y-4">
+                <div class="p-3.5 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-900 flex items-center gap-2">
+                    <span class="material-symbols-outlined text-xl text-amber-600">tips_and_updates</span>
+                    <span id="ai-tomorrow-advice">Analyse en cours...</span>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs border border-outline-variant/30 rounded-xl overflow-hidden">
+                        <thead class="bg-surface-container font-bold text-on-surface">
+                            <tr>
+                                <th class="p-2.5">Catégorie</th>
+                                <th class="p-2.5">Produit</th>
+                                <th class="p-2.5 text-center">Quantité Recommandée</th>
+                                <th class="p-2.5 text-right">Farine / Beurre</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ai-forecast-table-body" class="divide-y divide-outline-variant/20">
+                            <!-- Injected by JS -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3 pt-2">
+                    <div class="p-3 bg-surface-container rounded-xl text-center">
+                        <span class="text-[11px] text-on-surface-variant block font-bold">Farine Totale Requise</span>
+                        <strong class="text-base text-on-surface" id="ai-total-flour">-- kg</strong>
+                    </div>
+                    <div class="p-3 bg-surface-container rounded-xl text-center">
+                        <span class="text-[11px] text-on-surface-variant block font-bold">Beurre Tourage Requis</span>
+                        <strong class="text-base text-on-surface" id="ai-total-butter">-- kg</strong>
+                    </div>
+                </div>
+            </div>
+
+            <div class="prestige-modal-actions pt-3 border-t border-outline-variant/30 flex justify-end gap-2">
+                <button type="button" onclick="closeTomorrowForecastModal()" class="px-4 py-2.5 bg-surface border border-outline-variant text-on-surface font-bold text-xs rounded-xl">Fermer</button>
+                <button type="button" onclick="closeTomorrowForecastModal(); openSupplierPoModal();" class="px-4 py-2.5 bg-amber-500 hover:bg-amber-600 text-black font-extrabold text-xs rounded-xl flex items-center gap-1.5">
+                    <span class="material-symbols-outlined text-base">shopping_bag</span> Commander Matières Premières
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 📦 MODAL BON DE COMMANDE FOURNISSEUR AUTOMATISÉ -->
+    <div id="supplierPoModal" class="prestige-modal-overlay hidden">
+        <div class="prestige-modal-box max-w-2xl">
+            <div class="prestige-modal-header flex justify-between items-center pb-3 border-b border-outline-variant/30">
+                <div class="flex items-center gap-2">
+                    <span class="material-symbols-outlined text-2xl text-emerald-600">receipt_long</span>
+                    <h3 class="text-lg font-bold text-on-surface">Bon de Commande Fournisseur Automatisé</h3>
+                </div>
+                <button type="button" onclick="closeSupplierPoModal()" class="text-on-surface-variant hover:text-on-surface font-bold text-lg">✕</button>
+            </div>
+
+            <div class="py-4 space-y-4">
+                <div class="flex justify-between items-center text-xs">
+                    <span class="text-on-surface-variant">Réf : <strong id="po-order-ref" class="text-on-surface">BC-FOUR-7788</strong></span>
+                    <span class="text-on-surface-variant">Date : <strong id="po-order-date" class="text-on-surface">24/08/2026</strong></span>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs border border-outline-variant/30 rounded-xl overflow-hidden">
+                        <thead class="bg-surface-container font-bold text-on-surface">
+                            <tr>
+                                <th class="p-2.5">Matière Première</th>
+                                <th class="p-2.5">Fournisseur</th>
+                                <th class="p-2.5 text-center">Quantité</th>
+                                <th class="p-2.5 text-right">Coût Estimé</th>
+                            </tr>
+                        </thead>
+                        <tbody id="po-items-table-body" class="divide-y divide-outline-variant/20">
+                            <!-- Injected by JS -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="flex justify-between items-center p-3 bg-emerald-50 border border-emerald-200 rounded-xl">
+                    <span class="font-bold text-xs text-emerald-950">TOTAL ESTIMÉ DU BON DE COMMANDE</span>
+                    <strong class="text-base text-emerald-800" id="po-total-cost">0 FCFA</strong>
+                </div>
+
+                <div>
+                    <label class="text-xs font-bold text-slate-700 block mb-1">Aperçu Message WhatsApp Fournisseur :</label>
+                    <textarea id="po-whatsapp-preview" rows="4" readonly class="w-full p-2.5 bg-surface-container border border-outline-variant rounded-xl text-xs font-mono text-on-surface outline-none"></textarea>
+                </div>
+            </div>
+
+            <div class="prestige-modal-actions pt-3 border-t border-outline-variant/30 flex justify-end gap-2">
+                <button type="button" onclick="closeSupplierPoModal()" class="px-4 py-2.5 bg-surface border border-outline-variant text-on-surface font-bold text-xs rounded-xl">Fermer</button>
+                <button type="button" onclick="copyPoWhatsAppText()" class="px-4 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white font-extrabold text-xs rounded-xl flex items-center gap-1.5">
+                    <span class="material-symbols-outlined text-base">content_copy</span> Copier pour WhatsApp Fournisseur
                 </button>
             </div>
         </div>

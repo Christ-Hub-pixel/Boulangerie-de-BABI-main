@@ -1956,5 +1956,106 @@ window.toggleGeranteMobileSidebar = function() {
     }
 };
 
+// 🔮 IA PRÉVISION FOURNÉES DU LENDEMAIN
+async function openTomorrowForecastModal() {
+    const modal = document.getElementById('tomorrowForecastModal');
+    if (!modal) return;
+    modal.classList.remove('hidden');
+
+    const tbody = document.getElementById('ai-forecast-table-body');
+    if (tbody) tbody.innerHTML = `<tr><td colspan="4" class="text-center p-4 text-slate-500">Calcul des prévisions IA en cours...</td></tr>`;
+
+    try {
+        const res = await fetch(`${API_ROOT}/api/ai/production/tomorrow-forecast`);
+        if (res.ok) {
+            const data = await res.json();
+            document.getElementById('ai-tomorrow-advice').innerText = data.advice || data.weatherNote;
+            document.getElementById('ai-total-flour').innerText = `${data.totalEstimatedFlourKg || 80} kg`;
+            document.getElementById('ai-total-butter').innerText = `${data.totalEstimatedButterKg || 28} kg`;
+
+            if (tbody && Array.isArray(data.forecast)) {
+                tbody.innerHTML = data.forecast.map(item => `
+                    <tr class="hover:bg-amber-50/50">
+                        <td class="p-2.5 font-bold text-amber-900">${item.category}</td>
+                        <td class="p-2.5 font-extrabold text-on-surface">${item.product}</td>
+                        <td class="p-2.5 text-center">
+                            <span class="px-2.5 py-1 bg-amber-500 text-black font-black rounded-full text-xs">${item.recommendedUnits} pcs</span>
+                        </td>
+                        <td class="p-2.5 text-right font-mono text-xs">
+                            ${item.flourKg ? `${item.flourKg}kg farine` : ''} 
+                            ${item.butterKg ? `• ${item.butterKg}kg beurre` : ''}
+                        </td>
+                    </tr>
+                `).join('');
+            }
+        }
+    } catch (e) {
+        if (tbody) tbody.innerHTML = `<tr><td colspan="4" class="text-center p-4 text-rose-600">Erreur de chargement des prévisions.</td></tr>`;
+    }
+}
+
+function closeTomorrowForecastModal() {
+    document.getElementById('tomorrowForecastModal')?.classList.add('hidden');
+}
+
+// 📦 BON DE COMMANDE FOURNISSEUR AUTOMATISÉ
+let currentPoWhatsAppText = '';
+
+async function openSupplierPoModal() {
+    const modal = document.getElementById('supplierPoModal');
+    if (!modal) return;
+    modal.classList.remove('hidden');
+
+    const tbody = document.getElementById('po-items-table-body');
+    if (tbody) tbody.innerHTML = `<tr><td colspan="4" class="text-center p-4 text-slate-500">Génération du bon de commande...</td></tr>`;
+
+    try {
+        const res = await fetch(`${API_ROOT}/api/ai/supplier/generate-order`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({})
+        });
+
+        if (res.ok) {
+            const data = await res.json();
+            document.getElementById('po-order-ref').innerText = data.orderRef;
+            document.getElementById('po-order-date').innerText = data.date;
+            document.getElementById('po-total-cost').innerText = `${(data.totalEstimatedCost || 0).toLocaleString('fr-FR')} FCFA`;
+            currentPoWhatsAppText = data.whatsappText;
+            document.getElementById('po-whatsapp-preview').value = data.whatsappText;
+
+            if (tbody && Array.isArray(data.materials)) {
+                tbody.innerHTML = data.materials.map(m => `
+                    <tr class="hover:bg-emerald-50/40">
+                        <td class="p-2.5 font-bold text-on-surface">${m.item}</td>
+                        <td class="p-2.5 text-slate-600 text-xs">${m.supplier}</td>
+                        <td class="p-2.5 text-center font-extrabold text-emerald-800">${m.quantity}</td>
+                        <td class="p-2.5 text-right font-mono font-bold text-on-surface">${(m.estimatedCost || 0).toLocaleString('fr-FR')} F</td>
+                    </tr>
+                `).join('');
+            }
+        }
+    } catch (_) {
+        if (tbody) tbody.innerHTML = `<tr><td colspan="4" class="text-center p-4 text-rose-600">Erreur lors de la génération.</td></tr>`;
+    }
+}
+
+function closeSupplierPoModal() {
+    document.getElementById('supplierPoModal')?.classList.add('hidden');
+}
+
+function copyPoWhatsAppText() {
+    if (!currentPoWhatsAppText) {
+        currentPoWhatsAppText = document.getElementById('po-whatsapp-preview')?.value || '';
+    }
+    navigator.clipboard.writeText(currentPoWhatsAppText).then(() => {
+        alert("📋 Bon de commande copié dans le presse-papier ! Vous pouvez maintenant le coller dans WhatsApp.");
+        window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(currentPoWhatsAppText)}`, '_blank');
+    }).catch(() => {
+        alert("Bon de commande prêt : vous pouvez copier le texte ci-dessus.");
+    });
+}
+
+
 
 

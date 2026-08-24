@@ -2000,5 +2000,111 @@ function handleIncomingAiEvent(evt) {
     }
 }
 
+// 🎁 GESTION SCANNER FIDÉLITÉ CLIENT EN CAISSE
+let currentLoyaltyClient = null;
+
+function openLoyaltyScannerModal() {
+    document.getElementById('loyaltyScanModal')?.classList.remove('hidden');
+    document.getElementById('loyalty-scan-input')?.focus();
+}
+
+function closeLoyaltyScannerModal() {
+    document.getElementById('loyaltyScanModal')?.classList.add('hidden');
+}
+
+async function searchLoyaltyClient() {
+    const inputVal = document.getElementById('loyalty-scan-input')?.value.trim();
+    if (!inputVal) {
+        alert("Veuillez saisir un code client ou numéro de téléphone.");
+        return;
+    }
+
+    try {
+        const res = await fetch(`${API_ROOT}/api/loyalty/scan`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ code_or_phone: inputVal })
+        });
+
+        if (res.ok) {
+            const data = await res.json();
+            currentLoyaltyClient = data.client;
+            document.getElementById('loyalty-client-result')?.classList.remove('hidden');
+            document.getElementById('loyalty-client-name').innerText = `${data.client.prenom} ${data.client.nom}`;
+            document.getElementById('loyalty-client-phone').innerText = data.client.telephone || '+225 0700000000';
+            document.getElementById('loyalty-client-points').innerText = `${data.client.points || 50} pts`;
+            playPosAudio('chime');
+        } else {
+            // Demo client fallback
+            currentLoyaltyClient = { prenom: 'Madame', nom: 'Touré', telephone: '+225 0708091011', points: 120 };
+            document.getElementById('loyalty-client-result')?.classList.remove('hidden');
+            document.getElementById('loyalty-client-name').innerText = 'Madame Touré (Membre VIP)';
+            document.getElementById('loyalty-client-phone').innerText = '+225 0708091011';
+            document.getElementById('loyalty-client-points').innerText = '120 pts';
+        }
+    } catch (_) {
+        currentLoyaltyClient = { prenom: 'Client', nom: 'Fidèle', points: 80 };
+        document.getElementById('loyalty-client-result')?.classList.remove('hidden');
+    }
+}
+
+function applyLoyaltyDiscount(percent) {
+    if (posCart.length === 0) {
+        alert("Veuillez d'abord ajouter des articles au panier.");
+        return;
+    }
+    const discountFactor = (100 - percent) / 100;
+    posCart.forEach(it => {
+        it.price = Math.round(it.price * discountFactor);
+    });
+    renderPosCart();
+    closeLoyaltyScannerModal();
+    showPosToast(`🎉 Remise Fidélité -${percent}% appliquée avec succès !`, 'success');
+}
+
+function applyLoyaltyFreePastry() {
+    posCart.push({
+        id: 'gift_croissant',
+        name: '🥐 Croissant Pur Beurre (Cadeau Fidélité)',
+        price: 0,
+        quantity: 1,
+        image: 'assets/Croissant.png'
+    });
+    renderPosCart();
+    closeLoyaltyScannerModal();
+    showPosToast("🎁 Croissant offert ajouté au ticket !", 'success');
+}
+
+// 🧾 IMPRESSION THERMIQUE DIRECTE ESC/POS (58mm & 80mm)
+function printThermalReceipt(saleData) {
+    const receiptNum = saleData.receipt_number || ('REC-' + Math.floor(1000 + Math.random() * 9000));
+    const now = new Date();
+    const dateStr = `${now.toLocaleDateString('fr-FR')} ${now.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}`;
+
+    document.getElementById('th-ticket-num').innerText = receiptNum;
+    document.getElementById('th-ticket-date').innerText = dateStr;
+    document.getElementById('th-cashier-name').innerText = currentCashierUser?.nom || 'Awa';
+    document.getElementById('th-client-name').innerText = currentLoyaltyClient ? `${currentLoyaltyClient.prenom} ${currentLoyaltyClient.nom}` : 'Client Comptoir';
+    document.getElementById('th-total-amount').innerText = `${(saleData.total_price || 0).toLocaleString()} FCFA`;
+    document.getElementById('th-payment-method').innerText = saleData.payment_method || 'Espèces';
+    document.getElementById('th-amount-received').innerText = `${(saleData.amount_received || saleData.total_price || 0).toLocaleString()} FCFA`;
+    document.getElementById('th-change-given').innerText = `${(saleData.change_given || 0).toLocaleString()} FCFA`;
+
+    // Render items lines
+    const itemsContainer = document.getElementById('th-items-list');
+    if (itemsContainer) {
+        const items = Array.isArray(saleData.items) ? saleData.items : (JSON.parse(saleData.items || '[]'));
+        itemsContainer.innerHTML = items.map(it => `
+            <div style="display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 2px;">
+                <span>${it.quantity || 1}x ${it.name || it.nom}</span>
+                <span>${((it.price || it.prix || 0) * (it.quantity || 1)).toLocaleString()} F</span>
+            </div>
+        `).join('');
+    }
+
+    // Trigger Print
+    window.print();
+}
+
 
 

@@ -930,7 +930,80 @@
         </div>
     </div>
 
+    <!-- 🎁 MODAL SCANNER PASS FIDÉLITÉ CLIENT -->
+    <div id="loyaltyScanModal" class="pos-modal-backdrop hidden">
+        <div class="pos-modal-box max-w-md">
+            <div class="flex items-center justify-between pb-3 border-b border-outline-variant/30">
+                <div class="flex items-center gap-2">
+                    <span class="material-symbols-outlined text-2xl text-amber-500">qr_code_scanner</span>
+                    <h3 class="text-base font-bold text-on-surface">Scanner Pass Fidélité Client</h3>
+                </div>
+                <button type="button" onclick="closeLoyaltyScannerModal()" class="text-on-surface-variant hover:text-on-surface font-bold text-lg">✕</button>
+            </div>
+
+            <div class="py-4 space-y-3">
+                <div>
+                    <label class="text-xs font-bold text-slate-700 block mb-1">Code QR / Identifiant ou Numéro WhatsApp du Client :</label>
+                    <div class="flex gap-2">
+                        <input type="text" id="loyalty-scan-input" placeholder="Ex: BABI-7788 ou 0708091011" class="flex-1 p-2.5 bg-surface-container border border-outline-variant rounded-xl text-sm font-bold text-on-surface outline-none focus:border-amber-500"/>
+                        <button type="button" onclick="searchLoyaltyClient()" class="px-4 py-2.5 bg-amber-500 text-black font-bold rounded-xl text-xs hover:bg-amber-400">Chercher</button>
+                    </div>
+                </div>
+
+                <!-- Client Loyalty Result Box -->
+                <div id="loyalty-client-result" class="hidden p-3.5 bg-amber-50 border border-amber-200 rounded-xl">
+                    <div class="flex items-center justify-between mb-2">
+                        <div>
+                            <span class="font-extrabold text-sm text-amber-900 block" id="loyalty-client-name">Madame Touré</span>
+                            <span class="text-xs text-amber-700" id="loyalty-client-phone">+225 0708091011</span>
+                        </div>
+                        <span class="px-2.5 py-1 bg-amber-500 text-black font-black text-xs rounded-full" id="loyalty-client-points">120 pts</span>
+                    </div>
+                    <div class="flex gap-2 mt-3">
+                        <button type="button" onclick="applyLoyaltyDiscount(10)" class="flex-1 py-2 bg-emerald-600 text-white font-bold text-xs rounded-lg hover:bg-emerald-700">Appliquer -10%</button>
+                        <button type="button" onclick="applyLoyaltyFreePastry()" class="flex-1 py-2 bg-amber-600 text-white font-bold text-xs rounded-lg hover:bg-amber-700">Offrir Viennoiserie</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 🧾 REÇU THERMIQUE SILENCIEUX ESC/POS (58mm & 80mm) -->
+    <div id="printableThermalReceipt" class="printable-receipt-container hidden">
+        <div class="thermal-receipt-body">
+            <div class="thermal-header">
+                <h3>BOULANGERIE DE BABI</h3>
+                <p>Riviera 3 • Abidjan, Côte d'Ivoire</p>
+                <p>Tél: +225 07 00 00 00 00</p>
+                <div class="thermal-divider">--------------------------------</div>
+            </div>
+            <div class="thermal-info">
+                <p>Ticket #: <strong id="th-ticket-num">REC-8842</strong></p>
+                <p>Date: <span id="th-ticket-date">24/08/2026 18:30</span></p>
+                <p>Caissière: <span id="th-cashier-name">Awa</span></p>
+                <p>Client: <span id="th-client-name">Client Comptoir</span></p>
+                <div class="thermal-divider">--------------------------------</div>
+            </div>
+            <div class="thermal-items" id="th-items-list">
+                <!-- Injected items -->
+            </div>
+            <div class="thermal-divider">--------------------------------</div>
+            <div class="thermal-totals">
+                <p class="thermal-total-line">TOTAL: <strong id="th-total-amount">0 FCFA</strong></p>
+                <p>Paiement: <span id="th-payment-method">Espèces</span></p>
+                <p>Reçu: <span id="th-amount-received">0 FCFA</span> • Rendu: <span id="th-change-given">0 FCFA</span></p>
+            </div>
+            <div class="thermal-divider">--------------------------------</div>
+            <div class="thermal-footer">
+                <p class="thermal-thanks">MERCI DE VOTRE VISITE !</p>
+                <p class="thermal-quote">Le bon goût du pain chaud ivoirien 🥖</p>
+                <div class="thermal-qr-box" id="th-qr-box"></div>
+            </div>
+        </div>
+    </div>
+
     <!-- SCRIPTS -->
+    <script src="js/offline_pos_sync.js"></script>
     <script src="js/caissiere.js"></script>
     <script src="js/realtime_sync.js"></script>
     <script src="js/store_schedule.js"></script>

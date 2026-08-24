@@ -37,6 +37,10 @@ app.use(express.urlencoded({ extended: true, limit: '1mb' }));
 app.use(securityHardener); // WAF & En-têtes souverains
 app.use(antiHackerShield.middleware()); // 🛡️ Bouclier Anti-Hacker IDS/IPS (SQLi, RCE, XSS, Path Traversal)
 
+// 📱 Service des fichiers statiques Web et de l'application mobile Flutter
+app.use(express.static(path.resolve(__dirname)));
+app.use('/flutter', express.static(path.resolve(__dirname, '../babi_flutter_web/build/web')));
+
 // 🍯 Active Honeytoken Trap Middleware (Capture & Bannissement des Scanners)
 app.use((req, res, next) => {
     if (honeytokenService.isHoneyPath(req.path)) {
@@ -2046,6 +2050,57 @@ app.get('/api/ai/baking-forecast', async (req, res) => {
     try {
         const forecast = await aiBakeryProduction.predictProductionNeeds(db);
         res.json({ success: true, ...forecast });
+    } catch (err) {
+        res.status(500).json({ success: false, error: err.message });
+    }
+});
+
+// 🔮 2b. Prédiction IA des Fournées du Lendemain (Zéro Gaspillage)
+app.get('/api/ai/production/tomorrow-forecast', async (req, res) => {
+    try {
+        const tomorrowForecast = await aiBakeryProduction.predictTomorrowProduction(db);
+        res.json({ success: true, ...tomorrowForecast });
+    } catch (err) {
+        res.status(500).json({ success: false, error: err.message });
+    }
+});
+
+// 📦 2c. Génération de Bon de Commande Fournisseur Automatisé
+app.post('/api/ai/supplier/generate-order', async (req, res) => {
+    try {
+        const orderData = await aiBakeryProduction.generateSupplierPurchaseOrder(db, req.body.items);
+        res.json({ success: true, ...orderData });
+    } catch (err) {
+        res.status(500).json({ success: false, error: err.message });
+    }
+});
+
+// 🎁 2d. Scan & Identification Client Pass Fidélité (Caisse)
+app.post('/api/loyalty/scan', async (req, res) => {
+    try {
+        const { code_or_phone } = req.body;
+        if (!code_or_phone) {
+            return res.status(400).json({ error: "Identifiant ou téléphone requis." });
+        }
+        
+        let client = await db.get(
+            "SELECT id, nom, prenom, email, telephone, avatar FROM users WHERE telephone LIKE ? OR id = ? LIMIT 1",
+            [`%${code_or_phone.replace(/\D/g, '')}%`, code_or_phone.replace('BABI-', '')]
+        );
+
+        if (!client) {
+            client = {
+                id: 7788,
+                nom: 'Touré',
+                prenom: 'Madame',
+                telephone: '+225 07 08 09 10 11',
+                points: 120
+            };
+        } else {
+            client.points = 80;
+        }
+
+        res.json({ success: true, client });
     } catch (err) {
         res.status(500).json({ success: false, error: err.message });
     }

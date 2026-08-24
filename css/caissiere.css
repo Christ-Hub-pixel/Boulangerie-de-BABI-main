@@ -1057,5 +1057,79 @@ img.profile-avatar, .profile-avatar, img.logo-avatar, .logo-avatar {
     }
 }
 
+/* =============================================================
+   🧾 ESC/POS THERMAL RECEIPT PRINTING (58mm & 80mm)
+   ============================================================= */
+
+@media print {
+    body * {
+        visibility: hidden;
+    }
+    
+    #printableThermalReceipt,
+    #printableThermalReceipt * {
+        visibility: visible;
+    }
+    
+    #printableThermalReceipt {
+        display: block !important;
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        max-width: 320px;
+        margin: 0 auto;
+        padding: 0;
+        background: #ffffff;
+        color: #000000;
+        font-family: 'Courier New', Courier, monospace;
+        font-size: 11px;
+        line-height: 1.25;
+    }
+
+    .thermal-receipt-body {
+        width: 100%;
+        padding: 6px;
+    }
+
+    .thermal-header h3 {
+        font-size: 14px;
+        font-weight: 900;
+        margin: 0 0 2px 0;
+        text-align: center;
+    }
+
+    .thermal-header p, .thermal-info p, .thermal-totals p, .thermal-footer p {
+        margin: 1px 0;
+        font-size: 10px;
+    }
+
+    .thermal-divider {
+        margin: 4px 0;
+        font-family: monospace;
+        letter-spacing: -1px;
+        overflow: hidden;
+    }
+
+    .thermal-total-line {
+        font-size: 13px !important;
+        font-weight: 900 !important;
+        margin-top: 3px !important;
+    }
+
+    .thermal-thanks {
+        font-weight: 800;
+        text-align: center;
+        margin-top: 4px !important;
+    }
+
+    .thermal-quote {
+        font-style: italic;
+        text-align: center;
+        font-size: 9px !important;
+    }
+}
+
+
 
 
