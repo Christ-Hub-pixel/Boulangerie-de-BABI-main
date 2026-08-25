@@ -97,6 +97,16 @@ function addToCart(product, price, image) {
     saveCartItems(items);
     updateAllBadges();
     showAddToCartToast(itemObj);
+
+    // Audio & Haptic Feedback pour ajout au panier
+    try {
+        if ('vibrate' in navigator) {
+            navigator.vibrate(35);
+        }
+        const cartAudio = new Audio('assets/son/add_to_cart.mp3');
+        cartAudio.volume = 0.5;
+        cartAudio.play().catch(() => {});
+    } catch (_) {}
 }
 
 function removeFromCart(productIdOrIndex) {
