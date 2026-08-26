@@ -10,7 +10,9 @@ class WavePaymentProvider extends PaymentProviderInterface {
         super('wave');
         this.apiBaseUrl = process.env.WAVE_API_BASE_URL || 'https://api.wave.com/v1';
         this.apiKey = process.env.WAVE_API_KEY || '';
-        this.merchantId = process.env.WAVE_MERCHANT_ID || 'M_ci_babi_officiel';
+        this.merchantId = process.env.WAVE_MERCHANT_ID || 'M_ci_vBawLmucg2kQ';
+        this.accountNumber = process.env.WAVE_ACCOUNT_NUMBER || 'CI 35 64 13 64';
+        this.merchantName = process.env.WAVE_MERCHANT_NAME || 'Boulangerie De Babi';
         this.webhookSecret = process.env.WAVE_WEBHOOK_SECRET || process.env.GATEWAY_SECRET || 'wave_whsec_babi_secret_2026';
         this.returnUrl = process.env.WAVE_SUCCESS_URL || 'https://www.boulangeriedebabi.com/suivi.html';
         this.errorUrl = process.env.WAVE_ERROR_URL || 'https://www.boulangeriedebabi.com/checkout.html';
