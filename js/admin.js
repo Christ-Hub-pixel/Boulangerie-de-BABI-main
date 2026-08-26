@@ -955,6 +955,14 @@ async function parseSafeResponse(res) {
 
 async function handleCreateProduct(e) {
     if (e && e.preventDefault) e.preventDefault();
+
+    const submitBtn = document.getElementById('btn-submit-create-prod') || document.querySelector('#addProductModal button[type="submit"]');
+    const origHtml = submitBtn ? submitBtn.innerHTML : '';
+    if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-1"></i> Création...';
+    }
+
     const nom = document.getElementById('new-prod-name')?.value.trim();
     const categorie = document.getElementById('new-prod-category')?.value;
     const prix = Number(document.getElementById('new-prod-price')?.value);
@@ -963,8 +971,14 @@ async function handleCreateProduct(e) {
     const description = document.getElementById('new-prod-desc')?.value.trim() || '';
     const image = document.getElementById('new-prod-image-data')?.value || 'assets/product_baguette.png';
 
-    if (!nom || !prix || !categorie) {
-        showAdminToast("Veuillez remplir tous les champs obligatoires (Nom, Catégorie, Prix).", "warning");
+    if (!nom) {
+        showAdminToast("Veuillez saisir le nom du produit.", "warning");
+        if (submitBtn) { submitBtn.disabled = false; submitBtn.innerHTML = origHtml; }
+        return;
+    }
+    if (isNaN(prix) || prix < 0) {
+        showAdminToast("Veuillez saisir un prix unitaire valide.", "warning");
+        if (submitBtn) { submitBtn.disabled = false; submitBtn.innerHTML = origHtml; }
         return;
     }
 
@@ -984,6 +998,11 @@ async function handleCreateProduct(e) {
         }
     } catch (err) {
         showAdminToast("Erreur de communication : " + err.message, 'danger');
+    } finally {
+        if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = origHtml;
+        }
     }
 }
 
@@ -1035,6 +1054,14 @@ function closeEditProductModal() {
 
 async function handleUpdateProduct(e) {
     if (e && e.preventDefault) e.preventDefault();
+
+    const submitBtn = document.getElementById('btn-submit-update-prod') || document.querySelector('#editProductModal button[type="submit"]');
+    const origHtml = submitBtn ? submitBtn.innerHTML : '';
+    if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-1"></i> Mise à jour...';
+    }
+
     const id = document.getElementById('edit-prod-id')?.value;
     const nom = document.getElementById('edit-prod-name')?.value.trim();
     const categorie = document.getElementById('edit-prod-category')?.value;
@@ -1045,8 +1072,19 @@ async function handleUpdateProduct(e) {
     const description = document.getElementById('edit-prod-desc')?.value.trim() || '';
     const image = document.getElementById('edit-prod-image-data')?.value;
 
-    if (!id || !nom || !prix || !categorie) {
-        showAdminToast("Veuillez remplir les informations requises (Nom, Catégorie, Prix).", "warning");
+    if (!id) {
+        showAdminToast("Erreur : Identifiant du produit manquant.", "danger");
+        if (submitBtn) { submitBtn.disabled = false; submitBtn.innerHTML = origHtml; }
+        return;
+    }
+    if (!nom) {
+        showAdminToast("Veuillez remplir le nom du produit.", "warning");
+        if (submitBtn) { submitBtn.disabled = false; submitBtn.innerHTML = origHtml; }
+        return;
+    }
+    if (isNaN(prix) || prix < 0) {
+        showAdminToast("Veuillez saisir un prix valide.", "warning");
+        if (submitBtn) { submitBtn.disabled = false; submitBtn.innerHTML = origHtml; }
         return;
     }
 
@@ -1066,6 +1104,11 @@ async function handleUpdateProduct(e) {
         }
     } catch (err) {
         showAdminToast("Erreur de communication : " + err.message, 'danger');
+    } finally {
+        if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = origHtml;
+        }
     }
 }
 
