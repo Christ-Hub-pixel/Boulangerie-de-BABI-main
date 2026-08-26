@@ -115,13 +115,27 @@ function renderCartPage() {
 }
 
 function handleClearCart() {
-    if (confirm('Voulez-vous vraiment vider tout votre panier ?')) {
-        if (typeof clearCart === 'function') {
-            clearCart();
-        } else {
-            localStorage.removeItem('babi_cart');
-            localStorage.removeItem('babi_cart_items');
-        }
+    if (typeof showBabiCustomConfirm === 'function') {
+        showBabiCustomConfirm({
+            title: "Vider le panier",
+            message: "Voulez-vous vraiment retirer l'ensemble des articles de votre panier ?",
+            icon: "fa-trash-can",
+            confirmColor: "gradient-red",
+            confirmText: "Vider le panier",
+            cancelText: "Annuler",
+            onConfirm: () => {
+                if (typeof clearCart === 'function') {
+                    clearCart();
+                } else {
+                    localStorage.removeItem('babi_cart');
+                    localStorage.removeItem('babi_cart_items');
+                }
+                renderCartPage();
+            }
+        });
+    } else {
+        localStorage.removeItem('babi_cart');
+        localStorage.removeItem('babi_cart_items');
         renderCartPage();
     }
 }

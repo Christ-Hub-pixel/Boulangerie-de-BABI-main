@@ -504,7 +504,7 @@ window.triggerCustomerAutoCancel = function() {
 
     const orderId = order ? order.id : 'BABI-CMD-100';
 
-    if (confirm("Voulez-vous vraiment annuler votre commande ?\nLe remboursement sera effectué immédiatement sur votre compte Mobile Money.")) {
+    const executeCancel = () => {
         fetch(`${API_ROOT}/api/payments/refund`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -513,15 +513,27 @@ window.triggerCustomerAutoCancel = function() {
                 reason: 'Annulation express par le client'
             })
         }).then(res => res.json()).then(data => {
-            alert("✅ Commande annulée avec succès !\n" + (data.message || "Remboursement de votre compte Mobile Money effectué."));
             if (order) {
                 order.status = 'annule_rembourse';
                 localStorage.setItem('babi_current_order', JSON.stringify(order));
             }
             window.location.reload();
         }).catch(() => {
-            alert("✅ Commande annulée ! Votre remboursement Wave / Orange Money a été initié.");
             window.location.reload();
         });
+    };
+
+    if (typeof showBabiCustomConfirm === 'function') {
+        showBabiCustomConfirm({
+            title: "Annulation de commande",
+            message: "Voulez-vous vraiment annuler votre commande ? Le remboursement sera effectué immédiatement sur votre compte Mobile Money.",
+            icon: "fa-ban",
+            confirmColor: "gradient-red",
+            confirmText: "Confirmer l'annulation",
+            cancelText: "Garder ma commande",
+            onConfirm: executeCancel
+        });
+    } else {
+        executeCancel();
     }
 };

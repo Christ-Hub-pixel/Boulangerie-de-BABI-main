@@ -503,69 +503,75 @@ async function handleSendSinglePayout(e) {
     const submitBtn = document.getElementById('btn-submit-payout');
 
     if (!phone || !amount) {
-        alert("Le numéro de téléphone et le montant sont obligatoires.");
+        showAdminToast("Le numéro de téléphone et le montant sont obligatoires.", "warning");
         return;
     }
 
-    if (!confirm(`Confirmez-vous le virement Wave immédiat de ${Number(amount).toLocaleString()} FCFA vers le numéro ${phone} ?`)) {
-        return;
-    }
+    showBabiCustomConfirm({
+        title: "Confirmation Virement Wave",
+        message: `Confirmez-vous le virement Wave immédiat de ${Number(amount).toLocaleString()} FCFA vers le numéro ${phone} ?`,
+        icon: "fa-wave-square",
+        confirmColor: "gradient-emerald",
+        confirmText: "Effectuer le virement",
+        cancelText: "Annuler",
+        onConfirm: async () => {
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin me-1"></i> Virement Wave en cours...`;
+            }
 
-    if (submitBtn) {
-        submitBtn.disabled = true;
-        submitBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin me-1"></i> Virement Wave en cours...`;
-    }
+            try {
+                const idempotencyKey = `IDEM_PAYOUT_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`;
+                const res = await fetch(`${API_ROOT}/api/wave/payout`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Idempotency-Key': idempotencyKey
+                    },
+                    body: JSON.stringify({
+                        mobile: phone,
+                        receive_amount: amount,
+                        name,
+                        payment_reason: reason,
+                        client_reference: clientRef
+                    })
+                });
 
-    try {
-        const idempotencyKey = `IDEM_PAYOUT_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`;
-        const res = await fetch(`${API_ROOT}/api/wave/payout`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Idempotency-Key': idempotencyKey
-            },
-            body: JSON.stringify({
-                mobile: phone,
-                receive_amount: amount,
-                name,
-                payment_reason: reason,
-                client_reference: clientRef
-            })
-        });
+                const data = await res.json();
+                if (!res.ok) {
+                    throw new Error(data.message || data.error || "Échec du virement Wave");
+                }
 
-        const data = await res.json();
-        if (!res.ok) {
-            throw new Error(data.message || data.error || "Échec du virement Wave");
+                // Sauvegarder dans le journal local
+                const newPayout = {
+                    id: data.id || `pt-${Date.now()}`,
+                    mobile: phone,
+                    receive_amount: amount,
+                    name: name || 'Bénéficiaire',
+                    payment_reason: reason,
+                    client_reference: clientRef,
+                    fee: data.fee || '10',
+                    status: data.status || 'succeeded',
+                    timestamp: new Date().toISOString()
+                };
+
+                const existing = JSON.parse(localStorage.getItem('babi_wave_payouts_log') || '[]');
+                existing.unshift(newPayout);
+                localStorage.setItem('babi_wave_payouts_log', JSON.stringify(existing));
+
+                showAdminToast(`✅ Virement Wave de ${Number(amount).toLocaleString()} FCFA exécuté avec succès (ID: ${newPayout.id}) !`, 'success');
+                closeSinglePayoutModal();
+                loadWavePayoutHistory();
+            } catch (err) {
+                showAdminToast("Erreur Virement Wave : " + err.message, "danger");
+            } finally {
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = `<i class="fa-solid fa-bolt me-1"></i> Exécuter le Virement Wave`;
+                }
+            }
         }
-
-        // Sauvegarder dans le journal local
-        const newPayout = {
-            id: data.id || `pt-${Date.now()}`,
-            mobile: phone,
-            receive_amount: amount,
-            name: name || 'Bénéficiaire',
-            payment_reason: reason,
-            client_reference: clientRef,
-            fee: data.fee || '10',
-            status: data.status || 'succeeded',
-            timestamp: new Date().toISOString()
-        };
-
-        const existing = JSON.parse(localStorage.getItem('babi_wave_payouts_log') || '[]');
-        existing.unshift(newPayout);
-        localStorage.setItem('babi_wave_payouts_log', JSON.stringify(existing));
-
-        showAdminToast(`✅ Virement Wave de ${Number(amount).toLocaleString()} FCFA exécuté avec succès (ID: ${newPayout.id}) !`, 'success');
-        closeSinglePayoutModal();
-        loadWavePayoutHistory();
-    } catch (err) {
-        alert("Erreur Virement Wave : " + err.message);
-    } finally {
-        if (submitBtn) {
-            submitBtn.disabled = false;
-            submitBtn.innerHTML = `<i class="fa-solid fa-bolt me-1"></i> Exécuter le Virement Wave`;
-        }
-    }
+    });
 }
 
 // 4. Modal Virement Groupé (POST /v1/payout-batch)
@@ -637,30 +643,36 @@ async function handleSendBatchPayout(e) {
 
 // 5. Inverser / Annuler un Payout (POST /v1/payout/:id/reverse)
 async function handleReverseWavePayout(payoutId) {
-    if (!confirm(`Souhaitez-vous annuler et inverser le paiement Wave ${payoutId} ? Les fonds seront recrédités sur le solde de la boulangerie.`)) {
-        return;
-    }
+    showBabiCustomConfirm({
+        title: "Annulation de Virement",
+        message: `Souhaitez-vous annuler et inverser le paiement Wave ${payoutId} ? Les fonds seront recrédités sur le compte marchand.`,
+        icon: "fa-rotate-left",
+        confirmColor: "gradient-amber",
+        confirmText: "Inverser le virement",
+        cancelText: "Annuler",
+        onConfirm: async () => {
+            try {
+                const res = await fetch(`${API_ROOT}/api/wave/payout/${encodeURIComponent(payoutId)}/reverse`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                const data = await res.json();
 
-    try {
-        const res = await fetch(`${API_ROOT}/api/wave/payout/${encodeURIComponent(payoutId)}/reverse`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' }
-        });
-        const data = await res.json();
+                // Mettre à jour le statut dans le stockage local
+                const existing = JSON.parse(localStorage.getItem('babi_wave_payouts_log') || '[]');
+                const target = existing.find(p => p.id === payoutId);
+                if (target) {
+                    target.status = 'reversed';
+                    localStorage.setItem('babi_wave_payouts_log', JSON.stringify(existing));
+                }
 
-        // Mettre à jour le statut dans le stockage local
-        const existing = JSON.parse(localStorage.getItem('babi_wave_payouts_log') || '[]');
-        const target = existing.find(p => p.id === payoutId);
-        if (target) {
-            target.status = 'reversed';
-            localStorage.setItem('babi_wave_payouts_log', JSON.stringify(existing));
+                showAdminToast(`✅ Paiement Wave ${payoutId} inversé avec succès (Fonds recrédités).`, 'success');
+                loadWavePayoutHistory();
+            } catch (err) {
+                showAdminToast("Erreur lors de l'inversion du paiement : " + err.message, "danger");
+            }
         }
-
-        showAdminToast(`✅ Paiement Wave ${payoutId} inversé avec succès (Fonds recrédités).`, 'success');
-        loadWavePayoutHistory();
-    } catch (err) {
-        alert("Erreur lors de l'inversion du paiement : " + err.message);
-    }
+    });
 }
 
 // 6. Rembourser une commande directement par Wave Payout
@@ -1047,21 +1059,27 @@ async function handleDeleteProduct(id) {
     const product = allProducts.find(p => p.id === id || String(p.id) === String(id));
     const prodName = product ? (product.nom || product.title) : 'ce produit';
 
-    if (!confirm(`⚠️ Êtes-vous certain de vouloir supprimer définitivement "${prodName}" du catalogue et des stocks ?`)) {
-        return;
-    }
-    
-    try {
-        const res = await fetch(`${API_ROOT}/api/products/${id}`, { method: 'DELETE' });
-        if (res.ok) {
-            showAdminToast(`🗑️ "${prodName}" a été retiré du catalogue.`, 'info');
-            await loadProducts();
-        } else {
-            alert("Erreur lors de la suppression du produit.");
+    showBabiCustomConfirm({
+        title: "Suppression de produit",
+        message: `Êtes-vous certain de vouloir supprimer définitivement "${prodName}" du catalogue et des stocks ?`,
+        icon: "fa-trash-can",
+        confirmColor: "gradient-red",
+        confirmText: "Supprimer du catalogue",
+        cancelText: "Annuler",
+        onConfirm: async () => {
+            try {
+                const res = await fetch(`${API_ROOT}/api/products/${id}`, { method: 'DELETE' });
+                if (res.ok) {
+                    showAdminToast(`🗑️ "${prodName}" a été retiré du catalogue.`, 'info');
+                    await loadProducts();
+                } else {
+                    showAdminToast("Erreur lors de la suppression du produit.", "danger");
+                }
+            } catch (err) {
+                showAdminToast("Erreur : " + err.message, "danger");
+            }
         }
-    } catch (err) {
-        alert("Erreur : " + err.message);
-    }
+    });
 }
 
 // Users
@@ -1391,11 +1409,146 @@ async function handlePasswordChange(e) {
     } catch (_) {}
 }
 
+function showBabiCustomConfirm({
+    title = "Déconnexion",
+    message = "Voulez-vous vraiment vous déconnecter du Cockpit Direction ?",
+    icon = "shield_lock",
+    confirmText = "Se déconnecter",
+    cancelText = "Annuler",
+    onConfirm = () => {}
+} = {}) {
+    const existing = document.getElementById('babiCustomConfirmModal');
+    if (existing) existing.remove();
+
+    const modal = document.createElement('div');
+    modal.id = 'babiCustomConfirmModal';
+    modal.style.cssText = `
+        position: fixed;
+        inset: 0;
+        z-index: 99999;
+        background: rgba(15, 23, 42, 0.75);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 16px;
+        opacity: 0;
+        transition: opacity 0.25s ease;
+    `;
+
+    modal.innerHTML = `
+        <div style="
+            background: #ffffff;
+            border-radius: 24px;
+            max-width: 420px;
+            width: 100%;
+            padding: 28px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(226, 232, 240, 0.8);
+            transform: scale(0.92);
+            transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+            text-align: center;
+        " id="babiConfirmCard">
+            <div style="
+                width: 64px;
+                height: 64px;
+                margin: 0 auto 18px auto;
+                border-radius: 20px;
+                background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+                border: 1px solid #fecaca;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: #ef4444;
+                box-shadow: 0 8px 16px -4px rgba(239, 68, 68, 0.2);
+            ">
+                <span class="material-symbols-outlined" style="font-size: 32px;">${icon}</span>
+            </div>
+            <h3 style="
+                font-family: 'Playfair Display', serif, system-ui;
+                font-size: 20px;
+                font-weight: 800;
+                color: #1e293b;
+                margin: 0 0 8px 0;
+            ">${title}</h3>
+            <p style="
+                font-size: 14px;
+                color: #64748b;
+                margin: 0 0 24px 0;
+                line-height: 1.5;
+            ">${message}</p>
+            <div style="
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 12px;
+            ">
+                <button type="button" id="babiConfirmCancelBtn" style="
+                    padding: 12px 18px;
+                    border-radius: 14px;
+                    border: 1px solid #cbd5e1;
+                    background: #f8fafc;
+                    color: #475569;
+                    font-size: 14px;
+                    font-weight: 700;
+                    cursor: pointer;
+                    transition: all 0.15s ease;
+                ">${cancelText}</button>
+                <button type="button" id="babiConfirmOkBtn" style="
+                    padding: 12px 18px;
+                    border-radius: 14px;
+                    border: none;
+                    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+                    color: #ffffff;
+                    font-size: 14px;
+                    font-weight: 700;
+                    cursor: pointer;
+                    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+                    transition: all 0.15s ease;
+                ">${confirmText}</button>
+            </div>
+        </div>
+    `;
+
+    document.body.appendChild(modal);
+
+    requestAnimationFrame(() => {
+        modal.style.opacity = '1';
+        const card = document.getElementById('babiConfirmCard');
+        if (card) card.style.transform = 'scale(1)';
+    });
+
+    const closeModal = () => {
+        modal.style.opacity = '0';
+        const card = document.getElementById('babiConfirmCard');
+        if (card) card.style.transform = 'scale(0.92)';
+        setTimeout(() => modal.remove(), 250);
+    };
+
+    document.getElementById('babiConfirmCancelBtn').onclick = closeModal;
+    modal.onclick = (e) => {
+        if (e.target === modal) closeModal();
+    };
+    document.getElementById('babiConfirmOkBtn').onclick = () => {
+        closeModal();
+        if (typeof onConfirm === 'function') onConfirm();
+    };
+}
+
 function handleAdminLogout() {
-    if (confirm("Êtes-vous sûr de vouloir vous déconnecter du Cockpit Administrateur ?")) {
-        localStorage.removeItem('babi_admin_auth');
-        window.location.href = 'index.html';
-    }
+    showBabiCustomConfirm({
+        title: "Déconnexion Cockpit Direction",
+        message: "Êtes-vous sûr de vouloir vous déconnecter du Cockpit Administrateur ?",
+        icon: "shield_lock",
+        confirmText: "Se déconnecter",
+        cancelText: "Annuler",
+        onConfirm: () => {
+            localStorage.removeItem('babi_admin_auth');
+            showAdminToast("Session Administrateur clôturée.", "info");
+            setTimeout(() => {
+                window.location.href = 'index.html';
+            }, 250);
+        }
+    });
 }
 
 // ================================================================
@@ -1603,28 +1756,34 @@ async function handleEditCashierSubmit(e) {
 
 // 3. Déconnexion à distance forcée (Force Logout)
 async function forceLogoutCashier(id, name) {
-    if (!confirm(`Confirmez-vous la déconnexion forcée immédiate de ${name} du terminal de caisse ? Sa session sera immédiatement verrouillée.`)) {
-        return;
-    }
+    showBabiCustomConfirm({
+        title: "Déconnexion à distance",
+        message: `Confirmez-vous la déconnexion forcée immédiate de ${name} du terminal de caisse ? Sa session sera immédiatement verrouillée.`,
+        icon: "fa-user-lock",
+        confirmColor: "gradient-red",
+        confirmText: "Déconnecter la caissière",
+        cancelText: "Annuler",
+        onConfirm: async () => {
+            try {
+                const res = await fetch(`${API_ROOT}/api/admin/cashiers/${id}/force-logout`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                const data = await res.json();
 
-    try {
-        const res = await fetch(`${API_ROOT}/api/admin/cashiers/${id}/force-logout`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' }
-        });
-        const data = await res.json();
+                // Émettre un signal instantané sur le bus de diffusion
+                try {
+                    const b = new BroadcastChannel('babi_global_sync');
+                    b.postMessage({ type: 'CASHIER_FORCE_LOGOUT', cashier_id: id });
+                } catch (_) {}
 
-        // Émettre un signal instantané sur le bus de diffusion
-        try {
-            const b = new BroadcastChannel('babi_global_sync');
-            b.postMessage({ type: 'CASHIER_FORCE_LOGOUT', cashier_id: id });
-        } catch (_) {}
-
-        showAdminToast(`🔴 ${name} a été déconnectée du terminal de caisse.`, 'danger');
-        loadCashiersData();
-    } catch (err) {
-        alert("Erreur lors de la déconnexion : " + err.message);
-    }
+                showAdminToast(`🔴 ${name} a été déconnectée du terminal de caisse.`, 'danger');
+                loadCashiersData();
+            } catch (err) {
+                showAdminToast("Erreur lors de la déconnexion : " + err.message, "danger");
+            }
+        }
+    });
 }
 
 // 4. Suspendre / Activer le compte caissière
@@ -1647,23 +1806,29 @@ async function toggleCashierStatus(id) {
         }
         loadCashiersData();
     } catch (err) {
-        alert("Erreur changement statut : " + err.message);
+        showAdminToast("Erreur changement statut : " + err.message, "danger");
     }
 }
 
 // 5. Supprimer profil caissière
 async function deleteCashier(id, name) {
-    if (!confirm(`Êtes-vous sûr de vouloir supprimer définitivement le profil caissière de ${name} ?`)) {
-        return;
-    }
-
-    try {
-        await fetch(`${API_ROOT}/api/admin/cashiers/${id}`, { method: 'DELETE' });
-        showAdminToast(`Profil de ${name} supprimé.`, 'info');
-        loadCashiersData();
-    } catch (err) {
-        alert("Erreur suppression : " + err.message);
-    }
+    showBabiCustomConfirm({
+        title: "Suppression Profil Caissière",
+        message: `Êtes-vous certain de vouloir supprimer définitivement le profil caissière de ${name} ?`,
+        icon: "fa-user-xmark",
+        confirmColor: "gradient-red",
+        confirmText: "Supprimer le profil",
+        cancelText: "Annuler",
+        onConfirm: async () => {
+            try {
+                await fetch(`${API_ROOT}/api/admin/cashiers/${id}`, { method: 'DELETE' });
+                showAdminToast(`Profil de ${name} supprimé.`, 'info');
+                loadCashiersData();
+            } catch (err) {
+                showAdminToast("Erreur suppression : " + err.message, "danger");
+            }
+        }
+    });
 }
 
 // ================================================================

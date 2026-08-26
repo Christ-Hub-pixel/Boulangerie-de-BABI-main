@@ -1822,10 +1822,145 @@ function lockCurrentSession() {
     if (menu) menu.classList.add('hidden');
 }
 
+function showBabiCustomConfirm({
+    title = "Déconnexion de la session",
+    message = "Voulez-vous vraiment vous déconnecter du portail Fournil ?",
+    icon = "logout",
+    confirmText = "Se déconnecter",
+    cancelText = "Annuler",
+    onConfirm = () => {}
+} = {}) {
+    const existing = document.getElementById('babiCustomConfirmModal');
+    if (existing) existing.remove();
+
+    const modal = document.createElement('div');
+    modal.id = 'babiCustomConfirmModal';
+    modal.style.cssText = `
+        position: fixed;
+        inset: 0;
+        z-index: 99999;
+        background: rgba(15, 23, 42, 0.75);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 16px;
+        opacity: 0;
+        transition: opacity 0.25s ease;
+    `;
+
+    modal.innerHTML = `
+        <div style="
+            background: #ffffff;
+            border-radius: 24px;
+            max-width: 420px;
+            width: 100%;
+            padding: 28px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(226, 232, 240, 0.8);
+            transform: scale(0.92);
+            transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+            text-align: center;
+        " id="babiConfirmCard">
+            <div style="
+                width: 64px;
+                height: 64px;
+                margin: 0 auto 18px auto;
+                border-radius: 20px;
+                background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+                border: 1px solid #fecaca;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: #ef4444;
+                box-shadow: 0 8px 16px -4px rgba(239, 68, 68, 0.2);
+            ">
+                <span class="material-symbols-outlined" style="font-size: 32px;">${icon}</span>
+            </div>
+            <h3 style="
+                font-family: 'Playfair Display', serif, system-ui;
+                font-size: 20px;
+                font-weight: 800;
+                color: #1e293b;
+                margin: 0 0 8px 0;
+            ">${title}</h3>
+            <p style="
+                font-size: 14px;
+                color: #64748b;
+                margin: 0 0 24px 0;
+                line-height: 1.5;
+            ">${message}</p>
+            <div style="
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 12px;
+            ">
+                <button type="button" id="babiConfirmCancelBtn" style="
+                    padding: 12px 18px;
+                    border-radius: 14px;
+                    border: 1px solid #cbd5e1;
+                    background: #f8fafc;
+                    color: #475569;
+                    font-size: 14px;
+                    font-weight: 700;
+                    cursor: pointer;
+                    transition: all 0.15s ease;
+                ">${cancelText}</button>
+                <button type="button" id="babiConfirmOkBtn" style="
+                    padding: 12px 18px;
+                    border-radius: 14px;
+                    border: none;
+                    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+                    color: #ffffff;
+                    font-size: 14px;
+                    font-weight: 700;
+                    cursor: pointer;
+                    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+                    transition: all 0.15s ease;
+                ">${confirmText}</button>
+            </div>
+        </div>
+    `;
+
+    document.body.appendChild(modal);
+
+    requestAnimationFrame(() => {
+        modal.style.opacity = '1';
+        const card = document.getElementById('babiConfirmCard');
+        if (card) card.style.transform = 'scale(1)';
+    });
+
+    const closeModal = () => {
+        modal.style.opacity = '0';
+        const card = document.getElementById('babiConfirmCard');
+        if (card) card.style.transform = 'scale(0.92)';
+        setTimeout(() => modal.remove(), 250);
+    };
+
+    document.getElementById('babiConfirmCancelBtn').onclick = closeModal;
+    modal.onclick = (e) => {
+        if (e.target === modal) closeModal();
+    };
+    document.getElementById('babiConfirmOkBtn').onclick = () => {
+        closeModal();
+        if (typeof onConfirm === 'function') onConfirm();
+    };
+}
+
 function handleLogout() {
-    if (confirm("Voulez-vous vous déconnecter du portail Fournil ?")) {
-        window.location.href = "index.html";
-    }
+    showBabiCustomConfirm({
+        title: "Déconnexion du Fournil",
+        message: "Êtes-vous sûr de vouloir quitter votre session de gérance du Fournil ?",
+        icon: "logout",
+        confirmText: "Se déconnecter",
+        cancelText: "Annuler",
+        onConfirm: () => {
+            showBabiToast("Déconnexion réussie.", "info");
+            setTimeout(() => {
+                window.location.href = "index.html";
+            }, 250);
+        }
+    });
 }
 
 // ================================================================
