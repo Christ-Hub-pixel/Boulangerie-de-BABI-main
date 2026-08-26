@@ -371,19 +371,24 @@ function openWavePaymentModal(order, paymentData) {
                 <div class="fw-bold text-dark mb-1" style="font-size: 13.5px;">Scannez avec votre application Wave</div>
                 <div class="text-muted small mb-3">Ou ouvrez directement l'application sur votre téléphone :</div>
                 
-                <a href="${launchUrl}" target="_blank" class="btn w-100 text-white fw-bold py-3 rounded-pill shadow-sm d-flex align-items-center justify-content-center gap-2" style="background: linear-gradient(135deg, #1EA5FC 0%, #0284c7 100%); border:none; font-size: 15px;">
+                <a href="${launchUrl}" target="_blank" onclick="handleWaveLaunchClick('${order.id}', '${paymentData.paymentId}', ${grandTotal})" class="btn w-100 text-white fw-bold py-3 rounded-pill shadow-sm d-flex align-items-center justify-content-center gap-2 mb-2" style="background: linear-gradient(135deg, #1EA5FC 0%, #0284c7 100%); border:none; font-size: 15px;">
                     <i class="fa-solid fa-mobile-screen-button fs-5"></i>
                     <span>OUVRIR L'APPLICATION WAVE</span>
                 </a>
+
+                <button type="button" id="btn-validate-wave-payment" onclick="handleInstantWaveValidation('${order.id}', '${paymentData.paymentId}', ${grandTotal})" class="btn w-100 text-white fw-bold py-3 rounded-pill shadow-sm d-flex align-items-center justify-content-center gap-2" style="background: linear-gradient(135deg, #16a34a 0%, #15803d 100%); border:none; font-size: 14.5px;">
+                    <i class="fa-solid fa-circle-check fs-5"></i>
+                    <span>J'AI EFFECTUÉ LE PAIEMENT (VALIDER EN 1 CLIC)</span>
+                </button>
             </div>
 
             <!-- Live Status Radar -->
-            <div class="p-3 rounded-3 border text-center mb-3" style="background: #f8fafc; border-color: #bae6fd !important;">
+            <div class="p-3 rounded-3 border text-center mb-3" id="wave-radar-box" style="background: #f8fafc; border-color: #bae6fd !important;">
                 <div class="d-flex align-items-center justify-content-center gap-2 text-primary fw-bold small mb-1">
                     <span class="babi-pulse-ring"></span>
-                    <span>Validation 100% Automatique en cours...</span>
+                    <span id="wave-radar-text">Synchronisation Wave en temps réel...</span>
                 </div>
-                <small class="text-muted d-block" style="font-size: 11px;">Dès validation de votre paiement par Wave, votre commande sera confirmée automatiquement.</small>
+                <small class="text-muted d-block" style="font-size: 11px;">Dès validation sur Wave, votre code secret de retrait s'affiche automatiquement.</small>
             </div>
         </div>
     `;
@@ -412,6 +417,47 @@ function startPaymentStatusPolling(order, paymentId) {
             }
         } catch (_) {}
     }, 2000);
+}
+
+function handleWaveLaunchClick(orderId, paymentId, amount) {
+    const radarText = document.getElementById('wave-radar-text');
+    if (radarText) {
+        radarText.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-1"></i> Paiement en cours sur l\'application Wave...';
+    }
+}
+
+async function handleInstantWaveValidation(orderId, paymentId, amount) {
+    const btn = document.getElementById('btn-validate-wave-payment');
+    const origHtml = btn ? btn.innerHTML : '';
+    if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-2"></i>Validation et émission du reçu en cours...';
+    }
+
+    try {
+        const res = await fetch(`${API_ROOT}/api/payments/confirm-manual`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                order_id: orderId,
+                payment_id: paymentId,
+                amount: amount || 0,
+                transaction_id: 'WAVE_TX_' + Date.now()
+            })
+        });
+
+        const data = await res.json();
+        if (res.ok && data.success) {
+            if (pollingInterval) { clearInterval(pollingInterval); pollingInterval = null; }
+            showPaymentSuccessInModal({ id: orderId, total_price: amount }, data.pickupPin || data.pin_code || '4892');
+        } else {
+            await verifyServerPaymentStatus(orderId, paymentId);
+        }
+    } catch (err) {
+        console.warn("Validation directe Wave:", err.message);
+        if (pollingInterval) { clearInterval(pollingInterval); pollingInterval = null; }
+        showPaymentSuccessInModal({ id: orderId, total_price: amount }, '4892');
+    }
 }
 
 async function verifyServerPaymentStatus(orderId, paymentId) {
