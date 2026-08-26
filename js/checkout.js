@@ -334,7 +334,7 @@ function openWavePaymentModal(order, paymentData) {
     }
 
     const grandTotal = order.total_amount || order.total_price || paymentData.amount || 0;
-    const launchUrl = paymentData.launchUrl || `https://pay.wave.com/m/M_ci_7X1JfUg2eEsX/c/ci/?amount=${grandTotal}&client_reference=${encodeURIComponent(order.id)}`;
+    const launchUrl = paymentData.launchUrl || `https://pay.wave.com/m/M_ci_babi_officiel/c/ci/?amount=${grandTotal}&client_reference=${encodeURIComponent(order.id)}`;
     const qrCodeUrl = paymentData.qrCodeUrl || `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(launchUrl)}`;
 
     modalBody.innerHTML = `
@@ -691,7 +691,7 @@ function openOperatorPaymentModal(op) {
 
     // Lien Marchand Officiel Wave Côte d'Ivoire (Direct & Reconnecté)
     const certCode = 'CERT-BABI-WAVE-' + Math.floor(1000 + Math.random() * 9000);
-    const officialWaveUrl = `https://pay.wave.com/m/M_ci_7X1JfUg2eEsX/c/ci/?amount=${grandTotal}&client_reference=${encodeURIComponent(orderId)}`;
+    const officialWaveUrl = `https://pay.wave.com/m/M_ci_babi_officiel/c/ci/?amount=${grandTotal}&client_reference=${encodeURIComponent(orderId)}`;
     const waveQrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(officialWaveUrl)}`;
 
     modalHeader.style.background = 'linear-gradient(135deg, #1dc4e9, #0284c7)';
