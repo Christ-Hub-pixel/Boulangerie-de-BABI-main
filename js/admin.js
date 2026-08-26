@@ -872,19 +872,43 @@ async function loadProducts() {
     }
 }
 
-// 🖼️ GESTION DU SÉLECTEUR DE PHOTO PRODUIT (GALERIE & FICHIERS)
+// 🖼️ GESTION DU SÉLECTEUR DE PHOTO PRODUIT (COMPRESSION CANVAS AUTOMATIQUE)
 function handleProductImageSelect(event, modalType) {
     const file = event.target.files[0];
     if (!file) return;
 
     const reader = new FileReader();
     reader.onload = function(e) {
-        const base64Data = e.target.result;
-        const previewEl = document.getElementById(`${modalType}-prod-preview-img`);
-        const hiddenDataEl = document.getElementById(`${modalType}-prod-image-data`);
-        
-        if (previewEl) previewEl.src = base64Data;
-        if (hiddenDataEl) hiddenDataEl.value = base64Data;
+        const rawBase64 = e.target.result;
+        const img = new Image();
+        img.onload = function() {
+            // Redimensionnement et compression intelligente max 800x800 pour fluidité totale
+            const maxDim = 800;
+            let width = img.width;
+            let height = img.height;
+            if (width > maxDim || height > maxDim) {
+                if (width > height) {
+                    height = Math.round((height * maxDim) / width);
+                    width = maxDim;
+                } else {
+                    width = Math.round((width * maxDim) / height);
+                    height = maxDim;
+                }
+            }
+            const canvas = document.createElement('canvas');
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, width, height);
+            const optimizedBase64 = canvas.toDataURL('image/jpeg', 0.85);
+
+            const previewEl = document.getElementById(`${modalType}-prod-preview-img`);
+            const hiddenDataEl = document.getElementById(`${modalType}-prod-image-data`);
+            
+            if (previewEl) previewEl.src = optimizedBase64;
+            if (hiddenDataEl) hiddenDataEl.value = optimizedBase64;
+        };
+        img.src = rawBase64;
     };
     reader.readAsDataURL(file);
 }
