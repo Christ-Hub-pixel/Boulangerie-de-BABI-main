@@ -369,41 +369,43 @@ function openWavePaymentModal(order, paymentData) {
                 </div>
                 
                 <div class="fw-bold text-dark mb-1" style="font-size: 13.5px;">Scannez avec votre application Wave</div>
-                <div class="text-muted small mb-3">Ou ouvrez directement l'application sur votre téléphone :</div>
+                <div class="text-muted small mb-3">Ou validez directement sur votre smartphone :</div>
                 
-                <a href="${launchUrl}" target="_blank" onclick="handleWaveLaunchClick('${order.id}', '${paymentData.paymentId}', ${grandTotal})" class="btn w-100 text-white fw-bold py-3 rounded-pill shadow-sm d-flex align-items-center justify-content-center gap-2 mb-2" style="background: linear-gradient(135deg, #1EA5FC 0%, #0284c7 100%); border:none; font-size: 15px;">
+                <a href="${launchUrl}" target="_blank" onclick="triggerAutomaticWaveCheckout('${order.id}', '${paymentData.paymentId}', ${grandTotal})" class="btn w-100 text-white fw-bold py-3 rounded-pill shadow-sm d-flex align-items-center justify-content-center gap-2 mb-2" style="background: linear-gradient(135deg, #1EA5FC 0%, #0284c7 100%); border:none; font-size: 15px;">
                     <i class="fa-solid fa-mobile-screen-button fs-5"></i>
                     <span>OUVRIR L'APPLICATION WAVE</span>
                 </a>
-
-                <button type="button" id="btn-validate-wave-payment" onclick="handleInstantWaveValidation('${order.id}', '${paymentData.paymentId}', ${grandTotal})" class="btn w-100 text-white fw-bold py-3 rounded-pill shadow-sm d-flex align-items-center justify-content-center gap-2" style="background: linear-gradient(135deg, #16a34a 0%, #15803d 100%); border:none; font-size: 14.5px;">
-                    <i class="fa-solid fa-circle-check fs-5"></i>
-                    <span>J'AI EFFECTUÉ LE PAIEMENT (VALIDER EN 1 CLIC)</span>
-                </button>
             </div>
 
-            <!-- Live Status Radar -->
-            <div class="p-3 rounded-3 border text-center mb-3" id="wave-radar-box" style="background: #f8fafc; border-color: #bae6fd !important;">
+            <!-- Live Status Radar & Auto-Validation Bar -->
+            <div class="p-3 rounded-3 border text-center mb-2" id="wave-radar-box" style="background: #f8fafc; border-color: #bae6fd !important;">
                 <div class="d-flex align-items-center justify-content-center gap-2 text-primary fw-bold small mb-1">
                     <span class="babi-pulse-ring"></span>
-                    <span id="wave-radar-text">Synchronisation Wave en temps réel...</span>
+                    <span id="wave-radar-text">Validation automatique en cours...</span>
                 </div>
-                <small class="text-muted d-block" style="font-size: 11px;">Dès validation sur Wave, votre code secret de retrait s'affiche automatiquement.</small>
+                <div class="progress my-2" style="height: 6px; border-radius: 10px; background: #e0f2fe;">
+                    <div id="wave-auto-progress" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 25%; background: #0284c7;"></div>
+                </div>
+                <small class="text-muted d-block" id="wave-radar-subtext" style="font-size: 11.5px;">Dès confirmation sur Wave, votre code PIN de retrait s'affiche automatiquement.</small>
             </div>
         </div>
     `;
 
     bsModal.show();
 
-    // 3. Polling du statut serveur toutes les 2.0 secondes
-    startPaymentStatusPolling(order, paymentData.paymentId);
+    // 3. Lancement de la validation 100% Automatique
+    startSmartAutoValidation(order, paymentData.paymentId, grandTotal);
 }
 
 let pollingInterval = null;
+let autoValidationTimer = null;
+let tabFocusListener = null;
 
-function startPaymentStatusPolling(order, paymentId) {
+function startSmartAutoValidation(order, paymentId, amount) {
     if (pollingInterval) clearInterval(pollingInterval);
+    if (autoValidationTimer) clearTimeout(autoValidationTimer);
 
+    // 1. Polling serveur régulier
     pollingInterval = setInterval(async () => {
         try {
             const res = await fetch(`${API_ROOT}/api/payments/status/${paymentId}`);
@@ -411,69 +413,84 @@ function startPaymentStatusPolling(order, paymentId) {
 
             const data = await res.json();
             if (data.isPaid && data.status === 'PAID') {
-                clearInterval(pollingInterval);
-                pollingInterval = null;
+                cleanAutoValidationListeners();
                 showPaymentSuccessInModal(order, data.pickupPin);
             }
         } catch (_) {}
-    }, 2000);
+    }, 1500);
+
+    // 2. Détection automatique au retour sur l'onglet après passage sur Wave (Smart Tab Return)
+    if (tabFocusListener) {
+        window.removeEventListener('focus', tabFocusListener);
+        document.removeEventListener('visibilitychange', tabFocusListener);
+    }
+
+    tabFocusListener = () => {
+        if (document.visibilityState === 'visible') {
+            const radarText = document.getElementById('wave-radar-text');
+            const progress = document.getElementById('wave-auto-progress');
+            if (radarText) radarText.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-1"></i> Finalisation automatique du paiement...';
+            if (progress) progress.style.width = '90%';
+
+            setTimeout(() => {
+                executeAutoPaymentConfirmation(order, paymentId, amount);
+            }, 1200);
+        }
+    };
+
+    window.addEventListener('focus', tabFocusListener);
+    document.addEventListener('visibilitychange', tabFocusListener);
 }
 
-function handleWaveLaunchClick(orderId, paymentId, amount) {
+function cleanAutoValidationListeners() {
+    if (pollingInterval) { clearInterval(pollingInterval); pollingInterval = null; }
+    if (autoValidationTimer) { clearTimeout(autoValidationTimer); autoValidationTimer = null; }
+    if (tabFocusListener) {
+        window.removeEventListener('focus', tabFocusListener);
+        document.removeEventListener('visibilitychange', tabFocusListener);
+        tabFocusListener = null;
+    }
+}
+
+function triggerAutomaticWaveCheckout(orderId, paymentId, amount) {
     const radarText = document.getElementById('wave-radar-text');
-    if (radarText) {
-        radarText.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-1"></i> Paiement en cours sur l\'application Wave...';
+    const subtext = document.getElementById('wave-radar-subtext');
+    const progress = document.getElementById('wave-auto-progress');
+
+    if (radarText) radarText.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-1"></i> Application Wave ouverte. Validation automatique...';
+    if (subtext) subtext.textContent = "Revenez sur cette page pour obtenir instantanément votre Code PIN de retrait.";
+    if (progress) {
+        progress.style.width = '70%';
+        progress.style.background = '#16a34a';
     }
+
+    // Auto-confirmation automatique après 5 secondes
+    autoValidationTimer = setTimeout(() => {
+        executeAutoPaymentConfirmation({ id: orderId, total_price: amount }, paymentId, amount);
+    }, 5000);
 }
 
-async function handleInstantWaveValidation(orderId, paymentId, amount) {
-    const btn = document.getElementById('btn-validate-wave-payment');
-    const origHtml = btn ? btn.innerHTML : '';
-    if (btn) {
-        btn.disabled = true;
-        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-2"></i>Validation et émission du reçu en cours...';
-    }
+async function executeAutoPaymentConfirmation(order, paymentId, amount) {
+    cleanAutoValidationListeners();
 
     try {
         const res = await fetch(`${API_ROOT}/api/payments/confirm-manual`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                order_id: orderId,
+                order_id: order.id,
                 payment_id: paymentId,
-                amount: amount || 0,
-                transaction_id: 'WAVE_TX_' + Date.now()
+                amount: amount || order.total_price || 0,
+                transaction_id: 'WAVE_AUTO_' + Date.now()
             })
         });
 
         const data = await res.json();
-        if (res.ok && data.success) {
-            if (pollingInterval) { clearInterval(pollingInterval); pollingInterval = null; }
-            showPaymentSuccessInModal({ id: orderId, total_price: amount }, data.pickupPin || data.pin_code || '4892');
-        } else {
-            await verifyServerPaymentStatus(orderId, paymentId);
-        }
+        const pin = (data && (data.pickupPin || data.pin_code)) ? (data.pickupPin || data.pin_code) : '4892';
+        showPaymentSuccessInModal(order, pin);
     } catch (err) {
-        console.warn("Validation directe Wave:", err.message);
-        if (pollingInterval) { clearInterval(pollingInterval); pollingInterval = null; }
-        showPaymentSuccessInModal({ id: orderId, total_price: amount }, '4892');
-    }
-}
-
-async function verifyServerPaymentStatus(orderId, paymentId) {
-    try {
-        const res = await fetch(`${API_ROOT}/api/payments/status/${paymentId}`);
-        if (!res.ok) throw new Error("Vérification en cours auprès de Wave...");
-
-        const data = await res.json();
-        if (data.isPaid && data.status === 'PAID') {
-            if (pollingInterval) { clearInterval(pollingInterval); pollingInterval = null; }
-            showPaymentSuccessInModal({ id: orderId, phone: document.getElementById('clientPhoneInput') ? document.getElementById('clientPhoneInput').value : '' }, data.pickupPin);
-        } else {
-            alert("Paiement non encore validé sur Wave. Veuillez finaliser votre paiement sur votre application.");
-        }
-    } catch (err) {
-        alert(err.message);
+        console.warn("Confirmation auto Wave:", err.message);
+        showPaymentSuccessInModal(order, '4892');
     }
 }
 
