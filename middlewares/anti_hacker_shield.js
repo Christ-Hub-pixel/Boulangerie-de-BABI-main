@@ -90,10 +90,22 @@ class UniversalAntiHackerShield {
     }
 
     /**
+     * Détermine si une IP est locale ou privée (LAN/Démo/Admin)
+     */
+    isLocalOrPrivateIp(ip) {
+        if (!ip) return true;
+        if (ip === '127.0.0.1' || ip === '::1' || ip === 'localhost') return true;
+        if (ip.includes('127.0.0.1') || ip.includes('::1') || ip.startsWith('192.168.') || ip.startsWith('10.') || ip.startsWith('172.') || ip.startsWith('fe80:') || ip.startsWith('::ffff:')) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
      * Vérifie si l'adresse IP est actuellement bannie
      */
     isIpBlocked(ip) {
-        if (!ip || ip === '127.0.0.1' || ip === '::1' || ip === 'localhost' || ip.includes('127.0.0.1')) {
+        if (this.isLocalOrPrivateIp(ip)) {
             return false;
         }
         const entry = this.blacklistedIps.get(ip);
@@ -109,7 +121,7 @@ class UniversalAntiHackerShield {
      * Banne une IP malveillante avec escalade exponentielle
      */
     banIp(ip, reason, category, durationMinutes = 60) {
-        if (!ip || ip === '127.0.0.1' || ip === '::1' || ip === 'localhost' || ip.includes('127.0.0.1')) {
+        if (this.isLocalOrPrivateIp(ip)) {
             return;
         }
         const existing = this.blacklistedIps.get(ip) || { attempts: 0 };
@@ -174,6 +186,11 @@ class UniversalAntiHackerShield {
         return (req, res, next) => {
             const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || '127.0.0.1';
             const userAgent = (req.headers['user-agent'] || '').toLowerCase();
+
+            // Immunité totale et immédiate pour tout le trafic local / LAN / Démo
+            if (this.isLocalOrPrivateIp(ip)) {
+                return next();
+            }
 
             // 1. Contrôle IP Bannie
             const banInfo = this.isIpBlocked(ip);
