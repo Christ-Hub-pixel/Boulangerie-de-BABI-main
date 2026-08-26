@@ -2,7 +2,7 @@
 // BABI ADMIN COCKPIT & WAVE PAYOUT v1 CONTROLLER
 // ================================================================
 
-const API_ROOT = (typeof window !== 'undefined' && (window.API_BASE_URL || (window.location.hostname.includes('boulangeriedebabi.com') ? 'https://api.boulangeriedebabi.com' : 'http://localhost:5000'))) || 'http://localhost:5000';
+const API_ROOT = (typeof window !== 'undefined' && window.API_BASE_URL) ? window.API_BASE_URL : '';
 
 let allOrders = [];
 let allProducts = [];
@@ -920,8 +920,17 @@ function closeAddProductModal() {
     document.getElementById('addProductModal')?.classList.add('hidden');
 }
 
+async function parseSafeResponse(res) {
+    const text = await res.text();
+    try {
+        return JSON.parse(text);
+    } catch (_) {
+        return { error: text || `Erreur HTTP ${res.status}` };
+    }
+}
+
 async function handleCreateProduct(e) {
-    e.preventDefault();
+    if (e && e.preventDefault) e.preventDefault();
     const nom = document.getElementById('new-prod-name')?.value.trim();
     const categorie = document.getElementById('new-prod-category')?.value;
     const prix = Number(document.getElementById('new-prod-price')?.value);
@@ -931,7 +940,7 @@ async function handleCreateProduct(e) {
     const image = document.getElementById('new-prod-image-data')?.value || 'assets/product_baguette.png';
 
     if (!nom || !prix || !categorie) {
-        alert("Veuillez remplir tous les champs obligatoires (Nom, Catégorie, Prix).");
+        showAdminToast("Veuillez remplir tous les champs obligatoires (Nom, Catégorie, Prix).", "warning");
         return;
     }
 
@@ -941,16 +950,16 @@ async function handleCreateProduct(e) {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ nom, categorie, prix, stock, seuil_alerte, description, image })
         });
+        const data = await parseSafeResponse(res);
         if (res.ok) {
             showAdminToast(`🎉 Produit "${nom}" ajouté avec succès au catalogue !`, 'success');
             closeAddProductModal();
             await loadProducts();
         } else {
-            const err = await res.json();
-            alert("Erreur : " + (err.error || "Impossible d'ajouter le produit."));
+            showAdminToast("Erreur : " + (data.error || "Impossible d'ajouter le produit."), 'danger');
         }
     } catch (err) {
-        alert("Erreur de connexion : " + err.message);
+        showAdminToast("Erreur de communication : " + err.message, 'danger');
     }
 }
 
@@ -958,7 +967,7 @@ async function handleCreateProduct(e) {
 function openEditProductModal(productId) {
     const product = allProducts.find(p => p.id === productId || String(p.id) === String(productId));
     if (!product) {
-        alert("Produit introuvable.");
+        showAdminToast("Produit introuvable.", "warning");
         return;
     }
 
@@ -1001,7 +1010,7 @@ function closeEditProductModal() {
 }
 
 async function handleUpdateProduct(e) {
-    e.preventDefault();
+    if (e && e.preventDefault) e.preventDefault();
     const id = document.getElementById('edit-prod-id')?.value;
     const nom = document.getElementById('edit-prod-name')?.value.trim();
     const categorie = document.getElementById('edit-prod-category')?.value;
@@ -1013,7 +1022,7 @@ async function handleUpdateProduct(e) {
     const image = document.getElementById('edit-prod-image-data')?.value;
 
     if (!id || !nom || !prix || !categorie) {
-        alert("Veuillez remplir les informations requises.");
+        showAdminToast("Veuillez remplir les informations requises (Nom, Catégorie, Prix).", "warning");
         return;
     }
 
@@ -1023,16 +1032,16 @@ async function handleUpdateProduct(e) {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ nom, categorie, prix, stock, seuil_alerte, is_active, description, image })
         });
+        const data = await parseSafeResponse(res);
         if (res.ok) {
             showAdminToast(`✨ Produit "${nom}" mis à jour avec succès !`, 'success');
             closeEditProductModal();
             await loadProducts();
         } else {
-            const err = await res.json();
-            alert("Erreur : " + (err.error || "Impossible de modifier le produit."));
+            showAdminToast("Erreur : " + (data.error || "Impossible de modifier le produit."), 'danger');
         }
     } catch (err) {
-        alert("Erreur de communication : " + err.message);
+        showAdminToast("Erreur de communication : " + err.message, 'danger');
     }
 }
 
@@ -1042,15 +1051,15 @@ async function handleToggleProductStatus(id) {
         const res = await fetch(`${API_ROOT}/api/products/${id}/toggle-status`, {
             method: 'PATCH'
         });
+        const data = await parseSafeResponse(res);
         if (res.ok) {
-            const data = await res.json();
             showAdminToast(data.message || "Statut du produit modifié.", 'info');
             await loadProducts();
         } else {
-            alert("Erreur lors de la modification du statut.");
+            showAdminToast("Erreur : " + (data.error || "Impossible de modifier le statut."), "danger");
         }
     } catch (err) {
-        console.error(err);
+        showAdminToast("Erreur de communication : " + err.message, "danger");
     }
 }
 
@@ -1069,11 +1078,12 @@ async function handleDeleteProduct(id) {
         onConfirm: async () => {
             try {
                 const res = await fetch(`${API_ROOT}/api/products/${id}`, { method: 'DELETE' });
+                const data = await parseSafeResponse(res);
                 if (res.ok) {
                     showAdminToast(`🗑️ "${prodName}" a été retiré du catalogue.`, 'info');
                     await loadProducts();
                 } else {
-                    showAdminToast("Erreur lors de la suppression du produit.", "danger");
+                    showAdminToast("Erreur : " + (data.error || "Suppression impossible."), "danger");
                 }
             } catch (err) {
                 showAdminToast("Erreur : " + err.message, "danger");

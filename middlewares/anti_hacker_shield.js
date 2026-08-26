@@ -33,51 +33,46 @@ class UniversalAntiHackerShield {
             // ==========================================
             // 1. INJECTIONS SQL & NOSQL (SQLi / NoSQLi)
             // ==========================================
-            { pattern: /(\b(union\s+select|select\s+.*?\s+from|insert\s+into|delete\s+from|drop\s+table|drop\s+database|truncate\s+table|alter\s+table)\b)/i, type: "SQL_INJECTION_DML", category: "SQLi" },
-            { pattern: /('|\%27|")\s*(or|and)\s*('|\%27|"|\d+=\d+|\w+=\w+)/i, type: "SQL_INJECTION_AUTH_BYPASS", category: "SQLi" },
-            { pattern: /(sleep\(|benchmark\(|waitfor\s+delay|pg_sleep\(|dbms_pipe\.receive_message)/i, type: "SQL_INJECTION_TIMING_BLIND", category: "SQLi" },
-            { pattern: /(--|\/\*|\*\/|@@version|0x[0-9a-f]{4,}|char\(\d+\)|concat\(|load_file\()/i, type: "SQL_INJECTION_EXPLOIT_CHARS", category: "SQLi" },
-            { pattern: /(\$where|\$ne|\$gt|\$gte|\$regex|\$exists|\$jsonSchema)/i, type: "NOSQL_OPERATOR_INJECTION", category: "SQLi" },
+            { pattern: /(\b(union\s+select|select\s+.*?\s+from\s+information_schema|insert\s+into\s+users|drop\s+database|truncate\s+table)\b)/i, type: "SQL_INJECTION_DML", category: "SQLi" },
+            { pattern: /(sleep\(\d+\)|benchmark\(\d+,|waitfor\s+delay|pg_sleep\(\d+\)|dbms_pipe\.receive_message)/i, type: "SQL_INJECTION_TIMING_BLIND", category: "SQLi" },
+            { pattern: /(@@version|0x[0-9a-f]{6,}|load_file\()/i, type: "SQL_INJECTION_EXPLOIT_CHARS", category: "SQLi" },
+            { pattern: /(\$where\b|\$jsonSchema\b)/i, type: "NOSQL_OPERATOR_INJECTION", category: "SQLi" },
 
             // ==========================================
             // 2. EXÉCUTION DE COMMANDES (RCE / SHELL)
             // ==========================================
-            { pattern: /(;\s*(ls|cat|whoami|id|uname|dir|type|powershell|cmd\.exe|wget|curl|nc|bash|sh|kill|netcat|ncat|python|perl|ruby)\b)/i, type: "COMMAND_INJECTION_CHAINED", category: "RCE" },
-            { pattern: /(\|\s*(ls|cat|whoami|id|uname|dir|powershell|cmd\.exe|bash|sh)\b)/i, type: "COMMAND_INJECTION_PIPE", category: "RCE" },
-            { pattern: /(`.*?`|\$\(.*?\)|<\(.*?\))/i, type: "COMMAND_INJECTION_SUBSTITUTION", category: "RCE" },
-            { pattern: /(phpinfo\(\)|base64_decode\(|eval\(|system\(|passthru\(|shell_exec\(|exec\(|popen\()/i, type: "WEB_SHELL_PAYLOAD", category: "RCE" },
+            { pattern: /(;\s*(uname|whoami|powershell\.exe|cmd\.exe|wget|curl|nc|bash\s+-i|ncat)\b)/i, type: "COMMAND_INJECTION_CHAINED", category: "RCE" },
+            { pattern: /(\|\s*(whoami|powershell\.exe|cmd\.exe|bash\s+-i)\b)/i, type: "COMMAND_INJECTION_PIPE", category: "RCE" },
+            { pattern: /(phpinfo\(\)|eval\(\$_|system\(\$_|shell_exec\(\$_|passthru\(\$_)/i, type: "WEB_SHELL_PAYLOAD", category: "RCE" },
 
             // ==========================================
             // 3. SERVER-SIDE TEMPLATE INJECTION (SSTI)
             // ==========================================
-            { pattern: /(\{\{.*?\}\}|\$\{.*?\}|\#\{.*?\}|<%.*?%>)/i, type: "TEMPLATE_INJECTION_SYNTAX", category: "SSTI" },
             { pattern: /(\b(__class__|__mro__|__subclasses__|__globals__|__builtins__)\b)/i, type: "PYTHON_SANDBOX_ESCAPE", category: "SSTI" },
 
             // ==========================================
             // 4. PATH TRAVERSAL & LFI/RFI (LOCAL/REMOTE FILE)
             // ==========================================
             { pattern: /(\.\.\/|\.\.\\|%2e%2e%2f|%2e%2e\/|\.\.%2f|%252e%252e%252f)/i, type: "PATH_TRAVERSAL_DOT_DOT", category: "LFI" },
-            { pattern: /(\/etc\/passwd|\/etc\/shadow|\/proc\/self|\/dev\/tcp|c:\\windows\\system32|win\.ini|boot\.ini|web\.config)/i, type: "SENSITIVE_OS_FILE_ACCESS", category: "LFI" },
-            { pattern: /(php:\/\/input|php:\/\/filter|data:\/\/text\/plain|file:\/\/|expect:\/\/)/i, type: "PHP_WRAPPER_EXPLOITATION", category: "LFI" },
+            { pattern: /(\/etc\/passwd|\/etc\/shadow|\/proc\/self\/environ|win\.ini|boot\.ini)/i, type: "SENSITIVE_OS_FILE_ACCESS", category: "LFI" },
+            { pattern: /(php:\/\/input|php:\/\/filter|data:\/\/text\/plain)/i, type: "PHP_WRAPPER_EXPLOITATION", category: "LFI" },
 
             // ==========================================
             // 5. CROSS-SITE SCRIPTING (XSS) & POLYGLOTS
             // ==========================================
             { pattern: /(<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>)/i, type: "XSS_SCRIPT_TAG", category: "XSS" },
-            { pattern: /(javascript:|vbscript:|data:text\/html|expression\(|document\.cookie|document\.domain|window\.location|alert\(|prompt\(|confirm\()/i, type: "XSS_JAVASCRIPT_URI", category: "XSS" },
-            { pattern: /(onload\s*=|onerror\s*=|onclick\s*=|onmouseover\s*=|onfocus\s*=|onblur\s*=|svg\s+onload|body\s+onload)/i, type: "XSS_EVENT_HANDLER", category: "XSS" },
-            { pattern: /(jaVasCript:|eval\(|Function\(|setTimeout\(|setInterval\()/i, type: "XSS_OBFUSCATED_CALL", category: "XSS" },
+            { pattern: /(javascript:\s*alert|vbscript:|data:text\/html)/i, type: "XSS_JAVASCRIPT_URI", category: "XSS" },
+            { pattern: /(svg\s+onload|body\s+onload)/i, type: "XSS_EVENT_HANDLER", category: "XSS" },
 
             // ==========================================
             // 6. SSRF & FUITE DE METADONNÉES CLOUD
             // ==========================================
-            { pattern: /(169\.254\.169\.254|metadata\.google\.internal|100\.100\.100\.200|instance-data|latest\/meta-data)/i, type: "SSRF_CLOUD_METADATA_STEALING", category: "SSRF" },
-            { pattern: /(127\.0\.0\.1|localhost|0\.0\.0\.0|::1|0177\.0\.0\.1|2130706433)/i, type: "SSRF_LOCAL_LOOPBACK_PROBING", category: "SSRF" },
+            { pattern: /(169\.254\.169\.254|metadata\.google\.internal|100\.100\.100\.200|latest\/meta-data)/i, type: "SSRF_CLOUD_METADATA_STEALING", category: "SSRF" },
 
             // ==========================================
             // 7. PROTOTYPE POLLUTION & POLLUTION D'OBJETS
             // ==========================================
-            { pattern: /(__proto__|constructor\.prototype|prototype\.)/i, type: "PROTOTYPE_POLLUTION_ATTACK", category: "PrototypePollution" },
+            { pattern: /(__proto__|constructor\.prototype)/i, type: "PROTOTYPE_POLLUTION_ATTACK", category: "PrototypePollution" },
 
             // ==========================================
             // 8. CRLF & HTTP HEADER SPLITTING
@@ -87,9 +82,9 @@ class UniversalAntiHackerShield {
 
         // 🤖 Empreintes de Scanners & Outils de Hack à Rejeter
         this.hackerToolSignatures = [
-            'sqlmap', 'nikto', 'burp', 'burpcollaborator', 'wpscan', 'acunetix',
+            'sqlmap', 'nikto', 'burpcollaborator', 'wpscan', 'acunetix',
             'nessus', 'openvas', 'gobuster', 'dirbuster', 'ffuf', 'nuclei',
-            'nmap', 'masscan', 'shodan', 'censys', 'metasploit', 'hydra',
+            'masscan', 'censys', 'metasploit', 'hydra',
             'arachni', 'zaproxy', 'havij', 'pangolin', 'commix'
         ];
     }
@@ -98,6 +93,9 @@ class UniversalAntiHackerShield {
      * Vérifie si l'adresse IP est actuellement bannie
      */
     isIpBlocked(ip) {
+        if (!ip || ip === '127.0.0.1' || ip === '::1' || ip === 'localhost' || ip.includes('127.0.0.1')) {
+            return false;
+        }
         const entry = this.blacklistedIps.get(ip);
         if (!entry) return false;
         if (Date.now() > entry.blockedUntil) {
@@ -111,6 +109,9 @@ class UniversalAntiHackerShield {
      * Banne une IP malveillante avec escalade exponentielle
      */
     banIp(ip, reason, category, durationMinutes = 60) {
+        if (!ip || ip === '127.0.0.1' || ip === '::1' || ip === 'localhost' || ip.includes('127.0.0.1')) {
+            return;
+        }
         const existing = this.blacklistedIps.get(ip) || { attempts: 0 };
         existing.attempts += 1;
         existing.reason = reason;
@@ -141,6 +142,10 @@ class UniversalAntiHackerShield {
      */
     inspectPayload(content) {
         if (typeof content === 'string') {
+            // Ignorer les blobs images base64 ou URLs internes
+            if (content.startsWith('data:image/') || content.startsWith('assets/')) {
+                return null;
+            }
             for (const sig of this.attackSignatures) {
                 if (sig.pattern.test(content)) {
                     return { type: sig.type, category: sig.category };
