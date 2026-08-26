@@ -1309,14 +1309,23 @@ function initSaasCharts() {
         greenGrad.addColorStop(0, 'rgba(22, 163, 74, 0.22)');
         greenGrad.addColorStop(1, 'rgba(22, 163, 74, 0.0)');
 
+        const days = [];
+        const months = ['Janv', 'Févr', 'Mars', 'Avr', 'Mai', 'Juin', 'Juil', 'Août', 'Sept', 'Oct', 'Nov', 'Déc'];
+        const now = new Date();
+        for (let i = 5; i >= 0; i--) {
+            const d = new Date(now);
+            d.setDate(d.getDate() - i);
+            days.push(d.getDate() + ' ' + months[d.getMonth()]);
+        }
+
         resEvolutionChartInstance = new Chart(ctx, {
             type: 'line',
             data: {
-                labels: ['18 Août', '19 Août', '20 Août', '21 Août', '22 Août', '23 Août'],
+                labels: days,
                 datasets: [
                     {
                         label: 'Commandes',
-                        data: [15, 24, 38, 42, 55, 68],
+                        data: [0, 0, 0, 0, 0, 0],
                         borderColor: '#ea580c',
                         backgroundColor: orangeGrad,
                         borderWidth: 2.5,
@@ -1325,7 +1334,7 @@ function initSaasCharts() {
                     },
                     {
                         label: 'Servies',
-                        data: [12, 20, 32, 38, 48, 60],
+                        data: [0, 0, 0, 0, 0, 0],
                         borderColor: '#16a34a',
                         backgroundColor: greenGrad,
                         borderWidth: 2.5,
@@ -1340,7 +1349,12 @@ function initSaasCharts() {
                 plugins: { legend: { display: false } },
                 scales: {
                     x: { grid: { display: false } },
-                    y: { grid: { color: '#f1f5f9' } }
+                    y: { 
+                        beginAtZero: true,
+                        suggestedMax: 10,
+                        grid: { color: '#f1f5f9' },
+                        ticks: { stepSize: 1 }
+                    }
                 }
             }
         });
@@ -1356,7 +1370,7 @@ function initSaasCharts() {
             data: {
                 labels: ['Nouvelles', 'En préparation', 'Prêtes', 'Livrées'],
                 datasets: [{
-                    data: [10, 15, 25, 50],
+                    data: [0, 0, 0, 0],
                     backgroundColor: ['#3b82f6', '#a855f7', '#22c55e', '#06b6d4'],
                     borderWidth: 2,
                     borderColor: '#ffffff'
@@ -1373,26 +1387,65 @@ function initSaasCharts() {
 }
 
 function updateChartsWithRealData() {
-    if (!statusDonutChartInstance) return;
-    const newCount = allOrders.filter(o => o.status === 'nouveau' || o.status === 'en_attente_paiement').length;
-    const prepCount = allOrders.filter(o => o.status === 'en_preparation' || o.status === 'en preparation' || o.status === 'payee_en_preparation').length;
-    const pretCount = allOrders.filter(o => o.status === 'pret' || o.status === 'prete').length;
-    const livreCount = allOrders.filter(o => o.status === 'livre' || o.status === 'livré' || o.status === 'recupere').length;
+    // 1. Mise à jour du graphe d'évolution linéaire
+    if (resEvolutionChartInstance) {
+        const days = [];
+        const ordersPerDay = [0, 0, 0, 0, 0, 0];
+        const servedPerDay = [0, 0, 0, 0, 0, 0];
+        const months = ['Janv', 'Févr', 'Mars', 'Avr', 'Mai', 'Juin', 'Juil', 'Août', 'Sept', 'Oct', 'Nov', 'Déc'];
+        const now = new Date();
 
-    statusDonutChartInstance.data.datasets[0].data = [newCount, prepCount, pretCount, livreCount];
-    statusDonutChartInstance.update();
+        for (let i = 5; i >= 0; i--) {
+            const d = new Date(now);
+            d.setDate(d.getDate() - i);
+            days.push(d.getDate() + ' ' + months[d.getMonth()]);
+        }
 
-    const donutTotalEl = document.getElementById('donut-total-count');
-    if (donutTotalEl) donutTotalEl.textContent = allOrders.length;
+        if (Array.isArray(allOrders)) {
+            allOrders.forEach(o => {
+                if (!o.created_at) return;
+                const oDate = new Date(o.created_at);
+                const diffTime = now.setHours(0,0,0,0) - new Date(oDate).setHours(0,0,0,0);
+                const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
+                if (diffDays >= 0 && diffDays < 6) {
+                    const idx = 5 - diffDays;
+                    ordersPerDay[idx]++;
+                    const s = String(o.status || '').toLowerCase();
+                    if (s.includes('livr') || s.includes('recup') || s.includes('serv')) {
+                        servedPerDay[idx]++;
+                    }
+                }
+            });
+        }
 
-    const legendEl = document.getElementById('donut-status-legend');
-    if (legendEl) {
-        legendEl.innerHTML = `
-            <div class="d-flex justify-content-between"><span><span class="saas-legend-dot" style="background:#3b82f6;"></span> Nouvelles</span><strong>${newCount}</strong></div>
-            <div class="d-flex justify-content-between"><span><span class="saas-legend-dot" style="background:#a855f7;"></span> Préparation</span><strong>${prepCount}</strong></div>
-            <div class="d-flex justify-content-between"><span><span class="saas-legend-dot" style="background:#22c55e;"></span> Prêtes</span><strong>${pretCount}</strong></div>
-            <div class="d-flex justify-content-between"><span><span class="saas-legend-dot" style="background:#06b6d4;"></span> Servies</span><strong>${livreCount}</strong></div>
-        `;
+        resEvolutionChartInstance.data.labels = days;
+        resEvolutionChartInstance.data.datasets[0].data = ordersPerDay;
+        resEvolutionChartInstance.data.datasets[1].data = servedPerDay;
+        resEvolutionChartInstance.update();
+    }
+
+    // 2. Mise à jour du Donut
+    if (statusDonutChartInstance) {
+        const newCount = allOrders.filter(o => o.status === 'nouveau' || o.status === 'en_attente_paiement').length;
+        const prepCount = allOrders.filter(o => o.status === 'en_preparation' || o.status === 'en preparation' || o.status === 'payee_en_preparation').length;
+        const pretCount = allOrders.filter(o => o.status === 'pret' || o.status === 'prete').length;
+        const livreCount = allOrders.filter(o => o.status === 'livre' || o.status === 'livré' || o.status === 'recupere').length;
+
+        statusDonutChartInstance.data.datasets[0].data = (allOrders.length === 0) ? [0, 0, 0, 0] : [newCount, prepCount, pretCount, livreCount];
+        statusDonutChartInstance.update();
+
+        const donutTotalEl = document.getElementById('donut-total-count');
+        if (donutTotalEl) donutTotalEl.textContent = allOrders.length;
+
+        const legendEl = document.getElementById('donut-status-legend');
+        if (legendEl) {
+            legendEl.innerHTML = `
+                <div class="d-flex justify-content-between"><span><span class="saas-legend-dot" style="background:#3b82f6;"></span> Nouvelles</span><strong>${newCount}</strong></div>
+                <div class="d-flex justify-content-between"><span><span class="saas-legend-dot" style="background:#a855f7;"></span> Préparation</span><strong>${prepCount}</strong></div>
+                <div class="d-flex justify-content-between"><span><span class="saas-legend-dot" style="background:#22c55e;"></span> Prêtes</span><strong>${pretCount}</strong></div>
+                <div class="d-flex justify-content-between"><span><span class="saas-legend-dot" style="background:#06b6d4;"></span> Servies</span><strong>${livreCount}</strong></div>
+            `;
+        }
     }
 }
 
