@@ -62,7 +62,7 @@ function showStoreClosedModal(actionContext = 'action') {
                             <i class="fa-solid fa-moon"></i>
                         </div>
                         <div>
-                            <h4 style="margin: 0; font-family: 'Playfair Display', Georgia, serif; font-size: 20px; font-weight: 800; color: #ffffff;">Fournil Actuellement Fermé</h4>
+                            <h4 style="margin: 0; font-family: 'Playfair Display', Georgia, serif; font-size: 20px; font-weight: 800; color: #ffffff;">Boulangerie Actuellement Fermée</h4>
                             <span style="display: inline-block; margin-top: 3px; font-size: 12px; font-weight: 700; color: #fbbf24; background: rgba(245, 158, 11, 0.18); padding: 2px 8px; border-radius: 6px;">
                                 <i class="fa-regular fa-clock me-1"></i> Horaires : 05h45 – 23h00 (7j/7)
                             </span>
@@ -86,8 +86,8 @@ function showStoreClosedModal(actionContext = 'action') {
                         <div style="font-weight: 700; color: #92400e; margin-bottom: 6px; display: flex; align-items: center; gap: 6px;">
                             <i class="fa-solid fa-circle-info"></i> Informations de service :
                         </div>
-                        <div style="color: #451a03; margin-bottom: 4px;">• <strong>Ouverture du fournil :</strong> Dès 05h45 du matin</div>
-                        <div style="color: #451a03; margin-bottom: 4px;">• <strong>Fermeture du fournil :</strong> À 23h00</div>
+                        <div style="color: #451a03; margin-bottom: 4px;">• <strong>Ouverture de la boulangerie :</strong> Dès 05h45 du matin</div>
+                        <div style="color: #451a03; margin-bottom: 4px;">• <strong>Fermeture de la boulangerie :</strong> À 23h00</div>
                         <div style="color: #b45309; font-weight: 600; margin-top: 6px;">
                             <i class="fa-solid fa-fire text-danger"></i> Sorties de pain chaud : 06h00 • 09h00 • 14h00 • 17h00 • 18h00
                         </div>
@@ -125,37 +125,9 @@ function checkStoreBeforeAction(actionName, onAllowedCallback) {
 }
 
 function renderStoreStatusBanner() {
-    const isClosed = !isStoreOpen();
-    let banner = document.getElementById('babiStoreClosedGlobalBanner');
-    
-    if (isClosed) {
-        if (!banner) {
-            banner = document.createElement('div');
-            banner.id = 'babiStoreClosedGlobalBanner';
-            banner.style.cssText = `
-                background: linear-gradient(90deg, #1f1008, #431d0e);
-                color: #fed7aa;
-                padding: 8px 16px;
-                font-size: 12.5px;
-                font-weight: 600;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                gap: 10px;
-                border-bottom: 2px solid #f59e0b;
-                position: relative;
-                z-index: 1050;
-                text-align: center;
-            `;
-            banner.innerHTML = `
-                <span><i class="fa-solid fa-moon text-warning me-1"></i> Le fournil est actuellement <strong>fermé</strong> (Horaires : <strong>05h45 – 23h00</strong>). Réouverture à 05h45 !</span>
-                <button type="button" onclick="showStoreClosedModal('banner')" style="background: rgba(245, 158, 11, 0.25); border: 1px solid #fbbf24; color: #fbbf24; border-radius: 6px; padding: 2px 8px; font-size: 11px; font-weight: 700; cursor: pointer;">Détails</button>
-            `;
-            document.body.insertBefore(banner, document.body.firstChild);
-        }
-    } else {
-        if (banner) banner.remove();
-    }
+    // Le bandeau permanent intrusif est supprimé pour préserver une interface propre et professionnelle.
+    const existing = document.getElementById('babiStoreClosedGlobalBanner');
+    if (existing) existing.remove();
 }
 
 document.addEventListener('DOMContentLoaded', () => {

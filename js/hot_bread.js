@@ -205,7 +205,7 @@
 
     document.addEventListener('DOMContentLoaded', () => {
         updateHotBreadWidget();
-        setInterval(updateHotBreadWidget, 1000);
+        setInterval(updateHotBreadWidget, 15000);
     });
 
 })();

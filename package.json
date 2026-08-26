@@ -6,12 +6,19 @@
   "scripts": {
     "start": "node server.js"
   },
-  "keywords": ["boulangerie", "babi", "abidjan", "saas", "pos"],
+  "keywords": [
+    "boulangerie",
+    "babi",
+    "abidjan",
+    "saas",
+    "pos"
+  ],
   "author": "Christ-Hub-pixel",
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
     "bcrypt": "^6.0.0",
+    "compression": "^1.8.1",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",

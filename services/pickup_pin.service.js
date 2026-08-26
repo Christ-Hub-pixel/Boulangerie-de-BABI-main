@@ -48,8 +48,8 @@ class PickupPinService {
      */
     async lookupOrderDetailsByPin(db, enteredPin) {
         const cleanPin = String(enteredPin || '').trim();
-        if (!cleanPin || cleanPin.length < 3) {
-            return { success: false, error: "Code PIN invalide (au moins 3 chiffres requis)." };
+        if (!cleanPin || cleanPin.length < 4) {
+            return { success: false, error: "Code PIN invalide (4 chiffres requis)." };
         }
 
         const paddedPin = cleanPin.padStart(4, '0');

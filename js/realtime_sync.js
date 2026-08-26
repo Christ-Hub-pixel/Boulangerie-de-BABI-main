@@ -94,7 +94,7 @@
         }
     }
 
-    // 3. Fallback Polling (Every 8 seconds)
+    // 3. Fallback Polling (Every 30 seconds)
     function startFallbackPolling() {
         if (pollInterval) return;
         pollInterval = setInterval(async () => {

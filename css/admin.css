@@ -794,21 +794,21 @@ h1, h2, h3, .font-headline-lg, .font-display-lg, .font-headline-md {
    PRESTIGE LUXURY TOPBAR
    ============================================================= */
 .prestige-topbar {
-    position: fixed;
+    position: sticky;
     top: 0;
-    left: 18rem;
-    right: 0;
-    height: 5rem;
-    background: rgba(252, 249, 242, 0.92) !important;
+    width: 100%;
+    height: 72px;
+    background: rgba(252, 249, 242, 0.94) !important;
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
     border-bottom: 1px solid rgba(214, 199, 171, 0.6) !important;
     box-shadow: 0 4px 20px rgba(43, 22, 12, 0.03);
     z-index: 40;
-    padding: 0 2rem;
+    padding: 0 1.5rem;
     display: flex;
     align-items: center;
     justify-content: space-between;
+    box-sizing: border-box;
 }
 
 .prestige-search-box {
@@ -2853,11 +2853,10 @@ img.profile-avatar, .profile-avatar, img.logo-avatar, .logo-avatar {
 }
 
 .prestige-topbar {
-    position: fixed !important;
+    position: sticky !important;
     top: 0 !important;
-    right: 0 !important;
-    left: 18rem !important; /* 72 = 18rem width of sidebar */
-    height: 76px !important;
+    width: 100% !important;
+    height: 72px !important;
     background: rgba(251, 248, 241, 0.94) !important;
     backdrop-filter: blur(14px) !important;
     -webkit-backdrop-filter: blur(14px) !important;
@@ -2866,8 +2865,9 @@ img.profile-avatar, .profile-avatar, img.logo-avatar, .logo-avatar {
     display: flex !important;
     align-items: center !important;
     justify-content: space-between !important;
-    padding: 0 32px !important;
+    padding: 0 24px !important;
     z-index: 40 !important;
+    box-sizing: border-box !important;
 }
 
 .magazine-search-pill, .prestige-search-box {
@@ -3444,6 +3444,25 @@ img.profile-avatar, .profile-avatar, img.logo-avatar, .logo-avatar {
         height: auto !important;
         min-height: 56px !important;
         gap: 8px !important;
+    }
+
+    .prestige-topbar {
+        left: 0 !important;
+        width: 100% !important;
+        max-width: 100vw !important;
+        padding: 8px 14px !important;
+        flex-wrap: wrap !important;
+        height: auto !important;
+        min-height: 56px !important;
+        gap: 8px !important;
+        box-sizing: border-box !important;
+    }
+
+    .pl-72 {
+        padding-left: 0 !important;
+        width: 100% !important;
+        max-width: 100vw !important;
+        overflow-x: hidden !important;
     }
 
     .saas-topbar-subtitle {

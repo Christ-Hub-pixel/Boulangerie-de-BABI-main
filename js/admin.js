@@ -16,6 +16,15 @@ let resEvolutionChartInstance = null;
 let statusDonutChartInstance = null;
 
 document.addEventListener('DOMContentLoaded', () => {
+    // 0. Nettoyage initial unique des anciens caches de test
+    try {
+        if (localStorage.getItem('babi_admin_fresh_v2') !== 'true') {
+            localStorage.removeItem('babi_admin_cached_orders');
+            localStorage.removeItem('babi_admin_mock_stats');
+            localStorage.setItem('babi_admin_fresh_v2', 'true');
+        }
+    } catch (_) {}
+
     // 1. Initialiser la navigation par onglets SPA
     initAdminNavigation();
 
@@ -39,13 +48,13 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // 5. Polling de rafraîchissement automatique toutes les 8 secondes
-    setInterval(fetchAdminData, 8000);
+    // 5. Polling de rafraîchissement intelligent (Événementiel + fallback 30s)
+    setInterval(fetchAdminData, 30000);
 
     // 6. BABI Brain Engine (BBE v3.0) — Flux IA et Prévisions Business
     initAdminBrainFeed();
     fetchAdminAiBusinessForecast();
-    setInterval(fetchAdminAiBusinessForecast, 30000);
+    setInterval(fetchAdminAiBusinessForecast, 180000);
 });
 
 // ================================================================
@@ -1697,7 +1706,7 @@ function startAdminBrainPolling() {
                 }
             }
         } catch (_) {}
-    }, 4000);
+    }, 25000);
 }
 
 function handleAdminIncomingAiEvent(evt) {

@@ -1,6 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
+const compression = require('compression');
 const path = require('path');
 const crypto = require('crypto');
 const { initDB } = require('./db.js');
@@ -31,6 +32,7 @@ const aiAssistantCopilot = require('./services/ai_assistant_copilot.service.js')
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+app.use(compression()); // ⚡ Accélération Gzip ultra-rapide
 app.use(cors());
 app.use(express.json({ limit: '1mb' }));
 app.use(express.urlencoded({ extended: true, limit: '1mb' }));
@@ -38,8 +40,8 @@ app.use(securityHardener); // WAF & En-têtes souverains
 app.use(antiHackerShield.middleware()); // 🛡️ Bouclier Anti-Hacker IDS/IPS (SQLi, RCE, XSS, Path Traversal)
 
 // 📱 Service des fichiers statiques Web et de l'application mobile Flutter
-app.use(express.static(path.resolve(__dirname)));
-app.use('/flutter', express.static(path.resolve(__dirname, '../babi_flutter_web/build/web')));
+app.use(express.static(path.resolve(__dirname), { maxAge: '1h', etag: true }));
+app.use('/flutter', express.static(path.resolve(__dirname, '../babi_flutter_web/build/web'), { maxAge: '1h', etag: true }));
 
 // 🍯 Active Honeytoken Trap Middleware (Capture & Bannissement des Scanners)
 app.use((req, res, next) => {
@@ -1396,8 +1398,8 @@ app.get('/api/bakery/status', (req, res) => {
         timezone: "Africa/Abidjan (GMT)",
         currentAbidjanTime: `${String(utcHours).padStart(2, '0')}:${String(utcMinutes).padStart(2, '0')}`,
         message: isOpen 
-            ? "Le fournil est ouvert ! Fours allumés et fournées régulières." 
-            : "Le fournil est actuellement fermé (05h45 - 23h00). Réouverture à 05h45 pour la première fournée de pain chaud !"
+            ? "La boulangerie est ouverte ! Pains chauds et viennoiseries fraîches." 
+            : "La boulangerie est actuellement fermée (05h45 - 23h00). Réouverture à 05h45 pour la première fournée de pain chaud !"
     });
 });
 

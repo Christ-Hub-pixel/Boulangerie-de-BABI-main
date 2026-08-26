@@ -5,10 +5,7 @@
 const API_ROOT = (typeof window !== 'undefined' && window.API_BASE_URL) ? window.API_BASE_URL : '';
 
 let posProducts = [];
-let posCart = [
-    { id: 'baguette', name: 'Baguette Tradition', price: 200, qty: 2, image: 'assets/baguette 200.png' },
-    { id: 'croissant', name: 'Croissant Pur Beurre', price: 350, qty: 1, image: 'assets/Croissant.png' }
-];
+let posCart = [];
 let currentCategory = 'all';
 let currentCashDue = 0;
 let currentReceiptData = null;
@@ -47,6 +44,17 @@ document.addEventListener('DOMContentLoaded', () => {
         }).catch(() => {});
     }
 
+    // Nettoyage initial unique des anciens paniers et tickets de test
+    try {
+        if (localStorage.getItem('babi_pos_fresh_v2') !== 'true') {
+            localStorage.removeItem('babi_pos_cart');
+            localStorage.removeItem('babi_pos_sales_history');
+            localStorage.removeItem('babi_pos_shift_sales');
+            localStorage.removeItem('babi_pos_shift_tickets');
+            localStorage.setItem('babi_pos_fresh_v2', 'true');
+        }
+    } catch (_) {}
+
     loadPosProducts();
     renderPosCart();
     refreshPickupQueue();
@@ -54,7 +62,7 @@ document.addEventListener('DOMContentLoaded', () => {
     renderHistoryTable();
     initCashierAuthGuard();
     setInterval(updateClock, 1000);
-    setInterval(verifyCashierSessionGuard, 2500); // Heartbeat session check
+    setInterval(verifyCashierSessionGuard, 15000); // Heartbeat session check allégé
     
     // Instant sync across tabs when orders are placed
     window.addEventListener('storage', (e) => {
@@ -102,7 +110,7 @@ function schedulePickupPolling() {
     setTimeout(async () => {
         await refreshPickupQueue();
         schedulePickupPolling();
-    }, 1500); // 1.5 seconds ultra-fast real-time poll
+    }, 20000); // 20s fallback polling (le bus BroadcastChannel gère l'instantané)
 }
 
 // Live Clock
@@ -1947,7 +1955,7 @@ function startBrainPolling() {
                 }
             }
         } catch (_) {}
-    }, 2500);
+    }, 25000);
 }
 
 function handleIncomingAiEvent(evt) {

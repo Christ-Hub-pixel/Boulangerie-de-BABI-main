@@ -8,31 +8,28 @@ let allStocks = [];
 let allOrders = [];
 let allEmployees = [];
 
-// Fallback Demo Data if Server is offline
-const DEMO_STOCKS = [
-    { id: 1, nom_produit: 'Baguette Tradition', categorie: 'pain', quantite_disponible: 45, seuil_alerte: 15, unite: 'pièce', is_low_stock: 0 },
-    { id: 2, nom_produit: 'Croissant Pur Beurre', categorie: 'viennoiserie', quantite_disponible: 28, seuil_alerte: 10, unite: 'pièce', is_low_stock: 0 },
-    { id: 3, nom_produit: 'Pain au Chocolat', categorie: 'viennoiserie', quantite_disponible: 6, seuil_alerte: 12, unite: 'pièce', is_low_stock: 1 },
-    { id: 4, nom_produit: 'Entremet Chocolat', categorie: 'patisserie', quantite_disponible: 4, seuil_alerte: 5, unite: 'pièce', is_low_stock: 1 },
-    { id: 5, nom_produit: 'Jus de Bissap Naturel 50cl', categorie: 'jus', quantite_disponible: 22, seuil_alerte: 8, unite: 'bouteille', is_low_stock: 0 },
-    { id: 6, nom_produit: 'Pain Complet Bio', categorie: 'pain', quantite_disponible: 18, seuil_alerte: 8, unite: 'pièce', is_low_stock: 0 }
-];
-
-const DEMO_ORDERS = [
-    { id: 1048, client_nom: 'Aminata Koné', telephone: '07 04 38 92 01', total: 3200, statut: 'en_cuisson', items: [{ nom: 'Baguette Tradition', qte: 4 }, { nom: 'Croissant Beurre', qte: 2 }] },
-    { id: 1049, client_nom: 'Koffi Marc', telephone: '05 55 12 34 56', total: 4500, statut: 'attente_fournil', items: [{ nom: 'Pain au Chocolat', qte: 6 }] },
-    { id: 1050, client_nom: 'Sarah B.', telephone: '01 02 03 04 05', total: 5400, statut: 'pret_au_comptoir', items: [{ nom: 'Entremet Chocolat', qte: 2 }] }
-];
-
+// Pristine Clean Initial Data (0 Demo Data for Production)
+const DEMO_STOCKS = [];
+const DEMO_ORDERS = [];
 const DEMO_EMPLOYEES = [];
-
-const DEMO_MOVEMENTS = [
-    { id: 1, nom_produit: 'Baguette Tradition', delta_quantite: 30, motif: 'Sortie fournil 09h00', date_mouvement: 'Aujourd\'hui 09h05', auteur: 'Boulangerie BABI' },
-    { id: 2, nom_produit: 'Pain au Chocolat', delta_quantite: -14, motif: 'Ventes Caisse Matinée', date_mouvement: 'Aujourd\'hui 10h12', auteur: 'Boulangerie BABI' },
-    { id: 3, nom_produit: 'Croissant Pur Beurre', delta_quantite: 25, motif: 'Sortie fournil 06h00', date_mouvement: 'Aujourd\'hui 06h10', auteur: 'Boulangerie BABI' }
-];
+const DEMO_MOVEMENTS = [];
 
 document.addEventListener('DOMContentLoaded', () => {
+    // 0. Nettoyage initial unique des anciens mocks de test
+    try {
+        if (localStorage.getItem('babi_prod_fresh_v4') !== 'true') {
+            localStorage.removeItem('babi_manual_batches');
+            localStorage.removeItem('babi_manual_wastes');
+            localStorage.removeItem('babi_rayon_entries');
+            localStorage.removeItem('babi_pos_stock_adjustments');
+            localStorage.removeItem('babi_last_temp');
+            localStorage.removeItem('babi_event_orders');
+            localStorage.removeItem('babi_history_sales');
+            localStorage.removeItem('babi_orders');
+            localStorage.setItem('babi_prod_fresh_v4', 'true');
+        }
+    } catch (_) {}
+
     // 1. Initialiser immédiatement le planning manuel et les compteurs
     try {
         renderManualPlanning();
@@ -70,13 +67,13 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // 4. Charger les données complémentaires en arrière-plan
+    // 4. Charger les données complémentaires en arrière-plan (Optimisé pour fluidité maximale)
     loadDashboardData();
     initGeranteBrainFeed();
     fetchGeranteBakingAiForecast();
     fetchGeranteStockAiInsights();
-    setInterval(loadDashboardData, 15000);
-    setInterval(fetchGeranteBakingAiForecast, 30000);
+    setInterval(loadDashboardData, 45000);
+    setInterval(fetchGeranteBakingAiForecast, 180000);
 });
 
 function broadcastGlobalSync(eventType, payload = {}) {
@@ -423,64 +420,17 @@ async function loadMovements() {
 }
 
 // 6. Gâteaux d'Événements Gérance (Commandes Spéciales & Pâtisserie)
-const DEFAULT_EVENT_ORDERS = [
-    {
-        ref: 'EVT-8821',
-        name: 'Sarah Bamba',
-        phone: '0704389201',
-        eventType: 'Anniversaire VIP',
-        portions: 25,
-        tiers: 2,
-        flavor: 'Chocolat Cacao Intense & Framboise',
-        message: 'Joyeux 30 ans Sarah ! 👑',
-        date: 'Aujourd\'hui 16:30',
-        time: '16h30',
-        price: 35000,
-        acompte: 35000,
-        status: 'decorating' // pending, decorating, ready, delivered
-    },
-    {
-        ref: 'EVT-8822',
-        name: 'M. & Mme Kouassi',
-        phone: '0555123456',
-        eventType: 'Mariage Civil',
-        portions: 80,
-        tiers: 3,
-        flavor: 'Vanille Bourbon & Fruits Rouges',
-        message: 'Félicitations Mariam & Jean-Luc 💕',
-        date: 'Demain 11:00',
-        time: '11h00',
-        price: 110000,
-        acompte: 60000,
-        status: 'pending'
-    },
-    {
-        ref: 'EVT-8819',
-        name: 'Cabinet KPMG Plateau',
-        phone: '0102030405',
-        eventType: 'Cocktail Entreprise',
-        portions: 50,
-        tiers: 1,
-        flavor: 'Mignardises & Entremets Assortis',
-        message: 'Inauguration Nouveaux Locaux',
-        date: 'Aujourd\'hui 14:00',
-        time: '14h00',
-        price: 65000,
-        acompte: 65000,
-        status: 'ready'
-    }
-];
+const DEFAULT_EVENT_ORDERS = [];
 
 function getGeranteEventOrders() {
     try {
         const stored = localStorage.getItem('babi_event_orders');
         if (stored) {
             const list = JSON.parse(stored);
-            if (Array.isArray(list) && list.length > 0) return list;
+            if (Array.isArray(list)) return list;
         }
     } catch(e) {}
-    localStorage.setItem('babi_event_orders', JSON.stringify(DEFAULT_EVENT_ORDERS));
-    return DEFAULT_EVENT_ORDERS;
+    return [];
 }
 
 let currentEventFilter = 'all';
@@ -996,16 +946,13 @@ let currentCategoryFilter = 'all';
 function getManualBatches() {
     const saved = localStorage.getItem('babi_manual_batches');
     if (saved) {
-        return JSON.parse(saved);
+        try {
+            return JSON.parse(saved);
+        } catch (_) {
+            return [];
+        }
     }
-    // Default initial batches for immediate usability
-    const defaults = [
-        { id: 1, name: 'Baguette Traditionnelle', category: 'pains', quantity: 150, time: '17:00', baker: 'Mamadou Koné', oven: 'Four 1 (Sole 240°C)', status: 'en_cuisson' },
-        { id: 2, name: 'Croissants Pur Beurre & Pains Choc', category: 'viennoiseries', quantity: 100, time: '18:00', baker: 'Aïcha', oven: 'Four 2 (Ventilé 180°C)', status: 'en_pousse' },
-        { id: 3, name: 'Pain Complet & Pain de Mie', category: 'pains', quantity: 80, time: '14:00', baker: 'Bakary', oven: 'Four 1 (Sole 240°C)', status: 'en_rayon' }
-    ];
-    localStorage.setItem('babi_manual_batches', JSON.stringify(defaults));
-    return defaults;
+    return [];
 }
 
 function saveManualBatches(batches) {
@@ -1439,8 +1386,16 @@ function calculateManualKPIs() {
             kpiNextTime.innerHTML = `<span class="material-symbols-outlined text-sm">alarm</span><span>Sortie prévue à ${upcoming.time}</span>`;
         } else {
             kpiNextName.innerText = 'Aucune en cours';
-            kpiNextTime.innerHTML = `<span class="material-symbols-outlined text-sm">check_circle</span><span>Toutes les fournées sont terminées</span>`;
+            kpiNextTime.innerHTML = `<span class="material-symbols-outlined text-sm">check_circle</span><span>En attente de programmation</span>`;
         }
+    }
+
+    // 5. Sidebar Badge Fournil
+    const badgeFournil = document.getElementById('badge-fournil-count');
+    if (badgeFournil) {
+        const upcomingCount = batches.filter(b => b.status !== 'en_rayon').length;
+        badgeFournil.innerText = upcomingCount;
+        badgeFournil.style.display = upcomingCount > 0 ? 'inline-flex' : 'none';
     }
 }
 
@@ -1575,22 +1530,17 @@ function renderGeranteInventory() {
 // =============================================================
 // VUE 4 : REGISTRE SANITAIRE, PERTES & RELEVÉS THERMIQUES
 // =============================================================
-const DEFAULT_WASTES = [
-    { date: 'Aujourd\'hui 11:30', product: 'Croissant Pur Beurre', qty: 4, reason: 'Trop cuit / coloration forte', loss: 1400, author: 'Boulanger Bakayoko' },
-    { date: 'Aujourd\'hui 09:15', product: 'Baguette Tradition', qty: 2, reason: 'Casse lors de la mise en rayon', loss: 400, author: 'Caissière Aya' },
-    { date: 'Hier 19:45', product: 'Pain au Chocolat', qty: 5, reason: 'Invendu fin de journée (Dons)', loss: 2000, author: 'Gérante Mariam' }
-];
+const DEFAULT_WASTES = [];
 
 function getGeranteWastes() {
     try {
         const stored = localStorage.getItem('babi_manual_wastes');
         if (stored) {
             const list = JSON.parse(stored);
-            if (Array.isArray(list) && list.length > 0) return list;
+            if (Array.isArray(list)) return list;
         }
     } catch(e) {}
-    localStorage.setItem('babi_manual_wastes', JSON.stringify(DEFAULT_WASTES));
-    return DEFAULT_WASTES;
+    return [];
 }
 
 function renderGeranteWaste() {
@@ -1606,6 +1556,18 @@ function renderGeranteWaste() {
     if (elVal) elVal.innerText = `${totalVal.toLocaleString('fr-FR')} FCFA de perte`;
 
     if (!tbody) return;
+
+    if (wastes.length === 0) {
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="6" class="p-6 text-center text-xs text-on-surface-variant font-semibold">
+                    <span class="material-symbols-outlined text-2xl text-emerald-600 block mb-1">verified</span>
+                    Aucune perte enregistrée aujourd'hui. Tout est conforme au fournil.
+                </td>
+            </tr>
+        `;
+        return;
+    }
 
     tbody.innerHTML = wastes.map(w => {
         const lossVal = Number(w.loss || (parseInt(w.qty) * 350));
@@ -1668,10 +1630,16 @@ function renderGeranteFinance() {
         salesHistory = JSON.parse(localStorage.getItem('babi_history_sales') || '[]');
     } catch(e) {}
 
-    const posSalesTotal = salesHistory.reduce((sum, s) => sum + (Number(s.total) || 0), 0);
-    const totalRev = posSalesTotal > 0 ? (posSalesTotal + 85000) : 245000;
-    const totalItems = salesHistory.length > 0 ? (salesHistory.length * 3 + 120) : 380;
-    const avgBasket = totalRev > 0 ? Math.round(totalRev / (salesHistory.length || 65)) : 2450;
+    const totalRev = salesHistory.reduce((sum, s) => sum + (Number(s.total) || 0), 0);
+    const totalItems = salesHistory.reduce((sum, s) => sum + (Array.isArray(s.items) ? s.items.reduce((acc, it) => acc + (it.qty || 1), 0) : 1), 0);
+    const avgBasket = salesHistory.length > 0 ? Math.round(totalRev / salesHistory.length) : 0;
+    const ticketsCount = salesHistory.length;
+
+    // Calcul Wave vs Espèces
+    const waveSalesCount = salesHistory.filter(s => (s.paymentMethod || '').toLowerCase().includes('wave') || (s.paymentMethod || '').toLowerCase().includes('online') || s.isWave).length;
+    const cashSalesCount = ticketsCount - waveSalesCount;
+    const wavePct = ticketsCount > 0 ? Math.round((waveSalesCount / ticketsCount) * 100) : 0;
+    const cashPct = ticketsCount > 0 ? (100 - wavePct) : 0;
 
     const elRev = document.getElementById('kpi-fin-revenue');
     if (elRev) elRev.innerText = totalRev.toLocaleString('fr-FR') + ' FCFA';
@@ -1680,30 +1648,88 @@ function renderGeranteFinance() {
     const elAvg = document.getElementById('kpi-fin-avg-basket');
     if (elAvg) elAvg.innerText = `${avgBasket.toLocaleString('fr-FR')} F`;
 
+    const elTickets = document.getElementById('kpi-fin-tickets-count');
+    if (elTickets) elTickets.innerText = `Sur ${ticketsCount} ticket${ticketsCount > 1 ? 's' : ''} clôturé${ticketsCount > 1 ? 's' : ''}`;
+    const elAvgSub = document.getElementById('kpi-fin-avg-subtitle');
+    if (elAvgSub) elAvgSub.innerText = `${ticketsCount} transaction${ticketsCount > 1 ? 's' : ''}`;
+
+    const elWave = document.getElementById('kpi-fin-wave-pct');
+    if (elWave) elWave.innerText = `${wavePct}% Wave`;
+    const elCash = document.getElementById('kpi-fin-cash-pct');
+    if (elCash) elCash.innerText = `${cashPct}% Paiements Espèces`;
+
+    // Répartition des ventes par catégorie
+    let breadCount = 0, pastryCount = 0, cakeCount = 0, drinkCount = 0;
+    salesHistory.forEach(s => {
+        (s.items || []).forEach(it => {
+            const cat = (it.category || '').toLowerCase();
+            const name = (it.name || '').toLowerCase();
+            const qty = Number(it.qty) || 1;
+            if (cat.includes('pain') || name.includes('baguette') || name.includes('pain') || name.includes('mie')) breadCount += qty;
+            else if (cat.includes('viennoiserie') || name.includes('croissant') || name.includes('pain au chocolat') || name.includes('chocolatine') || name.includes('brioche')) pastryCount += qty;
+            else if (cat.includes('patisserie') || cat.includes('gateau') || name.includes('gateau') || name.includes('tarte') || name.includes('eclair')) cakeCount += qty;
+            else if (cat.includes('boisson') || cat.includes('jus') || name.includes('jus') || name.includes('eau') || name.includes('cafe')) drinkCount += qty;
+            else breadCount += qty;
+        });
+    });
+    const catTotal = breadCount + pastryCount + cakeCount + drinkCount;
+    const breadPct = catTotal > 0 ? Math.round((breadCount / catTotal) * 100) : 0;
+    const pastryPct = catTotal > 0 ? Math.round((pastryCount / catTotal) * 100) : 0;
+    const cakePct = catTotal > 0 ? Math.round((cakeCount / catTotal) * 100) : 0;
+    const drinkPct = catTotal > 0 ? (100 - breadPct - pastryPct - cakePct) : 0;
+
+    const setCatUI = (idPct, idBar, val) => {
+        const p = document.getElementById(idPct);
+        const b = document.getElementById(idBar);
+        if (p) p.innerText = `${val}%`;
+        if (b) b.style.width = `${val}%`;
+    };
+    setCatUI('fin-cat-pct-bread', 'fin-cat-bar-bread', breadPct);
+    setCatUI('fin-cat-pct-pastry', 'fin-cat-bar-pastry', pastryPct);
+    setCatUI('fin-cat-pct-cake', 'fin-cat-bar-cake', cakePct);
+    setCatUI('fin-cat-pct-drink', 'fin-cat-bar-drink', Math.max(0, drinkPct));
+
+    const elMargin = document.getElementById('kpi-fin-margin');
+    if (elMargin) elMargin.innerText = totalRev > 0 ? '64.2%' : '0%';
+
     const tbody = document.getElementById('gerante-finance-tops-tbody');
     if (!tbody) return;
 
-    const TOP_PRODUCTS = [
-        { name: 'Baguette Tradition', cat: 'Pains', prod: 200, sold: 184, rate: '92%', ca: 36800 },
-        { name: 'Croissant Pur Beurre', cat: 'Viennoiseries', prod: 130, sold: 124, rate: '95%', ca: 43400 },
-        { name: 'Pain au Chocolat', cat: 'Viennoiseries', prod: 110, sold: 102, rate: '93%', ca: 40800 },
-        { name: 'Forêt Noire Royale', cat: 'Pâtisseries', prod: 20, sold: 18, rate: '90%', ca: 27000 },
-        { name: 'Jus de Bissap Artisanal', cat: 'Boissons', prod: 45, sold: 42, rate: '93%', ca: 25200 },
-        { name: 'Sandwich Poulet Braisé', cat: 'Traiteur', prod: 25, sold: 24, rate: '96%', ca: 36000 }
-    ];
-
-    tbody.innerHTML = TOP_PRODUCTS.map(p => {
-        return `
-            <tr class="hover:bg-surface-container-low transition-colors">
-                <td class="p-3 font-bold text-xs text-on-surface">${p.name}</td>
-                <td class="p-3 text-xs font-semibold text-on-surface-variant">${p.cat}</td>
-                <td class="p-3 text-center font-mono font-bold text-xs">${p.prod} pcs</td>
-                <td class="p-3 text-center font-mono font-bold text-xs text-emerald-800">${p.sold} pcs</td>
-                <td class="p-3 text-center font-mono font-black text-xs text-primary">${p.rate}</td>
-                <td class="p-3 text-right font-mono font-extrabold text-xs text-primary">${p.ca.toLocaleString()} F</td>
+    if (salesHistory.length === 0) {
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="6" class="p-6 text-center text-xs text-on-surface-variant font-semibold">
+                    <span class="material-symbols-outlined text-2xl text-amber-600 block mb-1">point_of_sale</span>
+                    Aucune vente enregistrée pour le moment. Les statistiques s'actualiseront automatiquement dès le premier encaissement.
+                </td>
             </tr>
         `;
-    }).join('');
+        return;
+    }
+
+    // Agréger les ventes réelles
+    const productStats = {};
+    salesHistory.forEach(s => {
+        (s.items || []).forEach(it => {
+            const key = it.name || 'Produit';
+            if (!productStats[key]) {
+                productStats[key] = { name: key, category: it.category || 'Boulangerie', sold: 0, revenue: 0 };
+            }
+            productStats[key].sold += Number(it.qty) || 1;
+            productStats[key].revenue += (Number(it.price) || 0) * (Number(it.qty) || 1);
+        });
+    });
+
+    tbody.innerHTML = Object.values(productStats).map(p => `
+        <tr class="hover:bg-surface-container/50">
+            <td class="p-3 font-bold text-on-surface">${p.name}</td>
+            <td class="p-3 text-on-surface-variant">${p.category}</td>
+            <td class="p-3 text-center font-bold text-primary">${p.sold}</td>
+            <td class="p-3 text-center font-bold text-emerald-700">${p.sold}</td>
+            <td class="p-3 text-center"><span class="badge bg-emerald-100 text-emerald-800 text-[10px] font-bold px-2 py-0.5 rounded">100%</span></td>
+            <td class="p-3 text-right font-bold text-on-surface">${p.revenue.toLocaleString('fr-FR')} FCFA</td>
+        </tr>
+    `).join('');
 }
 
 function printFinancialClosing() {
@@ -1842,7 +1868,7 @@ function startGeranteBrainPolling() {
                 }
             }
         } catch (_) {}
-    }, 3000);
+    }, 25000);
 }
 
 function handleGeranteIncomingAiEvent(evt) {

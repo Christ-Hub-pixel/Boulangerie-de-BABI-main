@@ -125,12 +125,12 @@
             <a href="#" onclick="showGeranteTab('schedule'); return false;" class="prestige-nav-item active" id="nav-gerante-schedule">
                 <span class="material-symbols-outlined text-xl">table_restaurant</span>
                 <span class="flex-1">Planning Fournil</span>
-                <span id="badge-fournil-count" class="bg-amber-400 text-black text-[10px] font-black px-2 py-0.5 rounded-full font-mono">0</span>
+                <span id="badge-fournil-count" class="hidden bg-amber-400 text-black text-[10px] font-black px-2 py-0.5 rounded-full font-mono">0</span>
             </a>
             <a href="#" onclick="showGeranteTab('events'); return false;" class="prestige-nav-item" id="nav-gerante-events">
                 <span class="material-symbols-outlined text-xl">cake</span>
                 <span class="flex-1">Gâteaux & Événements</span>
-                <span id="badge-events-count" class="bg-rose-500 text-white text-[10px] font-black px-2 py-0.5 rounded-full font-mono">0</span>
+                <span id="badge-events-count" class="hidden bg-rose-500 text-white text-[10px] font-black px-2 py-0.5 rounded-full font-mono">0</span>
             </a>
             <a href="#" onclick="showGeranteTab('inventory'); return false;" class="prestige-nav-item" id="nav-gerante-inventory">
                 <span class="material-symbols-outlined text-xl">inventory_2</span>
@@ -163,44 +163,44 @@
     </aside>
 
     <!-- MAIN WRAPPER -->
-    <div class="pl-72">
+    <div class="lg:pl-72 pl-0 transition-all duration-300 w-full min-h-screen flex flex-col overflow-x-hidden">
         <!-- TOPBAR PRESTIGE LUXURY -->
-        <header class="prestige-topbar">
+        <header class="prestige-topbar sticky top-0 z-40 flex items-center justify-between px-3 sm:px-6 py-2.5 bg-[#fbf8f1]/95 backdrop-blur border-b border-amber-400/30 shadow-sm">
             <!-- Mobile Menu Toggle & Title -->
-            <div class="flex items-center gap-3">
-                <button type="button" class="prestige-mobile-hamburger-btn" onclick="toggleGeranteMobileSidebar()" aria-label="Ouvrir le menu Fournil">
+            <div class="flex items-center gap-2 sm:gap-3">
+                <button type="button" class="prestige-mobile-hamburger-btn p-2 rounded-lg bg-white border border-amber-200 text-amber-900 shadow-sm lg:hidden flex items-center justify-center" onclick="toggleGeranteMobileSidebar()" aria-label="Ouvrir le menu Fournil">
                     <span class="material-symbols-outlined text-2xl">menu</span>
                 </button>
-                <div class="lg:hidden flex flex-col">
-                    <span class="font-bold text-xs text-amber-800">Portail Gérance & Fournil</span>
-                    <span class="text-[10px] text-gray-500">Boulangerie de BABI</span>
+                <div class="flex flex-col">
+                    <span class="font-bold text-xs text-amber-900">Portail Gérance & Fournil</span>
+                    <span class="text-[10px] text-amber-700/70 font-semibold">Boulangerie de BABI</span>
                 </div>
             </div>
 
-            <!-- Search bar with gold focus ring -->
-            <div class="magazine-search-pill" style="max-width: 480px;">
+            <!-- Search bar with gold focus ring (Desktop only) -->
+            <div class="magazine-search-pill hidden md:flex" style="max-width: 380px;">
                 <span class="material-symbols-outlined search-icon" style="color: #765b00;">search</span>
-                <input placeholder="Rechercher une fournée, matière première, cuisson..." type="text"/>
+                <input placeholder="Rechercher fournée, stock..." type="text"/>
             </div>
 
             <!-- Profile Chef Fournil & Live Status -->
-            <div class="flex items-center gap-3">
-                <span class="prestige-status-badge amber">
+            <div class="flex items-center gap-2 sm:gap-3">
+                <span class="prestige-status-badge amber hidden sm:inline-flex">
                     <span class="status-pulse-dot amber"></span>
-                    <span>Fournil en Direct (Poste 1)</span>
+                    <span>Fournil en Direct</span>
                 </span>
                 <!-- Interactive Profile Card & Dropdown -->
                 <div class="relative" id="profileDropdownWrapper">
-                    <div class="prestige-user-card" onclick="toggleProfileDropdown(event)" id="profileTriggerBtn">
+                    <div class="prestige-user-card cursor-pointer flex items-center gap-2 p-1.5 sm:p-2 rounded-xl bg-white/80 border border-amber-200 shadow-xs" onclick="toggleProfileDropdown(event)" id="profileTriggerBtn">
                         <div class="relative flex items-center">
-                            <img alt="Profile" class="profile-avatar" src="assets/baker_profile.png"/>
+                            <img alt="Profile" class="profile-avatar w-8 h-8 sm:w-10 sm:h-10 rounded-full border-2 border-amber-400 object-cover" src="assets/baker_profile.png"/>
                             <span class="online-status-dot"></span>
                         </div>
-                        <div class="prestige-user-info">
-                            <span class="prestige-user-name">Mamadou Koné</span>
-                            <span class="prestige-user-role">Chef Fournil • Maître Boulanger 🥖</span>
+                        <div class="prestige-user-info hidden lg:flex flex-col">
+                            <span class="prestige-user-name font-bold text-xs text-amber-950">Mamadou Koné</span>
+                            <span class="prestige-user-role text-[10px] text-amber-800">Chef Fournil 🥖</span>
                         </div>
-                        <span class="material-symbols-outlined text-sm font-bold transition-transform" id="profileChevron" style="color: #765b00;">expand_more</span>
+                        <span class="material-symbols-outlined text-sm font-bold transition-transform text-amber-700" id="profileChevron">expand_more</span>
                     </div>
 
                     <!-- Luxury Profile Dropdown Menu -->
@@ -266,12 +266,12 @@
         </header>
 
         <!-- MAIN CONTENT -->
-        <main class="relative bg-background min-h-screen" style="padding-top: 6.5rem;">
+        <main class="relative bg-background min-h-screen flex-1 p-3 sm:p-6">
             
             <!-- ========================================================= -->
             <!-- VUE 1 : PLANNING FOURNIL & CUISSONS DU JOUR               -->
             <!-- ========================================================= -->
-            <div id="view-gerante-schedule" class="gerante-tab-view flex flex-col w-full h-full p-container-padding gap-stack-lg">
+            <div id="view-gerante-schedule" class="gerante-tab-view flex flex-col w-full h-full gap-4 sm:gap-6">
                 <!-- 4 Overview Cards (Saisies et Calculs Manuels Réels) -->
                 <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-gutter">
                     <!-- Card 1: Production -->
@@ -775,29 +775,29 @@
                             </div>
                             <div class="kpi-icon-medallion gold"><span class="material-symbols-outlined text-2xl">shopping_cart_checkout</span></div>
                         </div>
-                        <span class="text-xs text-on-surface-variant font-semibold">Sur 142 tickets clôturés</span>
+                        <span class="text-xs text-on-surface-variant font-semibold" id="kpi-fin-tickets-count">Sur 0 ticket clôturé</span>
                     </div>
 
                     <div class="magazine-card flex flex-col justify-between" style="min-height: 140px;">
                         <div class="flex justify-between items-start">
                             <div>
                                 <span class="font-label-sm text-xs uppercase text-on-surface-variant font-bold">Panier Moyen Client</span>
-                                <span class="font-display-lg text-3xl font-bold text-primary mt-1 block" id="kpi-fin-avg-basket">2 450 F</span>
+                                <span class="font-display-lg text-3xl font-bold text-primary mt-1 block" id="kpi-fin-avg-basket">0 F</span>
                             </div>
                             <div class="kpi-icon-medallion amber"><span class="material-symbols-outlined text-2xl">analytics</span></div>
                         </div>
-                        <span class="text-xs text-on-surface-variant font-semibold">+12% par rapport à hier</span>
+                        <span class="text-xs text-on-surface-variant font-semibold" id="kpi-fin-avg-subtitle">0 transaction</span>
                     </div>
 
                     <div class="magazine-card flex flex-col justify-between" style="min-height: 140px;">
                         <div class="flex justify-between items-start">
                             <div>
                                 <span class="font-label-sm text-xs uppercase text-on-surface-variant font-bold">Part Wave vs Espèces</span>
-                                <span class="font-display-lg text-2xl font-bold text-[#1EA5FC] mt-1 block" id="kpi-fin-wave-pct">68% Wave</span>
+                                <span class="font-display-lg text-2xl font-bold text-[#1EA5FC] mt-1 block" id="kpi-fin-wave-pct">0% Wave</span>
                             </div>
                             <div class="kpi-icon-medallion cyan"><span class="material-symbols-outlined text-2xl">qr_code_scanner</span></div>
                         </div>
-                        <span class="text-xs text-on-surface-variant font-semibold">32% Paiements Espèces</span>
+                        <span class="text-xs text-on-surface-variant font-semibold" id="kpi-fin-cash-pct">0% Espèces</span>
                     </div>
                 </section>
 
@@ -841,47 +841,47 @@
                             <div>
                                 <div class="flex justify-between text-xs font-bold mb-1">
                                     <span>🥖 Pains Tradition (Baguettes, Mie)</span>
-                                    <span class="font-mono text-primary">45%</span>
+                                    <span class="font-mono text-primary" id="fin-cat-pct-bread">0%</span>
                                 </div>
                                 <div class="w-full bg-surface-dim rounded-full h-2.5 overflow-hidden">
-                                    <div class="bg-amber-600 h-full rounded-full" style="width: 45%;"></div>
+                                    <div class="bg-amber-600 h-full rounded-full transition-all duration-500" id="fin-cat-bar-bread" style="width: 0%;"></div>
                                 </div>
                             </div>
 
                             <div>
                                 <div class="flex justify-between text-xs font-bold mb-1">
                                     <span>🥐 Viennoiseries Pur Beurre</span>
-                                    <span class="font-mono text-amber-700">32%</span>
+                                    <span class="font-mono text-amber-700" id="fin-cat-pct-pastry">0%</span>
                                 </div>
                                 <div class="w-full bg-surface-dim rounded-full h-2.5 overflow-hidden">
-                                    <div class="bg-amber-500 h-full rounded-full" style="width: 32%;"></div>
+                                    <div class="bg-amber-500 h-full rounded-full transition-all duration-500" id="fin-cat-bar-pastry" style="width: 0%;"></div>
                                 </div>
                             </div>
 
                             <div>
                                 <div class="flex justify-between text-xs font-bold mb-1">
                                     <span>🎂 Pâtisseries Fines & Gâteaux</span>
-                                    <span class="font-mono text-rose-700">18%</span>
+                                    <span class="font-mono text-rose-700" id="fin-cat-pct-cake">0%</span>
                                 </div>
                                 <div class="w-full bg-surface-dim rounded-full h-2.5 overflow-hidden">
-                                    <div class="bg-rose-500 h-full rounded-full" style="width: 18%;"></div>
+                                    <div class="bg-rose-500 h-full rounded-full transition-all duration-500" id="fin-cat-bar-cake" style="width: 0%;"></div>
                                 </div>
                             </div>
 
                             <div>
                                 <div class="flex justify-between text-xs font-bold mb-1">
                                     <span>🥤 Boissons & Jus Artisanaux</span>
-                                    <span class="font-mono text-emerald-700">5%</span>
+                                    <span class="font-mono text-emerald-700" id="fin-cat-pct-drink">0%</span>
                                 </div>
                                 <div class="w-full bg-surface-dim rounded-full h-2.5 overflow-hidden">
-                                    <div class="bg-emerald-500 h-full rounded-full" style="width: 5%;"></div>
+                                    <div class="bg-emerald-500 h-full rounded-full transition-all duration-500" id="fin-cat-bar-drink" style="width: 0%;"></div>
                                 </div>
                             </div>
                         </div>
 
                         <div class="p-3 bg-amber-50 rounded-xl border border-amber-200 text-amber-900 text-xs font-bold flex items-center gap-2">
                             <span class="material-symbols-outlined text-amber-700">verified</span>
-                            <span>Marge brute globale estimée : <strong>64.2%</strong></span>
+                            <span>Marge brute globale estimée : <strong id="kpi-fin-margin">0%</strong></span>
                         </div>
                     </div>
                 </div>
