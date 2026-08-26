@@ -1884,7 +1884,7 @@ function updateCashierHeaderUI() {
 function openSwitchCashierModal() {
     const menu = document.getElementById('posProfileDropdownMenu');
     if (menu) menu.classList.add('hidden');
-    showPosLockScreen();
+    lockPosTerminal();
 }
 
 function closeSwitchCashierModal() {
@@ -1892,10 +1892,10 @@ function closeSwitchCashierModal() {
 }
 
 function showBabiCustomConfirm({
-    title = "Clôture de Session POS",
-    message = "Voulez-vous fermer votre session de caisse et verrouiller le terminal ?",
-    icon = "lock",
-    confirmText = "Clôturer la caisse",
+    title = "Déconnexion de Caisse",
+    message = "Voulez-vous vraiment clôturer votre session de caisse et quitter le terminal ?",
+    icon = "logout",
+    confirmText = "Se déconnecter",
     cancelText = "Annuler",
     onConfirm = () => {}
 } = {}) {
@@ -2018,11 +2018,14 @@ function showBabiCustomConfirm({
 
 // 11. Déconnexion volontaire par la caissière
 async function handleCashierLogout() {
+    const menu = document.getElementById('posProfileDropdownMenu');
+    if (menu) menu.classList.add('hidden');
+
     showBabiCustomConfirm({
-        title: "Clôture de Caisse",
-        message: "Voulez-vous fermer votre session de caisse et verrouiller le terminal ?",
-        icon: "lock",
-        confirmText: "Clôturer la caisse",
+        title: "Déconnexion de Caisse",
+        message: "Voulez-vous vraiment clôturer votre session de caisse et quitter le terminal ?",
+        icon: "logout",
+        confirmText: "Se déconnecter",
         cancelText: "Annuler",
         onConfirm: async () => {
             const cashier = getActiveCashier();
@@ -2032,7 +2035,7 @@ async function handleCashierLogout() {
                 await fetch(`${API_ROOT}/api/cashier/logout`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ cashier_id: cashier.id, token })
+                    body: JSON.stringify({ cashier_id: cashier ? cashier.id : null, token })
                 });
             } catch (_) {}
 
@@ -2042,7 +2045,9 @@ async function handleCashierLogout() {
             currentCashierToken = null;
 
             showPosToast("Session de caisse clôturée.", "info");
-            showPosLockScreen();
+            setTimeout(() => {
+                window.location.href = "index.html";
+            }, 300);
         }
     });
 }

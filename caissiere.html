@@ -786,9 +786,14 @@
                 <button type="button" onclick="submitUnlockPin()" class="py-3 rounded-xl bg-emerald-600 text-white font-bold text-xs hover:bg-emerald-500 transition-all flex items-center justify-center">✓ OK</button>
             </div>
 
-            <button type="button" onclick="unlockPosTerminalDirect()" class="text-[11px] text-amber-300 hover:underline mt-1 font-semibold">
-                Déverrouillage Rapide (Test / Démo)
-            </button>
+            <div class="flex items-center justify-between w-full mt-2 pt-2 border-t border-white/10 text-xs">
+                <button type="button" onclick="unlockPosTerminalDirect()" class="text-[11px] text-amber-300 hover:underline font-semibold">
+                    🔓 Déverrouillage Rapide
+                </button>
+                <button type="button" onclick="handleCashierLogout()" class="text-[11px] text-rose-300 hover:underline font-semibold flex items-center gap-1">
+                    <span class="material-symbols-outlined text-xs">logout</span> Quitter la Caisse
+                </button>
+            </div>
         </div>
     </div>
 
