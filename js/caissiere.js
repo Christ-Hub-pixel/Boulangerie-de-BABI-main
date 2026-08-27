@@ -1216,8 +1216,7 @@ async function previewPinOrder(pin) {
     // 1. Try Backend API lookup
     const apiEndpoints = [
         `${API_ROOT}/api/pickup/lookup`,
-        `/api/pickup/lookup`,
-        `https://api.boulangeriedebabi.com/api/pickup/lookup`
+        `/api/pickup/lookup`
     ];
 
     for (const url of apiEndpoints) {

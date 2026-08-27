@@ -17,12 +17,9 @@
     let base = 'http://localhost:5000';
 
     if (isBrowser) {
-        const host = window.location.hostname;
         const proto = window.location.protocol;
 
-        if (host.includes('boulangeriedebabi.com')) {
-            base = 'https://api.boulangeriedebabi.com';
-        } else if (proto.startsWith('http')) {
+        if (proto.startsWith('http')) {
             base = window.location.origin;
         } else {
             base = 'http://localhost:5000';
