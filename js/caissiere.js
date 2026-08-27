@@ -672,67 +672,241 @@ function handleCaissiereGlobalSync(eventData) {
 }
 
 // -------------------------------------------------------------
-// 5. THERMAL RECEIPT 80mm
+// 5. THERMAL RECEIPT 80mm — EXACT REPLICA OF OFFICIAL PHYSICAL TICKET
 // -------------------------------------------------------------
 function showThermalReceipt(data) {
+    currentReceiptData = data;
     const receiptContainer = document.getElementById('thermal-receipt-content');
     if (!receiptContainer) return;
 
-    const dateStr = new Date(data.created_at || Date.now()).toLocaleDateString('fr-FR');
-    const timeStr = new Date(data.created_at || Date.now()).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+    const receiptNum = data.receipt_number || data.id || ('25' + Math.floor(10 + Math.random() * 90));
+    const cleanNum = String(receiptNum).replace(/^ORD-|^REC-|^POS-/, '');
+    const now = new Date(data.created_at || Date.now());
+    
+    // Format: "22 juil. 2026 12:07:54"
+    const months = ['janv.', 'févr.', 'mars', 'avr.', 'mai', 'juin', 'juil.', 'août', 'sept.', 'oct.', 'nov.', 'déc.'];
+    const dateFormatted = `${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`;
 
-    let itemsHtml = '';
-    (data.items || []).forEach(item => {
-        const lineTotal = (item.price || item.prix || 0) * (item.qty || item.quantity || 1);
-        itemsHtml += `
-            <div style="display:flex; justify-content:space-between; margin-bottom: 3px;">
-                <span>${item.qty || item.quantity || 1}x ${(item.name || item.nom || '').substring(0, 19)}</span>
-                <span style="font-weight: bold;">${lineTotal.toLocaleString()} F</span>
+    const cashierName = data.caissiere || (typeof currentCashierUser !== 'undefined' && currentCashierUser?.nom ? currentCashierUser.nom : 'CAISSES 1');
+    const terminalName = data.terminal || 'DESKTOP-FEHP3HD';
+
+    let rawItems = [];
+    if (Array.isArray(data.items)) {
+        rawItems = data.items;
+    } else if (typeof data.items === 'string') {
+        try { rawItems = JSON.parse(data.items); } catch (_) { rawItems = []; }
+    }
+    if (rawItems.length === 0 && data.items_summary) {
+        rawItems = [{ name: data.items_summary, qty: 1, price: data.total_price || data.total_amount || 0 }];
+    }
+
+    let totalItemsCount = 0;
+    let itemsRowsHtml = '';
+
+    rawItems.forEach(item => {
+        const qty = Number(item.qty || item.quantity || 1);
+        const unitPrice = Number(item.price || item.prix || 0);
+        const lineTotal = unitPrice * qty;
+        totalItemsCount += qty;
+        
+        const itemName = (item.name || item.nom || 'ARTICLE').toUpperCase();
+
+        itemsRowsHtml += `
+            <div style="display: grid; grid-template-columns: 1fr 58px 30px 65px; margin-bottom: 3px; font-size: 11px; line-height: 1.3;">
+                <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 500;">${itemName}</span>
+                <span style="text-align: right;">F ${unitPrice.toLocaleString('fr-FR')}</span>
+                <span style="text-align: center;">x${qty}</span>
+                <span style="text-align: right; font-weight: 600;">F ${lineTotal.toLocaleString('fr-FR')}</span>
             </div>
         `;
     });
 
+    const totalTTC = Number(data.total_price || data.total_amount || data.total || 0);
+    const modePaiement = data.mode_paiement || data.payment_method || 'Cash';
+    const montantRecu = Number(data.montant_recu || data.amount_received || (totalTTC > 0 ? (totalTTC >= 10000 ? totalTTC : (totalTTC > 5000 ? 10000 : (totalTTC > 2000 ? 5000 : 2000))) : 0));
+    const monnaieRendue = Number(data.monnaie_rendue || data.change_given || Math.max(0, montantRecu - totalTTC));
+
     receiptContainer.innerHTML = `
-        <div style="text-align: center; border-bottom: 1.5px dashed #333; padding-bottom: 8px; margin-bottom: 8px;">
-            <div style="font-weight: 900; font-size: 15px; letter-spacing: 0.5px;">BOULANGERIE DE BABI 🥐</div>
-            <div style="font-size: 11px;">Plateau, Boulevard Lagunaire, Abidjan</div>
-            <div style="font-size: 11px;">Tél : +225 07 04 38 92 01</div>
-        </div>
-
-        <div style="margin-bottom: 8px; font-size: 11px; line-height: 1.4;">
-            <div><strong>TICKET N° :</strong> #${data.id}</div>
-            <div><strong>DATE :</strong> ${dateStr} à ${timeStr}</div>
-            <div><strong>CAISSE :</strong> Caisse Principale 1</div>
-            <div><strong>OPÉRATEUR :</strong> ${data.caissiere || 'Caissière en service'}</div>
-        </div>
-
-        <div style="border-top: 1.5px dashed #333; border-bottom: 1.5px dashed #333; padding: 6px 0; margin-bottom: 8px;">
-            ${itemsHtml || `<div>${data.items_summary || 'Articles boulangerie'}</div>`}
-        </div>
-
-        <div style="font-size: 12px; margin-bottom: 6px; line-height: 1.4;">
-            <div style="display:flex; justify-content:space-between; font-size: 14px; font-weight: 900;">
-                <span>TOTAL TTC :</span>
-                <span>${(data.total_price || data.total_amount || 0).toLocaleString()} FCFA</span>
+        <div style="text-align: center; margin-bottom: 8px;">
+            <!-- Official BЯ Wreath Logo -->
+            <div style="margin: 0 auto 2px auto; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                <svg width="68" height="68" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" style="display: block; margin: 0 auto;">
+                    <circle cx="50" cy="50" r="46" stroke="#000" stroke-width="1.8" stroke-dasharray="2 1"/>
+                    <!-- Wheat wreath branches -->
+                    <path d="M 22 72 C 12 50, 20 22, 50 14 C 80 22, 88 50, 78 72 C 70 84, 58 90, 50 90 C 42 90, 30 84, 22 72 Z" stroke="#000" stroke-width="1.2" fill="none"/>
+                    <path d="M 78 72 C 82 67, 85 58, 80 54 C 76 58, 75 66, 78 72 Z" fill="#000"/>
+                    <path d="M 80 54 C 85 50, 88 42, 82 38 C 78 42, 78 49, 80 54 Z" fill="#000"/>
+                    <path d="M 82 38 C 86 32, 86 24, 80 22 C 76 26, 77 34, 82 38 Z" fill="#000"/>
+                    <path d="M 80 22 C 78 16, 72 13, 66 14 C 67 19, 73 22, 80 22 Z" fill="#000"/>
+                    <path d="M 22 72 C 18 67, 15 58, 20 54 C 24 58, 25 66, 22 72 Z" fill="#000"/>
+                    <path d="M 20 54 C 15 50, 12 42, 18 38 C 22 42, 22 49, 20 54 Z" fill="#000"/>
+                    <path d="M 18 38 C 14 32, 14 24, 20 22 C 24 26, 23 34, 18 38 Z" fill="#000"/>
+                    <!-- Monogram BЯ -->
+                    <text x="50" y="59" font-family="'Times New Roman', Georgia, serif" font-size="33" font-weight="900" text-anchor="middle" fill="#000" letter-spacing="-0.5">BЯ</text>
+                </svg>
+                <div style="font-family: 'Brush Script MT', 'Great Vibes', cursive, 'Times New Roman', serif; font-size: 13px; font-style: italic; color: #000; margin-top: -2px; letter-spacing: 0.5px;">Le Pain de Babi</div>
             </div>
-            <div style="display:flex; justify-content:space-between; font-size: 11px; margin-top: 4px;">
-                <span>Mode : ${data.mode_paiement || 'Espèces'}</span>
-                <span>Reçu : ${(data.montant_recu || data.total_price || data.total_amount || 0).toLocaleString()} F</span>
-            </div>
-            ${(data.monnaie_rendue && data.monnaie_rendue > 0) ? `
-            <div style="display:flex; justify-content:space-between; font-size: 11px; font-weight: bold; color: #166534;">
-                <span>Monnaie Rendue :</span>
-                <span>${data.monnaie_rendue.toLocaleString()} FCFA</span>
-            </div>` : ''}
+
+            <div style="font-weight: 900; font-size: 12.5px; letter-spacing: 0.5px; color: #000; text-transform: uppercase; margin-top: 4px;">BOULANGERIE DE BABI</div>
+            <div style="font-size: 9.5px; font-weight: 700; color: #000; margin: 1px 0;">TEL: 2722564123 / 0704389201 / 0706817977</div>
+            <div style="font-size: 10.5px; font-weight: 600; color: #000;">Recu</div>
         </div>
 
-        <div style="text-align: center; border-top: 1.5px dashed #333; padding-top: 8px; margin-top: 8px; font-size: 10px;">
-            <div>Merci de votre confiance et bonne dégustation !</div>
-            <div style="font-size: 9px; margin-top: 3px; font-family: monospace;">|||| | ||||| ||| |||| || ||||||||| |||</div>
+        <div style="font-size: 11px; line-height: 1.4; margin-bottom: 8px; color: #000;">
+            <div style="display: flex; justify-content: space-between;">
+                <span>Receipt:</span>
+                <span style="font-weight: 600;">${cleanNum || '2512'}</span>
+            </div>
+            <div style="display: flex; justify-content: space-between;">
+                <span>Date:</span>
+                <span>${dateFormatted}</span>
+            </div>
+            <div style="display: flex; justify-content: space-between;">
+                <span>Terminal:</span>
+                <span>${terminalName}</span>
+            </div>
+            <div style="display: flex; justify-content: space-between;">
+                <span>Caissier(e):</span>
+                <span>${cashierName}</span>
+            </div>
+        </div>
+
+        <div style="border-top: 1px dashed #000; border-bottom: 1px dashed #000; padding: 5px 0 3px 0; margin-bottom: 6px;">
+            <div style="display: grid; grid-template-columns: 1fr 58px 30px 65px; font-size: 10.5px; font-weight: 700; color: #000; margin-bottom: 3px;">
+                <span>Article</span>
+                <span style="text-align: right;">Prix</span>
+                <span style="text-align: center;">Qte</span>
+                <span style="text-align: right;">Valeur</span>
+            </div>
+            <div style="border-top: 1px dashed #000; margin: 2px 0 4px 0;"></div>
+            ${itemsRowsHtml || `<div style="font-size: 11px;">1x VENTE COMPTOIR F ${totalTTC.toLocaleString('fr-FR')}</div>`}
+        </div>
+
+        <div style="font-size: 11px; line-height: 1.35; color: #000; margin-bottom: 8px;">
+            <div style="margin-bottom: 6px;">Items count: ${totalItemsCount || 1}</div>
+            
+            <div style="display: flex; justify-content: space-between; font-size: 13px; font-weight: 900; margin-bottom: 4px;">
+                <span>Total TTC</span>
+                <span>F ${totalTTC.toLocaleString('fr-FR')}</span>
+            </div>
+            
+            <div style="font-weight: 700; margin-bottom: 1px;">
+                ${modePaiement.toLowerCase().includes('wave') ? 'Wave' : (modePaiement.toLowerCase().includes('orange') ? 'Orange Money' : 'Cash')}
+            </div>
+            
+            <div style="display: flex; justify-content: space-between; font-size: 10.5px;">
+                <span>Recu:</span>
+                <span>F ${montantRecu.toLocaleString('fr-FR')}</span>
+            </div>
+            
+            <div style="display: flex; justify-content: space-between; font-size: 10.5px;">
+                <span>Monnaie:</span>
+                <span>F ${monnaieRendue.toLocaleString('fr-FR')}</span>
+            </div>
+        </div>
+
+        ${(data.code_pin || data.pickup_pin) ? `
+        <div style="text-align: center; border-top: 1px dashed #000; padding-top: 6px; margin-top: 6px;">
+            <div style="font-size: 9.5px; text-transform: uppercase; font-weight: 800; color: #000;">🔑 CODE PIN RETRAIT</div>
+            <div style="font-size: 20px; font-weight: 900; letter-spacing: 3px; color: #000; font-family: monospace;">${data.code_pin || data.pickup_pin}</div>
+        </div>` : ''}
+
+        <div style="text-align: center; border-top: 1px dashed #000; padding-top: 6px; margin-top: 6px; font-size: 9.5px; color: #000;">
+            <div>Merci de votre visite et à bientôt ! 🥐</div>
+            <div style="font-size: 8.5px; font-family: monospace; letter-spacing: 1px; margin-top: 2px;">*** BOULANGERIE DE BABI ***</div>
         </div>
     `;
 
     document.getElementById('receiptModal').classList.remove('hidden');
+}
+
+function printCurrentThermalReceipt() {
+    playPosAudio('click');
+    window.print();
+}
+
+function shareReceiptOnWhatsApp() {
+    if (!currentReceiptData) return;
+    const d = currentReceiptData;
+    const num = d.receipt_number || d.id || ('25' + Math.floor(10 + Math.random() * 90));
+    const cleanNum = String(num).replace(/^ORD-|^REC-|^POS-/, '');
+    const now = new Date(d.created_at || Date.now());
+    const dateFormatted = now.toLocaleString('fr-FR');
+    const total = Number(d.total_price || d.total_amount || d.total || 0).toLocaleString('fr-FR');
+    
+    let rawItems = [];
+    if (Array.isArray(d.items)) rawItems = d.items;
+    else if (typeof d.items === 'string') { try { rawItems = JSON.parse(d.items); } catch (_) { rawItems = []; } }
+
+    let text = `🥖 *BOULANGERIE DE BABI* 🥐\n`;
+    text += `_Le Pain de Babi_\n`;
+    text += `TEL: 2722564123 / 0704389201 / 0706817977\n`;
+    text += `━━━━━━━━━━━━━━━━━━━━\n`;
+    text += `🧾 *Receipt:* ${cleanNum}\n`;
+    text += `📅 *Date:* ${dateFormatted}\n`;
+    text += `👤 *Caissier(e):* ${d.caissiere || 'CAISSES 1'}\n`;
+    text += `━━━━━━━━━━━━━━━━━━━━\n`;
+    text += `*Article* | *Prix* | *Qte* | *Valeur*\n`;
+    
+    rawItems.forEach(it => {
+        const qty = it.qty || it.quantity || 1;
+        const uPrice = (it.price || it.prix || 0);
+        const val = uPrice * qty;
+        text += `• ${it.name || it.nom} : F ${uPrice.toLocaleString('fr-FR')} x${qty} = F ${val.toLocaleString('fr-FR')}\n`;
+    });
+    
+    text += `━━━━━━━━━━━━━━━━━━━━\n`;
+    text += `💰 *Total TTC:* F ${total}\n`;
+    text += `💳 *Mode:* ${d.mode_paiement || 'Cash'}\n`;
+    if (d.code_pin || d.pickup_pin) {
+        text += `🔑 *CODE SECRET RETRAIT:* *${d.code_pin || d.pickup_pin}*\n`;
+    }
+    text += `━━━━━━━━━━━━━━━━━━━━\n`;
+    text += `_Merci de votre visite et à bientôt !_ 🥖`;
+
+    const phone = (d.customer_phone || d.phone || '').replace(/[^0-9]/g, '');
+    const url = phone ? `https://api.whatsapp.com/send?phone=${phone}&text=${encodeURIComponent(text)}` : `https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`;
+    window.open(url, '_blank');
+}
+
+function copyReceiptText() {
+    if (!currentReceiptData) return;
+    const d = currentReceiptData;
+    const num = d.receipt_number || d.id || '2512';
+    const cleanNum = String(num).replace(/^ORD-|^REC-|^POS-/, '');
+    const now = new Date(d.created_at || Date.now());
+    const total = Number(d.total_price || d.total_amount || d.total || 0).toLocaleString('fr-FR');
+
+    let text = `BOULANGERIE DE BABI\n`;
+    text += `Le Pain de Babi\n`;
+    text += `TEL: 2722564123 / 0704389201 / 0706817977\n`;
+    text += `Recu\n\n`;
+    text += `Receipt:     ${cleanNum}\n`;
+    text += `Date:        ${now.toLocaleString('fr-FR')}\n`;
+    text += `Terminal:    ${d.terminal || 'DESKTOP-FEHP3HD'}\n`;
+    text += `Caissier(e): ${d.caissiere || 'CAISSES 1'}\n\n`;
+    text += `Article                 Prix    Qte    Valeur\n`;
+    text += `--------------------------------------------\n`;
+
+    let rawItems = [];
+    if (Array.isArray(d.items)) rawItems = d.items;
+    else if (typeof d.items === 'string') { try { rawItems = JSON.parse(d.items); } catch (_) { rawItems = []; } }
+
+    rawItems.forEach(it => {
+        const qty = it.qty || it.quantity || 1;
+        const uPrice = (it.price || it.prix || 0);
+        const val = uPrice * qty;
+        text += `${(it.name || it.nom || '').padEnd(20)} F ${String(uPrice).padEnd(6)} x${String(qty).padEnd(4)} F ${val.toLocaleString('fr-FR')}\n`;
+    });
+
+    text += `--------------------------------------------\n`;
+    text += `Total TTC                            F ${total}\n`;
+
+    navigator.clipboard.writeText(text).then(() => {
+        showPosToast("📋 Texte du ticket copié avec succès !", 'success');
+    }).catch(() => {
+        showPosToast("Ticket copié !", 'info');
+    });
 }
 
 function closeReceiptModal() {

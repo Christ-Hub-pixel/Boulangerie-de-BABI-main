@@ -22,11 +22,41 @@
             src: url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&display=swap');
         }
 
-        /* Thermal Ticket Print Styles */
+        /* Thermal Ticket Print Styles 80mm / 58mm Standard */
         @media print {
-            body * { visibility: hidden; }
-            #receiptModal, #receiptModal * { visibility: visible; }
-            #receiptModal { position: absolute; left: 0; top: 0; width: 100%; margin: 0; padding: 0; background: white !important; }
+            @page {
+                size: 80mm auto;
+                margin: 0;
+            }
+            body * { visibility: hidden !important; }
+            #receiptModal, #receiptModal *, #thermal-receipt-content, #thermal-receipt-content * { 
+                visibility: visible !important; 
+            }
+            #receiptModal { 
+                position: absolute !important; 
+                left: 0 !important; 
+                top: 0 !important; 
+                width: 80mm !important; 
+                margin: 0 !important; 
+                padding: 0 !important; 
+                background: white !important; 
+                box-shadow: none !important;
+                display: block !important;
+            }
+            .prestige-modal-card {
+                box-shadow: none !important;
+                background: white !important;
+                border: none !important;
+                padding: 0 !important;
+                max-width: 80mm !important;
+                width: 80mm !important;
+            }
+            #thermal-receipt-content {
+                box-shadow: none !important;
+                border: none !important;
+                padding: 2mm !important;
+                width: 100% !important;
+            }
             .no-print { display: none !important; }
         }
 
@@ -642,18 +672,43 @@
         </div>
     </div>
 
-    <!-- THERMAL RECEIPT MODAL 80mm -->
-    <div id="receiptModal" class="prestige-modal-backdrop hidden">
-        <div class="prestige-modal-card max-w-sm p-5 rounded-3xl bg-white shadow-2xl">
-            <!-- 80mm Receipt Preview Container -->
-            <div id="thermal-receipt-content" class="bg-white p-4 text-black font-mono text-xs border border-dashed border-gray-300 rounded-xl shadow-inner mb-4">
+    <!-- THERMAL RECEIPT MODAL 80mm EXACT REPLICA -->
+    <div id="receiptModal" class="prestige-modal-backdrop hidden" style="z-index: 99999;">
+        <div class="prestige-modal-card max-w-sm p-5 rounded-3xl bg-slate-900/95 text-white shadow-2xl border border-white/10 backdrop-blur-xl">
+            <!-- Modal Header -->
+            <div class="flex items-center justify-between mb-3 pb-2.5 border-b border-white/10 no-print">
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center font-bold text-base">
+                        🧾
+                    </div>
+                    <div>
+                        <h3 class="font-extrabold text-xs text-white">Reçu de Caisse Officiel</h3>
+                        <p class="text-[10px] text-slate-400">Format Thermique 80mm • BABI POS</p>
+                    </div>
+                </div>
+                <button type="button" onclick="closeReceiptModal()" class="w-7 h-7 rounded-full bg-white/10 hover:bg-white/20 text-slate-300 flex items-center justify-center text-xs transition-all">
+                    ✕
+                </button>
+            </div>
+
+            <!-- 80mm Receipt Preview Container with Real Paper Style -->
+            <div id="thermal-receipt-content" class="bg-white text-slate-950 p-5 font-mono text-xs rounded-xl shadow-2xl mb-3 relative overflow-hidden" style="font-family: 'Courier New', Courier, monospace; letter-spacing: -0.2px;">
                 <!-- Injected dynamically via showThermalReceipt() -->
             </div>
 
-            <div class="flex gap-2 no-print">
-                <button type="button" onclick="closeReceiptModal()" class="flex-1 py-3 bg-gray-100 text-gray-800 font-bold rounded-xl text-xs hover:bg-gray-200 transition-all">Fermer</button>
-                <button type="button" onclick="window.print()" class="flex-[2] py-3 bg-primary text-white font-extrabold rounded-xl text-xs hover:brightness-95 flex items-center justify-center gap-2 shadow-md transition-all">
+            <!-- Interactive Actions Toolbar -->
+            <div class="grid grid-cols-3 gap-2 no-print">
+                <button type="button" onclick="printCurrentThermalReceipt()" class="col-span-3 py-3 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-slate-950 font-black rounded-xl text-xs flex items-center justify-center gap-2 shadow-lg shadow-amber-500/25 active:scale-[0.98] transition-all">
                     <span class="material-symbols-outlined text-base">print</span> Imprimer Ticket (80mm)
+                </button>
+                <button type="button" onclick="shareReceiptOnWhatsApp()" class="py-2 bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-400 border border-emerald-500/30 font-bold rounded-lg text-[11px] flex items-center justify-center gap-1 transition-all">
+                    <i class="fa-brands fa-whatsapp text-xs"></i> WhatsApp
+                </button>
+                <button type="button" onclick="copyReceiptText()" class="py-2 bg-white/10 hover:bg-white/20 text-white font-bold rounded-lg text-[11px] flex items-center justify-center gap-1 transition-all">
+                    <span class="material-symbols-outlined text-xs">content_copy</span> Copier
+                </button>
+                <button type="button" onclick="closeReceiptModal()" class="py-2 bg-white/10 hover:bg-white/20 text-slate-300 font-bold rounded-lg text-[11px] flex items-center justify-center gap-1 transition-all">
+                    Fermer
                 </button>
             </div>
         </div>

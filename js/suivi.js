@@ -348,58 +348,99 @@ function populateThermalReceiptData(order) {
     const recModalWhatsapp = document.getElementById('rec-modal-whatsapp');
 
     const d = order.createdAt ? new Date(order.createdAt) : new Date();
-    const formattedDate = d.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' }) + ' ' + d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+    const months = ['janv.', 'févr.', 'mars', 'avr.', 'mai', 'juin', 'juil.', 'août', 'sept.', 'oct.', 'nov.', 'déc.'];
+    const formattedDate = `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}:${String(d.getSeconds()).padStart(2, '0')}`;
 
-    if (recId) recId.innerText = '#' + (order.id || 'BABI-100');
+    const cleanNum = String(order.id || '2512').replace(/^ORD-|^REC-|^POS-|^BABI-CMD-/, '');
+
+    if (recId) recId.innerText = cleanNum || '2512';
     if (recDate) recDate.innerText = formattedDate;
     if (recClient) recClient.innerText = order.clientName || 'Client';
     if (recPhone) recPhone.innerText = order.phone || '--';
-    if (recDest) recDest.innerText = `${order.commune || 'Abidjan'}, ${order.address || ''}`;
-    if (recDeliveryMode) recDeliveryMode.innerText = 'Retrait en Boutique (Click & Collect)';
     
-    if (recPayment) recPayment.innerText = (order.payment_method || 'Mobile Money') + (order.payment_status === 'paye' ? ' (VALIDÉ)' : '');
-
-    const sub = order.subtotal || (order.total_price ? order.total_price - (order.delivery_cost || 0) : 0);
-    if (recSubtotal) recSubtotal.innerText = (sub || 0).toLocaleString() + ' FCFA';
-    
-    if (recDeliveryFee) {
-        recDeliveryFee.innerText = (order.delivery_cost || 0) > 0 ? order.delivery_cost.toLocaleString() + ' FCFA' : 'Gratuit (0 FCFA)';
-    }
-    if (recDeliveryRow) {
-        recDeliveryRow.style.display = 'flex';
-    }
-
-    if (recTotal) recTotal.innerText = (order.total_price || sub || 0).toLocaleString() + ' FCFA';
-
-    // Articles list
-    if (recList) {
-        let itemsHtml = '';
-        const items = order.items || order.cartItems || [];
-        if (items.length > 0) {
-            items.forEach(item => {
-                const q = item.qty || item.quantity || 1;
-                const p = item.price || item.prix || 0;
-                const val = p * q;
-                itemsHtml += `
-                <div class="d-flex justify-content-between my-1" style="font-size: 9.5px;">
-                    <span style="flex: 2; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${item.name || item.title}">${(item.name || item.title || '').toUpperCase()}</span>
-                    <span style="flex: 1; text-align: center;">${p.toLocaleString()}</span>
-                    <span style="flex: 0.8; text-align: center;">x${q}</span>
-                    <span style="flex: 1.2; text-align: right; font-weight:bold;">${val.toLocaleString()}</span>
-                </div>`;
-            });
-        } else if (order.itemsSummary) {
-            itemsHtml = `
-            <div class="d-flex justify-content-between my-1" style="font-size: 9.5px;">
-                <span style="flex: 2;">${order.itemsSummary.toUpperCase()}</span>
-                <span style="flex: 1; text-align: center;">--</span>
-                <span style="flex: 0.8; text-align: center;">x1</span>
-                <span style="flex: 1.2; text-align: right; font-weight:bold;">${(order.total_price || 0).toLocaleString()}</span>
-            </div>`;
+    const pinBox = document.getElementById('rec-pin-box');
+    const pinCodeEl = document.getElementById('rec-pin-code');
+    const pin = order.code_pin || order.confCode || order.pickup_pin || order.confirmation_code;
+    if (pinBox && pinCodeEl) {
+        if (pin) {
+            pinBox.style.display = 'block';
+            pinCodeEl.innerText = pin;
+        } else {
+            pinBox.style.display = 'none';
         }
-        recList.innerHTML = itemsHtml;
     }
 
+    const items = order.items || order.cartItems || [];
+    let itemsCount = 0;
+    let itemsHtml = '';
+
+    if (items.length > 0) {
+        items.forEach(item => {
+            const q = Number(item.qty || item.quantity || 1);
+            const p = Number(item.price || item.prix || 0);
+            const val = p * q;
+            itemsCount += q;
+            itemsHtml += `
+            <div style="display: grid; grid-template-columns: 1fr 55px 30px 60px; font-size: 10px; margin-bottom: 2px;">
+                <span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-weight:600;" title="${item.name || item.title}">${(item.name || item.title || '').toUpperCase()}</span>
+                <span style="text-align: right;">F ${p.toLocaleString('fr-FR')}</span>
+                <span style="text-align: center;">x${q}</span>
+                <span style="text-align: right; font-weight: bold;">F ${val.toLocaleString('fr-FR')}</span>
+            </div>`;
+        });
+    } else if (order.itemsSummary) {
+        itemsCount = 1;
+        itemsHtml = `
+        <div style="display: grid; grid-template-columns: 1fr 55px 30px 60px; font-size: 10px; margin-bottom: 2px;">
+            <span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${order.itemsSummary.toUpperCase()}</span>
+            <span style="text-align: right;">--</span>
+            <span style="text-align: center;">x1</span>
+            <span style="text-align: right; font-weight: bold;">F ${(order.total_price || 0).toLocaleString('fr-FR')}</span>
+        </div>`;
+    }
+
+    if (recList) recList.innerHTML = itemsHtml;
+
+    const itemsCountLine = document.getElementById('rec-items-count-line');
+    if (itemsCountLine) itemsCountLine.innerText = `Items count: ${itemsCount || 1}`;
+
+    const totalVal = Number(order.total_price || order.total_amount || order.subtotal || 0);
+    if (recTotal) recTotal.innerText = `F ${totalVal.toLocaleString('fr-FR')}`;
+
+    const mode = (order.payment_method || 'Cash').toLowerCase();
+    if (recPayment) recPayment.innerText = mode.includes('wave') ? 'Wave' : (mode.includes('orange') ? 'Orange Money' : 'Cash');
+
+    const amountPaidEl = document.getElementById('rec-amount-paid');
+    const changeGivenEl = document.getElementById('rec-change-given');
+    const montantRecu = Number(order.montant_recu || (totalVal > 0 ? (totalVal >= 10000 ? totalVal : (totalVal > 5000 ? 10000 : 5000)) : 0));
+    const monnaieRendue = Number(order.monnaie_rendue || Math.max(0, montantRecu - totalVal));
+
+    if (amountPaidEl) amountPaidEl.innerText = `F ${montantRecu.toLocaleString('fr-FR')}`;
+    if (changeGivenEl) changeGivenEl.innerText = `F ${monnaieRendue.toLocaleString('fr-FR')}`;
+
+    // WhatsApp modal link
+    if (recModalWhatsapp) {
+        let text = `🥖 *BOULANGERIE DE BABI* 🥐\n`;
+        text += `_Le Pain de Babi_\n`;
+        text += `TEL: 2722564123 / 0704389201 / 0706817977\n`;
+        text += `━━━━━━━━━━━━━━━━━━━━\n`;
+        text += `🧾 *Receipt:* ${cleanNum || '2512'}\n`;
+        text += `📅 *Date:* ${formattedDate}\n`;
+        text += `👤 *Caissier(e):* CAISSES 1\n`;
+        text += `━━━━━━━━━━━━━━━━━━━━\n`;
+        text += `*Article* | *Prix* | *Qte* | *Valeur*\n`;
+        items.forEach(it => {
+            const q = it.qty || it.quantity || 1;
+            const p = it.price || it.prix || 0;
+            text += `• ${it.name || it.nom} : F ${p.toLocaleString('fr-FR')} x${q} = F ${(p * q).toLocaleString('fr-FR')}\n`;
+        });
+        text += `━━━━━━━━━━━━━━━━━━━━\n`;
+        text += `💰 *Total TTC:* F ${totalVal.toLocaleString('fr-FR')}\n`;
+        if (pin) text += `🔑 *CODE RETRAIT:* *${pin}*\n`;
+        text += `━━━━━━━━━━━━━━━━━━━━\n`;
+        text += `_Merci de votre visite et à bientôt !_ 🥖`;
+
+        const phone = (order.phone || '').replace(/[^0-9]/g, '');
     // QR Code
     if (recQrCode) {
         recQrCode.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(trackingUrl)}`;

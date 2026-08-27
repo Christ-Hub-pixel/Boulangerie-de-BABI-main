@@ -388,75 +388,74 @@
                     <button type="button" class="btn-close btn-close-white btn-sm" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body p-3 bg-light d-flex justify-content-center">
-                    <!-- The Actual Paper Receipt -->
-                    <div id="printable-receipt" class="bg-white p-3 shadow-sm rounded-1 text-dark" style="width: 100%; max-width: 320px; font-family: 'Courier New', Courier, monospace; font-size: 11px; line-height: 1.35; border: 1px solid #e2e8f0;">
+                    <!-- The Actual Paper Receipt (Exact Official Replica) -->
+                    <div id="printable-receipt" class="bg-white p-4 shadow-sm rounded-2 text-dark" style="width: 100%; max-width: 320px; font-family: 'Courier New', Courier, monospace; font-size: 11px; line-height: 1.35; border: 1px solid #cbd5e1;">
                         <div class="text-center mb-2">
-                            <img src="assets/logo.png" style="width: 55px; height: auto;" class="ticket-logo mb-1" alt="Logo BABI">
-                            <div class="fw-bold fs-6" style="letter-spacing: 1px;">BOULANGERIE DE BABI</div>
-                            <div style="font-size: 9px;" class="text-muted">RIVIERA — ABIDJAN</div>
-                            <div style="font-size: 9px;" class="text-muted">TÉL : +225 07 04 38 92 01 / 27 22 56 41 23</div>
-                            <div class="fw-bold mt-1 text-uppercase" style="border-top: 1px dashed #000; border-bottom: 1px dashed #000; padding: 2px 0;">
-                                TICKET DE RETRAIT OFFICIEL
+                            <!-- Official BЯ Wreath Logo -->
+                            <div style="margin: 0 auto 2px auto; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                                <svg width="64" height="64" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" style="display: block; margin: 0 auto;">
+                                    <circle cx="50" cy="50" r="46" stroke="#000" stroke-width="1.8" stroke-dasharray="2 1"/>
+                                    <path d="M 22 72 C 12 50, 20 22, 50 14 C 80 22, 88 50, 78 72 C 70 84, 58 90, 50 90 C 42 90, 30 84, 22 72 Z" stroke="#000" stroke-width="1.2" fill="none"/>
+                                    <path d="M 78 72 C 82 67, 85 58, 80 54 C 76 58, 75 66, 78 72 Z" fill="#000"/>
+                                    <path d="M 80 54 C 85 50, 88 42, 82 38 C 78 42, 78 49, 80 54 Z" fill="#000"/>
+                                    <path d="M 82 38 C 86 32, 86 24, 80 22 C 76 26, 77 34, 82 38 Z" fill="#000"/>
+                                    <path d="M 80 22 C 78 16, 72 13, 66 14 C 67 19, 73 22, 80 22 Z" fill="#000"/>
+                                    <path d="M 22 72 C 18 67, 15 58, 20 54 C 24 58, 25 66, 22 72 Z" fill="#000"/>
+                                    <path d="M 20 54 C 15 50, 12 42, 18 38 C 22 42, 22 49, 20 54 Z" fill="#000"/>
+                                    <path d="M 18 38 C 14 32, 14 24, 20 22 C 24 26, 23 34, 18 38 Z" fill="#000"/>
+                                    <text x="50" y="59" font-family="'Times New Roman', Georgia, serif" font-size="33" font-weight="900" text-anchor="middle" fill="#000" letter-spacing="-0.5">BЯ</text>
+                                </svg>
+                                <div style="font-family: 'Brush Script MT', 'Great Vibes', cursive, 'Times New Roman', serif; font-size: 13px; font-style: italic; color: #000; margin-top: -2px; letter-spacing: 0.5px;">Le Pain de Babi</div>
+                            </div>
+                            <div class="fw-bold" style="font-size: 12.5px; letter-spacing: 0.5px; text-transform: uppercase;">BOULANGERIE DE BABI</div>
+                            <div style="font-size: 9.5px; font-weight: 700;">TEL: 2722564123 / 0704389201 / 0706817977</div>
+                            <div style="font-size: 10.5px; font-weight: 600;">Recu</div>
+                        </div>
+
+                        <div class="mb-2" style="font-size: 11px; line-height: 1.4;">
+                            <div class="d-flex justify-content-between"><span>Receipt:</span> <b id="rec-id">2512</b></div>
+                            <div class="d-flex justify-content-between"><span>Date:</span> <span id="rec-date">--/--/---- --:--</span></div>
+                            <div class="d-flex justify-content-between"><span>Terminal:</span> <span>DESKTOP-FEHP3HD</span></div>
+                            <div class="d-flex justify-content-between"><span>Caissier(e):</span> <span id="rec-cashier" class="fw-bold">CAISSES 1</span></div>
+                        </div>
+
+                        <div style="border-top: 1px dashed #000; border-bottom: 1px dashed #000; padding: 4px 0 2px 0; margin-bottom: 6px;">
+                            <div style="display: grid; grid-template-columns: 1fr 55px 30px 60px; font-size: 10.5px; font-weight: 700; color: #000; margin-bottom: 2px;">
+                                <span>Article</span>
+                                <span style="text-align: right;">Prix</span>
+                                <span style="text-align: center;">Qte</span>
+                                <span style="text-align: right;">Valeur</span>
+                            </div>
+                            <div style="border-top: 1px dashed #000; margin: 2px 0 4px 0;"></div>
+                            <div id="rec-items-list" class="my-1"></div>
+                        </div>
+
+                        <div style="font-size: 11px; line-height: 1.35;">
+                            <div id="rec-items-count-line" class="mb-1" style="font-size: 10.5px;">Items count: 2</div>
+                            <div class="d-flex justify-content-between fw-bold mb-1" style="font-size: 13px;">
+                                <span>Total TTC</span>
+                                <span id="rec-total">F 0</span>
+                            </div>
+                            <div id="rec-payment" class="fw-bold" style="font-size: 11px;">Cash</div>
+                            <div class="d-flex justify-content-between" style="font-size: 10.5px;">
+                                <span>Recu:</span>
+                                <span id="rec-amount-paid">F 0</span>
+                            </div>
+                            <div class="d-flex justify-content-between" style="font-size: 10.5px;">
+                                <span>Monnaie:</span>
+                                <span id="rec-change-given">F 0</span>
                             </div>
                         </div>
 
-                        <div class="mb-2" style="font-size: 10px;">
-                            <div>COMMANDE : <b id="rec-id">#BABI-CMD-000</b></div>
-                            <div>DATE : <span id="rec-date">--/--/---- --:--</span></div>
-                            <div>CLIENT : <span id="rec-client" class="fw-bold">Client</span></div>
-                            <div>TÉL : <span id="rec-phone">--</span></div>
-                            <div>POINT RETRAIT : <span id="rec-dest">Riviera</span></div>
-                            <div>MODE : <span id="rec-delivery-mode">Retrait au Fournil (Click & Collect)</span></div>
-                        </div>
-
-                        <div style="border-top: 1px dashed #000; margin: 4px 0;"></div>
-                        <div class="fw-bold d-flex justify-content-between" style="font-size: 10px;">
-                            <span style="flex: 2;">ARTICLE</span>
-                            <span style="flex: 1; text-align: center;">P.U</span>
-                            <span style="flex: 0.8; text-align: center;">QTÉ</span>
-                            <span style="flex: 1.2; text-align: right;">TOTAL</span>
-                        </div>
-                        <div style="border-top: 1px dashed #000; margin: 4px 0;"></div>
-
-                        <div id="rec-items-list" class="my-1"></div>
-
-                        <div style="border-top: 1px dashed #000; margin: 4px 0;"></div>
-                        <div style="font-size: 10px;">
-                            <div class="d-flex justify-content-between">
-                                <span>Sous-total :</span>
-                                <span id="rec-subtotal" class="fw-bold">0 FCFA</span>
-                            </div>
-                            <div class="d-flex justify-content-between" id="rec-delivery-row">
-                                <span>Frais de retrait :</span>
-                                <span id="rec-delivery-fee">Gratuit (0 FCFA)</span>
-                            </div>
-                            <div class="d-flex justify-content-between fw-bold fs-6 mt-1 pt-1" style="border-top: 1px solid #000;">
-                                <span>TOTAL PAYÉ :</span>
-                                <span id="rec-total">0 FCFA</span>
-                            </div>
-                            <div class="d-flex justify-content-between text-muted" style="font-size: 9px; margin-top: 2px;">
-                                <span>PAIEMENT :</span>
-                                <span id="rec-payment" class="fw-bold text-dark text-uppercase">MOBILE MONEY (WAVE)</span>
-                            </div>
-                            <div class="text-center mt-1" id="rec-paid-stamp">
-                                <span class="badge bg-success text-white px-2 py-1" style="font-size: 9px;">✓ PAYÉ / VALIDÉ</span>
-                            </div>
+                        <div id="rec-pin-box" class="text-center my-2 p-2 rounded" style="background: #f8fafc; border: 1px dashed #000;">
+                            <div style="font-size: 9px; font-weight: 800; text-transform: uppercase;">🔑 CODE SECRET RETRAIT COMPTOIR</div>
+                            <div id="rec-pin-code" style="font-size: 19px; font-weight: 900; letter-spacing: 3px; font-family: monospace;">4892</div>
                         </div>
 
                         <div style="border-top: 1px dashed #000; margin: 6px 0;"></div>
-
-                        <!-- Dynamic QR Code for GPS Tracking -->
-                        <div class="text-center my-2">
-                            <div class="small fw-bold mb-1" style="font-size: 8.5px;">SCANNEZ POUR LE SUIVI GPS EN DIRECT :</div>
-                            <img id="rec-qr-code" src="https://api.qrserver.com/v1/create-qr-code/?size=110x110&data=https%3A%2F%2Fboulangeriedebabi.ci%2Fsuivi.html" alt="QR Code Suivi GPS" style="width: 95px; height: 95px; margin: 0 auto; display: block; border: 1px solid #ddd; padding: 2px;">
-                            <div style="font-size: 8px; color: #64748b;" class="mt-1">boulangeriedebabi.ci/suivi</div>
-                        </div>
-
-                        <div style="border-top: 1px dashed #000; margin: 6px 0;"></div>
-                        <div class="text-center" style="font-size: 8.5px;">
-                            <div class="fw-bold">MERCI POUR VOTRE COMMANDE !</div>
-                            <div>Le bon pain croustillant au cœur d'Abidjan ✨</div>
-                            <div class="text-muted mt-1">Fournée artisanale • Service 7j/7</div>
+                        <div class="text-center" style="font-size: 9.5px;">
+                            <div>Merci de votre visite et à bientôt ! 🥐</div>
+                            <div style="font-size: 8.5px; font-family: monospace; letter-spacing: 1px; margin-top: 2px;">*** BOULANGERIE DE BABI ***</div>
                         </div>
                     </div>
                 </div>
