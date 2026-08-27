@@ -2750,26 +2750,40 @@ function populateClosureModalUI() {
 
 function openClosureModal() {
     const modal = document.getElementById('closureModal');
-    if (!modal) return;
+    if (!modal) {
+        console.error('Modal #closureModal not found in DOM');
+        return;
+    }
 
-    playPosAudio('chime');
+    try {
+        playPosAudio('chime');
+    } catch (_) {}
 
     // 1. Reset physical denomination inputs
-    CASH_DENOMINATIONS.forEach(d => {
-        const inp = document.getElementById(`denom_${d.id}`);
-        if (inp) inp.value = 0;
-        const sub = document.getElementById(`sub_${d.id}`);
-        if (sub) sub.innerText = '0 F';
-    });
+    try {
+        if (typeof CASH_DENOMINATIONS !== 'undefined' && Array.isArray(CASH_DENOMINATIONS)) {
+            CASH_DENOMINATIONS.forEach(d => {
+                const inp = document.getElementById(`denom_${d.id}`);
+                if (inp) inp.value = 0;
+                const sub = document.getElementById(`sub_${d.id}`);
+                if (sub) sub.innerText = '0 F';
+            });
+        }
+    } catch (_) {}
 
     // 2. Compute local shift data and populate UI instantly (0ms lag)
-    computeLocalShiftData();
-    populateClosureModalUI();
-    switchClosureTab('z');
-    recalculateCashCount();
+    try {
+        computeLocalShiftData();
+        populateClosureModalUI();
+        switchClosureTab('z');
+        recalculateCashCount();
+    } catch (err) {
+        console.warn('Non-blocking UI error in closure init:', err);
+    }
 
     // 3. Display modal immediately
     modal.classList.remove('hidden');
+    modal.style.display = 'flex';
 
     // 4. Background refresh if API is online
     try {
@@ -2804,15 +2818,31 @@ function openTicketXModal() {
 function computeLocalShiftData() {
     let sales = 0, cash = 0, wave = 0, others = 0, count = 0;
     try {
-        const history = JSON.parse(localStorage.getItem('babi_pos_sales_history') || '[]');
+        const hSales = JSON.parse(localStorage.getItem('babi_history_sales') || '[]');
+        const bOrders = JSON.parse(localStorage.getItem('babi_orders') || '[]');
+        const pSales = JSON.parse(localStorage.getItem('babi_pos_sales_history') || '[]');
+        
+        const map = new Map();
+        [...hSales, ...bOrders, ...pSales].forEach(s => {
+            if (!s) return;
+            const id = String(s.id || s.order_number || s.orderId || Math.random());
+            if (!map.has(id)) {
+                map.set(id, s);
+            }
+        });
+
         const todayStr = new Date().toISOString().slice(0, 10);
-        history.filter(s => (s.created_at || '').startsWith(todayStr)).forEach(s => {
-            sales += (s.total_price || 0);
-            count++;
-            const method = (s.payment_method || '').toLowerCase();
-            if (method.includes('wave')) wave += (s.total_price || 0);
-            else if (method.includes('orange') || method.includes('mtn')) others += (s.total_price || 0);
-            else cash += (s.total_price || 0);
+        Array.from(map.values()).forEach(s => {
+            const dateStr = s.created_at || s.createdAt || '';
+            if (!dateStr || dateStr.startsWith(todayStr) || (new Date(dateStr).toDateString() === new Date().toDateString())) {
+                const total = parseFloat(s.total_price || s.total_amount || s.total || 0);
+                sales += total;
+                count++;
+                const method = String(s.mode_paiement || s.payment_method || '').toLowerCase();
+                if (method.includes('wave') || method.includes('mobile')) wave += total;
+                else if (method.includes('orange') || method.includes('mtn')) others += total;
+                else cash += total;
+            }
         });
     } catch (_) {}
     currentClosureShiftData.total_sales = sales;
