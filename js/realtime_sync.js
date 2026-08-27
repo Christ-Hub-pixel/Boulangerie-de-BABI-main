@@ -38,6 +38,15 @@
             }
         }
 
+        // Auto-refresh POS cashier grid if function exists
+        if (typeof window.loadPosProducts === 'function') {
+            try {
+                window.loadPosProducts();
+            } catch (err) {
+                console.warn("[RealTimeSync] Error calling loadPosProducts:", err);
+            }
+        }
+
         // Broadcast to other tabs
         if (broadcast && broadcastChannel) {
             try {

@@ -563,17 +563,82 @@
                  SECTION 5: CATALOGUE PRODUITS & FOURNIL
                  ============================================================= -->
             <div id="section-products" class="admin-tab-section">
+                <!-- 4 Top Product Mini KPI Cards -->
+                <section class="saas-kpi-grid mb-4" style="padding-top: 0;">
+                    <div class="saas-kpi-card" style="border-left: 4px solid #f59e0b;">
+                        <div class="saas-kpi-icon-box yellow">
+                            <span class="material-symbols-outlined text-2xl">bakery_dining</span>
+                        </div>
+                        <div>
+                            <span class="saas-kpi-label">Total Produits</span>
+                            <div class="saas-kpi-value" id="prod-kpi-total">0</div>
+                            <span class="saas-kpi-badge">Catalogue Global</span>
+                        </div>
+                    </div>
+
+                    <div class="saas-kpi-card" style="border-left: 4px solid #16a34a;">
+                        <div class="saas-kpi-icon-box green">
+                            <span class="material-symbols-outlined text-2xl">check_circle</span>
+                        </div>
+                        <div>
+                            <span class="saas-kpi-label">Actifs en Vente</span>
+                            <div class="saas-kpi-value" id="prod-kpi-active" style="color: #16a34a;">0</div>
+                            <span class="saas-kpi-badge positive"><span class="saas-dot-online"></span> Caisse & Boutique</span>
+                        </div>
+                    </div>
+
+                    <div class="saas-kpi-card" style="border-left: 4px solid #ef4444;">
+                        <div class="saas-kpi-icon-box pink">
+                            <span class="material-symbols-outlined text-2xl">notification_important</span>
+                        </div>
+                        <div>
+                            <span class="saas-kpi-label">Alerte Stock Bas</span>
+                            <div class="saas-kpi-value" id="prod-kpi-low" style="color: #ef4444;">0</div>
+                            <span class="saas-kpi-badge" style="color: #ef4444;">Réapprovisionnement requis</span>
+                        </div>
+                    </div>
+
+                    <div class="saas-kpi-card" style="border-left: 4px solid #3b82f6;">
+                        <div class="saas-kpi-icon-box" style="background: rgba(59, 130, 246, 0.15); color: #3b82f6;">
+                            <span class="material-symbols-outlined text-2xl">inventory_2</span>
+                        </div>
+                        <div>
+                            <span class="saas-kpi-label">Valeur du Stock</span>
+                            <div class="saas-kpi-value" id="prod-kpi-value">0 FCFA</div>
+                            <span class="saas-kpi-badge">Prix unitaire TTC</span>
+                        </div>
+                    </div>
+                </section>
+
                 <div class="saas-card">
                     <div class="saas-card-header flex-wrap gap-3">
                         <div>
-                            <h3 class="saas-card-title">Catalogue des 48 Produits & Gestion des Fournées</h3>
-                            <p class="saas-card-subtitle">Gérez les prix, disponibilités et stocks en temps réel</p>
+                            <h3 class="saas-card-title">Catalogue & Tarification des Produits</h3>
+                            <p class="saas-card-subtitle">Ajoutez, modifiez, ajustez les prix et gérez la disponibilité en direct</p>
                         </div>
-                        <div class="d-flex align-items-center gap-2">
+                        <div class="d-flex align-items-center gap-2 flex-wrap">
+                            <div class="saas-search-box">
+                                <span class="material-symbols-outlined text-muted text-sm">search</span>
+                                <input type="text" id="admin-products-search" placeholder="Rechercher un produit..." oninput="filterProductsBySearch(this.value)"/>
+                            </div>
                             <button type="button" class="btn-sm btn-primary-gold" onclick="openAddProductModal()">
                                 <i class="fa-solid fa-plus me-1"></i> + Ajouter un Produit
                             </button>
+                            <button type="button" class="btn-sm btn-outline-primary" onclick="loadProducts()">
+                                <i class="fa-solid fa-rotate me-1"></i> Actualiser
+                            </button>
                         </div>
+                    </div>
+
+                    <!-- Category Filter Tabs -->
+                    <div class="saas-sub-filters">
+                        <button type="button" class="saas-filter-pill active" onclick="filterProductsByCategory('all', this)">Tous (<span id="prod-cat-all-count">0</span>)</button>
+                        <button type="button" class="saas-filter-pill" onclick="filterProductsByCategory('pain', this)">🥖 Pains (<span id="prod-cat-pain-count">0</span>)</button>
+                        <button type="button" class="saas-filter-pill" onclick="filterProductsByCategory('viennoiserie', this)">🥐 Viennoiseries (<span id="prod-cat-viennoiserie-count">0</span>)</button>
+                        <button type="button" class="saas-filter-pill" onclick="filterProductsByCategory('patisserie', this)">🍰 Pâtisseries (<span id="prod-cat-patisserie-count">0</span>)</button>
+                        <button type="button" class="saas-filter-pill" onclick="filterProductsByCategory('boisson', this)">🧃 Boissons (<span id="prod-cat-boisson-count">0</span>)</button>
+                        <button type="button" class="saas-filter-pill" onclick="filterProductsByCategory('sale', this)">🥪 Salés & Traiteur (<span id="prod-cat-sale-count">0</span>)</button>
+                        <button type="button" class="saas-filter-pill" onclick="filterProductsByCategory('snack', this)">🍪 Biscuits & Snacks (<span id="prod-cat-snack-count">0</span>)</button>
                     </div>
 
                     <div class="saas-table-wrapper" style="max-height: 600px; overflow-y: auto;">
@@ -586,7 +651,7 @@
                                     <th>Prix Unitaire</th>
                                     <th>Stock Disponible</th>
                                     <th>Seuil Alerte</th>
-                                    <th>Statut Fournil</th>
+                                    <th>Statut Vente</th>
                                     <th style="text-align: right;">Actions</th>
                                 </tr>
                             </thead>
@@ -1251,6 +1316,222 @@
                     <button type="button" onclick="closeCreateCashierModal()" class="btn-modal-cancel">Annuler</button>
                     <button type="submit" class="btn-modal-submit-gold" style="background: linear-gradient(135deg, #f59e0b, #d97706); border:none;">
                         <i class="fa-solid fa-circle-check me-1"></i> Valider & Autoriser la Caissière
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- =============================================================
+         MODAL : AJOUTER UN NOUVEAU PRODUIT AU CATALOGUE
+         ============================================================= -->
+    <div id="addProductModal" class="prestige-modal-backdrop hidden" style="z-index: 99999;">
+        <div class="prestige-modal-card" style="max-width: 620px; max-height: 92vh; overflow-y: auto;">
+            <div class="prestige-modal-header" style="background: linear-gradient(135deg, #f59e0b, #d97706); color: #fff; margin: -28px -28px 16px -28px; padding: 20px 24px; border-radius: 26px 26px 0 0;">
+                <div class="d-flex align-items-center gap-2">
+                    <span class="material-symbols-outlined text-2xl text-white">add_shopping_cart</span>
+                    <div>
+                        <h3 class="prestige-modal-title text-white mb-0" style="font-size: 18px;">+ Ajouter un Nouveau Produit</h3>
+                        <p class="small text-white-50 mb-0">Synchronisation instantanée Caisse Tactile & Boutique</p>
+                    </div>
+                </div>
+                <button type="button" onclick="closeAddProductModal()" class="prestige-modal-close-btn text-white" style="background: rgba(0,0,0,0.2); border: none;">✕</button>
+            </div>
+
+            <form onsubmit="handleCreateProduct(event)" style="display: flex; flex-direction: column; gap: 14px;">
+                <!-- Nom & Catégorie -->
+                <div class="row g-2">
+                    <div class="col-md-7">
+                        <label class="prestige-form-label" style="font-weight: 700; font-size: 12px; margin-bottom: 4px; display: block;">Nom du Produit * :</label>
+                        <input type="text" id="new-prod-name" class="prestige-form-input" placeholder="Ex: Baguette Tradition, Croissant Beurre..." required style="width: 100%; padding: 10px 12px; border-radius: 12px; border: 1.5px solid #cbd5e1; font-size: 13px; outline: none;"/>
+                    </div>
+                    <div class="col-md-5">
+                        <label class="prestige-form-label" style="font-weight: 700; font-size: 12px; margin-bottom: 4px; display: block;">Catégorie * :</label>
+                        <select id="new-prod-category" class="prestige-form-input" required style="width: 100%; padding: 10px 12px; border-radius: 12px; border: 1.5px solid #cbd5e1; font-size: 13px; outline: none; background: #fff;">
+                            <option value="pain">🥖 Pains & Traditions</option>
+                            <option value="viennoiserie">🥐 Viennoiseries</option>
+                            <option value="patisserie">🍰 Pâtisseries & Gâteaux</option>
+                            <option value="boisson">🧃 Boissons & Jus Naturels</option>
+                            <option value="sale">🥪 Salés, Pizzas & Paninis</option>
+                            <option value="snack">🍪 Biscuits & Cookies</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Prix & Stocks -->
+                <div class="row g-2">
+                    <div class="col-md-4">
+                        <label class="prestige-form-label" style="font-weight: 700; font-size: 12px; margin-bottom: 4px; display: block;">Prix TTC (FCFA) * :</label>
+                        <input type="number" id="new-prod-price" class="prestige-form-input" placeholder="Ex: 250" min="0" step="25" required style="width: 100%; padding: 10px 12px; border-radius: 12px; border: 1.5px solid #cbd5e1; font-size: 13px; font-weight: 800; font-family: monospace; outline: none;"/>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="prestige-form-label" style="font-weight: 700; font-size: 12px; margin-bottom: 4px; display: block;">Stock Initial (unités) :</label>
+                        <input type="number" id="new-prod-stock" class="prestige-form-input" value="50" min="0" style="width: 100%; padding: 10px 12px; border-radius: 12px; border: 1.5px solid #cbd5e1; font-size: 13px; outline: none;"/>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="prestige-form-label" style="font-weight: 700; font-size: 12px; margin-bottom: 4px; display: block;">Seuil Alerte Stock :</label>
+                        <input type="number" id="new-prod-alert" class="prestige-form-input" value="10" min="1" style="width: 100%; padding: 10px 12px; border-radius: 12px; border: 1.5px solid #cbd5e1; font-size: 13px; outline: none;"/>
+                    </div>
+                </div>
+
+                <!-- Photo du Produit (Aperçu + Upload + Modèles rapides) -->
+                <div style="background: #f8fafc; border: 1.5px dashed #cbd5e1; border-radius: 16px; padding: 14px;">
+                    <label class="prestige-form-label" style="font-weight: 700; font-size: 12px; margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between;">
+                        <span>📷 Photo & Visuel Produit :</span>
+                        <span class="text-muted" style="font-size: 11px;">Upload ou choisir un modèle</span>
+                    </label>
+
+                    <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 12px;">
+                        <img id="new-prod-preview-img" src="assets/product_baguette.png" alt="Aperçu" style="width: 64px; height: 64px; border-radius: 12px; object-fit: cover; border: 2px solid #f59e0b; box-shadow: 0 4px 10px rgba(0,0,0,0.1); shrink-0;"/>
+                        <div style="flex: 1;">
+                            <input type="file" id="new-prod-file" accept="image/*" onchange="handleProductImageSelect(event, 'new')" style="display: none;"/>
+                            <input type="hidden" id="new-prod-image-data" value="assets/product_baguette.png"/>
+                            <button type="button" onclick="document.getElementById('new-prod-file').click()" class="btn-xs btn-outline-primary" style="padding: 7px 14px; border-radius: 10px; font-weight: 700; font-size: 12px;">
+                                <i class="fa-solid fa-cloud-arrow-up me-1"></i> Importer une photo depuis mon appareil...
+                            </button>
+                            <small class="text-muted d-block mt-1" style="font-size: 11px;">Format JPG, PNG ou WEBP (redimensionnement automatique)</small>
+                        </div>
+                    </div>
+
+                    <!-- Modèles rapides de photos -->
+                    <div style="font-size: 11px; font-weight: 700; color: #64748b; margin-bottom: 6px;">Ou choisir un visuel prédéfini :</div>
+                    <div style="display: flex; gap: 6px; overflow-x: auto; padding-bottom: 4px;" class="custom-scrollbar">
+                        <button type="button" onclick="selectProductPresetImage('new', 'assets/baguette 200.png')" class="btn-preset-img" title="Baguette"><img src="assets/baguette 200.png" style="width:36px;height:36px;border-radius:8px;object-fit:cover;"/></button>
+                        <button type="button" onclick="selectProductPresetImage('new', 'assets/Croissant.png')" class="btn-preset-img" title="Croissant"><img src="assets/Croissant.png" style="width:36px;height:36px;border-radius:8px;object-fit:cover;"/></button>
+                        <button type="button" onclick="selectProductPresetImage('new', 'assets/pain au chocolat.png')" class="btn-preset-img" title="Pain au chocolat"><img src="assets/pain au chocolat.png" style="width:36px;height:36px;border-radius:8px;object-fit:cover;"/></button>
+                        <button type="button" onclick="selectProductPresetImage('new', 'assets/Pain Complet (Grand).png')" class="btn-preset-img" title="Pain complet"><img src="assets/Pain Complet (Grand).png" style="width:36px;height:36px;border-radius:8px;object-fit:cover;"/></button>
+                        <button type="button" onclick="selectProductPresetImage('new', 'assets/Gateau1.png')" class="btn-preset-img" title="Gâteau"><img src="assets/Gateau1.png" style="width:36px;height:36px;border-radius:8px;object-fit:cover;"/></button>
+                        <button type="button" onclick="selectProductPresetImage('new', 'assets/jus de bissap.png')" class="btn-preset-img" title="Jus Bissap"><img src="assets/jus de bissap.png" style="width:36px;height:36px;border-radius:8px;object-fit:cover;"/></button>
+                        <button type="button" onclick="selectProductPresetImage('new', 'assets/jus de passion.png')" class="btn-preset-img" title="Jus Passion"><img src="assets/jus de passion.png" style="width:36px;height:36px;border-radius:8px;object-fit:cover;"/></button>
+                        <button type="button" onclick="selectProductPresetImage('new', 'assets/Pizza.png')" class="btn-preset-img" title="Pizza"><img src="assets/Pizza.png" style="width:36px;height:36px;border-radius:8px;object-fit:cover;"/></button>
+                        <button type="button" onclick="selectProductPresetImage('new', 'assets/Panini.png')" class="btn-preset-img" title="Panini"><img src="assets/Panini.png" style="width:36px;height:36px;border-radius:8px;object-fit:cover;"/></button>
+                        <button type="button" onclick="selectProductPresetImage('new', 'assets/cookies.png')" class="btn-preset-img" title="Cookies"><img src="assets/cookies.png" style="width:36px;height:36px;border-radius:8px;object-fit:cover;"/></button>
+                    </div>
+                </div>
+
+                <!-- Description -->
+                <div>
+                    <label class="prestige-form-label" style="font-weight: 700; font-size: 12px; margin-bottom: 4px; display: block;">Description / Ingrédients :</label>
+                    <textarea id="new-prod-desc" rows="2" class="prestige-form-input" placeholder="Ex: Farine label rouge, levain naturel, cuisson sur sole de pierre..." style="width: 100%; padding: 8px 12px; border-radius: 12px; border: 1.5px solid #cbd5e1; font-size: 12.5px; outline: none; resize: none;"></textarea>
+                </div>
+
+                <!-- Modal Actions -->
+                <div class="prestige-modal-actions" style="display: flex; gap: 10px; margin-top: 8px;">
+                    <button type="button" onclick="closeAddProductModal()" class="btn-modal-cancel" style="flex: 1; padding: 12px; border-radius: 12px; border: 1px solid #cbd5e1; background: #fff; font-weight: 700; cursor: pointer;">Annuler</button>
+                    <button type="submit" id="btn-submit-create-prod" class="btn-modal-submit-gold" style="flex: 2; padding: 12px; border-radius: 12px; background: linear-gradient(135deg, #f59e0b, #d97706); color: #fff; font-weight: 800; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; box-shadow: 0 4px 12px rgba(245, 158, 11, 0.35);">
+                        <i class="fa-solid fa-plus-circle me-1"></i> Enregistrer & Publier le Produit
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- =============================================================
+         MODAL : MODIFIER UN PRODUIT DU CATALOGUE
+         ============================================================= -->
+    <div id="editProductModal" class="prestige-modal-backdrop hidden" style="z-index: 99999;">
+        <div class="prestige-modal-card" style="max-width: 620px; max-height: 92vh; overflow-y: auto;">
+            <div class="prestige-modal-header" style="background: linear-gradient(135deg, #0f172a, #1e293b); color: #fff; margin: -28px -28px 16px -28px; padding: 20px 24px; border-radius: 26px 26px 0 0; border-bottom: 2px solid #f59e0b;">
+                <div class="d-flex align-items-center gap-2">
+                    <span class="material-symbols-outlined text-2xl text-amber-400">edit_note</span>
+                    <div>
+                        <h3 class="prestige-modal-title text-white mb-0" style="font-size: 18px;">Modifier le Produit</h3>
+                        <p class="small text-white-50 mb-0">Mise à jour des prix, stocks et visuels</p>
+                    </div>
+                </div>
+                <button type="button" onclick="closeEditProductModal()" class="prestige-modal-close-btn text-white" style="background: rgba(255,255,255,0.1); border: none;">✕</button>
+            </div>
+
+            <form onsubmit="handleUpdateProduct(event)" style="display: flex; flex-direction: column; gap: 14px;">
+                <input type="hidden" id="edit-prod-id"/>
+
+                <!-- Nom & Catégorie -->
+                <div class="row g-2">
+                    <div class="col-md-7">
+                        <label class="prestige-form-label" style="font-weight: 700; font-size: 12px; margin-bottom: 4px; display: block;">Nom du Produit * :</label>
+                        <input type="text" id="edit-prod-name" class="prestige-form-input" required style="width: 100%; padding: 10px 12px; border-radius: 12px; border: 1.5px solid #cbd5e1; font-size: 13px; outline: none;"/>
+                    </div>
+                    <div class="col-md-5">
+                        <label class="prestige-form-label" style="font-weight: 700; font-size: 12px; margin-bottom: 4px; display: block;">Catégorie * :</label>
+                        <select id="edit-prod-category" class="prestige-form-input" required style="width: 100%; padding: 10px 12px; border-radius: 12px; border: 1.5px solid #cbd5e1; font-size: 13px; outline: none; background: #fff;">
+                            <option value="pain">🥖 Pains & Traditions</option>
+                            <option value="viennoiserie">🥐 Viennoiseries</option>
+                            <option value="patisserie">🍰 Pâtisseries & Gâteaux</option>
+                            <option value="boisson">🧃 Boissons & Jus Naturels</option>
+                            <option value="sale">🥪 Salés, Pizzas & Paninis</option>
+                            <option value="snack">🍪 Biscuits & Cookies</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Prix & Stocks & Statut -->
+                <div class="row g-2">
+                    <div class="col-md-3">
+                        <label class="prestige-form-label" style="font-weight: 700; font-size: 12px; margin-bottom: 4px; display: block;">Prix TTC (FCFA) * :</label>
+                        <input type="number" id="edit-prod-price" class="prestige-form-input" min="0" step="25" required style="width: 100%; padding: 10px 12px; border-radius: 12px; border: 1.5px solid #cbd5e1; font-size: 13px; font-weight: 800; font-family: monospace; outline: none;"/>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="prestige-form-label" style="font-weight: 700; font-size: 12px; margin-bottom: 4px; display: block;">Stock Disponible :</label>
+                        <input type="number" id="edit-prod-stock" class="prestige-form-input" min="0" style="width: 100%; padding: 10px 12px; border-radius: 12px; border: 1.5px solid #cbd5e1; font-size: 13px; outline: none;"/>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="prestige-form-label" style="font-weight: 700; font-size: 12px; margin-bottom: 4px; display: block;">Seuil Alerte :</label>
+                        <input type="number" id="edit-prod-alert" class="prestige-form-input" min="1" style="width: 100%; padding: 10px 12px; border-radius: 12px; border: 1.5px solid #cbd5e1; font-size: 13px; outline: none;"/>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="prestige-form-label" style="font-weight: 700; font-size: 12px; margin-bottom: 4px; display: block;">Visibilité :</label>
+                        <select id="edit-prod-status" class="prestige-form-input" style="width: 100%; padding: 10px 12px; border-radius: 12px; border: 1.5px solid #cbd5e1; font-size: 13px; outline: none; background: #fff; font-weight: 700;">
+                            <option value="1">🟢 Actif en vente</option>
+                            <option value="0">🔴 Désactivé / Masqué</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Photo du Produit -->
+                <div style="background: #f8fafc; border: 1.5px dashed #cbd5e1; border-radius: 16px; padding: 14px;">
+                    <label class="prestige-form-label" style="font-weight: 700; font-size: 12px; margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between;">
+                        <span>📷 Photo & Visuel Produit :</span>
+                        <span class="text-muted" style="font-size: 11px;">Upload ou choisir un modèle</span>
+                    </label>
+
+                    <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 12px;">
+                        <img id="edit-prod-preview-img" src="assets/product_baguette.png" alt="Aperçu" style="width: 64px; height: 64px; border-radius: 12px; object-fit: cover; border: 2px solid #f59e0b; box-shadow: 0 4px 10px rgba(0,0,0,0.1); shrink-0;"/>
+                        <div style="flex: 1;">
+                            <input type="file" id="edit-prod-file" accept="image/*" onchange="handleProductImageSelect(event, 'edit')" style="display: none;"/>
+                            <input type="hidden" id="edit-prod-image-data"/>
+                            <button type="button" onclick="document.getElementById('edit-prod-file').click()" class="btn-xs btn-outline-primary" style="padding: 7px 14px; border-radius: 10px; font-weight: 700; font-size: 12px;">
+                                <i class="fa-solid fa-cloud-arrow-up me-1"></i> Remplacer la photo...
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Modèles rapides de photos -->
+                    <div style="font-size: 11px; font-weight: 700; color: #64748b; margin-bottom: 6px;">Ou choisir un visuel prédéfini :</div>
+                    <div style="display: flex; gap: 6px; overflow-x: auto; padding-bottom: 4px;" class="custom-scrollbar">
+                        <button type="button" onclick="selectProductPresetImage('edit', 'assets/baguette 200.png')" class="btn-preset-img" title="Baguette"><img src="assets/baguette 200.png" style="width:36px;height:36px;border-radius:8px;object-fit:cover;"/></button>
+                        <button type="button" onclick="selectProductPresetImage('edit', 'assets/Croissant.png')" class="btn-preset-img" title="Croissant"><img src="assets/Croissant.png" style="width:36px;height:36px;border-radius:8px;object-fit:cover;"/></button>
+                        <button type="button" onclick="selectProductPresetImage('edit', 'assets/pain au chocolat.png')" class="btn-preset-img" title="Pain au chocolat"><img src="assets/pain au chocolat.png" style="width:36px;height:36px;border-radius:8px;object-fit:cover;"/></button>
+                        <button type="button" onclick="selectProductPresetImage('edit', 'assets/Pain Complet (Grand).png')" class="btn-preset-img" title="Pain complet"><img src="assets/Pain Complet (Grand).png" style="width:36px;height:36px;border-radius:8px;object-fit:cover;"/></button>
+                        <button type="button" onclick="selectProductPresetImage('edit', 'assets/Gateau1.png')" class="btn-preset-img" title="Gâteau"><img src="assets/Gateau1.png" style="width:36px;height:36px;border-radius:8px;object-fit:cover;"/></button>
+                        <button type="button" onclick="selectProductPresetImage('edit', 'assets/jus de bissap.png')" class="btn-preset-img" title="Jus Bissap"><img src="assets/jus de bissap.png" style="width:36px;height:36px;border-radius:8px;object-fit:cover;"/></button>
+                        <button type="button" onclick="selectProductPresetImage('edit', 'assets/jus de passion.png')" class="btn-preset-img" title="Jus Passion"><img src="assets/jus de passion.png" style="width:36px;height:36px;border-radius:8px;object-fit:cover;"/></button>
+                        <button type="button" onclick="selectProductPresetImage('edit', 'assets/Pizza.png')" class="btn-preset-img" title="Pizza"><img src="assets/Pizza.png" style="width:36px;height:36px;border-radius:8px;object-fit:cover;"/></button>
+                        <button type="button" onclick="selectProductPresetImage('edit', 'assets/Panini.png')" class="btn-preset-img" title="Panini"><img src="assets/Panini.png" style="width:36px;height:36px;border-radius:8px;object-fit:cover;"/></button>
+                        <button type="button" onclick="selectProductPresetImage('edit', 'assets/cookies.png')" class="btn-preset-img" title="Cookies"><img src="assets/cookies.png" style="width:36px;height:36px;border-radius:8px;object-fit:cover;"/></button>
+                    </div>
+                </div>
+
+                <!-- Description -->
+                <div>
+                    <label class="prestige-form-label" style="font-weight: 700; font-size: 12px; margin-bottom: 4px; display: block;">Description / Ingrédients :</label>
+                    <textarea id="edit-prod-desc" rows="2" class="prestige-form-input" style="width: 100%; padding: 8px 12px; border-radius: 12px; border: 1.5px solid #cbd5e1; font-size: 12.5px; outline: none; resize: none;"></textarea>
+                </div>
+
+                <!-- Modal Actions -->
+                <div class="prestige-modal-actions" style="display: flex; gap: 10px; margin-top: 8px;">
+                    <button type="button" onclick="closeEditProductModal()" class="btn-modal-cancel" style="flex: 1; padding: 12px; border-radius: 12px; border: 1px solid #cbd5e1; background: #fff; font-weight: 700; cursor: pointer;">Annuler</button>
+                    <button type="submit" id="btn-submit-update-prod" class="btn-modal-submit-gold" style="flex: 2; padding: 12px; border-radius: 12px; background: linear-gradient(135deg, #0f172a, #1e293b); color: #fff; font-weight: 800; border: 1px solid #f59e0b; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;">
+                        <i class="fa-solid fa-save me-1 text-amber-400"></i> Enregistrer les Modifications
                     </button>
                 </div>
             </form>

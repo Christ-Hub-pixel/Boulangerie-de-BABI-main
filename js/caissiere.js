@@ -393,33 +393,69 @@ function resolveProductImage(name, rawImage, category) {
 
 async function loadPosProducts() {
     const adjustments = JSON.parse(localStorage.getItem('babi_pos_stock_adjustments') || '{}');
+    const apiBase = window.API_BASE_URL || (window.location.hostname.includes('boulangeriedebabi.com') ? 'https://api.boulangeriedebabi.com' : (API_ROOT || 'http://localhost:5000'));
 
+    // 1. Essai de chargement direct depuis l'API Backend Dynamique (Base de données SQLite / Turso Cloud)
     try {
-        const res = await fetch('data/products.json');
+        const res = await fetch(`${apiBase}/api/products`);
         if (res.ok) {
-            const data = await res.json();
-            const productList = Array.isArray(data) ? data : (data.products || []);
+            const rawProducts = await res.json();
+            const productList = Array.isArray(rawProducts) ? rawProducts : (rawProducts.products || []);
             if (productList.length > 0) {
-                posProducts = productList.map(p => {
-                    const pName = p.nom || p.name;
-                    const pCat = (p.categorie || p.category || 'pains').toLowerCase();
-                    const baseStock = p.stock !== undefined ? p.stock : 30;
-                    const adj = adjustments[pName] !== undefined ? adjustments[pName] : 0;
-                    return {
-                        id: p.id || p._id || pName,
-                        name: pName,
-                        price: p.prix || p.price,
-                        category: pCat,
-                        image: resolveProductImage(pName, p.image, pCat),
-                        stock: Math.max(0, baseStock + adj)
-                    };
-                });
+                posProducts = productList
+                    .filter(p => p.is_active !== 0 && p.is_active !== '0' && p.is_active !== false)
+                    .map(p => {
+                        const pName = p.nom || p.name;
+                        const pCat = (p.categorie || p.category || 'pains').toLowerCase();
+                        const baseStock = (p.stock !== undefined && p.stock !== null) ? Number(p.stock) : ((p.quantite_disponible !== undefined && p.quantite_disponible !== null) ? Number(p.quantite_disponible) : 30);
+                        const adj = adjustments[pName] !== undefined ? adjustments[pName] : 0;
+                        return {
+                            id: p.id || p._id || pName,
+                            name: pName,
+                            price: Number(p.prix || p.price || 0),
+                            category: pCat,
+                            image: resolveProductImage(pName, p.image || p.image_url, pCat),
+                            stock: Math.max(0, baseStock + adj),
+                            seuil_alerte: Number(p.seuil_alerte || 10)
+                        };
+                    });
                 renderPosProductsGrid();
                 return;
             }
         }
     } catch (_) {}
 
+    // 2. Repli vers le fichier statique local data/products.json
+    try {
+        const res = await fetch('data/products.json');
+        if (res.ok) {
+            const data = await res.json();
+            const productList = Array.isArray(data) ? data : (data.products || []);
+            if (productList.length > 0) {
+                posProducts = productList
+                    .filter(p => p.is_active !== 0 && p.is_active !== '0' && p.is_active !== false)
+                    .map(p => {
+                        const pName = p.nom || p.name;
+                        const pCat = (p.categorie || p.category || 'pains').toLowerCase();
+                        const baseStock = p.stock !== undefined ? Number(p.stock) : 30;
+                        const adj = adjustments[pName] !== undefined ? adjustments[pName] : 0;
+                        return {
+                            id: p.id || p._id || pName,
+                            name: pName,
+                            price: Number(p.prix || p.price || 0),
+                            category: pCat,
+                            image: resolveProductImage(pName, p.image || p.image_url, pCat),
+                            stock: Math.max(0, baseStock + adj),
+                            seuil_alerte: Number(p.seuil_alerte || 10)
+                        };
+                    });
+                renderPosProductsGrid();
+                return;
+            }
+        }
+    } catch (_) {}
+
+    // 3. Repli ultime vers les constantes par défaut
     posProducts = FALLBACK_POS_PRODUCTS.map(p => {
         const adj = adjustments[p.name] !== undefined ? adjustments[p.name] : 0;
         return {
@@ -429,6 +465,15 @@ async function loadPosProducts() {
         };
     });
     renderPosProductsGrid();
+}
+
+// Exposer globalement pour le Realtime Sync omnicanal
+if (typeof window !== 'undefined') {
+    window.loadPosProducts = loadPosProducts;
+    window.loadProducts = loadPosProducts;
+    window.addEventListener('babi:products:updated', () => {
+        loadPosProducts();
+    });
 }
 
 function filterPosCategory(cat, btn) {
