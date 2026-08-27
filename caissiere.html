@@ -243,9 +243,14 @@
                     <input placeholder="Rechercher un produit..." type="text" id="pos-product-search" oninput="filterPosProducts(this.value)" class="w-full min-w-0 bg-transparent outline-none"/>
                 </div>
             </div>
-
             <!-- Center: Session Stats Live Summary Chip & Quick Actions (Desktop only >= 1024px) -->
             <div class="hidden lg:flex items-center gap-3 px-4 py-2 bg-surface-container rounded-2xl border border-outline-variant/30 shrink-0 shadow-xs">
+                <!-- Live Cart Quick Button -->
+                <button type="button" onclick="openCartOrScroll()" id="topbar-live-cart-chip" class="flex items-center gap-1.5 px-3 py-1 bg-amber-100 hover:bg-amber-200 text-amber-950 border border-amber-300 rounded-lg text-xs font-extrabold shadow-xs transition-all cursor-pointer" title="Voir le ticket en cours">
+                    <span class="material-symbols-outlined text-base text-amber-700">receipt</span>
+                    <span id="topbar-live-cart-label">Ticket : 0 FCFA</span>
+                </button>
+                <span class="text-outline-variant">•</span>
                 <div class="flex items-center gap-1.5 text-xs font-bold text-[#5a4030]">
                     <span class="material-symbols-outlined text-base text-emerald-600">payments</span>
                     <span>Ventes : <strong class="text-emerald-700 font-mono" id="topbar-sales-total">0 FCFA</strong></span>
@@ -396,10 +401,10 @@
                     </span>
                 </div>
 
-                <div class="flex flex-col md:flex-row gap-3 sm:gap-4 h-full">
+                <div class="flex flex-col lg:flex-row gap-4 items-start w-full">
 
-                    <!-- LEFT 2/3 COLUMN: PRODUCTS CATALOG & CATEGORIES -->
-                    <div class="flex-1 md:flex-[1.6] lg:flex-[2] flex flex-col gap-stack-md bg-surface-container rounded-2xl shadow-sm p-3 sm:p-4 border border-outline-variant/30">
+                    <!-- LEFT COLUMN: PRODUCTS CATALOG & CATEGORIES -->
+                    <div class="flex-1 min-w-0 flex flex-col gap-stack-md bg-surface-container rounded-2xl shadow-sm p-3 sm:p-4 border border-outline-variant/30 w-full">
                         <!-- Category Tabs -->
                         <div class="flex items-center gap-1.5 sm:gap-2 overflow-x-auto pb-1" id="category-pills">
                             <button onclick="filterPosCategory('all', this)" class="category-filter-btn px-3.5 sm:px-5 py-2 rounded-full bg-primary text-on-primary font-label-md text-xs font-bold whitespace-nowrap shadow-sm hover:brightness-95 transition-all">Tous</button>
@@ -418,42 +423,47 @@
                         </div>
                     </div>
 
-                    <!-- RIGHT 1/3 COLUMN: TICKET & CART (DESKTOP & TABLETS >= 768px) -->
-                    <div class="hidden md:flex flex-1 flex-col bg-surface rounded-2xl shadow-md overflow-hidden min-w-[270px] md:max-w-[310px] lg:max-w-[360px] xl:max-w-[400px] border border-outline-variant/30">
+                    <!-- RIGHT COLUMN: TICKET & CART (DESKTOP & TABLETS >= 1024px) -->
+                    <div id="pos-cart-panel" class="pos-desktop-cart-panel">
                         <!-- Cart Header -->
-                        <div class="p-4 bg-surface-container-low border-b border-outline-variant/20 flex items-center justify-between">
+                        <div class="p-3.5 sm:p-4 bg-[#fbf8f1] border-b border-[rgba(212,175,55,0.25)] flex items-center justify-between">
                             <div class="flex items-center gap-2">
-                                <span class="material-symbols-outlined text-primary text-xl">receipt</span>
-                                <h2 class="font-headline-md text-base font-bold text-on-surface">Ticket En Cours <span class="text-primary font-mono" id="ticket-number">#142</span></h2>
+                                <div class="w-8 h-8 rounded-xl bg-amber-400 text-black flex items-center justify-center font-bold shadow-xs">
+                                    <span class="material-symbols-outlined text-lg">receipt</span>
+                                </div>
+                                <div>
+                                    <h2 class="font-headline-md text-sm sm:text-base font-black text-[#2b160c]">Ticket En Cours</h2>
+                                    <span class="text-[11px] font-bold text-[#786558] font-mono" id="ticket-number">#142</span>
+                                </div>
                             </div>
-                            <button onclick="clearPosCart()" class="p-2 text-on-surface-variant hover:text-error transition-colors rounded-full hover:bg-error-container/50" title="Vider le ticket">
-                                <span class="material-symbols-outlined text-lg">delete_sweep</span>
+                            <button onclick="clearPosCart()" class="p-1.5 px-2.5 text-[#786558] hover:text-rose-600 hover:bg-rose-50 transition-colors rounded-xl flex items-center gap-1 text-xs font-bold" title="Vider le ticket">
+                                <span class="material-symbols-outlined text-base">delete_sweep</span> Vider
                             </button>
                         </div>
 
                         <!-- Cart Items List -->
-                        <div class="flex-1 overflow-y-auto p-4 flex flex-col gap-2.5" id="pos-cart-items" style="min-height: 260px; max-height: calc(100vh - 460px);">
+                        <div class="flex-1 overflow-y-auto p-3 sm:p-4 flex flex-col gap-2.5 min-h-[160px] max-h-[calc(100dvh-390px)]" id="pos-cart-items">
                             <!-- Items injected dynamically -->
                         </div>
 
                         <!-- Cart Totals & Actions -->
-                        <div class="bg-surface-container-low p-4 flex flex-col gap-3 mt-auto border-t border-outline-variant/30">
+                        <div class="bg-[#fbf8f1] p-3.5 sm:p-4 flex flex-col gap-3 mt-auto border-t border-[rgba(212,175,55,0.25)]">
                             <div class="flex flex-col gap-1.5 text-xs">
-                                <div class="flex justify-between font-body-md text-on-surface-variant">
+                                <div class="flex justify-between font-body-md text-[#786558] font-semibold">
                                     <span>Sous-total HT</span>
-                                    <span class="font-mono" id="pos-subtotal">0 FCFA</span>
+                                    <span class="font-mono font-bold" id="pos-subtotal">0 FCFA</span>
                                 </div>
-                                <div class="flex justify-between font-body-md text-on-surface-variant">
+                                <div class="flex justify-between font-body-md text-[#786558] font-semibold">
                                     <span>TVA Inclus (5.5%)</span>
-                                    <span class="font-mono" id="pos-tva">0 FCFA</span>
+                                    <span class="font-mono font-bold" id="pos-tva">0 FCFA</span>
                                 </div>
-                                <div class="flex justify-between text-base font-bold text-on-surface pt-2 border-t border-outline-variant/30">
-                                    <span>TOTAL NET :</span>
-                                    <span class="text-primary font-extrabold text-xl font-mono" id="pos-total">0 FCFA</span>
+                                <div class="flex justify-between text-base font-black text-[#2b160c] pt-2 border-t border-[rgba(212,175,55,0.25)] items-center">
+                                    <span class="text-xs uppercase tracking-wide">TOTAL NET :</span>
+                                    <span class="text-[#765b00] font-black text-xl font-mono" id="pos-total">0 FCFA</span>
                                 </div>
                             </div>
 
-                            <div class="grid grid-cols-2 gap-2.5 mt-2">
+                            <div class="grid grid-cols-2 gap-2.5 mt-1">
                                 <button onclick="checkoutPos('especes')" class="pos-btn-pay pos-btn-cash">
                                     <div class="pos-btn-pay-icon-box">
                                         <span class="material-symbols-outlined text-xl">payments</span>
@@ -544,8 +554,8 @@
         </main>
     </div>
 
-    <!-- MOBILE FLOATING CART BAR (APPEARS WHEN ITEMS IN CART ON MOBILE < 768px) -->
-    <div id="pos-mobile-floating-cart" onclick="openMobileCart()" class="pos-floating-cart-bar hidden md:hidden no-print">
+    <!-- MOBILE FLOATING CART BAR (APPEARS WHEN ITEMS IN CART ON MOBILE & TABLETS < 1024px) -->
+    <div id="pos-mobile-floating-cart" onclick="openMobileCart()" class="pos-floating-cart-bar hidden lg:hidden no-print">
         <div class="flex items-center gap-2.5">
             <div class="w-8 h-8 rounded-full bg-amber-400 text-black flex items-center justify-center font-bold text-xs shadow-md">
                 <span id="mobile-floating-count">0</span>
@@ -562,7 +572,7 @@
     </div>
 
     <!-- MOBILE CART DRAWER (BOTTOM SHEET) -->
-    <div id="pos-mobile-cart-drawer" class="mobile-cart-drawer-backdrop hidden md:hidden no-print" onclick="if(event.target === this) closeMobileCart()">
+    <div id="pos-mobile-cart-drawer" class="mobile-cart-drawer-backdrop hidden lg:hidden no-print" onclick="if(event.target === this) closeMobileCart()">
         <div class="mobile-cart-drawer-card p-4">
             <div class="flex items-center justify-between pb-3 border-b border-outline-variant/20">
                 <div class="flex items-center gap-2">

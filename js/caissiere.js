@@ -569,6 +569,11 @@ function renderPosCart() {
     if (floatingTotal) floatingTotal.innerText = total.toLocaleString() + ' FCFA';
     if (mobileTotalEl) mobileTotalEl.innerText = total.toLocaleString() + ' FCFA';
 
+    const topbarLiveLabel = document.getElementById('topbar-live-cart-label');
+    if (topbarLiveLabel) {
+        topbarLiveLabel.innerText = totalItemCount > 0 ? `Ticket (${totalItemCount}) : ${total.toLocaleString()} FCFA` : `Ticket : 0 FCFA`;
+    }
+
     // Show or hide floating cart on mobile
     if (floatingCart) {
         if (posCart.length > 0) {
@@ -647,6 +652,20 @@ function openMobileCart() {
 function closeMobileCart() {
     const drawer = document.getElementById('pos-mobile-cart-drawer');
     if (drawer) drawer.classList.add('hidden');
+}
+
+function openCartOrScroll() {
+    showPosView('terminal');
+    if (window.innerWidth >= 1024) {
+        const cartPanel = document.getElementById('pos-cart-panel');
+        if (cartPanel) {
+            cartPanel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            cartPanel.classList.add('ring-4', 'ring-amber-400');
+            setTimeout(() => cartPanel.classList.remove('ring-4', 'ring-amber-400'), 1200);
+        }
+    } else {
+        openMobileCart();
+    }
 }
 
 function setActiveMobileTab(btn) {
