@@ -535,27 +535,199 @@ main, .pos-main-view {
 
 /* Main Content Area */
 main {
-    padding-top: 5.5rem !important;
+    padding-top: 5rem !important;
     min-height: 100dvh;
     transition: all 0.3s ease;
 }
 
-/* Sticky Desktop POS Cart Panel */
-.pos-desktop-cart-panel {
+/* Product Item Card */
+.pos-product-item {
+    background: #ffffff;
+    border: 1px solid rgba(212, 197, 169, 0.45);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    border-radius: 1rem;
+    overflow: hidden;
     display: flex;
     flex-direction: column;
-    width: 380px;
-    min-width: 330px;
-    max-width: 420px;
-    border-radius: 1.25rem;
+    transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.pos-product-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px -4px rgba(212, 175, 55, 0.25), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    border-color: rgba(212, 175, 55, 0.6);
+}
+
+.pos-product-img-box {
+    position: relative;
+    width: 100%;
+    height: 105px;
+    background: #fdfbf7;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px;
     overflow: hidden;
-    position: sticky;
-    top: 86px;
-    background: #ffffff;
-    border: 1.5px solid rgba(212, 175, 55, 0.35);
-    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
-    z-index: 20;
-    transition: box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+.pos-product-img-box img {
+    max-height: 94px;
+    max-width: 90%;
+    object-fit: contain;
+    transition: transform 0.3s ease;
+}
+
+.pos-product-item:hover .pos-product-img-box img {
+    transform: scale(1.06);
+}
+
+.pos-price-badge-vip {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    background: #f5b800;
+    color: #1a0c06;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    border: 1px solid rgba(255,255,255,0.6);
+    border-radius: 8px;
+    padding: 2px 7px;
+    font-size: 11px;
+    font-weight: 900;
+    letter-spacing: -0.2px;
+}
+
+/* =============================================================
+   FULL-SCREEN POS LAYOUT FOR DESKTOP & MONITORS (>= 1024px)
+   ============================================================= */
+@media (min-width: 1024px) {
+    html, body {
+        height: 100vh !important;
+        max-height: 100vh !important;
+        overflow: hidden !important;
+    }
+    
+    .prestige-topbar {
+        height: 60px !important;
+        padding: 0 1.25rem !important;
+        flex-shrink: 0 !important;
+    }
+    
+    main {
+        padding-top: 0 !important;
+        height: calc(100vh - 60px) !important;
+        max-height: calc(100vh - 60px) !important;
+        min-height: 0 !important;
+        overflow: hidden !important;
+        display: flex !important;
+        flex-direction: column !important;
+        box-sizing: border-box !important;
+    }
+    
+    #pos-view-terminal {
+        height: 100% !important;
+        max-height: 100% !important;
+        min-height: 0 !important;
+        padding: 10px 14px !important;
+        overflow: hidden !important;
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 0 !important;
+        box-sizing: border-box !important;
+    }
+    
+    .pos-desktop-layout {
+        display: flex !important;
+        flex-direction: row !important;
+        gap: 12px !important;
+        height: 100% !important;
+        max-height: 100% !important;
+        min-height: 0 !important;
+        overflow: hidden !important;
+        align-items: stretch !important;
+        width: 100% !important;
+        flex: 1 1 0% !important;
+    }
+    
+    .pos-catalog-panel {
+        flex: 1 1 0% !important;
+        min-width: 0 !important;
+        height: 100% !important;
+        max-height: 100% !important;
+        min-height: 0 !important;
+        display: flex !important;
+        flex-direction: column !important;
+        overflow: hidden !important;
+        padding: 10px 14px !important;
+        box-sizing: border-box !important;
+    }
+    
+    .pos-products-scroll-area {
+        flex: 1 1 0% !important;
+        overflow-y: auto !important;
+        min-height: 0 !important;
+        max-height: none !important;
+        padding-right: 4px !important;
+    }
+    
+    .pos-desktop-cart-panel {
+        display: flex !important;
+        flex-direction: column !important;
+        width: 350px !important;
+        min-width: 310px !important;
+        max-width: 380px !important;
+        height: 100% !important;
+        max-height: 100% !important;
+        min-height: 0 !important;
+        overflow: hidden !important;
+        position: static !important;
+        background: #ffffff !important;
+        border: 1.5px solid rgba(212, 175, 55, 0.35) !important;
+        border-radius: 1.25rem !important;
+        box-shadow: 0 8px 24px -4px rgba(0, 0, 0, 0.08) !important;
+        flex-shrink: 0 !important;
+        box-sizing: border-box !important;
+    }
+    
+    #pos-cart-items {
+        flex: 1 1 0% !important;
+        overflow-y: auto !important;
+        min-height: 0 !important;
+        max-height: none !important;
+        padding: 8px 10px !important;
+    }
+    
+    .pos-cart-totals-box {
+        flex-shrink: 0 !important;
+        margin-top: auto !important;
+        padding: 8px 12px !important;
+        background: #fbf8f1 !important;
+        border-top: 1px solid rgba(212, 175, 55, 0.25) !important;
+    }
+    
+    .pos-btn-pay {
+        padding: 8px 6px !important;
+        border-radius: 14px !important;
+        gap: 2px !important;
+        min-height: 48px !important;
+    }
+    
+    .pos-btn-pay-icon-box {
+        width: 28px !important;
+        height: 28px !important;
+        border-radius: 8px !important;
+    }
+    
+    .pos-btn-pay-icon-box .material-symbols-outlined {
+        font-size: 16px !important;
+    }
+    
+    .pos-btn-pay-title {
+        font-size: 11px !important;
+    }
+    
+    .pos-btn-pay-subtitle {
+        font-size: 8.5px !important;
+    }
 }
 
 @media (max-width: 1023px) {

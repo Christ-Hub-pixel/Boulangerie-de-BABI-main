@@ -385,9 +385,9 @@
         <main class="relative bg-background min-h-screen no-print flex-1">
             
             <!-- VIEW 1: TERMINAL CAISSE TACTILE -->
-            <div id="pos-view-terminal" class="pos-main-view p-container-padding flex flex-col gap-stack-md sm:gap-stack-lg">
+            <div id="pos-view-terminal" class="pos-main-view p-container-padding flex flex-col gap-2 sm:gap-3 h-full">
                 <!-- Real-time incoming order banner -->
-                <div id="pos-incoming-alert-banner" class="hidden p-3.5 bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500 text-black font-extrabold rounded-2xl shadow-md flex items-center justify-between animate-pulse cursor-pointer hover:brightness-105 transition-all" onclick="showPosView('pickups')">
+                <div id="pos-incoming-alert-banner" class="hidden p-3 bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500 text-black font-extrabold rounded-2xl shadow-md flex items-center justify-between animate-pulse cursor-pointer hover:brightness-105 transition-all shrink-0" onclick="showPosView('pickups')">
                     <div class="flex items-center gap-3">
                         <span class="w-8 h-8 rounded-xl bg-black text-amber-400 flex items-center justify-center font-black text-sm">🔔</span>
                         <div>
@@ -395,28 +395,28 @@
                             <span id="pos-banner-order-desc" class="text-xs font-bold block opacity-90">1 commande payée prête à être remise</span>
                         </div>
                     </div>
-                    <span class="px-3 py-1.5 bg-black text-amber-300 font-extrabold text-xs rounded-xl flex items-center gap-1">
+                    <span class="px-3 py-1 bg-black text-amber-300 font-extrabold text-xs rounded-xl flex items-center gap-1">
                         <span>Voir les retraits</span>
                         <span class="material-symbols-outlined text-sm">arrow_forward</span>
                     </span>
                 </div>
 
-                <div class="flex flex-col lg:flex-row gap-4 items-start w-full">
+                <div class="pos-desktop-layout flex flex-col lg:flex-row gap-3 sm:gap-3.5 w-full h-full min-h-0 overflow-hidden items-stretch">
 
                     <!-- LEFT COLUMN: PRODUCTS CATALOG & CATEGORIES -->
-                    <div class="flex-1 min-w-0 flex flex-col gap-stack-md bg-surface-container rounded-2xl shadow-sm p-3 sm:p-4 border border-outline-variant/30 w-full">
+                    <div class="pos-catalog-panel flex-1 min-w-0 flex flex-col bg-surface-container rounded-2xl shadow-sm p-3 border border-outline-variant/30 w-full h-full overflow-hidden">
                         <!-- Category Tabs -->
-                        <div class="flex items-center gap-1.5 sm:gap-2 overflow-x-auto pb-1" id="category-pills">
-                            <button onclick="filterPosCategory('all', this)" class="category-filter-btn px-3.5 sm:px-5 py-2 rounded-full bg-primary text-on-primary font-label-md text-xs font-bold whitespace-nowrap shadow-sm hover:brightness-95 transition-all">Tous</button>
-                            <button onclick="filterPosCategory('pains', this)" class="category-filter-btn px-3.5 sm:px-5 py-2 rounded-full bg-surface text-on-surface font-label-md text-xs font-bold whitespace-nowrap hover:bg-surface-container-high transition-all">Pains</button>
-                            <button onclick="filterPosCategory('viennoiseries', this)" class="category-filter-btn px-3.5 sm:px-5 py-2 rounded-full bg-surface text-on-surface font-label-md text-xs font-bold whitespace-nowrap hover:bg-surface-container-high transition-all">Viennoiseries</button>
-                            <button onclick="filterPosCategory('patisseries', this)" class="category-filter-btn px-3.5 sm:px-5 py-2 rounded-full bg-surface text-on-surface font-label-md text-xs font-bold whitespace-nowrap hover:bg-surface-container-high transition-all">Pâtisseries</button>
-                            <button onclick="filterPosCategory('boissons', this)" class="category-filter-btn px-3.5 sm:px-5 py-2 rounded-full bg-surface text-on-surface font-label-md text-xs font-bold whitespace-nowrap hover:bg-surface-container-high transition-all">Boissons & Jus</button>
-                            <button onclick="filterPosCategory('traiteur', this)" class="category-filter-btn px-3.5 sm:px-5 py-2 rounded-full bg-surface text-on-surface font-label-md text-xs font-bold whitespace-nowrap hover:bg-surface-container-high transition-all">Snacks & Traiteur</button>
+                        <div class="flex items-center gap-1.5 overflow-x-auto pb-2 shrink-0 select-none" id="category-pills">
+                            <button onclick="filterPosCategory('all', this)" class="category-filter-btn px-4 py-1.5 rounded-full bg-primary text-on-primary font-label-md text-xs font-bold whitespace-nowrap shadow-sm hover:brightness-95 transition-all">Tous</button>
+                            <button onclick="filterPosCategory('pains', this)" class="category-filter-btn px-4 py-1.5 rounded-full bg-surface text-on-surface font-label-md text-xs font-bold whitespace-nowrap hover:bg-surface-container-high transition-all">Pains</button>
+                            <button onclick="filterPosCategory('viennoiseries', this)" class="category-filter-btn px-4 py-1.5 rounded-full bg-surface text-on-surface font-label-md text-xs font-bold whitespace-nowrap hover:bg-surface-container-high transition-all">Viennoiseries</button>
+                            <button onclick="filterPosCategory('patisseries', this)" class="category-filter-btn px-4 py-1.5 rounded-full bg-surface text-on-surface font-label-md text-xs font-bold whitespace-nowrap hover:bg-surface-container-high transition-all">Pâtisseries</button>
+                            <button onclick="filterPosCategory('boissons', this)" class="category-filter-btn px-4 py-1.5 rounded-full bg-surface text-on-surface font-label-md text-xs font-bold whitespace-nowrap hover:bg-surface-container-high transition-all">Boissons & Jus</button>
+                            <button onclick="filterPosCategory('traiteur', this)" class="category-filter-btn px-4 py-1.5 rounded-full bg-surface text-on-surface font-label-md text-xs font-bold whitespace-nowrap hover:bg-surface-container-high transition-all">Snacks & Traiteur</button>
                         </div>
 
-                        <!-- Product Grid (Responsive Auto-Fill Grid from 320px to 4K) -->
-                        <div class="flex-1 overflow-y-auto pr-1" style="max-height: calc(100dvh - 190px);">
+                        <!-- Product Grid (Responsive Scroll Area) -->
+                        <div class="pos-products-scroll-area flex-1 overflow-y-auto pr-1 min-h-0">
                             <div class="pos-products-auto-grid" id="pos-products-grid">
                                 <!-- Products loaded via loadPosProducts() in js/caissiere.js -->
                             </div>
@@ -424,59 +424,59 @@
                     </div>
 
                     <!-- RIGHT COLUMN: TICKET & CART (DESKTOP & TABLETS >= 1024px) -->
-                    <div id="pos-cart-panel" class="pos-desktop-cart-panel">
+                    <div id="pos-cart-panel" class="pos-desktop-cart-panel flex flex-col bg-surface rounded-2xl shadow-md border border-[rgba(212,175,55,0.35)] overflow-hidden shrink-0 h-full">
                         <!-- Cart Header -->
-                        <div class="p-3.5 sm:p-4 bg-[#fbf8f1] border-b border-[rgba(212,175,55,0.25)] flex items-center justify-between">
+                        <div class="p-3 bg-[#fbf8f1] border-b border-[rgba(212,175,55,0.25)] flex items-center justify-between shrink-0">
                             <div class="flex items-center gap-2">
-                                <div class="w-8 h-8 rounded-xl bg-amber-400 text-black flex items-center justify-center font-bold shadow-xs">
-                                    <span class="material-symbols-outlined text-lg">receipt</span>
+                                <div class="w-7 h-7 rounded-lg bg-amber-400 text-black flex items-center justify-center font-bold shadow-xs">
+                                    <span class="material-symbols-outlined text-base">receipt_long</span>
                                 </div>
                                 <div>
-                                    <h2 class="font-headline-md text-sm sm:text-base font-black text-[#2b160c]">Ticket En Cours</h2>
-                                    <span class="text-[11px] font-bold text-[#786558] font-mono" id="ticket-number">#142</span>
+                                    <h2 class="font-headline-md text-sm font-black text-[#2b160c]">Ticket En Cours</h2>
+                                    <span class="text-[10.5px] font-bold text-[#786558] font-mono" id="ticket-number">#142</span>
                                 </div>
                             </div>
-                            <button onclick="clearPosCart()" class="p-1.5 px-2.5 text-[#786558] hover:text-rose-600 hover:bg-rose-50 transition-colors rounded-xl flex items-center gap-1 text-xs font-bold" title="Vider le ticket">
-                                <span class="material-symbols-outlined text-base">delete_sweep</span> Vider
+                            <button onclick="clearPosCart()" class="p-1 px-2 text-[#786558] hover:text-rose-600 hover:bg-rose-50 transition-colors rounded-lg flex items-center gap-1 text-xs font-bold" title="Vider le ticket">
+                                <span class="material-symbols-outlined text-sm">delete</span> Vider
                             </button>
                         </div>
 
                         <!-- Cart Items List -->
-                        <div class="flex-1 overflow-y-auto p-3 sm:p-4 flex flex-col gap-2.5 min-h-[160px] max-h-[calc(100dvh-390px)]" id="pos-cart-items">
+                        <div class="flex-1 overflow-y-auto p-2.5 flex flex-col gap-2 min-h-0" id="pos-cart-items">
                             <!-- Items injected dynamically -->
                         </div>
 
                         <!-- Cart Totals & Actions -->
-                        <div class="bg-[#fbf8f1] p-3.5 sm:p-4 flex flex-col gap-3 mt-auto border-t border-[rgba(212,175,55,0.25)]">
-                            <div class="flex flex-col gap-1.5 text-xs">
-                                <div class="flex justify-between font-body-md text-[#786558] font-semibold">
+                        <div class="pos-cart-totals-box bg-[#fbf8f1] p-3 flex flex-col gap-2 shrink-0 mt-auto border-t border-[rgba(212,175,55,0.25)]">
+                            <div class="flex flex-col gap-1 text-xs">
+                                <div class="flex justify-between font-body-md text-[#786558] text-[11px] font-semibold">
                                     <span>Sous-total HT</span>
                                     <span class="font-mono font-bold" id="pos-subtotal">0 FCFA</span>
                                 </div>
-                                <div class="flex justify-between font-body-md text-[#786558] font-semibold">
+                                <div class="flex justify-between font-body-md text-[#786558] text-[11px] font-semibold">
                                     <span>TVA Inclus (5.5%)</span>
                                     <span class="font-mono font-bold" id="pos-tva">0 FCFA</span>
                                 </div>
-                                <div class="flex justify-between text-base font-black text-[#2b160c] pt-2 border-t border-[rgba(212,175,55,0.25)] items-center">
-                                    <span class="text-xs uppercase tracking-wide">TOTAL NET :</span>
-                                    <span class="text-[#765b00] font-black text-xl font-mono" id="pos-total">0 FCFA</span>
+                                <div class="flex justify-between text-sm font-black text-[#2b160c] pt-1.5 border-t border-[rgba(212,175,55,0.25)] items-center">
+                                    <span class="text-[11px] uppercase tracking-wide">TOTAL NET :</span>
+                                    <span class="text-[#765b00] font-black text-lg font-mono" id="pos-total">0 FCFA</span>
                                 </div>
                             </div>
 
-                            <div class="grid grid-cols-2 gap-2.5 mt-1">
+                            <div class="grid grid-cols-2 gap-2 mt-0.5">
                                 <button onclick="checkoutPos('especes')" class="pos-btn-pay pos-btn-cash">
                                     <div class="pos-btn-pay-icon-box">
-                                        <span class="material-symbols-outlined text-xl">payments</span>
+                                        <span class="material-symbols-outlined text-base">payments</span>
                                     </div>
                                     <span class="pos-btn-pay-title">Espèces (Cash)</span>
-                                    <span class="pos-btn-pay-subtitle"><span class="material-symbols-outlined text-[11px]">currency_exchange</span> Rendu Monnaie</span>
+                                    <span class="pos-btn-pay-subtitle"><span class="material-symbols-outlined text-[10px]">currency_exchange</span> Rendu Monnaie</span>
                                 </button>
                                 <button onclick="checkoutPos('wave')" class="pos-btn-pay pos-btn-wave">
                                     <div class="pos-btn-pay-icon-box">
-                                        <span class="material-symbols-outlined text-xl">qr_code_scanner</span>
+                                        <span class="material-symbols-outlined text-base">qr_code_scanner</span>
                                     </div>
                                     <span class="pos-btn-pay-title">Wave Mobile</span>
-                                    <span class="pos-btn-pay-subtitle"><span class="material-symbols-outlined text-[11px]">bolt</span> 1-Clic • 0% Frais</span>
+                                    <span class="pos-btn-pay-subtitle"><span class="material-symbols-outlined text-[10px]">bolt</span> 1-Clic • 0% Frais</span>
                                 </button>
                             </div>
                         </div>

@@ -585,10 +585,10 @@ function renderPosCart() {
 
     if (posCart.length === 0) {
         const emptyHtml = `
-            <div class="flex-1 flex flex-col items-center justify-center text-center p-6 text-on-surface-variant/60 my-auto">
-                <span class="material-symbols-outlined text-4xl mb-2 text-outline-variant">shopping_cart</span>
-                <p class="text-xs font-bold">Le ticket est vide.</p>
-                <p class="text-[11px] text-muted">Touchez un article pour l'ajouter.</p>
+            <div class="flex-1 flex flex-col items-center justify-center text-center p-3 text-on-surface-variant/60 my-auto">
+                <span class="material-symbols-outlined text-3xl mb-1 text-amber-500/40">shopping_cart</span>
+                <p class="text-xs font-bold text-slate-700">Le ticket est vide</p>
+                <p class="text-[10.5px] text-slate-400">Touchez un article pour l'ajouter</p>
             </div>
         `;
         if (cartContainer) cartContainer.innerHTML = emptyHtml;
