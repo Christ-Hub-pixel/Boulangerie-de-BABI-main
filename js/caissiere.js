@@ -260,6 +260,9 @@ function playPosAudio(type = 'beep') {
 // 1. NAVIGATION & VIEW SWITCHING
 // -------------------------------------------------------------
 function showPosView(viewName) {
+    // Ensure body scroll is unlocked
+    document.body.style.overflow = '';
+    
     // Nav links active state
     document.querySelectorAll('.prestige-nav-item').forEach(el => el.classList.remove('active'));
     const activeNav = document.getElementById(`nav-pos-${viewName}`);
@@ -269,6 +272,9 @@ function showPosView(viewName) {
     document.querySelectorAll('.pos-main-view').forEach(v => v.classList.add('hidden'));
     const targetView = document.getElementById(`pos-view-${viewName}`);
     if (targetView) targetView.classList.remove('hidden');
+
+    // Scroll to top of page/view smoothly
+    window.scrollTo({ top: 0, behavior: 'instant' });
 
     if (viewName === 'pickups') {
         refreshPickupQueue();
