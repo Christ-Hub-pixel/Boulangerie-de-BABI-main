@@ -268,6 +268,11 @@ function showPosView(viewName) {
     const activeNav = document.getElementById(`nav-pos-${viewName}`);
     if (activeNav) activeNav.classList.add('active');
 
+    // Mobile bottom tabs active state
+    document.querySelectorAll('.pos-mobile-tab-btn').forEach(b => b.classList.remove('active'));
+    const activeMobileTab = document.getElementById(`mobile-tab-${viewName}`);
+    if (activeMobileTab) activeMobileTab.classList.add('active');
+
     // Main views toggle
     document.querySelectorAll('.pos-main-view').forEach(v => v.classList.add('hidden'));
     const targetView = document.getElementById(`pos-view-${viewName}`);
