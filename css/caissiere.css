@@ -728,6 +728,27 @@ main {
     .pos-btn-pay-subtitle {
         font-size: 8.5px !important;
     }
+    
+    #pos-view-pickups, #pos-view-history {
+        flex: 1 1 0% !important;
+        height: 100% !important;
+        max-height: 100% !important;
+        min-height: 0 !important;
+        overflow-y: auto !important;
+        padding: 1.25rem 1.5rem !important;
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 1.25rem !important;
+        box-sizing: border-box !important;
+    }
+    
+    #pos-view-terminal.hidden, #pos-view-pickups.hidden, #pos-view-history.hidden {
+        display: none !important;
+    }
+}
+
+.pos-main-view.hidden {
+    display: none !important;
 }
 
 @media (max-width: 1023px) {

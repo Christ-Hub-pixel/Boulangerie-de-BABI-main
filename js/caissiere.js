@@ -1760,11 +1760,41 @@ function renderHistoryTable() {
     const tbody = document.getElementById('pos-history-table-body');
     if (!tbody) return;
 
-    const orders = JSON.parse(localStorage.getItem('babi_orders') || '[]');
+    let orders = [];
+    try {
+        const hSales = JSON.parse(localStorage.getItem('babi_history_sales') || '[]');
+        const bOrders = JSON.parse(localStorage.getItem('babi_orders') || '[]');
+        const pSales = JSON.parse(localStorage.getItem('babi_pos_sales_history') || '[]');
+        
+        const map = new Map();
+        [...hSales, ...bOrders, ...pSales].forEach(o => {
+            if (!o) return;
+            const id = String(o.id || o.order_number || o.orderId || Math.random());
+            if (!map.has(id)) {
+                let itemsSummary = o.items_summary;
+                if (!itemsSummary && Array.isArray(o.items)) {
+                    itemsSummary = o.items.map(i => `${i.qty || 1}x ${i.name || i.nom || 'Produit'}`).join(', ');
+                }
+                map.set(id, {
+                    ...o,
+                    id: o.id || id,
+                    items_summary: itemsSummary || 'Articles de boulangerie',
+                    created_at: o.created_at || o.createdAt || new Date().toISOString()
+                });
+            }
+        });
+        orders = Array.from(map.values());
+    } catch(e) {
+        orders = [];
+    }
+
+    // Sort newest first
+    orders.sort((a, b) => new Date(b.created_at || b.createdAt || 0) - new Date(a.created_at || a.createdAt || 0));
+
     const filtered = orders.filter(o => {
         if (historyFilter === 'all') return true;
         const method = String(o.payment_method || o.mode_paiement || '').toLowerCase();
-        if (historyFilter === 'especes') return method.includes('espece');
+        if (historyFilter === 'especes') return method.includes('espece') || method.includes('cash');
         if (historyFilter === 'wave') return method.includes('wave') || method.includes('mobile');
         return true;
     });
@@ -1772,7 +1802,10 @@ function renderHistoryTable() {
     if (filtered.length === 0) {
         tbody.innerHTML = `
             <tr>
-                <td colspan="7" class="p-8 text-center text-on-surface-variant font-bold">Aucune transaction enregistrée.</td>
+                <td colspan="7" class="p-8 text-center text-on-surface-variant font-bold">
+                    <span class="material-symbols-outlined text-4xl text-amber-500/40 block mb-1">receipt_long</span>
+                    Aucune transaction enregistrée pour ce filtre.
+                </td>
             </tr>
         `;
         return;
@@ -1780,21 +1813,22 @@ function renderHistoryTable() {
 
     tbody.innerHTML = filtered.map(o => {
         const timeStr = new Date(o.created_at || Date.now()).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
-        const total = parseFloat(o.total_price || o.total_amount) || 0;
+        const total = parseFloat(o.total_price || o.total_amount || o.total) || 0;
         const method = o.mode_paiement || (o.payment_method === 'especes' ? 'Espèces' : 'Wave');
+        const isCash = String(method).toLowerCase().includes('esp') || String(method).toLowerCase().includes('cash');
         return `
             <tr class="hover:bg-surface-container-low transition-colors">
                 <td class="p-3.5 font-mono font-extrabold text-primary">#${o.id}</td>
                 <td class="p-3.5 font-mono text-on-surface-variant">${timeStr}</td>
                 <td class="p-3.5 font-bold">${o.customer_name || 'Client Comptoir'}</td>
-                <td class="p-3.5 text-on-surface-variant font-mono line-clamp-1 max-w-[200px]">${o.items_summary || 'Articles'}</td>
+                <td class="p-3.5 text-on-surface-variant font-mono line-clamp-1 max-w-[220px] text-[11px]">${o.items_summary || 'Articles'}</td>
                 <td class="p-3.5">
-                    <span class="px-2 py-0.5 rounded-md font-bold text-[10px] ${method.includes('Espèces') ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-900'}">${method}</span>
+                    <span class="px-2.5 py-1 rounded-md font-bold text-[10px] ${isCash ? 'bg-emerald-100 text-emerald-800 border border-emerald-300' : 'bg-sky-100 text-sky-900 border border-sky-300'}">${method}</span>
                 </td>
-                <td class="p-3.5 font-mono font-extrabold text-right text-on-surface">${total.toLocaleString()} F</td>
+                <td class="p-3.5 font-mono font-extrabold text-right text-on-surface text-sm">${total.toLocaleString()} F</td>
                 <td class="p-3.5 text-center">
-                    <button onclick='showThermalReceipt(${JSON.stringify(o)})' class="p-1.5 text-primary hover:bg-surface-container-high rounded-lg transition-colors" title="Réimprimer ticket">
-                        <span class="material-symbols-outlined text-base">print</span>
+                    <button onclick='showThermalReceipt(${JSON.stringify(o).replace(/'/g, "&#39;")})' class="p-1.5 px-2.5 bg-amber-50 text-amber-900 border border-amber-300 hover:bg-amber-100 rounded-lg transition-colors flex items-center gap-1 mx-auto font-bold text-xs" title="Réimprimer ticket">
+                        <span class="material-symbols-outlined text-sm">print</span> Imprimer
                     </button>
                 </td>
             </tr>
