@@ -2,7 +2,7 @@
 // GESTION AUTHENTIFICATION & UTILISATEURS (FIREBASE + HYBRID API)
 // -------------------------------------------------------------
 
-const API_ROOT = (typeof window !== 'undefined' && (window.API_BASE_URL || (window.location.hostname.includes('boulangeriedebabi.com') ? 'https://api.boulangeriedebabi.com' : 'http://localhost:5000'))) || 'http://localhost:5000';
+const API_ROOT = (typeof window !== 'undefined' && (window.API_BASE_URL || (window.location.protocol.startsWith('http') ? '' : 'http://localhost:5000'))) || '';
 
 // Configuration Firebase
 const firebaseConfig = {

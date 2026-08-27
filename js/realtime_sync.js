@@ -4,7 +4,7 @@
 // ================================================================
 
 (function() {
-    const API_BASE = window.API_BASE_URL || (window.location.hostname.includes('boulangeriedebabi.com') ? 'https://api.boulangeriedebabi.com' : 'http://localhost:5000');
+    const API_BASE = window.API_BASE_URL || (window.location.protocol.startsWith('http') ? '' : 'http://localhost:5000');
     let eventSource = null;
     let reconnectTimeout = null;
     let pollInterval = null;

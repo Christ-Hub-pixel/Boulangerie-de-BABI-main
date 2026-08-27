@@ -393,7 +393,7 @@ function resolveProductImage(name, rawImage, category) {
 
 async function loadPosProducts() {
     const adjustments = JSON.parse(localStorage.getItem('babi_pos_stock_adjustments') || '{}');
-    const apiBase = window.API_BASE_URL || (window.location.hostname.includes('boulangeriedebabi.com') ? 'https://api.boulangeriedebabi.com' : (API_ROOT || 'http://localhost:5000'));
+    const apiBase = window.API_BASE_URL || (window.location.protocol.startsWith('http') ? '' : (API_ROOT || 'http://localhost:5000'));
 
     // 1. Essai de chargement direct depuis l'API Backend Dynamique (Base de données SQLite / Turso Cloud)
     try {

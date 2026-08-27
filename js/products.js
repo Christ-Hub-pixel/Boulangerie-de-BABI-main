@@ -181,7 +181,8 @@ const itemsPerPage = 12;
 
 async function loadProducts() {
     try {
-        const apiUrl = (window.API_BASE_URL || (window.location.hostname.includes('boulangeriedebabi.com') ? 'https://api.boulangeriedebabi.com' : 'http://localhost:5000')) + '/api/products';
+        const apiBase = window.API_BASE_URL || (window.location.protocol.startsWith('http') ? '' : 'http://localhost:5000');
+        const apiUrl = `${apiBase}/api/products`;
         const response = await fetch(apiUrl);
         if (response.ok) {
             const rawProducts = await response.json();
