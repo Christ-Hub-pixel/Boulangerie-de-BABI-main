@@ -39,6 +39,39 @@ app.use(express.urlencoded({ extended: true, limit: '100mb' }));
 app.use(securityHardener); // WAF & En-têtes souverains
 app.use(antiHackerShield.middleware()); // 🛡️ Bouclier Anti-Hacker IDS/IPS (SQLi, RCE, XSS, Path Traversal)
 
+// 🗄️ Initialisation Asynchrone Robuste pour Vercel Serverless & Serveurs Dédiés
+let db = null;
+let dbPromise = null;
+
+function ensureDBReady() {
+    if (!dbPromise) {
+        dbPromise = initDB().then(database => {
+            db = database;
+            if (!process.env.VERCEL) {
+                try { startAutomatedRefundWorker(db); } catch (_) {}
+            }
+            return database;
+        }).catch(err => {
+            console.error("Erreur d'initialisation de la BD :", err);
+            dbPromise = null;
+            throw err;
+        });
+    }
+    return dbPromise;
+}
+
+// Middleware de garantie DB prête pour chaque requête
+app.use(async (req, res, next) => {
+    if (!db) {
+        try {
+            await ensureDBReady();
+        } catch (e) {
+            return res.status(503).json({ error: "Connexion à la base de données en cours..." });
+        }
+    }
+    next();
+});
+
 // 📱 Service des fichiers statiques Web et de l'application mobile Flutter
 app.use(express.static(path.resolve(__dirname), { maxAge: '1h', etag: true }));
 app.use('/flutter', express.static(path.resolve(__dirname, '../babi_flutter_web/build/web'), { maxAge: '1h', etag: true }));
@@ -2457,9 +2490,7 @@ function startAutomatedRefundWorker(database) {
 }
 
 // Init DB and start server
-initDB().then(database => {
-    db = database;
-    startAutomatedRefundWorker(db);
+ensureDBReady().then(() => {
     if (!process.env.VERCEL) {
         app.listen(PORT, () => {
             console.log(`🚀 Serveur Boulangerie de BABI (4 Postes) démarré sur http://localhost:${PORT}`);
