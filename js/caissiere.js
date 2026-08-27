@@ -55,6 +55,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     } catch (_) {}
 
+    purgeStaleMockOrders();
+
     loadPosProducts();
     renderPosCart();
     refreshPickupQueue();
@@ -1223,16 +1225,57 @@ async function confirmOrderPickup(orderId, pin) {
 let previousPickupCount = -1;
 let knownOrderIds = new Set();
 
+const MOCK_ORDER_IDS = ['BABI-98402', 'BABI-87140', 'M5FLO3DTwkaTJ17PuA7gK2sJ2173', 'BABI-FOURNIL'];
+const MOCK_PINS = ['757', '419', '7412'];
+
+function isMockOrder(o) {
+    if (!o) return false;
+    const id = String(o.id || o.order_number || o.orderId || '').trim();
+    const pin = String(o.pickupPin || o.pickup_pin || o.pin_code || o.code_pin || o.pin || '').trim();
+    const phone = String(o.customer_phone || o.customerPhone || o.phone || '').trim();
+    const name = String(o.customer_name || o.customerName || '').trim();
+
+    if (MOCK_ORDER_IDS.includes(id) || id.includes('M5FLO3DT') || id.includes('98402') || id.includes('87140')) return true;
+    if (MOCK_PINS.includes(pin)) return true;
+    if (phone === '0707000000' && name === 'Client App Mobile') return true;
+    return false;
+}
+
+function purgeStaleMockOrders() {
+    const keysToClean = ['babi_orders', 'orders', 'flutter.babi_realtime_orders_v2', 'babi_realtime_orders_v2', 'babi_pos_cart'];
+    
+    keysToClean.forEach(k => {
+        try {
+            const raw = localStorage.getItem(k);
+            if (raw) {
+                const parsed = safeParseStorageJson(raw);
+                if (Array.isArray(parsed)) {
+                    const cleaned = parsed.filter(o => !isMockOrder(o));
+                    localStorage.setItem(k, JSON.stringify(cleaned));
+                }
+            }
+        } catch(_) {}
+    });
+
+    try {
+        const consumedPins = JSON.parse(localStorage.getItem('babi_consumed_pins') || '[]');
+        MOCK_PINS.forEach(p => {
+            if (!consumedPins.some(cp => cp.pin === p)) {
+                consumedPins.push({ pin: p, orderId: 'MOCK-CLEARED', consumedAt: new Date().toISOString() });
+            }
+        });
+        localStorage.setItem('babi_consumed_pins', JSON.stringify(consumedPins));
+    } catch(_) {}
+}
+
 async function refreshPickupQueue() {
     let apiOrders = [];
     
-    // 1. Fetch from multiple API endpoints
+    // 1. Fetch from backend API
     const apiEndpoints = [
         `${API_ROOT}/api/orders/pickup-queue`,
         `/api/orders/pickup-queue`,
-        `https://api.boulangeriedebabi.com/api/orders/pickup-queue`,
-        `${API_ROOT}/api/orders`,
-        `/api/orders`
+        `https://api.boulangeriedebabi.com/api/orders/pickup-queue`
     ];
 
     for (const url of apiEndpoints) {
@@ -1253,17 +1296,19 @@ async function refreshPickupQueue() {
         } catch (_) {}
     }
 
-    // 2. Fetch from all Local Storage keys (Flutter Web double-encoded & standard web)
+    // 2. Fetch from specific client orders local keys only
     let localOrdersList = [];
-    for (let i = 0; i < localStorage.length; i++) {
-        const key = localStorage.key(i);
-        if (key && (key.includes('orders') || key.includes('order') || key.includes('babi'))) {
-            if (key === 'babi_consumed_pins') continue;
-            const items = safeParseStorageJson(localStorage.getItem(key));
-            if (items && items.length > 0) {
-                localOrdersList.push(...items);
+    const validOrderKeys = ['babi_orders', 'flutter.babi_realtime_orders_v2', 'babi_realtime_orders_v2'];
+    for (const key of validOrderKeys) {
+        try {
+            const raw = localStorage.getItem(key);
+            if (raw) {
+                const items = safeParseStorageJson(raw);
+                if (Array.isArray(items) && items.length > 0) {
+                    localOrdersList.push(...items);
+                }
             }
-        }
+        } catch (_) {}
     }
 
     // 3. Exclude consumed PINs and picked-up orders
@@ -1276,6 +1321,8 @@ async function refreshPickupQueue() {
 
     allRaw.forEach(o => {
         if (!o) return;
+        if (isMockOrder(o)) return; // 🚫 Automatically filter out mock test orders!
+
         const oId = String(o.id || o.order_number || o.orderId || '').trim();
         const oPin = String(o.pickupPin || o.pickup_pin || o.pin_code || o.code_pin || o.pin || '').trim();
         const status = String(o.status || o.statusCode || '').toLowerCase();
@@ -1311,9 +1358,9 @@ async function refreshPickupQueue() {
             validOrdersMap.set(key, {
                 id: oId || `BABI-${oPin}`,
                 pin_code: oPin || '7412',
-                customer_name: o.customer_name || o.customerName || 'Client App Mobile',
-                customer_phone: o.customer_phone || o.customerPhone || o.phone || '0707000000',
-                total_price: Number(o.total_price || o.total_amount || o.total || 2500),
+                customer_name: o.customer_name || o.customerName || 'Client Web',
+                customer_phone: o.customer_phone || o.customerPhone || o.phone || '07 00 00 00 00',
+                total_price: Number(o.total_price || o.total_amount || o.total || 0),
                 items_summary: itemsSummary || 'Articles boulangerie',
                 created_at: o.created_at || o.createdAt || new Date().toISOString()
             });
@@ -1433,15 +1480,75 @@ function renderPickupCards() {
                         ${o.items_summary || (o.items ? (typeof o.items === 'string' ? o.items : JSON.stringify(o.items)) : 'Articles')}
                     </div>
                 </div>
-                <div class="flex items-center justify-between pt-2 border-t border-outline-variant/20">
+                <div class="flex items-center justify-between pt-2 border-t border-outline-variant/20 gap-2">
                     <span class="font-mono font-bold text-sm text-emerald-700">${total.toLocaleString()} FCFA</span>
-                    <button onclick="openPinModal('${pin}')" class="px-3.5 py-1.5 bg-primary text-on-primary font-bold text-xs rounded-xl shadow-sm hover:brightness-95 flex items-center gap-1">
-                        <span class="material-symbols-outlined text-sm">check</span> Remettre
-                    </button>
+                    <div class="flex items-center gap-1.5">
+                        <button onclick="dismissPickupOrder('${o.id}', '${pin}')" class="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors" title="Retirer cette commande">
+                            <span class="material-symbols-outlined text-base">delete</span>
+                        </button>
+                        <button onclick="openPinModal('${pin}')" class="px-3.5 py-1.5 bg-primary text-on-primary font-bold text-xs rounded-xl shadow-sm hover:brightness-95 flex items-center gap-1">
+                            <span class="material-symbols-outlined text-sm">check</span> Remettre
+                        </button>
+                    </div>
                 </div>
             </div>
         `;
     }).join('');
+}
+
+function dismissPickupOrder(orderId, pin) {
+    const consumedPins = JSON.parse(localStorage.getItem('babi_consumed_pins') || '[]');
+    consumedPins.unshift({
+        pin: String(pin || ''),
+        orderId: String(orderId || ''),
+        consumedAt: new Date().toISOString(),
+        cashier: currentCashierUser?.nom || 'Caissière'
+    });
+    localStorage.setItem('babi_consumed_pins', JSON.stringify(consumedPins));
+
+    const keysToClean = ['babi_orders', 'orders', 'flutter.babi_realtime_orders_v2', 'babi_realtime_orders_v2'];
+    keysToClean.forEach(k => {
+        try {
+            const raw = localStorage.getItem(k);
+            if (raw) {
+                const arr = safeParseStorageJson(raw);
+                if (Array.isArray(arr)) {
+                    const filtered = arr.filter(o => o.id != orderId && o.orderId != orderId && o.pin_code != pin && o.pickupPin != pin);
+                    localStorage.setItem(k, JSON.stringify(filtered));
+                }
+            }
+        } catch(_) {}
+    });
+
+    livePickups = livePickups.filter(o => o.id != orderId && o.pin_code != pin);
+    renderPickupCards();
+    showPosToast('🗑️ Commande retirée de la file.', 'info');
+}
+
+function clearAllPickupQueue() {
+    livePickups.forEach(o => {
+        const pin = o.pin_code || o.code_pin || '';
+        const orderId = o.id || '';
+        const consumedPins = JSON.parse(localStorage.getItem('babi_consumed_pins') || '[]');
+        consumedPins.unshift({
+            pin: String(pin),
+            orderId: String(orderId),
+            consumedAt: new Date().toISOString(),
+            cashier: currentCashierUser?.nom || 'Caissière'
+        });
+        localStorage.setItem('babi_consumed_pins', JSON.stringify(consumedPins));
+    });
+
+    const keysToClean = ['babi_orders', 'orders', 'flutter.babi_realtime_orders_v2', 'babi_realtime_orders_v2'];
+    keysToClean.forEach(k => {
+        try {
+            localStorage.setItem(k, JSON.stringify([]));
+        } catch(_) {}
+    });
+
+    livePickups = [];
+    renderPickupCards();
+    showPosToast('🧹 File des retraits vidée avec succès.', 'success');
 }
 
 // -------------------------------------------------------------

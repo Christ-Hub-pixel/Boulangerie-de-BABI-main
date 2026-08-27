@@ -486,6 +486,9 @@
                         <p class="text-[11px] sm:text-xs text-on-surface-variant mt-0.5">Commandes payées prêtes à être remises aux clients</p>
                     </div>
                     <div class="flex items-center gap-2 flex-wrap sm:flex-nowrap w-full sm:w-auto">
+                        <button onclick="clearAllPickupQueue()" class="flex-1 sm:flex-none px-3.5 py-2 sm:py-2.5 bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold text-xs rounded-xl border border-rose-200 flex items-center justify-center gap-1.5 transition-all" title="Vider et nettoyer les commandes de test">
+                            <span class="material-symbols-outlined text-base">delete_sweep</span> Vider la file
+                        </button>
                         <button onclick="refreshPickupQueue()" class="flex-1 sm:flex-none px-3.5 py-2 sm:py-2.5 bg-surface text-on-surface font-bold text-xs rounded-xl border border-outline-variant/30 hover:bg-surface-container-high flex items-center justify-center gap-1.5 transition-all">
                             <span class="material-symbols-outlined text-base">refresh</span> Actualiser
                         </button>
