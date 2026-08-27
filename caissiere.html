@@ -725,38 +725,6 @@
         </div>
     </div>
 
-    <!-- CLOSURE MODAL PRESTIGE (Z DE CAISSE) -->
-    <div id="closureModal" class="prestige-modal-backdrop hidden">
-        <div class="prestige-modal-card max-w-md">
-            <div class="prestige-modal-header">
-                <div class="flex items-center gap-2.5">
-                    <div class="action-icon-badge gold" style="width: 36px; height: 36px; min-width: 36px; border-radius: 10px;">
-                        <span class="material-symbols-outlined text-xl">account_balance</span>
-                    </div>
-                    <div>
-                        <h3 class="prestige-modal-title">Clôture Journalière (Z de Caisse)</h3>
-                        <span class="text-xs text-[#786558] font-bold" id="closure-date">Session Caisse 1</span>
-                    </div>
-                </div>
-                <button onclick="closeClosureModal()" class="text-[#786558] hover:text-[#ba1a1a] text-2xl font-bold transition-colors">✕</button>
-            </div>
-
-            <div class="flex flex-col gap-3 py-3 border-y border-[#ebe4d5] text-sm">
-                <div class="flex justify-between items-center"><span class="text-[#5a4030] font-bold">Ventes Totales :</span> <strong class="text-[#765b00] font-mono text-base font-extrabold" id="closure-total">0 FCFA</strong></div>
-                <div class="flex justify-between items-center"><span class="text-[#5a4030] font-bold">Espèces en Tiroir :</span> <strong class="font-mono text-emerald-800" id="closure-cash">0 FCFA</strong></div>
-                <div class="flex justify-between items-center"><span class="text-[#5a4030] font-bold">Encaissements Wave :</span> <strong class="font-mono text-amber-800" id="closure-wave">0 FCFA</strong></div>
-                <div class="flex justify-between items-center"><span class="text-[#5a4030] font-bold">Nombre de Tickets :</span> <strong class="font-mono text-on-surface" id="closure-ticket-count">0</strong></div>
-            </div>
-
-            <div class="prestige-modal-actions mt-4">
-                <button type="button" onclick="closeClosureModal()" class="btn-modal-cancel">Fermer</button>
-                <button type="button" onclick="printClosureReport()" class="btn-modal-submit-gold flex items-center justify-center gap-2">
-                    <span class="material-symbols-outlined text-base">print</span> Imprimer Bilan Z
-                </button>
-            </div>
-        </div>
-    </div>
-
     <!-- CASH PAYMENT & CHANGE CALCULATOR MODAL PRESTIGE -->
     <div id="cashModal" class="prestige-modal-backdrop hidden">
         <div class="prestige-modal-card max-w-md">
@@ -987,17 +955,78 @@
                     <button type="button" class="numpad-btn numpad-btn-submit" onclick="submitLockPin()"><span class="material-symbols-outlined text-lg">key</span></button>
                 </div>
 
-                <div class="text-center pt-2">
-                    <button type="button" onclick="submitLockPin()" class="w-full py-3 bg-gradient-to-r from-amber-500 to-amber-600 text-white font-bold rounded-xl shadow-md hover:from-amber-600 hover:to-amber-700 transition-all flex items-center justify-center gap-2">
-                        <span class="material-symbols-outlined text-xl">login</span>
-                        <span>Déverrouiller le Terminal POS</span>
-                    </button>
+                <label class="prestige-form-label">Montant Donné par le Client (FCFA) :</label>
+                <input type="number" id="cash-given-input" class="prestige-form-input text-2xl font-bold font-mono text-center py-2.5" placeholder="0" oninput="calculateChange()"/>
+            </div>
+
+            <!-- Change Result Display -->
+            <div class="p-4 rounded-2xl mb-4 flex justify-between items-center" id="cash-change-box" style="background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%); border: 1.5px solid #86efac; box-shadow: 0 4px 12px rgba(22, 163, 74, 0.15);">
+                <div>
+                    <div class="text-[11px] font-extrabold text-emerald-950 uppercase tracking-wide">Monnaie à Rendre</div>
+                    <div class="text-2xl font-black text-emerald-800 font-mono" id="cash-change-amount">0 FCFA</div>
                 </div>
+                <span class="material-symbols-outlined text-3xl text-emerald-700">currency_exchange</span>
+            </div>
+
+            <div class="prestige-modal-actions">
+                <button type="button" onclick="closeCashModal()" class="btn-modal-cancel">Annuler</button>
+                <button type="button" onclick="confirmCashPayment()" class="btn-modal-submit-green">
+                    <span class="material-symbols-outlined text-base font-bold">check_circle</span> Valider & Imprimer
+                </button>
+            </div>
+    <!-- 1. LOCK SCREEN POS MODAL WITH TACTILE PIN KEYPAD -->
+    <div id="posLockScreenModal" class="pos-lock-backdrop hidden">
+        <div class="max-w-xs w-full bg-[#2b160c] text-white p-6 rounded-3xl border-2 border-amber-400/60 shadow-2xl flex flex-col items-center text-center">
+            <!-- Avatar & Lock Icon -->
+            <div class="relative mb-3">
+                <img src="assets/caissiere.png" id="lock-screen-avatar" class="w-18 h-18 rounded-full border-3 border-amber-400 shadow-lg object-cover" alt="Avatar"/>
+                <div class="absolute -bottom-1 -right-1 w-7 h-7 rounded-full bg-amber-400 text-black flex items-center justify-center font-bold text-xs shadow-md">
+                    <span class="material-symbols-outlined text-sm">lock</span>
+                </div>
+            </div>
+
+            <h3 class="text-base font-black text-amber-300" id="lock-screen-name">Awa Kouassi</h3>
+            <p class="text-[11px] text-amber-100/70 mb-3">Terminal Caisse en Pause • Saisissez votre PIN</p>
+
+            <!-- PIN Display Dots -->
+            <div class="flex items-center justify-center gap-3 mb-4 py-2 px-4 bg-black/40 rounded-xl border border-amber-400/30 w-full">
+                <span class="w-3.5 h-3.5 rounded-full border border-amber-400 bg-transparent transition-all" id="lock-pin-dot-1"></span>
+                <span class="w-3.5 h-3.5 rounded-full border border-amber-400 bg-transparent transition-all" id="lock-pin-dot-2"></span>
+                <span class="w-3.5 h-3.5 rounded-full border border-amber-400 bg-transparent transition-all" id="lock-pin-dot-3"></span>
+                <span class="w-3.5 h-3.5 rounded-full border border-amber-400 bg-transparent transition-all" id="lock-pin-dot-4"></span>
+            </div>
+
+            <!-- PIN Keypad -->
+            <div class="grid grid-cols-3 gap-2 w-full mb-3">
+                <button type="button" onclick="appendLockPin('1')" class="py-3 rounded-xl bg-white/10 text-white font-bold text-lg hover:bg-amber-400 hover:text-black transition-all">1</button>
+                <button type="button" onclick="appendLockPin('2')" class="py-3 rounded-xl bg-white/10 text-white font-bold text-lg hover:bg-amber-400 hover:text-black transition-all">2</button>
+                <button type="button" onclick="appendLockPin('3')" class="py-3 rounded-xl bg-white/10 text-white font-bold text-lg hover:bg-amber-400 hover:text-black transition-all">3</button>
+                
+                <button type="button" onclick="appendLockPin('4')" class="py-3 rounded-xl bg-white/10 text-white font-bold text-lg hover:bg-amber-400 hover:text-black transition-all">4</button>
+                <button type="button" onclick="appendLockPin('5')" class="py-3 rounded-xl bg-white/10 text-white font-bold text-lg hover:bg-amber-400 hover:text-black transition-all">5</button>
+                <button type="button" onclick="appendLockPin('6')" class="py-3 rounded-xl bg-white/10 text-white font-bold text-lg hover:bg-amber-400 hover:text-black transition-all">6</button>
+                
+                <button type="button" onclick="appendLockPin('7')" class="py-3 rounded-xl bg-white/10 text-white font-bold text-lg hover:bg-amber-400 hover:text-black transition-all">7</button>
+                <button type="button" onclick="appendLockPin('8')" class="py-3 rounded-xl bg-white/10 text-white font-bold text-lg hover:bg-amber-400 hover:text-black transition-all">8</button>
+                <button type="button" onclick="appendLockPin('9')" class="py-3 rounded-xl bg-white/10 text-white font-bold text-lg hover:bg-amber-400 hover:text-black transition-all">9</button>
+                
+                <button type="button" onclick="clearLockPin()" class="py-3 rounded-xl bg-rose-900/40 text-rose-300 font-bold text-xs hover:bg-rose-800 transition-all flex items-center justify-center">⌫ Effacer</button>
+                <button type="button" onclick="appendLockPin('0')" class="py-3 rounded-xl bg-white/10 text-white font-bold text-lg hover:bg-amber-400 hover:text-black transition-all">0</button>
+                <button type="button" onclick="submitUnlockPin()" class="py-3 rounded-xl bg-emerald-600 text-white font-bold text-xs hover:bg-emerald-500 transition-all flex items-center justify-center">✓ OK</button>
+            </div>
+
+            <div class="flex items-center justify-between w-full mt-2 pt-2 border-t border-white/10 text-xs">
+<button type="button" onclick="unlockPosTerminalDirect()" class="text-[11px] text-amber-300 hover:underline font-semibold">
+                    🔓 Déverrouillage Rapide
+                </button>
+                <button type="button" onclick="handleCashierLogout()" class="text-[11px] text-rose-300 hover:underline font-semibold flex items-center gap-1">
+                    <span class="material-symbols-outlined text-xs">logout</span> Quitter la Caisse
+                </button>
             </div>
         </div>
     </div>
 
-    <!-- 1. CASH MOVEMENT MODAL (FOND DE CAISSE / PRÉLÈVEMENT) -->
+    <!-- 2. CASH MOVEMENT MODAL (FOND DE CAISSE / PRÉLÈVEMENT) -->
     <div id="posCashMovementModal" class="prestige-modal-backdrop hidden">
         <div class="prestige-modal-card max-w-md">
             <div class="prestige-modal-header">
