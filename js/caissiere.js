@@ -274,6 +274,14 @@ function showPosView(viewName) {
         refreshPickupQueue();
     } else if (viewName === 'history') {
         renderHistoryTable();
+    } else if (viewName === 'closure') {
+        try {
+            computeLocalShiftData();
+            populateClosureModalUI();
+            recalculateCashCount();
+        } catch (e) {
+            console.warn('Error refreshing closure view:', e);
+        }
     }
 }
 
@@ -2720,38 +2728,59 @@ const CASH_DENOMINATIONS = [
 
 // 1. Ouvrir le Modal de Clôture (Immédiat & Fluide)
 function populateClosureModalUI() {
-    const elSales = document.getElementById('z-kpi-total-sales');
-    const elCash = document.getElementById('z-kpi-cash-sales');
-    const elWave = document.getElementById('z-kpi-wave-sales');
-    const elCount = document.getElementById('z-kpi-ticket-count');
-    const elFond = document.getElementById('z-fond-de-caisse');
+    const kpiMap = [
+        { ids: ['z-kpi-total-sales', 'view-z-kpi-total-sales'], text: `${currentClosureShiftData.total_sales.toLocaleString()} FCFA` },
+        { ids: ['z-kpi-cash-sales', 'view-z-kpi-cash-sales'], text: `${currentClosureShiftData.total_cash.toLocaleString()} FCFA` },
+        { ids: ['z-kpi-wave-sales', 'view-z-kpi-wave-sales'], text: `${currentClosureShiftData.total_wave.toLocaleString()} FCFA` },
+        { ids: ['z-kpi-ticket-count', 'view-z-kpi-ticket-count'], text: currentClosureShiftData.total_tickets },
+        { ids: ['x-total-sales'], text: `${currentClosureShiftData.total_sales.toLocaleString()} FCFA` },
+        { ids: ['x-cash-sales'], text: `${currentClosureShiftData.total_cash.toLocaleString()} FCFA` },
+        { ids: ['x-wave-sales'], text: `${currentClosureShiftData.total_wave.toLocaleString()} FCFA` },
+        { ids: ['x-ticket-count'], text: currentClosureShiftData.total_tickets }
+    ];
 
-    if (elSales) elSales.innerText = `${currentClosureShiftData.total_sales.toLocaleString()} FCFA`;
-    if (elCash) elCash.innerText = `${currentClosureShiftData.total_cash.toLocaleString()} FCFA`;
-    if (elWave) elWave.innerText = `${currentClosureShiftData.total_wave.toLocaleString()} FCFA`;
-    if (elCount) elCount.innerText = currentClosureShiftData.total_tickets;
-    if (elFond) elFond.value = currentClosureShiftData.fond_de_caisse;
+    kpiMap.forEach(item => {
+        item.ids.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.innerText = item.text;
+        });
+    });
 
-    const elXSales = document.getElementById('x-total-sales');
-    const elXCash = document.getElementById('x-cash-sales');
-    const elXWave = document.getElementById('x-wave-sales');
-    const elXCount = document.getElementById('x-ticket-count');
+    const fondIds = ['z-fond-de-caisse', 'view-z-fond-de-caisse'];
+    fondIds.forEach(id => {
+        const el = document.getElementById(id);
+        if (el && !el.value) el.value = currentClosureShiftData.fond_de_caisse;
+    });
 
-    if (elXSales) elXSales.innerText = `${currentClosureShiftData.total_sales.toLocaleString()} FCFA`;
-    if (elXCash) elXCash.innerText = `${currentClosureShiftData.total_cash.toLocaleString()} FCFA`;
-    if (elXWave) elXWave.innerText = `${currentClosureShiftData.total_wave.toLocaleString()} FCFA`;
-    if (elXCount) elXCount.innerText = currentClosureShiftData.total_tickets;
+    const subtitleText = `${currentCashierUser?.nom || 'Caissière'} • ${new Date().toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}`;
+    ['closure-modal-subtitle', 'view-closure-subtitle'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.innerText = subtitleText;
+    });
+}
 
-    const subTitle = document.getElementById('closure-modal-subtitle');
-    if (subTitle) {
-        subTitle.innerText = `${currentCashierUser?.nom || 'Caissière'} • ${new Date().toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}`;
-    }
+function syncFondDeCaisse(val) {
+    const num = parseInt(val || '0', 10);
+    ['z-fond-de-caisse', 'view-z-fond-de-caisse'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el && el.value != num) el.value = num;
+    });
+    recalculateCashCount();
+}
+
+function syncDenomInput(denomId, val) {
+    const num = parseInt(val || '0', 10);
+    [`denom_${denomId}`, `view_denom_${denomId}`].forEach(id => {
+        const el = document.getElementById(id);
+        if (el && el.value != num) el.value = num;
+    });
+    recalculateCashCount();
 }
 
 function openClosureModal() {
     const modal = document.getElementById('closureModal');
     if (!modal) {
-        console.error('Modal #closureModal not found in DOM');
+        showPosView('closure');
         return;
     }
 
@@ -2765,8 +2794,12 @@ function openClosureModal() {
             CASH_DENOMINATIONS.forEach(d => {
                 const inp = document.getElementById(`denom_${d.id}`);
                 if (inp) inp.value = 0;
+                const viewInp = document.getElementById(`view_denom_${d.id}`);
+                if (viewInp) viewInp.value = 0;
                 const sub = document.getElementById(`sub_${d.id}`);
                 if (sub) sub.innerText = '0 F';
+                const viewSub = document.getElementById(`view_sub_${d.id}`);
+                if (viewSub) viewSub.innerText = '0 F';
             });
         }
     } catch (_) {}
@@ -2854,7 +2887,10 @@ function computeLocalShiftData() {
 
 function closeClosureModal() {
     const modal = document.getElementById('closureModal');
-    if (modal) modal.classList.add('hidden');
+    if (modal) {
+        modal.classList.add('hidden');
+        modal.style.display = 'none';
+    }
 }
 
 function switchClosureTab(tab) {
@@ -2886,11 +2922,15 @@ function switchClosureTab(tab) {
 
 // 2. Ajustement des coupures (+ / -)
 function adjustDenomQty(denomId, delta) {
-    const input = document.getElementById(`denom_${denomId}`);
-    if (!input) return;
-    let qty = parseInt(input.value || '0', 10) + delta;
+    const input = document.getElementById(`denom_${denomId}`) || document.getElementById(`view_denom_${denomId}`);
+    let curVal = parseInt(input?.value || '0', 10);
+    let qty = curVal + delta;
     if (qty < 0) qty = 0;
-    input.value = qty;
+    
+    [`denom_${denomId}`, `view_denom_${denomId}`].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = qty;
+    });
     recalculateCashCount();
 }
 
@@ -2900,17 +2940,24 @@ function recalculateCashCount() {
     const detailComptage = {};
 
     CASH_DENOMINATIONS.forEach(d => {
-        const input = document.getElementById(`denom_${d.id}`);
+        const input = document.getElementById(`denom_${d.id}`) || document.getElementById(`view_denom_${d.id}`);
         const qty = parseInt(input?.value || '0', 10);
         const subtotal = qty * d.value;
         totalCashCounted += subtotal;
         detailComptage[d.id] = { qty, subtotal };
 
-        const subEl = document.getElementById(`sub_${d.id}`);
-        if (subEl) subEl.innerText = `${subtotal.toLocaleString()} F`;
+        [`sub_${d.id}`, `view_sub_${d.id}`].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.innerText = `${subtotal.toLocaleString()} F`;
+        });
+        
+        [`denom_${d.id}`, `view_denom_${d.id}`].forEach(id => {
+            const el = document.getElementById(id);
+            if (el && el.value != qty) el.value = qty;
+        });
     });
 
-    const fondInput = document.getElementById('z-fond-de-caisse');
+    const fondInput = document.getElementById('z-fond-de-caisse') || document.getElementById('view-z-fond-de-caisse');
     const fond = parseInt(fondInput?.value || '50000', 10);
     const expectedCash = fond + (currentClosureShiftData.total_cash || 0);
     const ecart = totalCashCounted - expectedCash;
@@ -2920,34 +2967,48 @@ function recalculateCashCount() {
     currentClosureShiftData.ecart = ecart;
     currentClosureShiftData.detail_comptage = detailComptage;
 
-    // Update UI Labels
-    const elCounted = document.getElementById('z-total-cash-counted');
-    const elExpected = document.getElementById('z-expected-cash');
-    const elEcartAmount = document.getElementById('z-discrepancy-amount');
-    const elEcartStatus = document.getElementById('z-discrepancy-status');
+    // Update UI Labels in both View and Modal
+    ['z-total-cash-counted', 'view-z-total-cash-counted'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.innerText = `${totalCashCounted.toLocaleString()} FCFA`;
+    });
 
-    if (elCounted) elCounted.innerText = `${totalCashCounted.toLocaleString()} FCFA`;
-    if (elExpected) elExpected.innerText = `${expectedCash.toLocaleString()} FCFA`;
+    ['z-expected-cash', 'view-z-expected-cash'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.innerText = `${expectedCash.toLocaleString()} FCFA`;
+    });
     
-    if (elEcartAmount) {
-        elEcartAmount.innerText = `${(ecart >= 0 ? '+' : '')}${ecart.toLocaleString()} FCFA`;
+    ['z-discrepancy-amount', 'view-z-discrepancy-amount'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.innerText = `${(ecart >= 0 ? '+' : '')}${ecart.toLocaleString()} FCFA`;
+    });
+
+    let statusText = 'Caisse Parfaitement Équilibrée ✅';
+    let statusClass = 'text-xs font-bold text-emerald-400';
+    let amountClass = 'text-xl font-mono font-black text-emerald-400';
+
+    if (ecart > 0) {
+        statusText = `Excédent en Tiroir (+${ecart.toLocaleString()} F) 🟢`;
+        statusClass = 'text-xs font-bold text-sky-400';
+        amountClass = 'text-xl font-mono font-black text-sky-400';
+    } else if (ecart < 0) {
+        statusText = `Déficit / Manquant en Caisse (${ecart.toLocaleString()} F) ⚠️`;
+        statusClass = 'text-xs font-bold text-rose-400';
+        amountClass = 'text-xl font-mono font-black text-rose-400';
     }
 
-    if (elEcartStatus && elEcartAmount) {
-        if (ecart === 0) {
-            elEcartStatus.innerText = 'Caisse Parfaitement Équilibrée ✅';
-            elEcartStatus.className = 'text-xs font-bold text-emerald-400';
-            elEcartAmount.className = 'text-xl font-mono font-black text-emerald-400';
-        } else if (ecart > 0) {
-            elEcartStatus.innerText = `Excédent en Tiroir (+${ecart.toLocaleString()} F) 🟢`;
-            elEcartStatus.className = 'text-xs font-bold text-sky-400';
-            elEcartAmount.className = 'text-xl font-mono font-black text-sky-400';
-        } else {
-            elEcartStatus.innerText = `Déficit / Manquant en Caisse (${ecart.toLocaleString()} F) ⚠️`;
-            elEcartStatus.className = 'text-xs font-bold text-rose-400';
-            elEcartAmount.className = 'text-xl font-mono font-black text-rose-400';
+    ['z-discrepancy-status', 'view-z-discrepancy-status'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+            el.innerText = statusText;
+            el.className = statusClass;
         }
-    }
+    });
+
+    ['z-discrepancy-amount', 'view-z-discrepancy-amount'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.className = amountClass;
+    });
 }
 
 // 4. Modal Ticket X Direct
