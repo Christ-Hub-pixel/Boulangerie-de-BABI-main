@@ -2,19 +2,11 @@
   "version": 2,
   "cleanUrls": true,
   "trailingSlash": false,
-  "outputDirectory": ".",
-  "headers": [
-    {
-      "source": "/(.*)",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "public, max-age=0, must-revalidate"
-        }
-      ]
-    }
-  ],
   "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "/api/index.js"
+    },
     {
       "source": "/",
       "has": [{ "type": "host", "value": "caisse.boulangeriedebabi.com" }],
@@ -35,8 +27,13 @@
       "has": [{ "type": "host", "value": "api.boulangeriedebabi.com" }],
       "destination": "/api/index.js"
     },
-    { "source": "/app", "destination": "/app.html" },
-    { "source": "/app/", "destination": "/app.html" },
-    { "source": "/api/(.*)", "destination": "/api/index.js" }
+    {
+      "source": "/app",
+      "destination": "/app.html"
+    },
+    {
+      "source": "/app/",
+      "destination": "/app.html"
+    }
   ]
 }

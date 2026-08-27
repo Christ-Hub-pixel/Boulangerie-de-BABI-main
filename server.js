@@ -72,6 +72,14 @@ app.use(async (req, res, next) => {
     next();
 });
 
+// ⚡ Normalisation d'URL pour Vercel Serverless (supporte /api/... et /...)
+app.use((req, res, next) => {
+    if (!req.url.startsWith('/api') && req.url !== '/' && !req.url.startsWith('/assets') && !req.url.includes('.')) {
+        req.url = '/api' + req.url;
+    }
+    next();
+});
+
 // 📱 Service des fichiers statiques Web et de l'application mobile Flutter
 app.use(express.static(path.resolve(__dirname), { maxAge: '1h', etag: true }));
 app.use('/flutter', express.static(path.resolve(__dirname, '../babi_flutter_web/build/web'), { maxAge: '1h', etag: true }));
