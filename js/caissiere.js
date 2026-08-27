@@ -124,17 +124,134 @@ function updateClock() {
     }
 }
 
-// POS Feedback Haptique (Vibration au lieu du son)
+// -------------------------------------------------------------
+// REAL WEB AUDIO SYNTHESIZER & POS SOUND EFFECTS
+// -------------------------------------------------------------
+let posAudioCtx = null;
+
+function getPosAudioContext() {
+    if (!posAudioCtx) {
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        if (AudioContext) {
+            posAudioCtx = new AudioContext();
+        }
+    }
+    if (posAudioCtx && posAudioCtx.state === 'suspended') {
+        posAudioCtx.resume().catch(() => {});
+    }
+    return posAudioCtx;
+}
+
+// Unlock audio on any initial user tap/click
+if (typeof document !== 'undefined') {
+    ['click', 'touchstart', 'keydown'].forEach(evt => {
+        document.addEventListener(evt, () => {
+            getPosAudioContext();
+        }, { once: true, passive: true });
+    });
+}
+
 function playPosAudio(type = 'beep') {
+    // 1. Haptic Vibration Feedback (Mobile)
     try {
         if ('vibrate' in navigator) {
-            if (type === 'error') {
-                navigator.vibrate([60, 40, 60]);
-            } else if (type === 'success' || type === 'chime') {
-                navigator.vibrate([45, 30, 45]);
-            } else {
-                navigator.vibrate(30);
-            }
+            if (type === 'error' || type === 'buzz') navigator.vibrate([60, 40, 60]);
+            else if (type === 'success' || type === 'chime' || type === 'new_order') navigator.vibrate([45, 30, 45]);
+            else navigator.vibrate(25);
+        }
+    } catch (_) {}
+
+    // 2. Real Web Audio API POS Sound Synthesis
+    try {
+        const ctx = getPosAudioContext();
+        if (!ctx) return;
+
+        const now = ctx.currentTime;
+
+        if (type === 'beep') {
+            // Crisp, authentic POS register / barcode scan beep
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(1450, now);
+            osc.frequency.exponentialRampToValueAtTime(1750, now + 0.05);
+
+            gain.gain.setValueAtTime(0.22, now);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.07);
+
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start(now);
+            osc.stop(now + 0.07);
+        } else if (type === 'click') {
+            // Tactile keypad click
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(650, now);
+            osc.frequency.exponentialRampToValueAtTime(250, now + 0.025);
+
+            gain.gain.setValueAtTime(0.18, now);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.025);
+
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start(now);
+            osc.stop(now + 0.025);
+        } else if (type === 'success') {
+            // Harmonious 4-note ascending major arpeggio (C5 -> E5 -> G5 -> C6)
+            const notes = [523.25, 659.25, 783.99, 1046.50];
+            notes.forEach((freq, i) => {
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                const startTime = now + (i * 0.055);
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(freq, startTime);
+
+                gain.gain.setValueAtTime(0.18, startTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, startTime + 0.2);
+
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start(startTime);
+                osc.stop(startTime + 0.2);
+            });
+        } else if (type === 'chime' || type === 'new_order') {
+            // Warm bakery bell chime (incoming order alert)
+            const bellNotes = [880, 1318.5, 1760];
+            bellNotes.forEach((freq, i) => {
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                const startTime = now + (i * 0.075);
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(freq, startTime);
+
+                gain.gain.setValueAtTime(0.22, startTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, startTime + 0.45);
+
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start(startTime);
+                osc.stop(startTime + 0.45);
+            });
+        } else if (type === 'error' || type === 'buzz') {
+            // Double low alert buzz
+            [0, 0.09].forEach(delay => {
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                const startTime = now + delay;
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(220, startTime);
+                osc.frequency.linearRampToValueAtTime(140, startTime + 0.08);
+
+                gain.gain.setValueAtTime(0.18, startTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, startTime + 0.08);
+
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start(startTime);
+                osc.stop(startTime + 0.08);
+            });
         }
     } catch (_) {}
 }
@@ -312,6 +429,8 @@ function filterPosProducts(term) {
     renderPosProductsGrid(term);
 }
 
+let currentFilteredProducts = [];
+
 function renderPosProductsGrid(searchTerm = '') {
     const grid = document.getElementById('pos-products-grid');
     if (!grid) return;
@@ -334,6 +453,8 @@ function renderPosProductsGrid(searchTerm = '') {
         return matchesCat && matchesName;
     });
 
+    currentFilteredProducts = filtered;
+
     if (filtered.length === 0) {
         grid.innerHTML = `
             <div class="col-span-full py-12 text-center text-on-surface-variant">
@@ -344,7 +465,7 @@ function renderPosProductsGrid(searchTerm = '') {
         return;
     }
 
-    grid.innerHTML = filtered.map(p => {
+    grid.innerHTML = filtered.map((p, idx) => {
         const cat = (p.category || '').toLowerCase();
         const name = (p.name || '').toLowerCase();
         const isDrink = cat.includes('boisson') || cat.includes('jus') || cat.includes('café') || cat.includes('cafe') || 
@@ -357,12 +478,12 @@ function renderPosProductsGrid(searchTerm = '') {
         const imgClass = isDrink ? 'pos-img-drink' : 'pos-img-food';
 
         return `
-            <button onclick="addToPosCart('${p.id}', '${p.name.replace(/'/g, "\\'")}', ${p.price}, '${p.image}')" class="pos-product-item flex flex-col rounded-2xl overflow-hidden group relative text-left">
-                <div class="pos-product-img-box ${boxClass} w-full">
+            <button type="button" onclick="addToPosCartByIndex(${idx})" class="pos-product-item flex flex-col rounded-2xl overflow-hidden group relative text-left select-none active:scale-[0.98] transition-transform cursor-pointer">
+                <div class="pos-product-img-box ${boxClass} w-full pointer-events-none">
                     <img class="${imgClass}" src="${p.image}" alt="${p.name}" loading="lazy" onerror="this.onerror=null; this.src='assets/Croissant.png';"/>
                     <div class="pos-price-badge-vip absolute top-2 right-2 px-2.5 py-0.5 rounded-lg font-mono text-[11px] sm:text-xs font-black z-10">${p.price.toLocaleString()} F</div>
                 </div>
-                <div class="p-2.5 sm:p-3 flex-1 flex flex-col justify-between gap-1.5 bg-white">
+                <div class="p-2.5 sm:p-3 flex-1 flex flex-col justify-between gap-1.5 bg-white pointer-events-none">
                     <h3 class="font-headline-sm text-xs sm:text-[13.5px] font-extrabold text-[#1a0c06] line-clamp-1 leading-snug tracking-tight">${p.name}</h3>
                     <div class="flex items-center justify-between text-[10.5px] sm:text-[11px] text-[#786558] font-semibold pt-1 border-t border-[rgba(212,175,55,0.15)]">
                         <span class="flex items-center gap-1">
@@ -379,32 +500,49 @@ function renderPosProductsGrid(searchTerm = '') {
     }).join('');
 }
 
+function addToPosCartByIndex(idx) {
+    const p = currentFilteredProducts[idx] || posProducts[idx];
+    if (!p) return;
+    addToPosCart(p.id, p.name, p.price, p.image);
+}
+
 // -------------------------------------------------------------
 // 3. POS CART LOGIC
 // -------------------------------------------------------------
 function addToPosCart(id, name, price, img) {
     playPosAudio('beep');
-    const existing = posCart.find(item => item.id === id);
+    const existing = posCart.find(item => String(item.id) === String(id));
     if (existing) {
         existing.qty += 1;
     } else {
-        posCart.push({ id, name, price: parseInt(price, 10), qty: 1, image: img || 'assets/baguette 200.png' });
+        const prod = posProducts.find(p => String(p.id) === String(id));
+        posCart.push({
+            id: id,
+            name: name || prod?.name || 'Produit',
+            price: parseInt(price || prod?.price || 0, 10),
+            qty: 1,
+            image: img || prod?.image || 'assets/baguette 200.png'
+        });
     }
     renderPosCart();
 }
 
 function updatePosItemQty(id, delta) {
-    const item = posCart.find(i => i.id === id);
+    const item = posCart.find(i => String(i.id) === String(id));
     if (!item) return;
+
+    if (delta > 0) playPosAudio('beep');
+    else playPosAudio('click');
 
     item.qty += delta;
     if (item.qty <= 0) {
-        posCart = posCart.filter(i => i.id !== id);
+        posCart = posCart.filter(i => String(i.id) !== String(id));
     }
     renderPosCart();
 }
 
 function clearPosCart() {
+    playPosAudio('click');
     posCart = [];
     renderPosCart();
 }
