@@ -32,19 +32,67 @@ class SqliteDbWrapper {
     }
 }
 
+class LibSqlDbWrapper {
+    constructor(client) {
+        this._client = client;
+    }
+
+    async exec(sql) {
+        return this._client.executeMultiple(sql);
+    }
+
+    async run(sql, params = []) {
+        const res = await this._client.execute({ sql, args: params });
+        return {
+            lastID: res.lastInsertRowid !== undefined ? Number(res.lastInsertRowid) : 0,
+            changes: res.rowsAffected || 0
+        };
+    }
+
+    async get(sql, params = []) {
+        const res = await this._client.execute({ sql, args: params });
+        return res.rows.length > 0 ? res.rows[0] : null;
+    }
+
+    async all(sql, params = []) {
+        const res = await this._client.execute({ sql, args: params });
+        return res.rows || [];
+    }
+}
+
 async function initDB() {
     let db;
-    try {
-        const { DatabaseSync } = require('node:sqlite');
-        const dbSync = new DatabaseSync(dbPath);
-        db = new SqliteDbWrapper(dbSync);
-    } catch (e) {
-        const sqlite3 = require('sqlite3').verbose();
-        const { open } = require('sqlite');
-        db = await open({
-            filename: dbPath,
-            driver: sqlite3.Database
-        });
+    const tursoUrl = process.env.TURSO_DATABASE_URL || process.env.DATABASE_URL;
+    const tursoAuthToken = process.env.TURSO_AUTH_TOKEN;
+
+    if (tursoUrl && (tursoUrl.startsWith('libsql://') || tursoUrl.startsWith('https://') || tursoUrl.startsWith('http://'))) {
+        try {
+            const { createClient } = require('@libsql/client');
+            const client = createClient({
+                url: tursoUrl,
+                authToken: tursoAuthToken
+            });
+            db = new LibSqlDbWrapper(client);
+            console.log("☁️ Base de données Cloud Turso LibSQL connectée :", tursoUrl.replace(/:[^:@]+@/, ':***@'));
+        } catch (tursoErr) {
+            console.warn("⚠️ Échec connexion Turso Cloud, bascule sur SQLite local :", tursoErr.message);
+        }
+    }
+
+    if (!db) {
+        const effectiveDbPath = process.env.VERCEL ? path.join('/tmp', 'database.sqlite') : dbPath;
+        try {
+            const { DatabaseSync } = require('node:sqlite');
+            const dbSync = new DatabaseSync(effectiveDbPath);
+            db = new SqliteDbWrapper(dbSync);
+        } catch (e) {
+            const sqlite3 = require('sqlite3').verbose();
+            const { open } = require('sqlite');
+            db = await open({
+                filename: effectiveDbPath,
+                driver: sqlite3.Database
+            });
+        }
     }
 
     // Create Tables
