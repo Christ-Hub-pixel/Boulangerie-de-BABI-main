@@ -552,70 +552,70 @@
             </div>
 
             <!-- VIEW 4: CLÔTURE JOURNALIÈRE & BILAN Z / X -->
-            <div id="pos-view-closure" class="pos-main-view p-container-padding flex flex-col gap-stack-md hidden">
+            <div id="pos-view-closure" class="pos-main-view p-container-padding flex flex-col gap-3 sm:gap-stack-md hidden pb-28 sm:pb-12">
                 <!-- Header Banner -->
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-surface-container p-4 sm:p-5 rounded-2xl border border-outline-variant/30">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-surface-container p-3.5 sm:p-5 rounded-2xl border border-outline-variant/30">
                     <div class="flex items-center gap-3">
-                        <div class="w-11 h-11 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-600">
-                            <span class="material-symbols-outlined text-2xl">account_balance</span>
+                        <div class="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-600 shrink-0">
+                            <span class="material-symbols-outlined text-2xl sm:text-3xl">account_balance</span>
                         </div>
-                        <div>
-                            <h2 class="text-base sm:text-xl font-headline-md font-black text-on-surface flex items-center gap-2">
-                                <span>Gestion & Clôture Journalière de Caisse</span>
+                        <div class="min-w-0">
+                            <h2 class="text-sm sm:text-lg font-black text-on-surface flex items-center gap-1.5 leading-tight">
+                                <span>Gestion & Clôture de Caisse</span>
                             </h2>
-                            <p class="text-xs text-on-surface-variant font-bold mt-0.5" id="view-closure-subtitle">Session en cours • Bilan Z & X</p>
+                            <p class="text-[11px] sm:text-xs text-on-surface-variant font-semibold mt-0.5 truncate" id="view-closure-subtitle">Session en cours • Bilan Z & X</p>
                         </div>
                     </div>
-                    <div class="flex items-center gap-2 flex-wrap sm:flex-nowrap">
-                        <button type="button" onclick="openTicketXModal()" class="flex-1 sm:flex-none px-3.5 py-2 sm:py-2.5 bg-amber-100 hover:bg-amber-200 text-amber-900 font-extrabold text-xs rounded-xl border border-amber-300 flex items-center justify-center gap-1.5 transition-all">
-                            <span class="material-symbols-outlined text-base">monitoring</span> Ticket X (Lecture Rapide)
+                    <div class="grid grid-cols-2 sm:flex items-center gap-2 w-full sm:w-auto">
+                        <button type="button" onclick="openTicketXModal()" class="py-2 px-2.5 sm:px-3.5 sm:py-2.5 bg-amber-100 hover:bg-amber-200 text-amber-900 font-extrabold text-[11px] sm:text-xs rounded-xl border border-amber-300 flex items-center justify-center gap-1 transition-all shadow-xs">
+                            <span class="material-symbols-outlined text-base">monitoring</span> Ticket X (Lecture)
                         </button>
-                        <button type="button" onclick="computeLocalShiftData(); populateClosureModalUI(); recalculateCashCount();" class="flex-1 sm:flex-none px-3.5 py-2 sm:py-2.5 bg-surface text-on-surface font-bold text-xs rounded-xl border border-outline-variant/30 hover:bg-surface-container-high flex items-center justify-center gap-1.5 transition-all">
+                        <button type="button" onclick="computeLocalShiftData(); populateClosureModalUI(); recalculateCashCount();" class="py-2 px-2.5 sm:px-3.5 sm:py-2.5 bg-surface text-on-surface font-bold text-[11px] sm:text-xs rounded-xl border border-outline-variant/30 hover:bg-surface-container-high flex items-center justify-center gap-1 transition-all shadow-xs">
                             <span class="material-symbols-outlined text-base">refresh</span> Actualiser
                         </button>
                     </div>
                 </div>
 
                 <!-- KPI Cards of the Day -->
-                <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
-                    <div class="p-4 bg-amber-50/70 border border-amber-200/80 rounded-2xl">
-                        <span class="text-[10.5px] font-extrabold text-amber-800 uppercase tracking-wider block">Total Ventes TTC</span>
-                        <span class="text-lg sm:text-2xl font-black text-amber-950 font-mono mt-1 block" id="view-z-kpi-total-sales">0 FCFA</span>
+                <div class="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3">
+                    <div class="p-3 sm:p-4 bg-amber-50/80 border border-amber-200 rounded-xl sm:rounded-2xl">
+                        <span class="text-[10px] sm:text-[11px] font-extrabold text-amber-800 uppercase tracking-wider block">Total Ventes TTC</span>
+                        <span class="text-sm sm:text-xl font-black text-amber-950 font-mono mt-0.5 sm:mt-1 block truncate" id="view-z-kpi-total-sales">0 FCFA</span>
                     </div>
-                    <div class="p-4 bg-emerald-50/70 border border-emerald-200/80 rounded-2xl">
-                        <span class="text-[10.5px] font-extrabold text-emerald-800 uppercase tracking-wider block">Ventes Espèces</span>
-                        <span class="text-lg sm:text-2xl font-black text-emerald-950 font-mono mt-1 block" id="view-z-kpi-cash-sales">0 FCFA</span>
+                    <div class="p-3 sm:p-4 bg-emerald-50/80 border border-emerald-200 rounded-xl sm:rounded-2xl">
+                        <span class="text-[10px] sm:text-[11px] font-extrabold text-emerald-800 uppercase tracking-wider block">Ventes Espèces</span>
+                        <span class="text-sm sm:text-xl font-black text-emerald-950 font-mono mt-0.5 sm:mt-1 block truncate" id="view-z-kpi-cash-sales">0 FCFA</span>
                     </div>
-                    <div class="p-4 bg-sky-50/70 border border-sky-200/80 rounded-2xl">
-                        <span class="text-[10.5px] font-extrabold text-sky-800 uppercase tracking-wider block">Paiements Wave</span>
-                        <span class="text-lg sm:text-2xl font-black text-sky-950 font-mono mt-1 block" id="view-z-kpi-wave-sales">0 FCFA</span>
+                    <div class="p-3 sm:p-4 bg-sky-50/80 border border-sky-200 rounded-xl sm:rounded-2xl">
+                        <span class="text-[10px] sm:text-[11px] font-extrabold text-sky-800 uppercase tracking-wider block">Paiements Wave</span>
+                        <span class="text-sm sm:text-xl font-black text-sky-950 font-mono mt-0.5 sm:mt-1 block truncate" id="view-z-kpi-wave-sales">0 FCFA</span>
                     </div>
-                    <div class="p-4 bg-purple-50/70 border border-purple-200/80 rounded-2xl">
-                        <span class="text-[10.5px] font-extrabold text-purple-800 uppercase tracking-wider block">Tickets Servis</span>
-                        <span class="text-lg sm:text-2xl font-black text-purple-950 font-mono mt-1 block" id="view-z-kpi-ticket-count">0</span>
+                    <div class="p-3 sm:p-4 bg-purple-50/80 border border-purple-200 rounded-xl sm:rounded-2xl">
+                        <span class="text-[10px] sm:text-[11px] font-extrabold text-purple-800 uppercase tracking-wider block">Tickets Servis</span>
+                        <span class="text-sm sm:text-xl font-black text-purple-950 font-mono mt-0.5 sm:mt-1 block" id="view-z-kpi-ticket-count">0</span>
                     </div>
                 </div>
 
                 <!-- Main Layout: Dénombrement (Gauche) & Réconciliation/Validation (Droite) -->
-                <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start">
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-3 sm:gap-4 items-start">
                     <!-- Left: Dénombrement Physique (7 cols) -->
-                    <div class="lg:col-span-7 bg-surface rounded-2xl shadow-sm border border-outline-variant/30 p-4 sm:p-5 flex flex-col gap-4">
-                        <div class="flex items-center justify-between border-b border-outline-variant/20 pb-3">
+                    <div class="lg:col-span-7 bg-surface rounded-2xl shadow-sm border border-outline-variant/30 p-3 sm:p-5 flex flex-col gap-3 sm:gap-4">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1 border-b border-outline-variant/20 pb-2 sm:pb-3">
                             <div class="flex items-center gap-2">
-                                <span class="material-symbols-outlined text-amber-600">calculate</span>
+                                <span class="material-symbols-outlined text-amber-600 text-xl">calculate</span>
                                 <h3 class="text-xs sm:text-sm font-black text-on-surface uppercase tracking-wider">Dénombrement Monnaie & Billets</h3>
                             </div>
-                            <span class="text-xs text-amber-800 font-bold">Comptez le tiroir-caisse</span>
+                            <span class="text-[11px] text-amber-800 font-bold">Comptez le tiroir-caisse</span>
                         </div>
 
                         <!-- Fond de Caisse Initial -->
-                        <div class="p-3 bg-surface-container-high rounded-xl flex items-center justify-between">
+                        <div class="p-3 bg-surface-container-high rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                             <div>
                                 <label class="text-xs font-bold text-on-surface block">Fond de Caisse Initial :</label>
-                                <span class="text-[10.5px] text-on-surface-variant">Espèces au matin</span>
+                                <span class="text-[10.5px] text-on-surface-variant">Espèces au démarrage du matin</span>
                             </div>
-                            <div class="flex items-center gap-2">
-                                <input type="number" id="view-z-fond-de-caisse" value="50000" oninput="syncFondDeCaisse(this.value); recalculateCashCount();" class="w-32 p-2 bg-surface border border-outline-variant/40 rounded-xl font-mono font-black text-sm text-right text-on-surface outline-none focus:border-primary"/>
+                            <div class="flex items-center gap-1.5 self-end sm:self-auto">
+                                <input type="number" id="view-z-fond-de-caisse" value="50000" oninput="syncFondDeCaisse(this.value); recalculateCashCount();" class="w-28 sm:w-32 p-1.5 sm:p-2 bg-surface border border-outline-variant/40 rounded-xl font-mono font-black text-xs sm:text-sm text-right text-on-surface outline-none focus:border-primary shadow-inner"/>
                                 <span class="text-xs font-extrabold text-on-surface-variant">FCFA</span>
                             </div>
                         </div>
@@ -623,124 +623,124 @@
                         <!-- Billets & Pieces Grid -->
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                             <!-- Billets Column -->
-                            <div class="space-y-2 bg-surface-container-low p-3 rounded-xl border border-outline-variant/20">
-                                <span class="text-[11px] font-black text-amber-900 uppercase block mb-1">💵 BILLETS (FCFA)</span>
+                            <div class="space-y-1.5 bg-surface-container-low p-2.5 sm:p-3 rounded-xl border border-outline-variant/20">
+                                <span class="text-[10.5px] font-black text-amber-900 uppercase block mb-1.5 tracking-wider">💵 BILLETS (FCFA)</span>
                                 
-                                <div class="flex items-center justify-between text-xs">
-                                    <span class="font-bold w-16 text-on-surface">10 000 F</span>
-                                    <div class="flex items-center gap-1">
-                                        <button type="button" onclick="adjustDenomQty('b10000', -1)" class="w-6 h-6 rounded-md bg-surface-container-high hover:bg-surface text-on-surface font-bold">-</button>
-                                        <input type="number" id="view_denom_b10000" min="0" value="0" oninput="syncDenomInput('b10000', this.value)" class="w-12 p-1 text-center font-mono font-bold bg-surface border rounded border-outline-variant/30 text-xs"/>
-                                        <button type="button" onclick="adjustDenomQty('b10000', 1)" class="w-6 h-6 rounded-md bg-surface-container-high hover:bg-surface text-on-surface font-bold">+</button>
+                                <div class="flex items-center justify-between gap-1 py-1 px-1 rounded-lg hover:bg-surface/60 transition-colors">
+                                    <span class="font-bold text-xs text-on-surface w-[65px] shrink-0">10 000 F</span>
+                                    <div class="flex items-center gap-1 shrink-0">
+                                        <button type="button" onclick="adjustDenomQty('b10000', -1)" class="w-7 h-7 rounded-lg bg-surface border border-outline-variant/30 shadow-xs hover:bg-surface-container text-on-surface font-black text-sm flex items-center justify-center active:scale-95 transition-all">-</button>
+                                        <input type="number" id="view_denom_b10000" min="0" value="0" oninput="syncDenomInput('b10000', this.value)" class="w-10 h-7 p-0 text-center font-mono font-black text-xs bg-surface border rounded-lg border-outline-variant/40 shadow-inner outline-none focus:border-primary"/>
+                                        <button type="button" onclick="adjustDenomQty('b10000', 1)" class="w-7 h-7 rounded-lg bg-surface border border-outline-variant/30 shadow-xs hover:bg-surface-container text-on-surface font-black text-sm flex items-center justify-center active:scale-95 transition-all">+</button>
                                     </div>
-                                    <span class="font-mono font-bold w-20 text-right text-on-surface" id="view_sub_b10000">0 F</span>
+                                    <span class="font-mono font-bold text-xs text-right text-on-surface min-w-[65px] shrink-0" id="view_sub_b10000">0 F</span>
                                 </div>
 
-                                <div class="flex items-center justify-between text-xs">
-                                    <span class="font-bold w-16 text-on-surface">5 000 F</span>
-                                    <div class="flex items-center gap-1">
-                                        <button type="button" onclick="adjustDenomQty('b5000', -1)" class="w-6 h-6 rounded-md bg-surface-container-high hover:bg-surface text-on-surface font-bold">-</button>
-                                        <input type="number" id="view_denom_b5000" min="0" value="0" oninput="syncDenomInput('b5000', this.value)" class="w-12 p-1 text-center font-mono font-bold bg-surface border rounded border-outline-variant/30 text-xs"/>
-                                        <button type="button" onclick="adjustDenomQty('b5000', 1)" class="w-6 h-6 rounded-md bg-surface-container-high hover:bg-surface text-on-surface font-bold">+</button>
+                                <div class="flex items-center justify-between gap-1 py-1 px-1 rounded-lg hover:bg-surface/60 transition-colors">
+                                    <span class="font-bold text-xs text-on-surface w-[65px] shrink-0">5 000 F</span>
+                                    <div class="flex items-center gap-1 shrink-0">
+                                        <button type="button" onclick="adjustDenomQty('b5000', -1)" class="w-7 h-7 rounded-lg bg-surface border border-outline-variant/30 shadow-xs hover:bg-surface-container text-on-surface font-black text-sm flex items-center justify-center active:scale-95 transition-all">-</button>
+                                        <input type="number" id="view_denom_b5000" min="0" value="0" oninput="syncDenomInput('b5000', this.value)" class="w-10 h-7 p-0 text-center font-mono font-black text-xs bg-surface border rounded-lg border-outline-variant/40 shadow-inner outline-none focus:border-primary"/>
+                                        <button type="button" onclick="adjustDenomQty('b5000', 1)" class="w-7 h-7 rounded-lg bg-surface border border-outline-variant/30 shadow-xs hover:bg-surface-container text-on-surface font-black text-sm flex items-center justify-center active:scale-95 transition-all">+</button>
                                     </div>
-                                    <span class="font-mono font-bold w-20 text-right text-on-surface" id="view_sub_b5000">0 F</span>
+                                    <span class="font-mono font-bold text-xs text-right text-on-surface min-w-[65px] shrink-0" id="view_sub_b5000">0 F</span>
                                 </div>
 
-                                <div class="flex items-center justify-between text-xs">
-                                    <span class="font-bold w-16 text-on-surface">2 000 F</span>
-                                    <div class="flex items-center gap-1">
-                                        <button type="button" onclick="adjustDenomQty('b2000', -1)" class="w-6 h-6 rounded-md bg-surface-container-high hover:bg-surface text-on-surface font-bold">-</button>
-                                        <input type="number" id="view_denom_b2000" min="0" value="0" oninput="syncDenomInput('b2000', this.value)" class="w-12 p-1 text-center font-mono font-bold bg-surface border rounded border-outline-variant/30 text-xs"/>
-                                        <button type="button" onclick="adjustDenomQty('b2000', 1)" class="w-6 h-6 rounded-md bg-surface-container-high hover:bg-surface text-on-surface font-bold">+</button>
+                                <div class="flex items-center justify-between gap-1 py-1 px-1 rounded-lg hover:bg-surface/60 transition-colors">
+                                    <span class="font-bold text-xs text-on-surface w-[65px] shrink-0">2 000 F</span>
+                                    <div class="flex items-center gap-1 shrink-0">
+                                        <button type="button" onclick="adjustDenomQty('b2000', -1)" class="w-7 h-7 rounded-lg bg-surface border border-outline-variant/30 shadow-xs hover:bg-surface-container text-on-surface font-black text-sm flex items-center justify-center active:scale-95 transition-all">-</button>
+                                        <input type="number" id="view_denom_b2000" min="0" value="0" oninput="syncDenomInput('b2000', this.value)" class="w-10 h-7 p-0 text-center font-mono font-black text-xs bg-surface border rounded-lg border-outline-variant/40 shadow-inner outline-none focus:border-primary"/>
+                                        <button type="button" onclick="adjustDenomQty('b2000', 1)" class="w-7 h-7 rounded-lg bg-surface border border-outline-variant/30 shadow-xs hover:bg-surface-container text-on-surface font-black text-sm flex items-center justify-center active:scale-95 transition-all">+</button>
                                     </div>
-                                    <span class="font-mono font-bold w-20 text-right text-on-surface" id="view_sub_b2000">0 F</span>
+                                    <span class="font-mono font-bold text-xs text-right text-on-surface min-w-[65px] shrink-0" id="view_sub_b2000">0 F</span>
                                 </div>
 
-                                <div class="flex items-center justify-between text-xs">
-                                    <span class="font-bold w-16 text-on-surface">1 000 F</span>
-                                    <div class="flex items-center gap-1">
-                                        <button type="button" onclick="adjustDenomQty('b1000', -1)" class="w-6 h-6 rounded-md bg-surface-container-high hover:bg-surface text-on-surface font-bold">-</button>
-                                        <input type="number" id="view_denom_b1000" min="0" value="0" oninput="syncDenomInput('b1000', this.value)" class="w-12 p-1 text-center font-mono font-bold bg-surface border rounded border-outline-variant/30 text-xs"/>
-                                        <button type="button" onclick="adjustDenomQty('b1000', 1)" class="w-6 h-6 rounded-md bg-surface-container-high hover:bg-surface text-on-surface font-bold">+</button>
+                                <div class="flex items-center justify-between gap-1 py-1 px-1 rounded-lg hover:bg-surface/60 transition-colors">
+                                    <span class="font-bold text-xs text-on-surface w-[65px] shrink-0">1 000 F</span>
+                                    <div class="flex items-center gap-1 shrink-0">
+                                        <button type="button" onclick="adjustDenomQty('b1000', -1)" class="w-7 h-7 rounded-lg bg-surface border border-outline-variant/30 shadow-xs hover:bg-surface-container text-on-surface font-black text-sm flex items-center justify-center active:scale-95 transition-all">-</button>
+                                        <input type="number" id="view_denom_b1000" min="0" value="0" oninput="syncDenomInput('b1000', this.value)" class="w-10 h-7 p-0 text-center font-mono font-black text-xs bg-surface border rounded-lg border-outline-variant/40 shadow-inner outline-none focus:border-primary"/>
+                                        <button type="button" onclick="adjustDenomQty('b1000', 1)" class="w-7 h-7 rounded-lg bg-surface border border-outline-variant/30 shadow-xs hover:bg-surface-container text-on-surface font-black text-sm flex items-center justify-center active:scale-95 transition-all">+</button>
                                     </div>
-                                    <span class="font-mono font-bold w-20 text-right text-on-surface" id="view_sub_b1000">0 F</span>
+                                    <span class="font-mono font-bold text-xs text-right text-on-surface min-w-[65px] shrink-0" id="view_sub_b1000">0 F</span>
                                 </div>
 
-                                <div class="flex items-center justify-between text-xs">
-                                    <span class="font-bold w-16 text-on-surface">500 F (B)</span>
-                                    <div class="flex items-center gap-1">
-                                        <button type="button" onclick="adjustDenomQty('b500', -1)" class="w-6 h-6 rounded-md bg-surface-container-high hover:bg-surface text-on-surface font-bold">-</button>
-                                        <input type="number" id="view_denom_b500" min="0" value="0" oninput="syncDenomInput('b500', this.value)" class="w-12 p-1 text-center font-mono font-bold bg-surface border rounded border-outline-variant/30 text-xs"/>
-                                        <button type="button" onclick="adjustDenomQty('b500', 1)" class="w-6 h-6 rounded-md bg-surface-container-high hover:bg-surface text-on-surface font-bold">+</button>
+                                <div class="flex items-center justify-between gap-1 py-1 px-1 rounded-lg hover:bg-surface/60 transition-colors">
+                                    <span class="font-bold text-xs text-on-surface w-[65px] shrink-0">500 F (B)</span>
+                                    <div class="flex items-center gap-1 shrink-0">
+                                        <button type="button" onclick="adjustDenomQty('b500', -1)" class="w-7 h-7 rounded-lg bg-surface border border-outline-variant/30 shadow-xs hover:bg-surface-container text-on-surface font-black text-sm flex items-center justify-center active:scale-95 transition-all">-</button>
+                                        <input type="number" id="view_denom_b500" min="0" value="0" oninput="syncDenomInput('b500', this.value)" class="w-10 h-7 p-0 text-center font-mono font-black text-xs bg-surface border rounded-lg border-outline-variant/40 shadow-inner outline-none focus:border-primary"/>
+                                        <button type="button" onclick="adjustDenomQty('b500', 1)" class="w-7 h-7 rounded-lg bg-surface border border-outline-variant/30 shadow-xs hover:bg-surface-container text-on-surface font-black text-sm flex items-center justify-center active:scale-95 transition-all">+</button>
                                     </div>
-                                    <span class="font-mono font-bold w-20 text-right text-on-surface" id="view_sub_b500">0 F</span>
+                                    <span class="font-mono font-bold text-xs text-right text-on-surface min-w-[65px] shrink-0" id="view_sub_b500">0 F</span>
                                 </div>
                             </div>
 
                             <!-- Pièces Column -->
-                            <div class="space-y-2 bg-surface-container-low p-3 rounded-xl border border-outline-variant/20">
-                                <span class="text-[11px] font-black text-amber-900 uppercase block mb-1">🪙 PIÈCES (FCFA)</span>
+                            <div class="space-y-1.5 bg-surface-container-low p-2.5 sm:p-3 rounded-xl border border-outline-variant/20">
+                                <span class="text-[10.5px] font-black text-amber-900 uppercase block mb-1.5 tracking-wider">🪙 PIÈCES (FCFA)</span>
 
-                                <div class="flex items-center justify-between text-xs">
-                                    <span class="font-bold w-16 text-on-surface">500 F (P)</span>
-                                    <div class="flex items-center gap-1">
-                                        <button type="button" onclick="adjustDenomQty('p500', -1)" class="w-6 h-6 rounded-md bg-surface-container-high hover:bg-surface text-on-surface font-bold">-</button>
-                                        <input type="number" id="view_denom_p500" min="0" value="0" oninput="syncDenomInput('p500', this.value)" class="w-12 p-1 text-center font-mono font-bold bg-surface border rounded border-outline-variant/30 text-xs"/>
-                                        <button type="button" onclick="adjustDenomQty('p500', 1)" class="w-6 h-6 rounded-md bg-surface-container-high hover:bg-surface text-on-surface font-bold">+</button>
+                                <div class="flex items-center justify-between gap-1 py-1 px-1 rounded-lg hover:bg-surface/60 transition-colors">
+                                    <span class="font-bold text-xs text-on-surface w-[65px] shrink-0">500 F (P)</span>
+                                    <div class="flex items-center gap-1 shrink-0">
+                                        <button type="button" onclick="adjustDenomQty('p500', -1)" class="w-7 h-7 rounded-lg bg-surface border border-outline-variant/30 shadow-xs hover:bg-surface-container text-on-surface font-black text-sm flex items-center justify-center active:scale-95 transition-all">-</button>
+                                        <input type="number" id="view_denom_p500" min="0" value="0" oninput="syncDenomInput('p500', this.value)" class="w-10 h-7 p-0 text-center font-mono font-black text-xs bg-surface border rounded-lg border-outline-variant/40 shadow-inner outline-none focus:border-primary"/>
+                                        <button type="button" onclick="adjustDenomQty('p500', 1)" class="w-7 h-7 rounded-lg bg-surface border border-outline-variant/30 shadow-xs hover:bg-surface-container text-on-surface font-black text-sm flex items-center justify-center active:scale-95 transition-all">+</button>
                                     </div>
-                                    <span class="font-mono font-bold w-20 text-right text-on-surface" id="view_sub_p500">0 F</span>
+                                    <span class="font-mono font-bold text-xs text-right text-on-surface min-w-[65px] shrink-0" id="view_sub_p500">0 F</span>
                                 </div>
 
-                                <div class="flex items-center justify-between text-xs">
-                                    <span class="font-bold w-16 text-on-surface">200 F</span>
-                                    <div class="flex items-center gap-1">
-                                        <button type="button" onclick="adjustDenomQty('p200', -1)" class="w-6 h-6 rounded-md bg-surface-container-high hover:bg-surface text-on-surface font-bold">-</button>
-                                        <input type="number" id="view_denom_p200" min="0" value="0" oninput="syncDenomInput('p200', this.value)" class="w-12 p-1 text-center font-mono font-bold bg-surface border rounded border-outline-variant/30 text-xs"/>
-                                        <button type="button" onclick="adjustDenomQty('p200', 1)" class="w-6 h-6 rounded-md bg-surface-container-high hover:bg-surface text-on-surface font-bold">+</button>
+                                <div class="flex items-center justify-between gap-1 py-1 px-1 rounded-lg hover:bg-surface/60 transition-colors">
+                                    <span class="font-bold text-xs text-on-surface w-[65px] shrink-0">200 F</span>
+                                    <div class="flex items-center gap-1 shrink-0">
+                                        <button type="button" onclick="adjustDenomQty('p200', -1)" class="w-7 h-7 rounded-lg bg-surface border border-outline-variant/30 shadow-xs hover:bg-surface-container text-on-surface font-black text-sm flex items-center justify-center active:scale-95 transition-all">-</button>
+                                        <input type="number" id="view_denom_p200" min="0" value="0" oninput="syncDenomInput('p200', this.value)" class="w-10 h-7 p-0 text-center font-mono font-black text-xs bg-surface border rounded-lg border-outline-variant/40 shadow-inner outline-none focus:border-primary"/>
+                                        <button type="button" onclick="adjustDenomQty('p200', 1)" class="w-7 h-7 rounded-lg bg-surface border border-outline-variant/30 shadow-xs hover:bg-surface-container text-on-surface font-black text-sm flex items-center justify-center active:scale-95 transition-all">+</button>
                                     </div>
-                                    <span class="font-mono font-bold w-20 text-right text-on-surface" id="view_sub_p200">0 F</span>
+                                    <span class="font-mono font-bold text-xs text-right text-on-surface min-w-[65px] shrink-0" id="view_sub_p200">0 F</span>
                                 </div>
 
-                                <div class="flex items-center justify-between text-xs">
-                                    <span class="font-bold w-16 text-on-surface">100 F</span>
-                                    <div class="flex items-center gap-1">
-                                        <button type="button" onclick="adjustDenomQty('p100', -1)" class="w-6 h-6 rounded-md bg-surface-container-high hover:bg-surface text-on-surface font-bold">-</button>
-                                        <input type="number" id="view_denom_p100" min="0" value="0" oninput="syncDenomInput('p100', this.value)" class="w-12 p-1 text-center font-mono font-bold bg-surface border rounded border-outline-variant/30 text-xs"/>
-                                        <button type="button" onclick="adjustDenomQty('p100', 1)" class="w-6 h-6 rounded-md bg-surface-container-high hover:bg-surface text-on-surface font-bold">+</button>
+                                <div class="flex items-center justify-between gap-1 py-1 px-1 rounded-lg hover:bg-surface/60 transition-colors">
+                                    <span class="font-bold text-xs text-on-surface w-[65px] shrink-0">100 F</span>
+                                    <div class="flex items-center gap-1 shrink-0">
+                                        <button type="button" onclick="adjustDenomQty('p100', -1)" class="w-7 h-7 rounded-lg bg-surface border border-outline-variant/30 shadow-xs hover:bg-surface-container text-on-surface font-black text-sm flex items-center justify-center active:scale-95 transition-all">-</button>
+                                        <input type="number" id="view_denom_p100" min="0" value="0" oninput="syncDenomInput('p100', this.value)" class="w-10 h-7 p-0 text-center font-mono font-black text-xs bg-surface border rounded-lg border-outline-variant/40 shadow-inner outline-none focus:border-primary"/>
+                                        <button type="button" onclick="adjustDenomQty('p100', 1)" class="w-7 h-7 rounded-lg bg-surface border border-outline-variant/30 shadow-xs hover:bg-surface-container text-on-surface font-black text-sm flex items-center justify-center active:scale-95 transition-all">+</button>
                                     </div>
-                                    <span class="font-mono font-bold w-20 text-right text-on-surface" id="view_sub_p100">0 F</span>
+                                    <span class="font-mono font-bold text-xs text-right text-on-surface min-w-[65px] shrink-0" id="view_sub_p100">0 F</span>
                                 </div>
 
-                                <div class="flex items-center justify-between text-xs">
-                                    <span class="font-bold w-16 text-on-surface">50 F</span>
-                                    <div class="flex items-center gap-1">
-                                        <button type="button" onclick="adjustDenomQty('p50', -1)" class="w-6 h-6 rounded-md bg-surface-container-high hover:bg-surface text-on-surface font-bold">-</button>
-                                        <input type="number" id="view_denom_p50" min="0" value="0" oninput="syncDenomInput('p50', this.value)" class="w-12 p-1 text-center font-mono font-bold bg-surface border rounded border-outline-variant/30 text-xs"/>
-                                        <button type="button" onclick="adjustDenomQty('p50', 1)" class="w-6 h-6 rounded-md bg-surface-container-high hover:bg-surface text-on-surface font-bold">+</button>
+                                <div class="flex items-center justify-between gap-1 py-1 px-1 rounded-lg hover:bg-surface/60 transition-colors">
+                                    <span class="font-bold text-xs text-on-surface w-[65px] shrink-0">50 F</span>
+                                    <div class="flex items-center gap-1 shrink-0">
+                                        <button type="button" onclick="adjustDenomQty('p50', -1)" class="w-7 h-7 rounded-lg bg-surface border border-outline-variant/30 shadow-xs hover:bg-surface-container text-on-surface font-black text-sm flex items-center justify-center active:scale-95 transition-all">-</button>
+                                        <input type="number" id="view_denom_p50" min="0" value="0" oninput="syncDenomInput('p50', this.value)" class="w-10 h-7 p-0 text-center font-mono font-black text-xs bg-surface border rounded-lg border-outline-variant/40 shadow-inner outline-none focus:border-primary"/>
+                                        <button type="button" onclick="adjustDenomQty('p50', 1)" class="w-7 h-7 rounded-lg bg-surface border border-outline-variant/30 shadow-xs hover:bg-surface-container text-on-surface font-black text-sm flex items-center justify-center active:scale-95 transition-all">+</button>
                                     </div>
-                                    <span class="font-mono font-bold w-20 text-right text-on-surface" id="view_sub_p50">0 F</span>
+                                    <span class="font-mono font-bold text-xs text-right text-on-surface min-w-[65px] shrink-0" id="view_sub_p50">0 F</span>
                                 </div>
 
-                                <div class="flex items-center justify-between text-xs">
-                                    <span class="font-bold w-16 text-on-surface">25 F</span>
-                                    <div class="flex items-center gap-1">
-                                        <button type="button" onclick="adjustDenomQty('p25', -1)" class="w-6 h-6 rounded-md bg-surface-container-high hover:bg-surface text-on-surface font-bold">-</button>
-                                        <input type="number" id="view_denom_p25" min="0" value="0" oninput="syncDenomInput('p25', this.value)" class="w-12 p-1 text-center font-mono font-bold bg-surface border rounded border-outline-variant/30 text-xs"/>
-                                        <button type="button" onclick="adjustDenomQty('p25', 1)" class="w-6 h-6 rounded-md bg-surface-container-high hover:bg-surface text-on-surface font-bold">+</button>
+                                <div class="flex items-center justify-between gap-1 py-1 px-1 rounded-lg hover:bg-surface/60 transition-colors">
+                                    <span class="font-bold text-xs text-on-surface w-[65px] shrink-0">25 F</span>
+                                    <div class="flex items-center gap-1 shrink-0">
+                                        <button type="button" onclick="adjustDenomQty('p25', -1)" class="w-7 h-7 rounded-lg bg-surface border border-outline-variant/30 shadow-xs hover:bg-surface-container text-on-surface font-black text-sm flex items-center justify-center active:scale-95 transition-all">-</button>
+                                        <input type="number" id="view_denom_p25" min="0" value="0" oninput="syncDenomInput('p25', this.value)" class="w-10 h-7 p-0 text-center font-mono font-black text-xs bg-surface border rounded-lg border-outline-variant/40 shadow-inner outline-none focus:border-primary"/>
+                                        <button type="button" onclick="adjustDenomQty('p25', 1)" class="w-7 h-7 rounded-lg bg-surface border border-outline-variant/30 shadow-xs hover:bg-surface-container text-on-surface font-black text-sm flex items-center justify-center active:scale-95 transition-all">+</button>
                                     </div>
-                                    <span class="font-mono font-bold w-20 text-right text-on-surface" id="view_sub_p25">0 F</span>
+                                    <span class="font-mono font-bold text-xs text-right text-on-surface min-w-[65px] shrink-0" id="view_sub_p25">0 F</span>
                                 </div>
                             </div>
                         </div>
                     </div>
 
                     <!-- Right: Réconciliation & Validation (5 cols) -->
-                    <div class="lg:col-span-5 flex flex-col gap-4">
+                    <div class="lg:col-span-5 flex flex-col gap-3 sm:gap-4">
                         <!-- Réconciliation Card -->
-                        <div class="p-4 sm:p-5 rounded-2xl bg-gradient-to-br from-slate-900 to-[#2b160c] text-white border border-amber-400/40 space-y-3 shadow-md">
+                        <div class="p-3.5 sm:p-5 rounded-2xl bg-gradient-to-br from-slate-900 to-[#2b160c] text-white border border-amber-400/40 space-y-2.5 sm:space-y-3 shadow-md">
                             <div class="flex justify-between items-center text-xs pb-2 border-b border-white/10">
                                 <span class="text-amber-200 font-bold">Total Espèces Comptées :</span>
-                                <strong class="text-lg sm:text-xl font-mono font-black text-emerald-400" id="view-z-total-cash-counted">0 FCFA</strong>
+                                <strong class="text-base sm:text-xl font-mono font-black text-emerald-400" id="view-z-total-cash-counted">0 FCFA</strong>
                             </div>
                             <div class="flex justify-between items-center text-xs text-slate-300">
                                 <span>Espèces Attendues (Fond + Ventes) :</span>
@@ -748,24 +748,24 @@
                             </div>
                             
                             <!-- Écart Box -->
-                            <div class="p-3.5 rounded-xl bg-white/10 flex items-center justify-between" id="view-z-discrepancy-box">
+                            <div class="p-3 sm:p-3.5 rounded-xl bg-white/10 flex items-center justify-between gap-2" id="view-z-discrepancy-box">
                                 <div>
-                                    <span class="text-[11px] font-extrabold uppercase tracking-wider block text-amber-300">Écart de Caisse</span>
-                                    <span class="text-xs font-bold text-emerald-400" id="view-z-discrepancy-status">Caisse Parfaitement Équilibrée ✅</span>
+                                    <span class="text-[10px] sm:text-[11px] font-extrabold uppercase tracking-wider block text-amber-300">Écart de Caisse</span>
+                                    <span class="text-[11px] sm:text-xs font-bold text-emerald-400" id="view-z-discrepancy-status">Caisse Parfaitement Équilibrée ✅</span>
                                 </div>
-                                <span class="text-xl font-mono font-black text-emerald-400" id="view-z-discrepancy-amount">0 FCFA</span>
+                                <span class="text-base sm:text-xl font-mono font-black text-emerald-400 shrink-0" id="view-z-discrepancy-amount">0 FCFA</span>
                             </div>
                         </div>
 
                         <!-- Observations -->
-                        <div class="bg-surface p-4 rounded-2xl border border-outline-variant/30 space-y-1.5 shadow-sm">
+                        <div class="bg-surface p-3 sm:p-4 rounded-2xl border border-outline-variant/30 space-y-1.5 shadow-sm">
                             <label class="text-xs font-bold text-on-surface block">Observations / Justification d'écart :</label>
-                            <input type="text" id="view-z-closure-notes" placeholder="Ex: Monnaie régularisée, aucun écart..." class="w-full p-2.5 bg-surface-container-high border border-outline-variant/30 rounded-xl text-xs text-on-surface outline-none focus:border-primary"/>
+                            <input type="text" id="view-z-closure-notes" placeholder="Ex: Monnaie régularisée, aucun écart..." class="w-full p-2 sm:p-2.5 bg-surface-container-high border border-outline-variant/30 rounded-xl text-xs text-on-surface outline-none focus:border-primary"/>
                         </div>
 
                         <!-- Submit Button -->
-                        <button type="button" onclick="submitDailyClosureZ()" class="w-full py-4 px-6 bg-gradient-to-r from-emerald-600 via-emerald-500 to-emerald-600 hover:brightness-110 text-white font-black text-sm rounded-2xl shadow-xl flex items-center justify-center gap-2 transition-all transform active:scale-98">
-                            <span class="material-symbols-outlined text-xl">lock</span>
+                        <button type="button" onclick="submitDailyClosureZ()" class="w-full py-3.5 sm:py-4 px-4 sm:px-6 bg-gradient-to-r from-emerald-600 via-emerald-500 to-emerald-600 hover:brightness-110 text-white font-black text-xs sm:text-sm rounded-2xl shadow-xl flex items-center justify-center gap-2 transition-all transform active:scale-98">
+                            <span class="material-symbols-outlined text-lg sm:text-xl">lock</span>
                             <span>Valider la Clôture & Imprimer Ticket Z</span>
                         </button>
                     </div>
