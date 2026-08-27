@@ -4,8 +4,20 @@
 
 const API_ROOT = (typeof window !== 'undefined' && window.API_BASE_URL) ? window.API_BASE_URL : '';
 
+function escapeHtml(str) {
+    if (str === null || str === undefined) return '';
+    return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+}
+
 let allOrders = [];
-let allProducts = [];
+let allProducts = (typeof window !== 'undefined' && typeof window.babiGetCachedProducts === 'function') 
+    ? window.babiGetCachedProducts() 
+    : ((typeof window !== 'undefined' && window.BABI_EMBEDDED_CATALOG) ? window.BABI_EMBEDDED_CATALOG : []);
 let allCashiers = [];
 let allUsers = [];
 let allTransactions = [];
@@ -29,13 +41,21 @@ document.addEventListener('DOMContentLoaded', () => {
     // 1. Initialiser la navigation par onglets SPA
     initAdminNavigation();
 
-    // 2. Initialiser les graphiques Chart.js
+    // 2. Rendu instantané 0ms du catalogue et des KPIs sans attendre le réseau
+    try {
+        if (allProducts && allProducts.length > 0) {
+            updateProductKpis();
+            renderProductsGridOrTable();
+        }
+    } catch (_) {}
+
+    // 3. Initialiser les graphiques Chart.js
     initSaasCharts();
 
-    // 3. Charger toutes les données initiales
+    // 4. Charger toutes les données en arrière-plan sans bloquer l'interface
     fetchAdminData();
 
-    // 4. Écouter le bus de synchronisation temps réel
+    // 5. Écouter le bus de synchronisation temps réel
     try {
         const globalChan = new BroadcastChannel('babi_global_sync');
         globalChan.onmessage = (e) => {
@@ -49,7 +69,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // 5. Polling de rafraîchissement intelligent (Événementiel + fallback 30s)
+    // 6. Polling de rafraîchissement intelligent (Événementiel + fallback 30s)
     setInterval(fetchAdminData, 30000);
 
     // 6. BABI Brain Engine (BBE v3.0) — Flux IA et Prévisions Business
@@ -98,6 +118,11 @@ function switchAdminSection(sectionId) {
     if (subEl) subEl.textContent = info.subtitle;
 
     // Actions spécifiques par onglet
+    if (sectionId === 'products') {
+        updateProductKpis();
+        renderProductsGridOrTable();
+        loadProducts();
+    }
     if (sectionId === 'cashiers') loadCashiersData();
     if (sectionId === 'wave-payouts') loadWavePayoutHistory();
     if (sectionId === 'audit') loadSecurityAuditLogs();
@@ -137,25 +162,21 @@ function initAdminNavigation() {
 // ================================================================
 // 2. DATA FETCHING ENGINE & REAL-TIME RECONCILIATION
 // ================================================================
-async function fetchAdminData() {
-    try {
-        await Promise.all([
-            loadStats(),
-            loadOrders(),
-            loadProducts(),
-            loadCashiersData(),
-            loadUsers(),
-            loadTransactions()
-        ]);
-    } catch (e) {
-        console.warn("[Admin Sync] Note de rafraîchissement:", e.message);
-    }
+function fetchAdminData() {
+    // Exécution découplée et non bloquante de chaque chargeur
+    loadStats().catch(() => {});
+    loadOrders().catch(() => {});
+    loadProducts().catch(() => {});
+    if (typeof loadCashiersData === 'function') loadCashiersData().catch(() => {});
+    if (typeof loadUsers === 'function') loadUsers().catch(() => {});
+    if (typeof loadTransactions === 'function') loadTransactions().catch(() => {});
 }
 
 async function loadStats() {
     try {
-        const res = await fetch(`${API_ROOT}/api/stats`);
-        if (!res.ok) return;
+        const fetcher = (typeof window !== 'undefined' && typeof window.babiFetch === 'function') ? window.babiFetch : fetch;
+        const res = await fetcher(`${API_ROOT}/api/stats`, {}, 2500);
+        if (!res || !res.ok) return;
         const stats = await res.json();
 
         const caGlobalEl = document.getElementById('kpi-ca-global');
@@ -170,9 +191,11 @@ async function loadStats() {
 
 async function loadOrders() {
     try {
-        const res = await fetch(`${API_ROOT}/api/orders`);
-        if (!res.ok) return;
-        allOrders = await res.json();
+        const fetcher = (typeof window !== 'undefined' && typeof window.babiFetch === 'function') ? window.babiFetch : fetch;
+        const res = await fetcher(`${API_ROOT}/api/orders`, {}, 2500);
+        if (res && res.ok) {
+            allOrders = await res.json();
+        }
 
         // Réconcilier avec les commandes locales récentes
         try {
@@ -189,7 +212,16 @@ async function loadOrders() {
         renderOrdersFullTable();
         updateChartsWithRealData();
     } catch (e) {
-        console.error("Erreur chargement commandes:", e);
+        // En cas d'indisponibilité réseau, garder les commandes en mémoire/cache
+        try {
+            const localOrders = JSON.parse(localStorage.getItem('babi_orders') || '[]');
+            if (localOrders.length > 0 && allOrders.length === 0) {
+                allOrders = localOrders;
+                updateOrdersKpisAndBadges();
+                renderDashboardRecentOrders();
+                renderOrdersFullTable();
+            }
+        } catch (_) {}
     }
 }
 
@@ -967,15 +999,49 @@ function renderProductsGridOrTable() {
 }
 
 async function loadProducts() {
-    try {
-        const res = await fetch(`${API_ROOT}/api/products`);
-        if (!res.ok) return;
-        allProducts = await res.json();
-        updateProductKpis();
-        renderProductsGridOrTable();
-    } catch (err) {
-        console.error("Erreur chargement produits:", err);
+    // 1. Rendu instantané 0ms depuis le catalogue en cache/mémoire
+    if (!allProducts || allProducts.length === 0) {
+        allProducts = (typeof window.babiGetCachedProducts === 'function') 
+            ? window.babiGetCachedProducts() 
+            : ((typeof window !== 'undefined' && window.BABI_EMBEDDED_CATALOG) ? window.BABI_EMBEDDED_CATALOG : []);
     }
+    updateProductKpis();
+    renderProductsGridOrTable();
+
+    // 2. Synchronisation en tâche de fond avec la Base de Données Cloud (timeout 2.5s)
+    try {
+        const apiBase = (typeof window !== 'undefined' && window.API_BASE_URL) ? window.API_BASE_URL : (window.location.protocol.startsWith('http') ? '' : 'http://localhost:5000');
+        const fetcher = (typeof window !== 'undefined' && typeof window.babiFetch === 'function') ? window.babiFetch : fetch;
+        const res = await fetcher(`${apiBase}/api/products`, {}, 2500);
+        if (res && res.ok) {
+            const data = await res.json();
+            const list = Array.isArray(data) ? data : (data.products || []);
+            if (list.length > 0) {
+                allProducts = list.map((p, idx) => ({
+                    id: p.id || idx + 1,
+                    nom: p.nom || p.name,
+                    prix: Number(p.prix || p.price || 0),
+                    categorie: p.categorie || p.category || 'pain',
+                    image: p.image || p.image_url || 'assets/product_baguette.png',
+                    stock: p.stock != null ? Number(p.stock) : 40,
+                    seuil_alerte: p.seuil_alerte != null ? Number(p.seuil_alerte) : 10,
+                    is_active: (p.is_active === 0 || p.is_active === '0' || p.is_active === false) ? 0 : 1
+                }));
+                if (typeof window.babiSetCachedProducts === 'function') {
+                    window.babiSetCachedProducts(allProducts);
+                }
+                updateProductKpis();
+                renderProductsGridOrTable();
+                return;
+            }
+        }
+    } catch (err) {
+        // Le catalogue local/cache garantit que l'écran ne reste jamais vide
+    }
+    
+    // 3. Rendu garanti
+    updateProductKpis();
+    renderProductsGridOrTable();
 }
 
 // 🖼️ GESTION DU SÉLECTEUR DE PHOTO PRODUIT (COMPRESSION CANVAS AUTOMATIQUE)
@@ -1292,8 +1358,9 @@ async function handleDeleteProduct(id) {
 // Users
 async function loadUsers() {
     try {
-        const res = await fetch(`${API_ROOT}/api/users`);
-        if (!res.ok) return;
+        const fetcher = (typeof window !== 'undefined' && typeof window.babiFetch === 'function') ? window.babiFetch : fetch;
+        const res = await fetcher(`${API_ROOT}/api/users`, {}, 2500);
+        if (!res || !res.ok) return;
         allUsers = await res.json();
 
         const countEl = document.getElementById('kpi-clients-count');
@@ -1361,8 +1428,9 @@ async function handleCreateUser(e) {
 // Transactions
 async function loadTransactions() {
     try {
-        const res = await fetch(`${API_ROOT}/api/admin/payments/transactions`);
-        if (!res.ok) return;
+        const fetcher = (typeof window !== 'undefined' && typeof window.babiFetch === 'function') ? window.babiFetch : fetch;
+        const res = await fetcher(`${API_ROOT}/api/admin/payments/transactions`, {}, 2500);
+        if (!res || !res.ok) return;
         const data = await res.json();
         const transactions = data.transactions || [];
         allTransactions = transactions;
@@ -1817,8 +1885,9 @@ function handleAdminLogout() {
 
 async function loadCashiersData() {
     try {
-        const res = await fetch(`${API_ROOT}/api/admin/cashiers`);
-        if (!res.ok) return;
+        const fetcher = (typeof window !== 'undefined' && typeof window.babiFetch === 'function') ? window.babiFetch : fetch;
+        const res = await fetcher(`${API_ROOT}/api/admin/cashiers`, {}, 2500);
+        if (!res || !res.ok) return;
         const cashiers = await res.json();
         allCashiers = cashiers || [];
 

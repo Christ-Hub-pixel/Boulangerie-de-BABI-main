@@ -441,17 +441,13 @@ function populateThermalReceiptData(order) {
         text += `_Merci de votre visite et à bientôt !_ 🥖`;
 
         const phone = (order.phone || '').replace(/[^0-9]/g, '');
+        const whatsappUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`;
+        recModalWhatsapp.href = whatsappUrl;
+    }
+
     // QR Code
     if (recQrCode) {
         recQrCode.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(trackingUrl)}`;
-    }
-
-    // WhatsApp
-    if (recModalWhatsapp) {
-        const whatsappUrl = typeof window.generateWhatsAppOrderUrl === 'function' 
-            ? window.generateWhatsAppOrderUrl(order)
-            : (order.whatsappUrl || '#');
-        recModalWhatsapp.href = whatsappUrl;
     }
 }
 

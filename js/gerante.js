@@ -117,8 +117,9 @@ async function loadDashboardData() {
 // 1. Load KPIs
 async function loadKpis() {
     try {
-        const res = await fetch(`${API_ROOT}/api/reports/manager-dashboard`);
-        if (!res.ok) throw new Error("API Offline");
+        const fetcher = (typeof window !== 'undefined' && typeof window.babiFetch === 'function') ? window.babiFetch : fetch;
+        const res = await fetcher(`${API_ROOT}/api/reports/manager-dashboard`, {}, 2500);
+        if (!res || !res.ok) throw new Error("API Offline");
         const data = await res.json();
 
         const elRev = document.getElementById('kpi-revenue-today');
@@ -161,8 +162,9 @@ function updateAlertBanner(count) {
 // 2. Load Stocks & Fournil
 async function loadStocks() {
     try {
-        const res = await fetch(`${API_ROOT}/api/stocks`);
-        if (!res.ok) throw new Error("API Offline");
+        const fetcher = (typeof window !== 'undefined' && typeof window.babiFetch === 'function') ? window.babiFetch : fetch;
+        const res = await fetcher(`${API_ROOT}/api/stocks`, {}, 2500);
+        if (!res || !res.ok) throw new Error("API Offline");
         allStocks = await res.json();
     } catch (err) {
         allStocks = [...DEMO_STOCKS];

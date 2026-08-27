@@ -395,10 +395,37 @@ async function loadPosProducts() {
     const adjustments = JSON.parse(localStorage.getItem('babi_pos_stock_adjustments') || '{}');
     const apiBase = window.API_BASE_URL || (window.location.protocol.startsWith('http') ? '' : (API_ROOT || 'http://localhost:5000'));
 
-    // 1. Essai de chargement direct depuis l'API Backend Dynamique (Base de données SQLite / Turso Cloud)
+    // 1. Rendu instantané 0ms depuis le catalogue en cache/mémoire locale
+    if (!posProducts || posProducts.length === 0) {
+        const cached = (typeof window.babiGetCachedProducts === 'function') 
+            ? window.babiGetCachedProducts() 
+            : FALLBACK_POS_PRODUCTS;
+        
+        posProducts = cached
+            .filter(p => p.is_active !== 0 && p.is_active !== '0' && p.is_active !== false)
+            .map(p => {
+                const pName = p.nom || p.name;
+                const pCat = (p.categorie || p.category || 'pains').toLowerCase();
+                const baseStock = (p.stock !== undefined && p.stock !== null) ? Number(p.stock) : 30;
+                const adj = adjustments[pName] !== undefined ? adjustments[pName] : 0;
+                return {
+                    id: p.id || pName,
+                    name: pName,
+                    price: Number(p.prix || p.price || 0),
+                    category: pCat,
+                    image: resolveProductImage(pName, p.image || p.image_url, pCat),
+                    stock: Math.max(0, baseStock + adj),
+                    seuil_alerte: Number(p.seuil_alerte || 10)
+                };
+            });
+    }
+    renderPosProductsGrid();
+
+    // 2. Synchronisation en tâche de fond avec le serveur (timeout 2s)
     try {
-        const res = await fetch(`${apiBase}/api/products`);
-        if (res.ok) {
+        const fetcher = (typeof window !== 'undefined' && typeof window.babiFetch === 'function') ? window.babiFetch : fetch;
+        const res = await fetcher(`${apiBase}/api/products`, {}, 2000);
+        if (res && res.ok) {
             const rawProducts = await res.json();
             const productList = Array.isArray(rawProducts) ? rawProducts : (rawProducts.products || []);
             if (productList.length > 0) {
@@ -423,48 +450,9 @@ async function loadPosProducts() {
                 return;
             }
         }
-    } catch (_) {}
-
-    // 2. Repli vers le fichier statique local data/products.json
-    try {
-        const res = await fetch('data/products.json');
-        if (res.ok) {
-            const data = await res.json();
-            const productList = Array.isArray(data) ? data : (data.products || []);
-            if (productList.length > 0) {
-                posProducts = productList
-                    .filter(p => p.is_active !== 0 && p.is_active !== '0' && p.is_active !== false)
-                    .map(p => {
-                        const pName = p.nom || p.name;
-                        const pCat = (p.categorie || p.category || 'pains').toLowerCase();
-                        const baseStock = p.stock !== undefined ? Number(p.stock) : 30;
-                        const adj = adjustments[pName] !== undefined ? adjustments[pName] : 0;
-                        return {
-                            id: p.id || p._id || pName,
-                            name: pName,
-                            price: Number(p.prix || p.price || 0),
-                            category: pCat,
-                            image: resolveProductImage(pName, p.image || p.image_url, pCat),
-                            stock: Math.max(0, baseStock + adj),
-                            seuil_alerte: Number(p.seuil_alerte || 10)
-                        };
-                    });
-                renderPosProductsGrid();
-                return;
-            }
-        }
-    } catch (_) {}
-
-    // 3. Repli ultime vers les constantes par défaut
-    posProducts = FALLBACK_POS_PRODUCTS.map(p => {
-        const adj = adjustments[p.name] !== undefined ? adjustments[p.name] : 0;
-        return {
-            ...p,
-            image: resolveProductImage(p.name, p.image, p.category),
-            stock: Math.max(0, (p.stock || 25) + adj)
-        };
-    });
-    renderPosProductsGrid();
+    } catch (_) {
+        // Le catalogue local garantit que la caisse tactile est 100% opérationnelle
+    }
 }
 
 // Exposer globalement pour le Realtime Sync omnicanal

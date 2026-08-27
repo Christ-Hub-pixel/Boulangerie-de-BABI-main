@@ -165,19 +165,6 @@ app.get(['/app', '/app/'], (req, res) => {
 
 app.use(express.static(__dirname));
 
-let db;
-
-app.use(async (req, res, next) => {
-    if (!db) {
-        try {
-            db = await initDB();
-        } catch(e) {
-            console.error("DB init error:", e);
-        }
-    }
-    next();
-});
-
 // ==========================================
 // 🛡️ CYBERSECURITY & AI FRAUD SENTINEL
 // ==========================================

@@ -174,36 +174,36 @@ const FALLBACK_PRODUCTS = [
     { id: 85, nom: "Suzette", prix: 300, categorie: "pain" }
 ];
 
-let allProducts = [];
-let currentFilteredList = [];
+let allProducts = (typeof window !== 'undefined' && typeof window.babiGetCachedProducts === 'function')
+    ? window.babiGetCachedProducts()
+    : FALLBACK_PRODUCTS.filter(p => p.is_active !== 0 && p.is_active !== '0');
+
+allProducts.sort((a, b) => (a.nom || a.name || '').localeCompare(b.nom || b.name || '', 'fr', { sensitivity: 'base' }));
+let currentFilteredList = [...allProducts];
 let currentPage = 1;
 const itemsPerPage = 12;
 
-async function loadProducts() {
-    try {
-        const apiBase = window.API_BASE_URL || (window.location.protocol.startsWith('http') ? '' : 'http://localhost:5000');
-        const apiUrl = `${apiBase}/api/products`;
-        const response = await fetch(apiUrl);
-        if (response.ok) {
-            const rawProducts = await response.json();
-            allProducts = rawProducts.filter(p => p.is_active !== 0 && p.is_active !== '0' && p.is_active !== false);
-        } else {
-            throw new Error("API status not ok");
-        }
-    } catch(err) {
-        allProducts = FALLBACK_PRODUCTS.filter(p => p.is_active !== 0 && p.is_active !== '0');
+// ⚡ Rendu immédiat 0ms synchrone (dès l'évaluation du script si le DOM est prêt)
+if (typeof document !== 'undefined') {
+    if (document.readyState === 'complete' || document.readyState === 'interactive') {
+        try { loadHomepageProducts(); } catch (_) {}
     }
-    
-    // Sort all products alphabetically (A-Z) by name
-    allProducts.sort((a, b) => a.nom.localeCompare(b.nom, 'fr', { sensitivity: 'base' }));
+}
+
+async function loadProducts() {
+    // 1. Rendu instantané 0ms depuis le catalogue en mémoire/cache
+    if (!allProducts || allProducts.length === 0) {
+        allProducts = (typeof window.babiGetCachedProducts === 'function')
+            ? window.babiGetCachedProducts()
+            : FALLBACK_PRODUCTS.filter(p => p.is_active !== 0 && p.is_active !== '0');
+    }
+    allProducts.sort((a, b) => (a.nom || a.name || '').localeCompare(b.nom || b.name || '', 'fr', { sensitivity: 'base' }));
     currentFilteredList = [...allProducts];
     
-    // Automatically populate Homepage grid if present
+    // Rendu immédiat sans attendre le réseau
     loadHomepageProducts();
-
-    // Automatically populate Catalog grid if present
     const container = document.getElementById('product-grid');
-    if(container) {
+    if (container) {
         const urlParams = new URLSearchParams(window.location.search);
         const searchQuery = urlParams.get('search');
         const cat = urlParams.get('cat');
@@ -214,6 +214,48 @@ async function loadProducts() {
         } else {
             renderProductsPage();
         }
+    }
+
+    // 2. Synchronisation transparente en arrière-plan avec l'API Cloud (timeout 2s)
+    try {
+        const apiBase = window.API_BASE_URL || (window.location.protocol.startsWith('http') ? '' : 'http://localhost:5000');
+        const apiUrl = `${apiBase}/api/products`;
+        const fetcher = (typeof window !== 'undefined' && typeof window.babiFetch === 'function') ? window.babiFetch : fetch;
+        const response = await fetcher(apiUrl, {}, 2000);
+        if (response && response.ok) {
+            const rawProducts = await response.json();
+            const valid = (Array.isArray(rawProducts) ? rawProducts : (rawProducts.products || []))
+                .filter(p => p.is_active !== 0 && p.is_active !== '0' && p.is_active !== false)
+                .map(p => ({
+                    id: p.id,
+                    nom: p.nom || p.name,
+                    prix: Number(p.prix || p.price || 0),
+                    categorie: p.categorie || p.category || 'pain',
+                    image: p.image || p.image_url || 'assets/product_baguette.png',
+                    stock: p.stock != null ? Number(p.stock) : 40,
+                    seuil_alerte: p.seuil_alerte != null ? Number(p.seuil_alerte) : 10,
+                    is_active: 1
+                }));
+            if (valid.length > 0) {
+                allProducts = valid;
+                if (typeof window.babiSetCachedProducts === 'function') {
+                    window.babiSetCachedProducts(allProducts);
+                }
+                allProducts.sort((a, b) => (a.nom || a.name || '').localeCompare(b.nom || b.name || '', 'fr', { sensitivity: 'base' }));
+                currentFilteredList = [...allProducts];
+                loadHomepageProducts();
+                if (container) {
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const searchQuery = urlParams.get('search');
+                    const cat = urlParams.get('cat');
+                    if (searchQuery) searchProducts(searchQuery);
+                    else if (cat) filterCat(cat);
+                    else renderProductsPage();
+                }
+            }
+        }
+    } catch(err) {
+        // En cas de lenteur réseau ou serveur hors ligne, la vitrine fonctionne parfaitement à 100%
     }
 }
 
