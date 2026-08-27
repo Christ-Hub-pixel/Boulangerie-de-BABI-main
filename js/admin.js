@@ -10,6 +10,7 @@ let allCashiers = [];
 let allUsers = [];
 let allTransactions = [];
 let allWavePayouts = [];
+let allClosuresZ = [];
 let currentOrdersFilter = 'all';
 
 let resEvolutionChartInstance = null;
@@ -1788,8 +1789,167 @@ async function loadCashiersData() {
                 </tr>
             `;
         }).join('');
+
+        // Charger également le journal des clôtures Z de caisse
+        loadCashierClosuresHistory();
     } catch (e) {
         console.error("Erreur chargement caissières:", e);
+    }
+}
+
+// -------------------------------------------------------------
+// 🔒 JOURNAL DES CLÔTURES Z (TICKET Z) & CONTRÔLE TIROIR-CAISSE
+// -------------------------------------------------------------
+
+async function loadCashierClosuresHistory() {
+    const tbody = document.getElementById('closures-z-tbody');
+    if (!tbody) return;
+
+    try {
+        const res = await fetch(`${API_ROOT}/api/pos/register/history`);
+        if (res.ok) {
+            allClosuresZ = await res.json();
+        } else {
+            allClosuresZ = JSON.parse(localStorage.getItem('babi_pos_closures_history') || '[]');
+        }
+    } catch (_) {
+        allClosuresZ = JSON.parse(localStorage.getItem('babi_pos_closures_history') || '[]');
+    }
+
+    if (!Array.isArray(allClosuresZ) || allClosuresZ.length === 0) {
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="10" class="text-center py-4 text-muted">
+                    <span class="material-symbols-outlined fs-3 text-warning d-block mb-1">lock_clock</span>
+                    Aucune clôture Z enregistrée pour le moment. Les clôtures validées par les caissières apparaîtront ici automatiquement.
+                </td>
+            </tr>
+        `;
+        return;
+    }
+
+    tbody.innerHTML = allClosuresZ.map(reg => {
+        const dateStr = reg.closed_at ? new Date(reg.closed_at).toLocaleString('fr-FR', { dateStyle: 'short', timeStyle: 'short' }) : '—';
+        const numZ = reg.numero_z || `Z-${reg.id || '0000'}`;
+        const ecart = Number(reg.ecart || 0);
+
+        let ecartBadge = `<span class="badge" style="background:#ecfdf5; color:#047857; font-weight:800; font-size:11px; padding:4px 8px; border-radius:6px;">✅ ÉQUILIBRÉ</span>`;
+        if (ecart > 0) {
+            ecartBadge = `<span class="badge" style="background:#f0f9ff; color:#0284c7; font-weight:800; font-size:11px; padding:4px 8px; border-radius:6px;">🟢 +${ecart.toLocaleString()} F (Excédent)</span>`;
+        } else if (ecart < 0) {
+            ecartBadge = `<span class="badge" style="background:#fef2f2; color:#dc2626; font-weight:800; font-size:11px; padding:4px 8px; border-radius:6px;">🔴 ${ecart.toLocaleString()} F (Déficit)</span>`;
+        }
+
+        return `
+            <tr>
+                <td>
+                    <span class="badge bg-amber-subtle text-amber-900 border border-amber-300 fw-bold font-mono px-2 py-1" style="font-size:11px;">
+                        ${escapeHtml(numZ)}
+                    </span>
+                </td>
+                <td class="small text-muted font-mono">${dateStr}</td>
+                <td>
+                    <strong style="color:#0f172a; font-size:12.5px;">${escapeHtml(reg.closed_by || reg.nom_caissiere || 'Caissière')}</strong>
+                </td>
+                <td style="font-family:monospace; font-weight:bold; color:#0f172a;">
+                    ${(reg.total_ventes || 0).toLocaleString()} FCFA
+                </td>
+                <td style="font-family:monospace; color:#16a34a; font-weight:600;">
+                    ${(reg.total_especes || 0).toLocaleString()} F
+                </td>
+                <td style="font-family:monospace; color:#0284c7; font-weight:600;">
+                    ${(reg.total_wave || 0).toLocaleString()} F
+                </td>
+                <td style="font-family:monospace; font-weight:800; color:#0f172a;">
+                    ${(reg.especes_reelles || 0).toLocaleString()} FCFA
+                </td>
+                <td style="font-family:monospace; font-weight:bold;">
+                    ${(ecart >= 0 ? '+' : '')}${ecart.toLocaleString()} F
+                </td>
+                <td>${ecartBadge}</td>
+                <td style="text-align: right;">
+                    <button type="button" class="btn-xs btn-outline-primary" onclick="viewAdminTicketZ(${reg.id || `'${numZ}'`})" style="font-weight:700;">
+                        <span class="material-symbols-outlined text-xs align-middle">receipt_long</span> Voir Ticket Z
+                    </button>
+                </td>
+            </tr>
+        `;
+    }).join('');
+}
+
+function viewAdminTicketZ(closureId) {
+    const reg = allClosuresZ.find(c => c.id == closureId || c.numero_z == closureId);
+    if (!reg) return;
+
+    const modal = document.getElementById('adminTicketZModal');
+    if (!modal) return;
+
+    const dateObj = reg.closed_at ? new Date(reg.closed_at) : new Date();
+    const dateStr = `${dateObj.toLocaleDateString('fr-FR')} ${dateObj.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}`;
+    const expectedCash = (reg.fond_de_caisse || 50000) + (reg.total_especes || 0);
+    const ecart = Number(reg.ecart || 0);
+    let ecartStr = '0 F CFA (ÉQUILIBRÉ)';
+    if (ecart > 0) ecartStr = `+${ecart.toLocaleString()} F (EXCÉDENT)`;
+    else if (ecart < 0) ecartStr = `${ecart.toLocaleString()} F (DÉFICIT)`;
+
+    document.getElementById('adm-tz-num').innerText = reg.numero_z || ('Z-' + reg.id);
+    document.getElementById('adm-tz-date').innerText = dateStr;
+    document.getElementById('adm-tz-cashier').innerText = reg.closed_by || reg.nom_caissiere || 'Caissière';
+
+    document.getElementById('adm-tz-total-sales').innerText = `${(reg.total_ventes || 0).toLocaleString()} F CFA`;
+    document.getElementById('adm-tz-total-cash').innerText = `${(reg.total_especes || 0).toLocaleString()} F CFA`;
+    document.getElementById('adm-tz-total-wave').innerText = `${(reg.total_wave || 0).toLocaleString()} F CFA`;
+    document.getElementById('adm-tz-total-others').innerText = `${(reg.total_others || 0).toLocaleString()} F CFA`;
+    document.getElementById('adm-tz-ticket-count').innerText = `${reg.total_tickets || 0} Tickets`;
+
+    document.getElementById('adm-tz-fond').innerText = `${(reg.fond_de_caisse || 50000).toLocaleString()} F CFA`;
+    document.getElementById('adm-tz-theorique').innerText = `${expectedCash.toLocaleString()} F CFA`;
+    document.getElementById('adm-tz-reel').innerText = `${(reg.especes_reelles || 0).toLocaleString()} F CFA`;
+    document.getElementById('adm-tz-ecart').innerText = ecartStr;
+
+    const notesContainer = document.getElementById('adm-tz-notes-container');
+    const notesEl = document.getElementById('adm-tz-notes');
+    if (reg.notes && notesContainer && notesEl) {
+        notesEl.innerText = reg.notes;
+        notesContainer.style.display = 'block';
+    } else if (notesContainer) {
+        notesContainer.style.display = 'none';
+    }
+
+    modal.style.display = 'flex';
+}
+
+function closeAdminTicketZModal() {
+    const modal = document.getElementById('adminTicketZModal');
+    if (modal) modal.style.display = 'none';
+}
+
+function printAdminTicketZDirect() {
+    const printArea = document.getElementById('admin-ticket-z-printable-area');
+    if (!printArea) return;
+
+    const w = window.open('', '_blank', 'width=380,height=650');
+    if (w) {
+        w.document.write(`
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <meta charset="UTF-8">
+                <title>Impression Ticket Z Archivé - Direction BABI</title>
+                <style>
+                    @page { size: 80mm auto; margin: 0; }
+                    body { font-family: monospace; width: 72mm; margin: 0 auto; padding: 10px; font-size: 11px; color: #000; }
+                </style>
+            </head>
+            <body>
+                ${printArea.innerHTML}
+            </body>
+            </html>
+        `);
+        w.document.close();
+        w.focus();
+        w.print();
+        setTimeout(() => w.close(), 1200);
     }
 }
 

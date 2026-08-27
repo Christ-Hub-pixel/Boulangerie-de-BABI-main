@@ -676,6 +676,46 @@
                         </table>
                     </div>
                 </div>
+
+                <!-- 🔒 JOURNAL DES CLÔTURES Z & CONTRÔLE TIROIR-CAISSE -->
+                <div class="saas-card" style="margin-top: 24px;">
+                    <div class="saas-card-header flex-wrap gap-3">
+                        <div>
+                            <h3 class="saas-card-title flex items-center gap-2">
+                                <span class="material-symbols-outlined text-amber-500">account_balance_wallet</span>
+                                Journal Officiel des Clôtures Z & Réconciliations
+                            </h3>
+                            <p class="saas-card-subtitle">Historique certifié des fins de journée, contrôles du tiroir-caisse et écarts détectés</p>
+                        </div>
+                        <div class="d-flex align-items-center gap-2">
+                            <button type="button" class="btn-sm btn-outline-primary" onclick="loadCashierClosuresHistory()">
+                                <i class="fa-solid fa-rotate me-1"></i> Actualiser les Clôtures
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="saas-table-wrapper" style="max-height: 500px; overflow-y: auto;">
+                        <table class="saas-table" id="closures-z-table">
+                            <thead>
+                                <tr>
+                                    <th>N° Ticket Z</th>
+                                    <th>Date & Heure</th>
+                                    <th>Caissier(e)</th>
+                                    <th>Total Ventes TTC</th>
+                                    <th>Total Espèces</th>
+                                    <th>Total Wave</th>
+                                    <th>Espèces Réelles (Tiroir)</th>
+                                    <th>Écart de Caisse</th>
+                                    <th>Statut / Audit</th>
+                                    <th style="text-align: right;">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="closures-z-tbody">
+                                <tr><td colspan="10" class="text-center py-4 text-muted">Chargement de l'historique des clôtures Z...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
 
             <!-- =============================================================
@@ -1281,6 +1321,134 @@
                     </button>
                 </div>
             </form>
+        </div>
+    </div>
+
+    <!-- Modal Visualisation Ticket Z Officiel (80mm) pour l'Admin -->
+    <div id="adminTicketZModal" class="prestige-modal-backdrop hidden" style="z-index: 100000; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center; padding: 16px;">
+        <div class="prestige-modal-card max-w-sm" style="max-height: 95vh; overflow-y: auto; background: #ffffff; border-radius: 20px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); width: 100%; max-width: 400px; padding: 20px; border: 1px solid #e2e8f0;">
+            <!-- Modal Actions Bar -->
+            <div style="display: flex; align-items: center; justify-content: space-between; padding-bottom: 12px; margin-bottom: 12px; border-bottom: 1px solid #e2e8f0;">
+                <span style="font-size: 12px; font-weight: 900; color: #047857; display: flex; align-items: center; gap: 6px;">
+                    <span class="material-symbols-outlined" style="font-size: 16px;">verified</span> Ticket Z Officiel Archivé
+                </span>
+                <button type="button" onclick="closeAdminTicketZModal()" style="border: none; background: none; font-size: 20px; cursor: pointer; color: #94a3b8;">✕</button>
+            </div>
+
+            <!-- Authentic 80mm Ticket Z Container -->
+            <div id="admin-ticket-z-printable-area" style="background: #ffffff; color: #000000; padding: 16px; border-radius: 12px; border: 1px solid #cbd5e1; font-family: monospace; font-size: 11px; line-height: 1.35; user-select: all;">
+                <!-- Header with BЯ monogram and Le Pain de Babi -->
+                <div style="text-align: center; padding-bottom: 8px; border-bottom: 1px dashed #000000;">
+                    <div style="display:inline-flex; width:44px; height:44px; border:2px solid #000; border-radius:50%; align-items:center; justify-content:center; font-weight:900; font-size:20px; font-family:'Times New Roman', serif; margin-bottom: 4px;">
+                        BЯ
+                    </div>
+                    <div style="font-family:'Brush Script MT', cursive, serif; font-size:15px; font-weight:bold; font-style:italic;">
+                        Le Pain de Babi
+                    </div>
+                    <div style="font-weight: 800; font-size: 13px; letter-spacing: 0.5px;">BOULANGERIE DE BABI</div>
+                    <div style="font-size: 10px;">TEL: 2722564123 / 0704389201 / 0706817977</div>
+                    <div style="font-size: 10px;">Riviera 3 • Abidjan, Côte d'Ivoire</div>
+                    <div style="font-weight: 900; font-size: 12px; padding-top: 4px; margin-top: 4px; border-top: 1px solid #000000;">*** CLOTURE DE CAISSE - TICKET Z ***</div>
+                </div>
+
+                <!-- Metadata -->
+                <div style="padding: 8px 0; border-bottom: 1px dashed #000000; font-size: 11px; display: flex; flex-direction: column; gap: 3px;">
+                    <div style="display: flex; justify-content: space-between;">
+                        <span>Z N° :</span>
+                        <strong id="adm-tz-num">Z-20260827-0042</strong>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                        <span>Date :</span>
+                        <span id="adm-tz-date">27 août 2026 22:00</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                        <span>Terminal :</span>
+                        <span>CAISSE 1 - RIVIERA</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                        <span>Caissier(e) :</span>
+                        <strong id="adm-tz-cashier">Awa Traoré</strong>
+                    </div>
+                </div>
+
+                <!-- Financial Breakdown -->
+                <div style="padding: 8px 0; border-bottom: 1px dashed #000000; display: flex; flex-direction: column; gap: 3px; font-size: 11px;">
+                    <div style="display: flex; justify-content: space-between; font-weight: 800; font-size: 12px; padding: 2px 0;">
+                        <span>TOTAL CA TTC :</span>
+                        <span id="adm-tz-total-sales">0 F CFA</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; color: #334155;">
+                        <span>Total Espèces :</span>
+                        <span id="adm-tz-total-cash">0 F CFA</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; color: #334155;">
+                        <span>Total Wave :</span>
+                        <span id="adm-tz-total-wave">0 F CFA</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; color: #334155;">
+                        <span>Total Autres :</span>
+                        <span id="adm-tz-total-others">0 F CFA</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; padding-top: 4px; border-top: 1px dotted #000000;">
+                        <span>Nombre de Tickets :</span>
+                        <span id="adm-tz-ticket-count">0</span>
+                    </div>
+                </div>
+
+                <!-- Cash Control & Reconciliation -->
+                <div style="padding: 8px 0; border-bottom: 1px dashed #000000; display: flex; flex-direction: column; gap: 3px; font-size: 11px;">
+                    <div style="font-weight: 800; font-size: 10px; text-transform: uppercase; text-align: center; padding-bottom: 3px;">-- CONTRÔLE TIROIR-CAISSE --</div>
+                    <div style="display: flex; justify-content: space-between;">
+                        <span>Fond Initial :</span>
+                        <span id="adm-tz-fond">50 000 F CFA</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                        <span>Espèces Attendues :</span>
+                        <span id="adm-tz-theorique">50 000 F CFA</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; font-weight: 800;">
+                        <span>Espèces Réelles :</span>
+                        <span id="adm-tz-reel">50 000 F CFA</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; font-weight: 900; font-size: 12px; padding-top: 4px; margin-top: 4px; border-top: 1px dotted #000000;">
+                        <span>ÉCART DE CAISSE :</span>
+                        <span id="adm-tz-ecart">0 F CFA (ÉQUILIBRÉ)</span>
+                    </div>
+                </div>
+
+                <!-- Notes / Justifications -->
+                <div id="adm-tz-notes-container" style="padding: 6px 0; border-bottom: 1px dashed #000000; font-size: 10px; display: none;">
+                    <span style="font-weight: bold;">Note Caissière :</span>
+                    <p id="adm-tz-notes" style="margin: 2px 0 0 0; color: #475569; font-style: italic;"></p>
+                </div>
+
+                <!-- Signatures -->
+                <div style="padding-top: 10px; font-size: 10px; display: flex; flex-direction: column; gap: 12px;">
+                    <div style="display: flex; justify-content: space-between;">
+                        <div>
+                            <span>Signature Caissière :</span>
+                            <div style="height: 20px; border-bottom: 1px solid #000; width: 90px; margin-top: 4px;"></div>
+                        </div>
+                        <div>
+                            <span>Visa Direction :</span>
+                            <div style="height: 20px; border-bottom: 1px solid #000; width: 90px; margin-top: 4px;"></div>
+                        </div>
+                    </div>
+                    <div style="text-align: center; font-weight: bold; font-size: 9px;">
+                        *** FIN DE RAPPORT OFFICIEL Z ***
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div style="margin-top: 14px; display: flex; flex-direction: column; gap: 8px;">
+                <button type="button" onclick="printAdminTicketZDirect()" style="width: 100%; padding: 10px; background: #0f172a; color: #ffffff; font-weight: 800; font-size: 12px; border-radius: 10px; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;">
+                    <span class="material-symbols-outlined" style="font-size: 16px;">print</span> Imprimer Reçu Thermique (80mm)
+                </button>
+                <button type="button" onclick="closeAdminTicketZModal()" style="width: 100%; padding: 8px; background: #f1f5f9; color: #475569; font-weight: 700; font-size: 12px; border-radius: 10px; border: none; cursor: pointer;">
+                    Fermer
+                </button>
+            </div>
         </div>
     </div>
 

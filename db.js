@@ -380,6 +380,14 @@ async function initDB() {
         await db.run("ALTER TABLE products ADD COLUMN seuil_alerte INTEGER DEFAULT 10");
     } catch (e) {}
 
+    // Cash register Ticket Z columns
+    try { await db.run("ALTER TABLE cash_registers ADD COLUMN especes_reelles INTEGER DEFAULT 0"); } catch (e) {}
+    try { await db.run("ALTER TABLE cash_registers ADD COLUMN ecart INTEGER DEFAULT 0"); } catch (e) {}
+    try { await db.run("ALTER TABLE cash_registers ADD COLUMN detail_comptage TEXT"); } catch (e) {}
+    try { await db.run("ALTER TABLE cash_registers ADD COLUMN notes TEXT"); } catch (e) {}
+    try { await db.run("ALTER TABLE cash_registers ADD COLUMN numero_z TEXT"); } catch (e) {}
+    try { await db.run("ALTER TABLE cash_registers ADD COLUMN total_tickets INTEGER DEFAULT 0"); } catch (e) {}
+
     // Initial clean state: No hardcoded dummy users or employees. 
     // Accounts are created exclusively by the Administrator or registered legitimately.
 

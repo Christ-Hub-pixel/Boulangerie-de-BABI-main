@@ -2392,5 +2392,457 @@ function printThermalReceipt(saleData) {
     window.print();
 }
 
+// -------------------------------------------------------------
+// 🧾 MODULE CLÔTURE DE CAISSE TACTILE — TICKET Z & TICKET X
+// -------------------------------------------------------------
 
+let currentClosureShiftData = {
+    total_sales: 0,
+    total_cash: 0,
+    total_wave: 0,
+    total_others: 0,
+    total_tickets: 0,
+    fond_de_caisse: 50000,
+    especes_reelles: 50000,
+    ecart: 0
+};
 
+const CASH_DENOMINATIONS = [
+    { id: 'b10000', value: 10000, type: 'billet' },
+    { id: 'b5000',  value: 5000,  type: 'billet' },
+    { id: 'b2000',  value: 2000,  type: 'billet' },
+    { id: 'b1000',  value: 1000,  type: 'billet' },
+    { id: 'b500',   value: 500,   type: 'billet' },
+    { id: 'p500',   value: 500,   type: 'piece' },
+    { id: 'p200',   value: 200,   type: 'piece' },
+    { id: 'p100',   value: 100,   type: 'piece' },
+    { id: 'p50',    value: 50,    type: 'piece' },
+    { id: 'p25',    value: 25,    type: 'piece' }
+];
+
+// 1. Ouvrir le Modal de Clôture
+async function openClosureModal() {
+    const modal = document.getElementById('closureModal');
+    if (!modal) return;
+
+    // Reset denominations inputs
+    CASH_DENOMINATIONS.forEach(d => {
+        const inp = document.getElementById(`denom_${d.id}`);
+        if (inp) inp.value = 0;
+        const sub = document.getElementById(`sub_${d.id}`);
+        if (sub) sub.innerText = '0 F';
+    });
+
+    // Fetch live register status from backend or fallback to local sales
+    try {
+        const res = await fetch(`${API_ROOT}/api/pos/register/ticket-x`, {
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('babi_cashier_token') || ''}`
+            }
+        });
+        if (res.ok) {
+            const data = await res.json();
+            currentClosureShiftData.total_sales = data.total_sales || 0;
+            currentClosureShiftData.total_cash = data.total_cash || 0;
+            currentClosureShiftData.total_wave = data.total_wave || 0;
+            currentClosureShiftData.total_others = data.total_others || 0;
+            currentClosureShiftData.total_tickets = data.total_tickets || 0;
+            currentClosureShiftData.fond_de_caisse = data.fond_de_caisse || 50000;
+        } else {
+            computeLocalShiftData();
+        }
+    } catch (_) {
+        computeLocalShiftData();
+    }
+
+    // Populate KPI Elements
+    const elSales = document.getElementById('z-kpi-total-sales');
+    const elCash = document.getElementById('z-kpi-cash-sales');
+    const elWave = document.getElementById('z-kpi-wave-sales');
+    const elCount = document.getElementById('z-kpi-ticket-count');
+    const elFond = document.getElementById('z-fond-de-caisse');
+
+    if (elSales) elSales.innerText = `${currentClosureShiftData.total_sales.toLocaleString()} FCFA`;
+    if (elCash) elCash.innerText = `${currentClosureShiftData.total_cash.toLocaleString()} FCFA`;
+    if (elWave) elWave.innerText = `${currentClosureShiftData.total_wave.toLocaleString()} FCFA`;
+    if (elCount) elCount.innerText = currentClosureShiftData.total_tickets;
+    if (elFond) elFond.value = currentClosureShiftData.fond_de_caisse;
+
+    // Populate Tab X Elements
+    const elXSales = document.getElementById('x-total-sales');
+    const elXCash = document.getElementById('x-cash-sales');
+    const elXWave = document.getElementById('x-wave-sales');
+    const elXCount = document.getElementById('x-ticket-count');
+
+    if (elXSales) elXSales.innerText = `${currentClosureShiftData.total_sales.toLocaleString()} FCFA`;
+    if (elXCash) elXCash.innerText = `${currentClosureShiftData.total_cash.toLocaleString()} FCFA`;
+    if (elXWave) elXWave.innerText = `${currentClosureShiftData.total_wave.toLocaleString()} FCFA`;
+    if (elXCount) elXCount.innerText = currentClosureShiftData.total_tickets;
+
+    switchClosureTab('z');
+    recalculateCashCount();
+    modal.classList.remove('hidden');
+}
+
+function computeLocalShiftData() {
+    let sales = 0, cash = 0, wave = 0, others = 0, count = 0;
+    try {
+        const history = JSON.parse(localStorage.getItem('babi_pos_sales_history') || '[]');
+        const todayStr = new Date().toISOString().slice(0, 10);
+        history.filter(s => (s.created_at || '').startsWith(todayStr)).forEach(s => {
+            sales += (s.total_price || 0);
+            count++;
+            const method = (s.payment_method || '').toLowerCase();
+            if (method.includes('wave')) wave += (s.total_price || 0);
+            else if (method.includes('orange') || method.includes('mtn')) others += (s.total_price || 0);
+            else cash += (s.total_price || 0);
+        });
+    } catch (_) {}
+    currentClosureShiftData.total_sales = sales;
+    currentClosureShiftData.total_cash = cash;
+    currentClosureShiftData.total_wave = wave;
+    currentClosureShiftData.total_others = others;
+    currentClosureShiftData.total_tickets = count;
+}
+
+function closeClosureModal() {
+    const modal = document.getElementById('closureModal');
+    if (modal) modal.classList.add('hidden');
+}
+
+function switchClosureTab(tab) {
+    const contentZ = document.getElementById('tab-content-closure-z');
+    const contentX = document.getElementById('tab-content-closure-x');
+    const btnZ = document.getElementById('tab-btn-closure-z');
+    const btnX = document.getElementById('tab-btn-closure-x');
+
+    if (tab === 'z') {
+        if (contentZ) contentZ.classList.remove('hidden');
+        if (contentX) contentX.classList.add('hidden');
+        if (btnZ) {
+            btnZ.className = 'flex-1 py-2 px-3 rounded-lg text-xs font-black text-slate-900 bg-white shadow-xs transition-all flex items-center justify-center gap-1.5';
+        }
+        if (btnX) {
+            btnX.className = 'flex-1 py-2 px-3 rounded-lg text-xs font-bold text-slate-600 hover:text-slate-900 transition-all flex items-center justify-center gap-1.5';
+        }
+    } else {
+        if (contentZ) contentZ.classList.add('hidden');
+        if (contentX) contentX.classList.remove('hidden');
+        if (btnX) {
+            btnX.className = 'flex-1 py-2 px-3 rounded-lg text-xs font-black text-slate-900 bg-white shadow-xs transition-all flex items-center justify-center gap-1.5';
+        }
+        if (btnZ) {
+            btnZ.className = 'flex-1 py-2 px-3 rounded-lg text-xs font-bold text-slate-600 hover:text-slate-900 transition-all flex items-center justify-center gap-1.5';
+        }
+    }
+}
+
+// 2. Ajustement des coupures (+ / -)
+function adjustDenomQty(denomId, delta) {
+    const input = document.getElementById(`denom_${denomId}`);
+    if (!input) return;
+    let qty = parseInt(input.value || '0', 10) + delta;
+    if (qty < 0) qty = 0;
+    input.value = qty;
+    recalculateCashCount();
+}
+
+// 3. Calculateur de Réconciliation & Écart en Temps Réel
+function recalculateCashCount() {
+    let totalCashCounted = 0;
+    const detailComptage = {};
+
+    CASH_DENOMINATIONS.forEach(d => {
+        const input = document.getElementById(`denom_${d.id}`);
+        const qty = parseInt(input?.value || '0', 10);
+        const subtotal = qty * d.value;
+        totalCashCounted += subtotal;
+        detailComptage[d.id] = { qty, subtotal };
+
+        const subEl = document.getElementById(`sub_${d.id}`);
+        if (subEl) subEl.innerText = `${subtotal.toLocaleString()} F`;
+    });
+
+    const fondInput = document.getElementById('z-fond-de-caisse');
+    const fond = parseInt(fondInput?.value || '50000', 10);
+    const expectedCash = fond + (currentClosureShiftData.total_cash || 0);
+    const ecart = totalCashCounted - expectedCash;
+
+    currentClosureShiftData.especes_reelles = totalCashCounted;
+    currentClosureShiftData.fond_de_caisse = fond;
+    currentClosureShiftData.ecart = ecart;
+    currentClosureShiftData.detail_comptage = detailComptage;
+
+    // Update UI Labels
+    const elCounted = document.getElementById('z-total-cash-counted');
+    const elExpected = document.getElementById('z-expected-cash');
+    const elEcartAmount = document.getElementById('z-discrepancy-amount');
+    const elEcartStatus = document.getElementById('z-discrepancy-status');
+
+    if (elCounted) elCounted.innerText = `${totalCashCounted.toLocaleString()} FCFA`;
+    if (elExpected) elExpected.innerText = `${expectedCash.toLocaleString()} FCFA`;
+    
+    if (elEcartAmount) {
+        elEcartAmount.innerText = `${(ecart >= 0 ? '+' : '')}${ecart.toLocaleString()} FCFA`;
+    }
+
+    if (elEcartStatus && elEcartAmount) {
+        if (ecart === 0) {
+            elEcartStatus.innerText = 'Caisse Parfaitement Équilibrée ✅';
+            elEcartStatus.className = 'text-xs font-bold text-emerald-400';
+            elEcartAmount.className = 'text-xl font-mono font-black text-emerald-400';
+        } else if (ecart > 0) {
+            elEcartStatus.innerText = `Excédent en Tiroir (+${ecart.toLocaleString()} F) 🟢`;
+            elEcartStatus.className = 'text-xs font-bold text-sky-400';
+            elEcartAmount.className = 'text-xl font-mono font-black text-sky-400';
+        } else {
+            elEcartStatus.innerText = `Déficit / Manquant en Caisse (${ecart.toLocaleString()} F) ⚠️`;
+            elEcartStatus.className = 'text-xs font-bold text-rose-400';
+            elEcartAmount.className = 'text-xl font-mono font-black text-rose-400';
+        }
+    }
+}
+
+// 4. Modal Ticket X Direct
+function openTicketXModal() {
+    openClosureModal();
+    switchClosureTab('x');
+}
+
+function printTicketXDirect() {
+    const now = new Date();
+    const dateStr = `${now.toLocaleDateString('fr-FR')} ${now.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}`;
+    const xNum = `X-${now.getFullYear()}${String(now.getMonth()+1).padStart(2,'0')}${String(now.getDate()).padStart(2,'0')}-${Math.floor(1000+Math.random()*9000)}`;
+
+    const textToPrint = `
+========================================
+           BOULANGERIE DE BABI
+         Riviera 3 • Abidjan
+      *** TICKET X - LECTURE ***
+========================================
+Numéro X    : ${xNum}
+Date / Heure: ${dateStr}
+Terminal    : CAISSE 1 - RIVIERA
+Caissier(e) : ${currentCashierUser?.nom || 'CAISSIERE 1'}
+----------------------------------------
+CHIFFRE D'AFFAIRES DU JOUR :
+TOTAL VENTES TTC : ${currentClosureShiftData.total_sales.toLocaleString()} FCFA
+  - Espèces      : ${currentClosureShiftData.total_cash.toLocaleString()} FCFA
+  - Wave         : ${currentClosureShiftData.total_wave.toLocaleString()} FCFA
+  - Autres / CB  : ${currentClosureShiftData.total_others.toLocaleString()} FCFA
+NOMBRE TICKETS   : ${currentClosureShiftData.total_tickets}
+----------------------------------------
+   Lecture intermédiaire non clôturée
+========================================
+    `.trim();
+
+    const w = window.open('', '_blank', 'width=350,height=550');
+    if (w) {
+        w.document.write(`<pre style="font-family:monospace; font-size:12px; line-height:1.4; padding:10px;">${textToPrint}</pre>`);
+        w.document.close();
+        w.focus();
+        w.print();
+        setTimeout(() => w.close(), 1000);
+    }
+}
+
+// 5. Valider la Clôture Définitive (Ticket Z)
+async function submitDailyClosureZ() {
+    recalculateCashCount();
+    const notes = document.getElementById('z-closure-notes')?.value || '';
+
+    const payload = {
+        fond_de_caisse: currentClosureShiftData.fond_de_caisse,
+        total_ventes: currentClosureShiftData.total_sales,
+        total_especes: currentClosureShiftData.total_cash,
+        total_wave: currentClosureShiftData.total_wave,
+        total_others: currentClosureShiftData.total_others,
+        total_tickets: currentClosureShiftData.total_tickets,
+        especes_reelles: currentClosureShiftData.especes_reelles,
+        ecart: currentClosureShiftData.ecart,
+        detail_comptage: currentClosureShiftData.detail_comptage,
+        notes: notes,
+        closed_by: currentCashierUser?.nom || 'CAISSIERE 1'
+    };
+
+    let zResult = null;
+
+    try {
+        const res = await fetch(`${API_ROOT}/api/pos/register/close-z`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('babi_cashier_token') || ''}`
+            },
+            body: JSON.stringify(payload)
+        });
+
+        if (res.ok) {
+            zResult = await res.json();
+        }
+    } catch (_) {}
+
+    // Fallback local Z calculation if offline
+    if (!zResult || !zResult.z_report) {
+        const now = new Date();
+        const numZ = `Z-${now.getFullYear()}${String(now.getMonth()+1).padStart(2,'0')}${String(now.getDate()).padStart(2,'0')}-${Math.floor(1000+Math.random()*9000)}`;
+        zResult = {
+            success: true,
+            z_report: {
+                ...payload,
+                numero_z: numZ,
+                closed_at: now.toISOString()
+            }
+        };
+    }
+
+    // Save to local closure history
+    try {
+        const closures = JSON.parse(localStorage.getItem('babi_pos_closures_history') || '[]');
+        closures.unshift(zResult.z_report);
+        localStorage.setItem('babi_pos_closures_history', JSON.stringify(closures));
+    } catch (_) {}
+
+    // Close closure modal & render official 80mm Ticket Z
+    closeClosureModal();
+    renderTicketZModal(zResult.z_report);
+    showPosToast('🔒 Clôture de Caisse effectuée avec succès ! Ticket Z généré.', 'success');
+}
+
+// 6. Rendu du Reçu Thermique Ticket Z Officiel (80mm)
+function renderTicketZModal(report) {
+    const modal = document.getElementById('ticketZModal');
+    if (!modal) return;
+
+    const dateObj = report.closed_at ? new Date(report.closed_at) : new Date();
+    const dateStr = `${dateObj.toLocaleDateString('fr-FR')} ${dateObj.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}`;
+    const expectedCash = (report.fond_de_caisse || 50000) + (report.total_especes || 0);
+    const ecart = (report.especes_reelles || 0) - expectedCash;
+    let ecartStr = '0 F CFA (ÉQUILIBRÉ)';
+    if (ecart > 0) ecartStr = `+${ecart.toLocaleString()} F (EXCÉDENT)`;
+    else if (ecart < 0) ecartStr = `${ecart.toLocaleString()} F (DÉFICIT)`;
+
+    const elNum = document.getElementById('tz-num');
+    const elDate = document.getElementById('tz-date');
+    const elTerm = document.getElementById('tz-terminal');
+    const elCashier = document.getElementById('tz-cashier');
+
+    const elSales = document.getElementById('tz-total-sales');
+    const elCash = document.getElementById('tz-total-cash');
+    const elWave = document.getElementById('tz-total-wave');
+    const elOthers = document.getElementById('tz-total-others');
+    const elCount = document.getElementById('tz-ticket-count');
+
+    const elFond = document.getElementById('tz-fond');
+    const elTheorique = document.getElementById('tz-theorique');
+    const elReel = document.getElementById('tz-reel');
+    const elEcart = document.getElementById('tz-ecart');
+
+    if (elNum) elNum.innerText = report.numero_z || ('Z-' + Math.floor(1000 + Math.random() * 9000));
+    if (elDate) elDate.innerText = dateStr;
+    if (elTerm) elTerm.innerText = 'CAISSE 1 - RIVIERA';
+    if (elCashier) elCashier.innerText = report.closed_by || currentCashierUser?.nom || 'CAISSIERE 1';
+
+    if (elSales) elSales.innerText = `${(report.total_ventes || 0).toLocaleString()} F CFA`;
+    if (elCash) elCash.innerText = `${(report.total_especes || 0).toLocaleString()} F CFA`;
+    if (elWave) elWave.innerText = `${(report.total_wave || 0).toLocaleString()} F CFA`;
+    if (elOthers) elOthers.innerText = `${(report.total_others || 0).toLocaleString()} F CFA`;
+    if (elCount) elCount.innerText = `${report.total_tickets || 0} Tickets`;
+
+    if (elFond) elFond.innerText = `${(report.fond_de_caisse || 50000).toLocaleString()} F CFA`;
+    if (elTheorique) elTheorique.innerText = `${expectedCash.toLocaleString()} F CFA`;
+    if (elReel) elReel.innerText = `${(report.especes_reelles || 0).toLocaleString()} F CFA`;
+    if (elEcart) elEcart.innerText = ecartStr;
+
+    modal.classList.remove('hidden');
+}
+
+function closeTicketZModal() {
+    const modal = document.getElementById('ticketZModal');
+    if (modal) modal.classList.add('hidden');
+}
+
+// 7. Impression Thermique Ticket Z (80mm)
+function printTicketZDirect() {
+    const printArea = document.getElementById('ticket-z-printable-area');
+    if (!printArea) return;
+
+    const w = window.open('', '_blank', 'width=380,height=650');
+    if (w) {
+        w.document.write(`
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <meta charset="UTF-8">
+                <title>Impression Ticket Z - Boulangerie de Babi</title>
+                <style>
+                    @page { size: 80mm auto; margin: 0; }
+                    body { font-family: monospace; width: 72mm; margin: 0 auto; padding: 10px; font-size: 11px; color: #000; }
+                    .center { text-align: center; }
+                    .bold { font-weight: bold; }
+                    .flex { display: flex; justify-content: space-between; }
+                    .divider { border-bottom: 1px dashed #000; margin: 6px 0; }
+                    .logo-circle { width: 44px; height: 44px; border: 2px solid #000; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto; font-family: 'Times New Roman', serif; font-size: 20px; font-weight: 900; }
+                </style>
+            </head>
+            <body>
+                ${printArea.innerHTML}
+            </body>
+            </html>
+        `);
+        w.document.close();
+        w.focus();
+        w.print();
+        setTimeout(() => w.close(), 1200);
+    }
+}
+
+// 8. Partage WhatsApp 1-Clic au Gérant
+function shareTicketZOnWhatsApp() {
+    const zNum = document.getElementById('tz-num')?.innerText || 'Z-0000';
+    const dateStr = document.getElementById('tz-date')?.innerText || '';
+    const cashier = document.getElementById('tz-cashier')?.innerText || 'Caissière';
+    const totalSales = document.getElementById('tz-total-sales')?.innerText || '0 F';
+    const totalCash = document.getElementById('tz-total-cash')?.innerText || '0 F';
+    const totalWave = document.getElementById('tz-total-wave')?.innerText || '0 F';
+    const tickets = document.getElementById('tz-ticket-count')?.innerText || '0';
+    const ecart = document.getElementById('tz-ecart')?.innerText || '0 F (ÉQUILIBRÉ)';
+    const fond = document.getElementById('tz-fond')?.innerText || '50 000 F';
+    const reel = document.getElementById('tz-reel')?.innerText || '50 000 F';
+
+    const msg = `🥖 *BOULANGERIE DE BABI — RAPPORT DE CLÔTURE Z* 🥖\n\n` +
+        `📋 *Z N° :* ${zNum}\n` +
+        `📅 *Date :* ${dateStr}\n` +
+        `👤 *Caissier(e) :* ${cashier}\n` +
+        `📍 *Terminal :* Caisse 1 - Riviera\n\n` +
+        `💰 *CHIFFRE D'AFFAIRES :*\n` +
+        `• Total TTC : *${totalSales}*\n` +
+        `• Espèces : ${totalCash}\n` +
+        `• Wave : ${totalWave}\n` +
+        `• Tickets Servis : ${tickets}\n\n` +
+        `🔍 *RÉCONCILIATION TIROIR :*\n` +
+        `• Fond Initial : ${fond}\n` +
+        `• Espèces Réelles : *${reel}*\n` +
+        `• Écart de Caisse : *${ecart}*\n\n` +
+        `✅ _Clôture journalière validée et enregistrée._`;
+
+    const url = `https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`;
+    window.open(url, '_blank');
+}
+
+// 9. Copier le Rapport Z
+function copyTicketZText() {
+    const zNum = document.getElementById('tz-num')?.innerText || 'Z-0000';
+    const dateStr = document.getElementById('tz-date')?.innerText || '';
+    const cashier = document.getElementById('tz-cashier')?.innerText || 'Caissière';
+    const totalSales = document.getElementById('tz-total-sales')?.innerText || '0 F';
+    const totalCash = document.getElementById('tz-total-cash')?.innerText || '0 F';
+    const totalWave = document.getElementById('tz-total-wave')?.innerText || '0 F';
+    const tickets = document.getElementById('tz-ticket-count')?.innerText || '0';
+    const ecart = document.getElementById('tz-ecart')?.innerText || '0 F';
+
+    const text = `BOULANGERIE DE BABI - CLÔTURE Z\nN°: ${zNum}\nDate: ${dateStr}\nCaissière: ${cashier}\nTotal Ventes: ${totalSales}\nEspèces: ${totalCash}\nWave: ${totalWave}\nTickets: ${tickets}\nÉcart: ${ecart}`;
+    navigator.clipboard.writeText(text).then(() => {
+        showPosToast('📋 Rapport Z copié dans le presse-papier !', 'info');
+    });
+}

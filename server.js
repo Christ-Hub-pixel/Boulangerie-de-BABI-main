@@ -1034,6 +1034,203 @@ app.get('/api/pos/daily-summary', async (req, res) => {
 });
 
 // ==========================================
+// 🧾 4.2 CASH REGISTER MANAGEMENT & TICKET Z / TICKET X API
+// ==========================================
+
+// 1. Get Live Cash Register Status & Today's Sales
+app.get(['/api/pos/register/status', '/api/pos/cash-register/current'], async (req, res) => {
+    try {
+        const today = new Date().toISOString().split('T')[0];
+        let register = await db.get("SELECT * FROM cash_registers WHERE statut = 'ouvert' ORDER BY id DESC LIMIT 1");
+        const orders = await db.all("SELECT * FROM orders WHERE (DATE(created_at) = DATE('now') OR created_at LIKE ?) AND status != 'annule'", [`${today}%`]);
+        
+        const totalSales = orders.reduce((sum, o) => sum + (o.total_price || 0), 0);
+        const countTickets = orders.length;
+        const cashSales = orders.filter(o => (o.payment_method || '').toLowerCase().includes('espèce') || (o.payment_method || '').toLowerCase().includes('cash')).reduce((sum, o) => sum + (o.total_price || 0), 0);
+        const waveSales = orders.filter(o => (o.payment_method || '').toLowerCase().includes('wave')).reduce((sum, o) => sum + (o.total_price || 0), 0);
+        const orangeSales = orders.filter(o => (o.payment_method || '').toLowerCase().includes('orange')).reduce((sum, o) => sum + (o.total_price || 0), 0);
+        const mtnSales = orders.filter(o => (o.payment_method || '').toLowerCase().includes('mtn')).reduce((sum, o) => sum + (o.total_price || 0), 0);
+
+        const fondDeCaisse = register ? (register.fond_de_caisse || 50000) : 50000;
+        const expectedCash = fondDeCaisse + cashSales;
+        const lastZ = await db.get("SELECT * FROM cash_registers WHERE statut = 'ferme' ORDER BY id DESC LIMIT 1");
+
+        res.json({
+            success: true,
+            is_open: !!register,
+            register_id: register ? register.id : null,
+            caissiere_nom: register ? register.caissiere_nom : 'Caisse 1 - Riviera',
+            fond_de_caisse: fondDeCaisse,
+            date_ouverture: register ? register.date_ouverture : today,
+            total_ventes: totalSales,
+            total_tickets: countTickets,
+            total_especes: cashSales,
+            total_wave: waveSales,
+            total_orange: orangeSales,
+            total_mtn: mtnSales,
+            especes_theoriques: expectedCash,
+            last_z_closure: lastZ || null
+        });
+    } catch (err) {
+        res.status(500).json({ success: false, error: err.message });
+    }
+});
+
+// 2. Open Cash Register Session
+app.post(['/api/pos/register/open', '/api/pos/cash-register/open'], async (req, res) => {
+    try {
+        const { caissiere_nom, fond_de_caisse } = req.body;
+        const fond = parseInt(fond_de_caisse, 10) || 50000;
+        const caissiere = caissiere_nom || 'Caisse 1 - Riviera';
+
+        await db.run("UPDATE cash_registers SET statut = 'ferme', date_cloture = CURRENT_TIMESTAMP WHERE statut = 'ouvert'");
+
+        const result = await db.run(
+            `INSERT INTO cash_registers (caissiere_nom, fond_de_caisse, total_ventes, total_especes, total_wave, statut, date_ouverture)
+             VALUES (?, ?, 0, 0, 0, 'ouvert', CURRENT_TIMESTAMP)`,
+            [caissiere, fond]
+        );
+
+        res.json({
+            success: true,
+            message: "Caisse ouverte avec succès !",
+            register_id: result.lastID,
+            caissiere_nom: caissiere,
+            fond_de_caisse: fond
+        });
+    } catch (err) {
+        res.status(500).json({ success: false, error: err.message });
+    }
+});
+
+// 3. Generate Ticket X (Mid-day inspection reading)
+app.get(['/api/pos/register/ticket-x', '/api/pos/cash-register/ticket-x'], async (req, res) => {
+    try {
+        const today = new Date().toISOString().split('T')[0];
+        const register = await db.get("SELECT * FROM cash_registers WHERE statut = 'ouvert' ORDER BY id DESC LIMIT 1");
+        const orders = await db.all("SELECT * FROM orders WHERE (DATE(created_at) = DATE('now') OR created_at LIKE ?) AND status != 'annule'", [`${today}%`]);
+        
+        const totalSales = orders.reduce((sum, o) => sum + (o.total_price || 0), 0);
+        const countTickets = orders.length;
+        const cashSales = orders.filter(o => (o.payment_method || '').toLowerCase().includes('espèce') || (o.payment_method || '').toLowerCase().includes('cash')).reduce((sum, o) => sum + (o.total_price || 0), 0);
+        const waveSales = orders.filter(o => (o.payment_method || '').toLowerCase().includes('wave')).reduce((sum, o) => sum + (o.total_price || 0), 0);
+        const fondDeCaisse = register ? (register.fond_de_caisse || 50000) : 50000;
+
+        const ticketXData = {
+            type: "TICKET_X",
+            title: "LECTURE INTERMÉDIAIRE (TICKET X)",
+            date: new Date().toISOString(),
+            date_formatee: new Date().toLocaleString('fr-FR', { timeZone: 'Africa/Abidjan' }),
+            terminal: "CAISSE 1 - RIVIERA",
+            caissiere_nom: register ? register.caissiere_nom : "Caisse 1 - Riviera",
+            fond_de_caisse: fondDeCaisse,
+            total_ventes: totalSales,
+            total_tickets: countTickets,
+            total_especes: cashSales,
+            total_wave: waveSales,
+            especes_theoriques: fondDeCaisse + cashSales
+        };
+
+        res.json({ success: true, ticket: ticketXData });
+    } catch (err) {
+        res.status(500).json({ success: false, error: err.message });
+    }
+});
+
+// 4. Close Cash Register Definitive (Ticket Z with Cash Counting & Discrepancy)
+app.post(['/api/pos/register/close-z', '/api/pos/cash-register/close-z'], async (req, res) => {
+    try {
+        const {
+            caissiere_nom,
+            fond_de_caisse,
+            especes_reelles,
+            detail_comptage,
+            notes
+        } = req.body;
+
+        const today = new Date().toISOString().split('T')[0];
+        const orders = await db.all("SELECT * FROM orders WHERE (DATE(created_at) = DATE('now') OR created_at LIKE ?) AND status != 'annule'", [`${today}%`]);
+        
+        const totalSales = orders.reduce((sum, o) => sum + (o.total_price || 0), 0);
+        const countTickets = orders.length;
+        const cashSales = orders.filter(o => (o.payment_method || '').toLowerCase().includes('espèce') || (o.payment_method || '').toLowerCase().includes('cash')).reduce((sum, o) => sum + (o.total_price || 0), 0);
+        const waveSales = orders.filter(o => (o.payment_method || '').toLowerCase().includes('wave')).reduce((sum, o) => sum + (o.total_price || 0), 0);
+        const orangeSales = orders.filter(o => (o.payment_method || '').toLowerCase().includes('orange')).reduce((sum, o) => sum + (o.total_price || 0), 0);
+        const mtnSales = orders.filter(o => (o.payment_method || '').toLowerCase().includes('mtn')).reduce((sum, o) => sum + (o.total_price || 0), 0);
+
+        const fond = parseInt(fond_de_caisse, 10) || 50000;
+        const reelles = parseInt(especes_reelles, 10) || 0;
+        const theoriques = fond + cashSales;
+        const ecart = reelles - theoriques;
+        const numZ = `Z-${new Date().getFullYear()}${String(new Date().getMonth() + 1).padStart(2, '0')}${String(new Date().getDate()).padStart(2, '0')}-${String(Math.floor(Math.random()*9000)+1000)}`;
+
+        const result = await db.run(
+            `INSERT INTO cash_registers (
+                caissiere_nom, fond_de_caisse, total_ventes, total_especes, total_wave, total_orange, total_mtn,
+                especes_reelles, ecart, detail_comptage, notes, numero_z, total_tickets, statut, date_cloture
+             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'ferme', CURRENT_TIMESTAMP)`,
+            [
+                caissiere_nom || 'Caisse 1 - Riviera',
+                fond,
+                totalSales,
+                cashSales,
+                waveSales,
+                orangeSales,
+                mtnSales,
+                reelles,
+                ecart,
+                typeof detail_comptage === 'object' ? JSON.stringify(detail_comptage) : (detail_comptage || ''),
+                notes || '',
+                numZ,
+                countTickets
+            ]
+        );
+
+        const ticketZ = {
+            numero_z: numZ,
+            id: result.lastID,
+            type: "TICKET_Z",
+            title: "CLÔTURE DE CAISSE OFFICIELLE (TICKET Z)",
+            date: new Date().toISOString(),
+            date_formatee: new Date().toLocaleString('fr-FR', { timeZone: 'Africa/Abidjan' }),
+            terminal: "CAISSE 1 - RIVIERA",
+            caissiere_nom: caissiere_nom || 'Caisse 1 - Riviera',
+            fond_de_caisse: fond,
+            total_ventes: totalSales,
+            total_tickets: countTickets,
+            total_especes: cashSales,
+            total_wave: waveSales,
+            total_orange: orangeSales,
+            total_mtn: mtnSales,
+            especes_theoriques: theoriques,
+            especes_reelles: reelles,
+            ecart: ecart,
+            statut_ecart: ecart === 0 ? "ÉQUILIBRÉ" : (ecart > 0 ? "EXCÉDENT" : "DÉFICIT"),
+            detail_comptage: detail_comptage || {},
+            notes: notes || ''
+        };
+
+        res.json({
+            success: true,
+            message: "Clôture de caisse Z effectuée avec succès !",
+            ticketZ
+        });
+    } catch (err) {
+        res.status(500).json({ success: false, error: err.message });
+    }
+});
+
+// 5. Get Cash Register Closures History (for Admin & Manager)
+app.get(['/api/pos/register/history', '/api/pos/cash-register/history'], async (req, res) => {
+    try {
+        const history = await db.all("SELECT * FROM cash_registers WHERE statut = 'ferme' ORDER BY id DESC LIMIT 50");
+        res.json({ success: true, closures: history });
+    } catch (err) {
+        res.status(500).json({ success: false, error: err.message });
+    }
+});
+
+// ==========================================
 // 👥 5. EMPLOYEES API (GÉRANTE & ADMIN)
 // ==========================================
 
