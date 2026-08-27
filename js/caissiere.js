@@ -2684,42 +2684,8 @@ const CASH_DENOMINATIONS = [
     { id: 'p25',    value: 25,    type: 'piece' }
 ];
 
-// 1. Ouvrir le Modal de Clôture
-async function openClosureModal() {
-    const modal = document.getElementById('closureModal');
-    if (!modal) return;
-
-    // Reset denominations inputs
-    CASH_DENOMINATIONS.forEach(d => {
-        const inp = document.getElementById(`denom_${d.id}`);
-        if (inp) inp.value = 0;
-        const sub = document.getElementById(`sub_${d.id}`);
-        if (sub) sub.innerText = '0 F';
-    });
-
-    // Fetch live register status from backend or fallback to local sales
-    try {
-        const res = await fetch(`${API_ROOT}/api/pos/register/ticket-x`, {
-            headers: {
-                'Authorization': `Bearer ${localStorage.getItem('babi_cashier_token') || ''}`
-            }
-        });
-        if (res.ok) {
-            const data = await res.json();
-            currentClosureShiftData.total_sales = data.total_sales || 0;
-            currentClosureShiftData.total_cash = data.total_cash || 0;
-            currentClosureShiftData.total_wave = data.total_wave || 0;
-            currentClosureShiftData.total_others = data.total_others || 0;
-            currentClosureShiftData.total_tickets = data.total_tickets || 0;
-            currentClosureShiftData.fond_de_caisse = data.fond_de_caisse || 50000;
-        } else {
-            computeLocalShiftData();
-        }
-    } catch (_) {
-        computeLocalShiftData();
-    }
-
-    // Populate KPI Elements
+// 1. Ouvrir le Modal de Clôture (Immédiat & Fluide)
+function populateClosureModalUI() {
     const elSales = document.getElementById('z-kpi-total-sales');
     const elCash = document.getElementById('z-kpi-cash-sales');
     const elWave = document.getElementById('z-kpi-wave-sales');
@@ -2732,7 +2698,6 @@ async function openClosureModal() {
     if (elCount) elCount.innerText = currentClosureShiftData.total_tickets;
     if (elFond) elFond.value = currentClosureShiftData.fond_de_caisse;
 
-    // Populate Tab X Elements
     const elXSales = document.getElementById('x-total-sales');
     const elXCash = document.getElementById('x-cash-sales');
     const elXWave = document.getElementById('x-wave-sales');
@@ -2743,9 +2708,63 @@ async function openClosureModal() {
     if (elXWave) elXWave.innerText = `${currentClosureShiftData.total_wave.toLocaleString()} FCFA`;
     if (elXCount) elXCount.innerText = currentClosureShiftData.total_tickets;
 
+    const subTitle = document.getElementById('closure-modal-subtitle');
+    if (subTitle) {
+        subTitle.innerText = `${currentCashierUser?.nom || 'Caissière'} • ${new Date().toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}`;
+    }
+}
+
+function openClosureModal() {
+    const modal = document.getElementById('closureModal');
+    if (!modal) return;
+
+    playPosAudio('chime');
+
+    // 1. Reset physical denomination inputs
+    CASH_DENOMINATIONS.forEach(d => {
+        const inp = document.getElementById(`denom_${d.id}`);
+        if (inp) inp.value = 0;
+        const sub = document.getElementById(`sub_${d.id}`);
+        if (sub) sub.innerText = '0 F';
+    });
+
+    // 2. Compute local shift data and populate UI instantly (0ms lag)
+    computeLocalShiftData();
+    populateClosureModalUI();
     switchClosureTab('z');
     recalculateCashCount();
+
+    // 3. Display modal immediately
     modal.classList.remove('hidden');
+
+    // 4. Background refresh if API is online
+    try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 2000);
+        fetch(`${API_ROOT}/api/pos/register/ticket-x`, {
+            headers: { 'Authorization': `Bearer ${localStorage.getItem('babi_cashier_token') || ''}` },
+            signal: controller.signal
+        }).then(res => {
+            clearTimeout(timeoutId);
+            return res.ok ? res.json() : null;
+        }).then(data => {
+            if (data) {
+                currentClosureShiftData.total_sales = data.total_sales || currentClosureShiftData.total_sales;
+                currentClosureShiftData.total_cash = data.total_cash || currentClosureShiftData.total_cash;
+                currentClosureShiftData.total_wave = data.total_wave || currentClosureShiftData.total_wave;
+                currentClosureShiftData.total_others = data.total_others || currentClosureShiftData.total_others;
+                currentClosureShiftData.total_tickets = data.total_tickets || currentClosureShiftData.total_tickets;
+                currentClosureShiftData.fond_de_caisse = data.fond_de_caisse || currentClosureShiftData.fond_de_caisse;
+                populateClosureModalUI();
+                recalculateCashCount();
+            }
+        }).catch(() => {});
+    } catch (_) {}
+}
+
+function openTicketXModal() {
+    openClosureModal();
+    switchClosureTab('x');
 }
 
 function computeLocalShiftData() {
