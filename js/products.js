@@ -4,6 +4,8 @@
 
 const catIcons = {
     'pain': '🥖',
+    'pains_speciaux': '🌾',
+    'pain_special': '🌾',
     'viennoiserie': '🥐',
     'patisserie': '🍰',
     'cafe': '☕',
@@ -295,7 +297,9 @@ window.handleImgError = function (img, cat) {
 
 function getCatLabel(cat) {
     const labels = {
-        'pain': '🥖 Pain',
+        'pain': '🥖 Pain & Tradition',
+        'pains_speciaux': '🌾 Pain Spécial',
+        'pain_special': '🌾 Pain Spécial',
         'viennoiserie': '🥐 Viennoiserie',
         'patisserie': '🍰 Pâtisserie',
         'cafe': '☕ Café',
@@ -314,11 +318,21 @@ window.filterCat = function (term) {
 
     if (term === '') {
         currentFilteredList = [...allProducts];
+    } else if (term === 'pains_speciaux' || term === 'pain_special') {
+        currentFilteredList = allProducts.filter(p => {
+            const c = (p.categorie || '').toLowerCase();
+            return c === 'pains_speciaux' || c === 'pain_special' || c.includes('special') || c.includes('speciaux');
+        });
+    } else if (term === 'pain') {
+        currentFilteredList = allProducts.filter(p => {
+            const c = (p.categorie || '').toLowerCase();
+            return (c === 'pain' || c.includes('baguette') || c.includes('tradition')) && !c.includes('special') && !c.includes('speciaux');
+        });
     } else {
-        currentFilteredList = allProducts.filter(p => p.categorie.toLowerCase() === term.toLowerCase());
+        currentFilteredList = allProducts.filter(p => (p.categorie || '').toLowerCase() === term.toLowerCase());
     }
 
-    currentFilteredList.sort((a, b) => a.nom.localeCompare(b.nom, 'fr', { sensitivity: 'base' }));
+    currentFilteredList.sort((a, b) => (a.nom || '').localeCompare(b.nom || '', 'fr', { sensitivity: 'base' }));
     currentPage = 1;
     renderProductsPage();
 }

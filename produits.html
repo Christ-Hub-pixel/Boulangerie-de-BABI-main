@@ -146,35 +146,39 @@
                     <h6 class="fw-bold border-bottom pb-2 mb-3">Catégories</h6>
                     <div class="form-check mb-2">
                         <input class="form-check-input" type="radio" name="catFilter" value="" id="c1" onchange="filterCat('')" checked>
-                        <label class="form-check-label fs-sm" for="c1">Tous les produits</label>
+                        <label class="form-check-label fs-sm fw-bold" for="c1">✨ Tous les produits</label>
                     </div>
                     <div class="form-check mb-2">
                         <input class="form-check-input" type="radio" name="catFilter" value="pain" id="c2" onchange="filterCat('pain')">
-                        <label class="form-check-label fs-sm" for="c2">Pains</label>
+                        <label class="form-check-label fs-sm" for="c2">🥖 Pains & Baguettes</label>
+                    </div>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="radio" name="catFilter" value="pains_speciaux" id="c2_speciaux" onchange="filterCat('pains_speciaux')">
+                        <label class="form-check-label fs-sm fw-semibold text-warning-emphasis" for="c2_speciaux">🌾 Pains Spéciaux</label>
                     </div>
                     <div class="form-check mb-2">
                         <input class="form-check-input" type="radio" name="catFilter" value="viennoiserie" id="c3" onchange="filterCat('viennoiserie')">
-                        <label class="form-check-label fs-sm" for="c3">Viennoiseries</label>
+                        <label class="form-check-label fs-sm" for="c3">🥐 Viennoiseries</label>
                     </div>
                     <div class="form-check mb-2">
                         <input class="form-check-input" type="radio" name="catFilter" value="patisserie" id="c4" onchange="filterCat('patisserie')">
-                        <label class="form-check-label fs-sm" for="c4">Pâtisseries</label>
-                    </div>
-                    <div class="form-check mb-2">
-                        <input class="form-check-input" type="radio" name="catFilter" value="cafe" id="c5" onchange="filterCat('cafe')">
-                        <label class="form-check-label fs-sm" for="c5">Cafés</label>
+                        <label class="form-check-label fs-sm" for="c4">🍰 Pâtisseries & Gâteaux</label>
                     </div>
                     <div class="form-check mb-2">
                         <input class="form-check-input" type="radio" name="catFilter" value="jus" id="c6" onchange="filterCat('jus')">
-                        <label class="form-check-label fs-sm" for="c6">Jus</label>
-                    </div>
-                    <div class="form-check mb-2">
-                        <input class="form-check-input" type="radio" name="catFilter" value="glace" id="c7" onchange="filterCat('glace')">
-                        <label class="form-check-label fs-sm" for="c7">Glaces</label>
+                        <label class="form-check-label fs-sm" for="c6">🥤 Jus Naturels</label>
                     </div>
                     <div class="form-check mb-2">
                         <input class="form-check-input" type="radio" name="catFilter" value="boisson" id="c8" onchange="filterCat('boisson')">
-                        <label class="form-check-label fs-sm" for="c8">Boissons</label>
+                        <label class="form-check-label fs-sm" for="c8">🧃 Boissons Fraîches</label>
+                    </div>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="radio" name="catFilter" value="cafe" id="c5" onchange="filterCat('cafe')">
+                        <label class="form-check-label fs-sm" for="c5">☕ Cafés & Boissons Chaudes</label>
+                    </div>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="radio" name="catFilter" value="glace" id="c7" onchange="filterCat('glace')">
+                        <label class="form-check-label fs-sm" for="c7">🍨 Glaces</label>
                     </div>
                     <div class="form-check mb-2 opacity-50">
                         <input class="form-check-input" type="radio" name="catFilter" value="snack" id="c9" disabled>

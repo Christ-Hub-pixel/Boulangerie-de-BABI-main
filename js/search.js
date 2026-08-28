@@ -277,6 +277,12 @@
                         </a>
                     </div>
                     <div class="col-4">
+                        <a href="produits.html?cat=pains_speciaux" class="babi-cat-card text-decoration-none" title="Pains Spéciaux">
+                            <span class="babi-cat-emoji">🌾</span>
+                            <span class="babi-cat-label">Pains Spéciaux</span>
+                        </a>
+                    </div>
+                    <div class="col-4">
                         <a href="produits.html?cat=viennoiserie" class="babi-cat-card text-decoration-none" title="Viennoiseries">
                             <span class="babi-cat-emoji">🥐</span>
                             <span class="babi-cat-label">Viennoiseries</span>

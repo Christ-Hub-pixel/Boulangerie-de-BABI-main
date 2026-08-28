@@ -493,7 +493,8 @@ function renderPosProductsGrid(searchTerm = '') {
         const cat = (p.category || '').toLowerCase();
         let matchesCat = (currentCategory === 'all');
         if (!matchesCat) {
-            if (currentCategory === 'pains') matchesCat = cat.includes('pain') || cat.includes('baguette');
+            if (currentCategory === 'pains') matchesCat = (cat === 'pain' || cat.includes('baguette') || cat.includes('tradition')) && !cat.includes('special') && !cat.includes('speciaux');
+            else if (currentCategory === 'pains_speciaux') matchesCat = cat.includes('special') || cat.includes('speciaux') || cat === 'pains_speciaux';
             else if (currentCategory === 'viennoiseries') matchesCat = cat.includes('viennois') || cat.includes('croissant') || cat.includes('chocolat') || cat.includes('chausson');
             else if (currentCategory === 'patisseries') matchesCat = cat.includes('patiss') || cat.includes('pâtiss') || cat.includes('gateau') || cat.includes('gâteau') || cat.includes('fondant') || cat.includes('eclair') || cat.includes('tarte') || cat.includes('mille');
             else if (currentCategory === 'boissons') matchesCat = cat.includes('boisson') || cat.includes('jus') || cat.includes('cafe') || cat.includes('café') || cat.includes('cappuccino');

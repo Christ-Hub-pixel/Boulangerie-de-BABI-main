@@ -894,6 +894,18 @@ function updateProductKpis() {
         if (!el) return;
         if (catKey === 'all') {
             el.textContent = totalCount;
+        } else if (catKey === 'pains_speciaux') {
+            const count = allProducts.filter(p => {
+                const c = (p.categorie || p.category || '').toLowerCase();
+                return c === 'pains_speciaux' || c === 'pain_special' || c.includes('special') || c.includes('speciaux');
+            }).length;
+            el.textContent = count;
+        } else if (catKey === 'pain') {
+            const count = allProducts.filter(p => {
+                const c = (p.categorie || p.category || '').toLowerCase();
+                return (c === 'pain' || c.includes('baguette') || c.includes('tradition')) && !c.includes('special') && !c.includes('speciaux');
+            }).length;
+            el.textContent = count;
         } else {
             const count = allProducts.filter(p => {
                 const c = (p.categorie || p.category || '').toLowerCase();
@@ -905,6 +917,7 @@ function updateProductKpis() {
 
     setCatCount('prod-cat-all-count', 'all');
     setCatCount('prod-cat-pain-count', 'pain');
+    setCatCount('prod-cat-speciaux-count', 'pains_speciaux');
     setCatCount('prod-cat-viennoiserie-count', 'viennois');
     setCatCount('prod-cat-patisserie-count', 'patiss');
     setCatCount('prod-cat-boisson-count', 'boisson');
@@ -925,7 +938,13 @@ function renderProductsGridOrTable() {
         // Category filter
         if (currentProductCategoryFilter !== 'all') {
             const cat = (p.categorie || p.category || '').toLowerCase();
-            if (!cat.includes(currentProductCategoryFilter)) return false;
+            if (currentProductCategoryFilter === 'pains_speciaux') {
+                if (cat !== 'pains_speciaux' && cat !== 'pain_special' && !cat.includes('special') && !cat.includes('speciaux')) return false;
+            } else if (currentProductCategoryFilter === 'pain') {
+                if ((cat !== 'pain' && !cat.includes('baguette') && !cat.includes('tradition')) || cat.includes('special') || cat.includes('speciaux')) return false;
+            } else {
+                if (!cat.includes(currentProductCategoryFilter)) return false;
+            }
         }
         // Search filter
         if (currentProductSearchQuery) {

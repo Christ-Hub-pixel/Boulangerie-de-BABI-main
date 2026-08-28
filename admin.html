@@ -634,6 +634,7 @@
                     <div class="saas-sub-filters">
                         <button type="button" class="saas-filter-pill active" onclick="filterProductsByCategory('all', this)">Tous (<span id="prod-cat-all-count">0</span>)</button>
                         <button type="button" class="saas-filter-pill" onclick="filterProductsByCategory('pain', this)">🥖 Pains (<span id="prod-cat-pain-count">0</span>)</button>
+                        <button type="button" class="saas-filter-pill" onclick="filterProductsByCategory('pains_speciaux', this)">🌾 Pains Spéciaux (<span id="prod-cat-speciaux-count">0</span>)</button>
                         <button type="button" class="saas-filter-pill" onclick="filterProductsByCategory('viennoiserie', this)">🥐 Viennoiseries (<span id="prod-cat-viennoiserie-count">0</span>)</button>
                         <button type="button" class="saas-filter-pill" onclick="filterProductsByCategory('patisserie', this)">🍰 Pâtisseries (<span id="prod-cat-patisserie-count">0</span>)</button>
                         <button type="button" class="saas-filter-pill" onclick="filterProductsByCategory('boisson', this)">🧃 Boissons (<span id="prod-cat-boisson-count">0</span>)</button>
@@ -1197,11 +1198,13 @@
                         <label class="prestige-form-label" style="font-weight: 700; font-size: 12px; margin-bottom: 4px; display: block;">Catégorie * :</label>
                         <select id="new-prod-category" class="prestige-form-input" required style="width: 100%; padding: 10px 12px; border-radius: 12px; border: 1.5px solid #cbd5e1; font-size: 13px; outline: none; background: #fff;">
                             <option value="pain">🥖 Pains & Traditions</option>
+                            <option value="pains_speciaux">🌾 Pains Spéciaux</option>
                             <option value="viennoiserie">🥐 Viennoiseries</option>
                             <option value="patisserie">🍰 Pâtisseries & Gâteaux</option>
-                            <option value="boisson">🧃 Boissons </option>
-                            <option value="sale">🥪 Salés, Pizzas & Paninis</option>
+                            <option value="boisson">🧃 Boissons Fraîches</option>
                             <option value="jus">🥤 Jus Naturels</option>
+                            <option value="sale">🥪 Salés, Pizzas & Paninis</option>
+                            <option value="glace">🍨 Glaces</option>
                             <option value="snack">🍪 Biscuits & Cookies</option>
                         </select>
                     </div>
@@ -1283,10 +1286,13 @@
                         <label class="prestige-form-label" style="font-weight: 700; font-size: 12px; margin-bottom: 4px; display: block;">Catégorie * :</label>
                         <select id="edit-prod-category" class="prestige-form-input" required style="width: 100%; padding: 10px 12px; border-radius: 12px; border: 1.5px solid #cbd5e1; font-size: 13px; outline: none; background: #fff;">
                             <option value="pain">🥖 Pains & Traditions</option>
+                            <option value="pains_speciaux">🌾 Pains Spéciaux</option>
                             <option value="viennoiserie">🥐 Viennoiseries</option>
                             <option value="patisserie">🍰 Pâtisseries & Gâteaux</option>
-                            <option value="boisson">🧃 Boissons & Jus Naturels</option>
+                            <option value="boisson">🧃 Boissons Fraîches</option>
+                            <option value="jus">🥤 Jus Naturels</option>
                             <option value="sale">🥪 Salés, Pizzas & Paninis</option>
+                            <option value="glace">🍨 Glaces</option>
                             <option value="snack">🍪 Biscuits & Cookies</option>
                         </select>
                     </div>
