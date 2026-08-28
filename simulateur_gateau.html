@@ -141,6 +141,22 @@
 
             <!-- RIGHT COLUMN: CONFIGURATOR STEPS -->
             <div class="configurator-panel">
+
+                <!-- 🎂 BANDEAU CHEF PÂTISSIER IA -->
+                <div style="background: linear-gradient(135deg, #2b160c, #451a03); border: 2px solid #fbbf24; border-radius: 16px; padding: 14px 18px; margin-bottom: 20px; color: #fff; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; box-shadow: 0 10px 25px rgba(43,22,12,0.3);">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <span class="material-symbols-outlined" style="font-size: 28px; color: #fbbf24;">auto_awesome</span>
+                        <div>
+                            <div style="font-weight: 800; font-size: 13.5px; color: #fff;">✨ Chef Pâtissier IA BABI</div>
+                            <div style="font-size: 11px; color: #fde68a;">Laissez l'IA composer les saveurs, génoises et messages idéaux.</div>
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+                        <button type="button" onclick="composeAiCake('anniversaire')" style="background: #fbbf24; color: #2b160c; border: none; padding: 6px 12px; border-radius: 10px; font-size: 11px; font-weight: 800; cursor: pointer;">🎉 Anniversaire</button>
+                        <button type="button" onclick="composeAiCake('mariage')" style="background: #ffffff; color: #2b160c; border: none; padding: 6px 12px; border-radius: 10px; font-size: 11px; font-weight: 800; cursor: pointer;">💍 Mariage</button>
+                        <button type="button" onclick="composeAiCake('bapteme')" style="background: #ffffff; color: #2b160c; border: none; padding: 6px 12px; border-radius: 10px; font-size: 11px; font-weight: 800; cursor: pointer;">🕊️ Baptême</button>
+                    </div>
+                </div>
                 
                 <!-- STEP 1: EVENT TYPE & TIERS -->
                 <div class="config-step-card" id="step-event">
@@ -425,5 +441,6 @@
     <!-- Scripts -->
     <script src="js/api_config.js"></script>
     <script src="js/simulateur_gateau.js"></script>
+    <script src="js/babi_ai_client.js"></script>
 </body>
 </html>

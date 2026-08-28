@@ -234,3 +234,66 @@ function formatFCFA(val) {
 function capitalize(s) {
     return s ? s.charAt(0).toUpperCase() + s.slice(1) : '';
 }
+
+/**
+ * 🎂 COMPOSITION AUTOMATIQUE PAR L'IA CHEF PÂTISSIER
+ */
+window.composeAiCake = async function(occasion = 'anniversaire') {
+    try {
+        const res = await fetch('/api/ai/cake-advisor', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ occasion: occasion, nbPersons: 20 })
+        });
+        const data = await res.json();
+
+        if (data && data.success) {
+            // 1. Sélection de l'événement
+            const eventRadio = document.querySelector(`input[name="cakeEvent"][value="${occasion}"]`);
+            if (eventRadio) eventRadio.checked = true;
+
+            // 2. Message personnalisé
+            if (data.suggestedMessage) {
+                const msgInput = document.getElementById('cakeMessageInput');
+                if (msgInput) {
+                    msgInput.value = data.suggestedMessage;
+                    updateCakeMessage(data.suggestedMessage);
+                }
+            }
+
+            // 3. Choix des génoises selon l'événement
+            if (occasion === 'mariage') {
+                const sponge = document.querySelector('input[name="cakeSponge"][value="vanille"]');
+                if (sponge) sponge.checked = true;
+                const filling = document.querySelector('input[name="cakeFilling"][value="fruits_rouges"]');
+                if (filling) filling.checked = true;
+                const orOpt = document.getElementById('opt-feuille-or');
+                if (orOpt) orOpt.checked = true;
+            } else if (occasion === 'anniversaire') {
+                const sponge = document.querySelector('input[name="cakeSponge"][value="chocolat"]');
+                if (sponge) sponge.checked = true;
+                const filling = document.querySelector('input[name="cakeFilling"][value="ganache_choc"]');
+                if (filling) filling.checked = true;
+                const bougieOpt = document.getElementById('opt-bougies-fontaine');
+                if (bougieOpt) bougieOpt.checked = true;
+            } else {
+                const sponge = document.querySelector('input[name="cakeSponge"][value="citron"]');
+                if (sponge) sponge.checked = true;
+                const filling = document.querySelector('input[name="cakeFilling"][value="praline"]');
+                if (filling) filling.checked = true;
+            }
+
+            updateCakeConfig();
+
+            // Notification
+            const notif = document.createElement('div');
+            notif.style.cssText = 'position:fixed;top:20px;right:20px;z-index:999999;background:linear-gradient(135deg,#2b160c,#78350f);color:#fbbf24;border:2px solid #fbbf24;padding:12px 18px;border-radius:14px;font-weight:800;font-size:13px;box-shadow:0 10px 25px rgba(0,0,0,0.3);';
+            notif.innerHTML = `✨ Chef Pâtissier IA : Composition "${capitalize(occasion)}" appliquée !`;
+            document.body.appendChild(notif);
+            setTimeout(() => notif.remove(), 3000);
+        }
+    } catch (err) {
+        console.warn("Erreur AI Cake Advisor :", err);
+    }
+};
+

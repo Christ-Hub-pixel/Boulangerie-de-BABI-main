@@ -2450,6 +2450,40 @@ app.post('/api/ai/admin-command', async (req, res) => {
     }
 });
 
+// 🥐 8.4 Conseiller Gourmand Public (Chat Client IA Boutique)
+app.post('/api/ai/client-advisor', async (req, res) => {
+    try {
+        const { prompt, cart } = req.body;
+        const result = await aiAssistantCopilot.handleClientAdvisorChat(prompt, cart || [], db);
+        res.json({ success: true, ...result });
+    } catch (err) {
+        res.status(500).json({ success: false, error: err.message });
+    }
+});
+
+// 🎂 8.5 Assistant Pâtissier Créatif (Simulateur de Gâteau)
+app.post('/api/ai/cake-advisor', async (req, res) => {
+    try {
+        const { occasion, flavor, nbPersons } = req.body;
+        const result = aiAssistantCopilot.handleCakeAdvisor(occasion, flavor, nbPersons);
+        res.json({ success: true, ...result });
+    } catch (err) {
+        res.status(500).json({ success: false, error: err.message });
+    }
+});
+
+// 💳 8.6 Ventes Additionnelles Intelligentes POS (Caisse Tactile)
+app.post('/api/ai/cashier-upsell', async (req, res) => {
+    try {
+        const { items } = req.body;
+        const result = aiAssistantCopilot.handleCashierUpsell(items || []);
+        res.json({ success: true, ...result });
+    } catch (err) {
+        res.status(500).json({ success: false, error: err.message });
+    }
+});
+
+
 
 // 🔑 9. Validation Universelle & Instantanée de Code PIN
 app.post('/api/pin/validate', async (req, res) => {

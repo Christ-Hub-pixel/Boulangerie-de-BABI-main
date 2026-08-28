@@ -330,14 +330,166 @@ class AiAssistantCopilotService {
             };
         }
 
-        // 5. Synthèse générale par défaut
+    /**
+     * 🥐 CONSEILLER GOURMAND CLIENT IA (Pour la Boutique & le Site Web)
+     */
+    async handleClientAdvisorChat(userPrompt = '', cartItems = [], db = null) {
+        const q = (userPrompt || '').toLowerCase().trim();
+        const hour = new Date().getHours();
+
+        // 1. Recommandations par moment de la journée
+        if (q.includes('matin') || q.includes('déjeuner') || q.includes('petit-déjeuner') || (hour >= 6 && hour < 11 && (q.includes('conseil') || q.includes('faim') || q.includes('recommande')))) {
+            return {
+                reply: "🌅 **Formule Réveil BABI :** Pour un petit-déjeuner parfait, nous vous recommandons notre **Croissant Pur Beurre** croustillant, accompagné d'une **Baguette Tradition** chaude et d'un **Jus de Passion** pressé du matin !",
+                suggestedProducts: [
+                    { nom: "Croissant", prix: 500, cat: "viennoiserie", img: "assets/Croissant.png" },
+                    { nom: "Baguette Tradition", prix: 200, cat: "pain", img: "assets/baguette 200.png" },
+                    { nom: "Jus de Passion", prix: 700, cat: "jus", img: "assets/jus de passion.png" }
+                ]
+            };
+        }
+
+        // 2. Pause midi / Déjeuner
+        if (q.includes('midi') || q.includes('salé') || q.includes('manger') || q.includes('pizza') || q.includes('sandwich') || q.includes('panini') || (hour >= 11 && hour < 15 && (q.includes('faim') || q.includes('recommande')))) {
+            return {
+                reply: "🥪 **Pause Gourmande du Midi :** Notre **Panini Poulet Toasté** ou notre **Pizza Royale** sortent tout juste du four ! À accompagner avec un délicieux **Jus de Bissap** glacé.",
+                suggestedProducts: [
+                    { nom: "Panini Poulet", prix: 2000, cat: "sale", img: "assets/Panini.png" },
+                    { nom: "Pizza Royale", prix: 2500, cat: "sale", img: "assets/Pizza.png" },
+                    { nom: "Jus de Bissap", prix: 700, cat: "jus", img: "assets/jus de bissap.png" }
+                ]
+            };
+        }
+
+        // 3. Goûter & Douceurs
+        if (q.includes('goûter') || q.includes('gouter') || q.includes('sucré') || q.includes('sucre') || q.includes('chocolat') || q.includes('cookie') || q.includes('crêpe') || (hour >= 15 && hour < 19 && (q.includes('faim') || q.includes('recommande')))) {
+            return {
+                reply: "🍪 **L'Heure du Goûter :** Laissez-vous tenter par nos **Cookies aux Pépites de Chocolat**, un **Pain au Chocolat** doré ou notre **Fondant au Chocolat** fondant à souhait !",
+                suggestedProducts: [
+                    { nom: "Cookies Chocolat", prix: 300, cat: "snack", img: "assets/cookies.png" },
+                    { nom: "Pain au Chocolat", prix: 600, cat: "viennoiserie", img: "assets/pain au chocolat.png" },
+                    { nom: "Fondant au Chocolat", prix: 1500, cat: "patisserie", img: "assets/Fondant au Chocolat.png" }
+                ]
+            };
+        }
+
+        // 4. Gâteaux & Événements
+        if (q.includes('gâteau') || q.includes('gateau') || q.includes('anniversaire') || q.includes('fête') || q.includes('mariage') || q.includes('sur mesure')) {
+            return {
+                reply: "🎂 **Créations Festives sur-mesure :** Nos chefs pâtissiers confectionnent des gâteaux d'anniversaire et pièces montées personnalisés. Vous pouvez utiliser notre **Simulateur de Gâteau 3D** en ligne pour personnaliser la crème, la génoise et le message !",
+                actionLink: "simulateur_gateau.html",
+                actionText: "🎨 Ouvrir le Simulateur de Gâteau",
+                suggestedProducts: [
+                    { nom: "Gâteau Anniversaire Fraise", prix: 15000, cat: "patisserie", img: "assets/Gateau1.png" },
+                    { nom: "Gâteau Chocolat Suprême", prix: 18000, cat: "patisserie", img: "assets/gateau2.png" }
+                ]
+            };
+        }
+
+        // 5. Livraison à Abidjan
+        if (q.includes('livraison') || q.includes('livrer') || q.includes('abidjan') || q.includes('cocody') || q.includes('plateau') || q.includes('riviera') || q.includes('zone')) {
+            return {
+                reply: "🛵 **Livraison Express à Abidjan :** Nous livrons partout à Abidjan (Riviera, Cocody, Deux-Plateaux, Marcory, Plateau, Angré, Bingerville). Votre commande est préparée minute et livrée encore tiède !",
+                suggestedProducts: []
+            };
+        }
+
+        // 6. Pain Chaud & Cuisson
+        if (q.includes('chaud') || q.includes('pain') || q.includes('fournée') || q.includes('four')) {
+            return {
+                reply: "🥖 **Le Pain Chaud de BABI :** Nos baguettes et pains complets sortent du four toutes les 45 minutes ! Cuisson sur sole de pierre au levain naturel.",
+                suggestedProducts: [
+                    { nom: "Baguette Tradition", prix: 200, cat: "pain", img: "assets/baguette 200.png" },
+                    { nom: "Pain Complet", prix: 500, cat: "pain", img: "assets/Pain Complet (Grand).png" }
+                ]
+            };
+        }
+
+        // 7. Réponse générale & Bienvenue
         return {
-            reply: `Bonjour ! Je suis le **Copilote IA BABI**.\n\nVoici ce que je peux faire pour vous :\n• ✨ **Créer un produit par simple commande** (*"Ajoute Croissant au beurre à 500F"*)\n• 📸 **Trouver & suggérer des photos HD** pour n'importe quel produit\n• 📦 **Vérifier l'état des stocks** et alertes de rupture\n• 📈 **Analyser les ventes** et chiffres d'affaires\n\nQue souhaitez-vous faire ?`,
-            category: 'general_summary',
-            data: summary
+            reply: "✨ **Bienvenue chez la Boulangerie de BABI !** Je suis votre Conseiller Gourmand IA. Que désirez-vous aujourd'hui ? Un pain croustillant, des viennoiseries dorées, un jus naturel ou un gâteau de fête ?",
+            suggestedProducts: [
+                { nom: "Baguette Tradition", prix: 200, cat: "pain", img: "assets/baguette 200.png" },
+                { nom: "Croissant Beurre", prix: 500, cat: "viennoiserie", img: "assets/Croissant.png" },
+                { nom: "Jus de Bissap", prix: 700, cat: "jus", img: "assets/jus de bissap.png" }
+            ]
+        };
+    }
+
+    /**
+     * 🎂 CONSEILLER IA DU SIMULATEUR DE GÂTEAU
+     */
+    handleCakeAdvisor(occasion = 'anniversaire', flavor = 'chocolat', nbPersons = 10) {
+        const occasionsMap = {
+            'anniversaire': {
+                message: "Joyeux Anniversaire & Plein de Bonheur !",
+                deco: "Plaque personnalisée en chocolat doré, perles croustillantes et bougies étincelantes.",
+                idealFlavor: "Chocolat Suprême & Cœur Fondant Praliné"
+            },
+            'mariage': {
+                message: "Félicitations aux Mariés !",
+                deco: "Finition cascade de roses en sucre, ruban satiné et perles nacrées.",
+                idealFlavor: "Vanille de Madagascar & Coulis Fruits Rouges"
+            },
+            'bapteme': {
+                message: "Bénédiction & Douceur pour ce Baptême",
+                deco: "Tons pastels délicats, angelots en chocolat blanc.",
+                idealFlavor: "Mousseline Vanille & Framboise fraîche"
+            },
+            'remerciement': {
+                message: "Mille Mercis pour tout !",
+                deco: "Élégant pochage crème chantilly et copeaux de chocolat noir.",
+                idealFlavor: "Moka Café & Noisettes caramélisées"
+            }
+        };
+
+        const occ = occasionsMap[occasion.toLowerCase()] || occasionsMap['anniversaire'];
+        const estimatedPrice = Math.max(10000, Number(nbPersons || 10) * 1500);
+
+        return {
+            suggestedTitle: `Création Prestige ${occasion.charAt(0).toUpperCase() + occasion.slice(1)} (${nbPersons} parts)`,
+            suggestedFlavor: occ.idealFlavor,
+            suggestedMessage: occ.message,
+            suggestedDecoration: occ.deco,
+            estimatedPriceFCFA: estimatedPrice,
+            advice: `Pour ${nbPersons} personnes, nous recommandons une base de ${Math.ceil(nbPersons / 6)} étages avec un équilibre génoise aérée et crème légère.`
+        };
+    }
+
+    /**
+     * 💳 VENTES ADDITIONNELLES IA POUR LA CAISSIÈRE POS
+     */
+    handleCashierUpsell(items = []) {
+        const itemNames = items.map(i => (i.nom || i.name || '').toLowerCase()).join(' ');
+
+        if (itemNames.includes('pain') || itemNames.includes('baguette')) {
+            return {
+                upsellMessage: "💡 Proposer une Viennoiserie ou une Boisson fraîche",
+                suggestedProduct: { nom: "Croissant Pur Beurre", prix: 500, img: "assets/Croissant.png" }
+            };
+        }
+
+        if (itemNames.includes('croissant') || itemNames.includes('chocolat')) {
+            return {
+                upsellMessage: "💡 Proposer un Jus Naturel ou un Café chaud",
+                suggestedProduct: { nom: "Jus de Bissap Glacé", prix: 700, img: "assets/jus de bissap.png" }
+            };
+        }
+
+        if (itemNames.includes('pizza') || itemNames.includes('panini') || itemNames.includes('burger')) {
+            return {
+                upsellMessage: "💡 Formule Midi : Proposer une boisson + dessert",
+                suggestedProduct: { nom: "Jus de Passion d'Abidjan", prix: 700, img: "assets/jus de passion.png" }
+            };
+        }
+
+        return {
+            upsellMessage: "💡 Coup de cœur du jour : Baguette Tradition cuite sur sole",
+            suggestedProduct: { nom: "Baguette Tradition", prix: 200, img: "assets/baguette 200.png" }
         };
     }
 }
 
 module.exports = new AiAssistantCopilotService();
+
 
