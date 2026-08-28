@@ -2438,12 +2438,12 @@ app.post('/api/ai/generate-photo', async (req, res) => {
     }
 });
 
-// ⚡ 8.3 Exécuteur de Commandes Naturelles Admin IA
+// ⚡ 8.3 Exécuteur de Commandes Naturelles & Enregistrement Direct Admin IA
 app.post('/api/ai/admin-command', async (req, res) => {
     try {
-        const { command } = req.body;
-        if (!command) return res.status(400).json({ error: "Commande requise." });
-        const result = await aiAssistantCopilot.executeAdminAiCommand(command, db);
+        const { command, image, photo } = req.body;
+        if (!command && !image && !photo) return res.status(400).json({ error: "Commande ou photo requise." });
+        const result = await aiAssistantCopilot.executeAdminAiCommand(command || 'Nouveau Produit Photo', image || photo || null, db);
         res.json({ success: true, ...result });
     } catch (err) {
         res.status(500).json({ success: false, error: err.message });

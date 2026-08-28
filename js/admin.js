@@ -2752,6 +2752,72 @@ window.toggleAiCopilotDrawer = function() {
     }
 };
 
+let currentAiChatPhotoData = null;
+
+window.triggerAiChatPhoto = function() {
+    const fileInput = document.getElementById('ai-chat-photo-input');
+    if (fileInput) fileInput.click();
+};
+
+window.handleAiChatPhotoSelect = function(e) {
+    const file = e.target.files && e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function(evt) {
+        const rawBase64 = evt.target.result;
+        const img = new Image();
+        img.onload = function() {
+            const canvas = document.createElement('canvas');
+            const MAX_SIZE = 800;
+            let width = img.width;
+            let height = img.height;
+
+            if (width > height) {
+                if (width > MAX_SIZE) {
+                    height = Math.round((height * MAX_SIZE) / width);
+                    width = MAX_SIZE;
+                }
+            } else {
+                if (height > MAX_SIZE) {
+                    width = Math.round((width * MAX_SIZE) / height);
+                    height = MAX_SIZE;
+                }
+            }
+
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, width, height);
+
+            currentAiChatPhotoData = canvas.toDataURL('image/jpeg', 0.85);
+
+            const previewBar = document.getElementById('ai-chat-photo-preview-bar');
+            const thumb = document.getElementById('ai-chat-attached-thumb');
+            if (previewBar && thumb) {
+                thumb.src = currentAiChatPhotoData;
+                previewBar.style.display = 'flex';
+            }
+
+            const chatInput = document.getElementById('ai-chat-input');
+            if (chatInput && !chatInput.value.trim()) {
+                chatInput.value = "Ajoute ce produit au catalogue";
+                chatInput.focus();
+            }
+        };
+        img.src = rawBase64;
+    };
+    reader.readAsDataURL(file);
+};
+
+window.removeAiChatPhoto = function() {
+    currentAiChatPhotoData = null;
+    const previewBar = document.getElementById('ai-chat-photo-preview-bar');
+    const fileInput = document.getElementById('ai-chat-photo-input');
+    if (previewBar) previewBar.style.display = 'none';
+    if (fileInput) fileInput.value = '';
+};
+
 window.sendAiQuickPrompt = function(promptText) {
     const input = document.getElementById('ai-chat-input');
     if (input) {
@@ -2768,22 +2834,33 @@ window.handleAiChatSubmit = async function(e) {
     if (!input || !container) return;
 
     const text = input.value.trim();
-    if (!text) return;
+    const photoData = currentAiChatPhotoData;
+
+    if (!text && !photoData) return;
 
     // 1. Bulle Utilisateur
+    let userBubbleContent = text || 'Publier cette photo de produit';
+    if (photoData) {
+        userBubbleContent = `
+            <div>${text ? text + '<br>' : ''}</div>
+            <img src="${photoData}" style="width: 70px; height: 70px; border-radius: 8px; object-fit: cover; margin-top: 4px; border: 1.5px solid rgba(255,255,255,0.4);"/>
+        `;
+    }
+
     container.innerHTML += `
         <div style="background: #4f46e5; color: #fff; border-radius: 14px; padding: 8px 12px; align-self: flex-end; max-width: 85%; font-weight: 500;">
-            ${text}
+            ${userBubbleContent}
         </div>
     `;
     input.value = '';
+    removeAiChatPhoto();
     container.scrollTop = container.scrollHeight;
 
     // 2. Indicateur de chargement
     const loadingId = 'ai-load-' + Date.now();
     container.innerHTML += `
         <div id="${loadingId}" style="background: #f1f5f9; border-radius: 14px; padding: 8px 12px; align-self: flex-start; color: #64748b; font-size: 11.5px;">
-            <i class="fa-solid fa-circle-notch fa-spin me-1"></i> Réflexion du Copilote IA...
+            <i class="fa-solid fa-circle-notch fa-spin me-1"></i> Traitement par le Copilote IA...
         </div>
     `;
     container.scrollTop = container.scrollHeight;
@@ -2792,7 +2869,10 @@ window.handleAiChatSubmit = async function(e) {
         const res = await fetch(`${API_BASE_URL}/ai/admin-command`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ command: text })
+            body: JSON.stringify({ 
+                command: text || 'Nouveau Produit Photo', 
+                image: photoData || null 
+            })
         });
         const data = await parseSafeResponse(res);
 
@@ -2802,8 +2882,34 @@ window.handleAiChatSubmit = async function(e) {
         if (data && data.success) {
             let extraHtml = '';
 
+            // Si le produit a été directement ENREGISTRÉ & PUBLIÉ en BD
+            if (data.action === 'PRODUCT_SAVED_AND_PUBLISHED' && data.product) {
+                const p = data.product;
+                extraHtml = `
+                    <div style="margin-top: 10px; padding: 10px; background: #ffffff; border: 2px solid #16a34a; border-radius: 14px; box-shadow: 0 4px 12px rgba(22, 163, 74, 0.15);">
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <img src="${p.image}" style="width: 54px; height: 54px; border-radius: 10px; object-fit: cover; border: 1.5px solid #22c55e;" onerror="this.src='assets/product_baguette.png'"/>
+                            <div style="flex: 1;">
+                                <div style="font-weight: 800; color: #14532d; font-size: 13px;">${p.nom}</div>
+                                <div style="font-size: 11.5px; color: #16a34a; font-weight: 700;">${(p.prix || 0).toLocaleString()} FCFA • ${p.stock || 50} en stock</div>
+                                <div style="font-size: 10.5px; color: #64748b;">Catégorie : <b>${(p.categorie || 'pain').toUpperCase()}</b></div>
+                            </div>
+                        </div>
+                        <div style="margin-top: 8px; padding-top: 6px; border-top: 1px dashed #e2e8f0; font-size: 11px; color: #15803d; font-weight: 700; display: flex; align-items: center; justify-content: space-between;">
+                            <span>✅ Actif sur le Web & l'App Mobile</span>
+                            <span class="badge" style="background:#dcfce7; color:#166534; font-size:10px;">EN LIGNE</span>
+                        </div>
+                    </div>
+                `;
+
+                // Recharger automatiquement le tableau de l'administrateur
+                if (typeof loadProducts === 'function') loadProducts();
+                if (typeof loadAdminDashboardData === 'function') loadAdminDashboardData();
+                showAdminToast(`🎉 Produit "${p.nom}" publié avec succès !`, "success");
+            }
+
             // Si l'IA propose un produit
-            if (data.action === 'SUGGEST_NEW_PRODUCT' && data.product) {
+            else if (data.action === 'SUGGEST_NEW_PRODUCT' && data.product) {
                 const p = data.product;
                 extraHtml = `
                     <div style="margin-top: 8px; padding: 8px; background: #ffffff; border: 1.5px dashed #4f46e5; border-radius: 12px; display: flex; align-items: center; gap: 10px;">
@@ -2820,7 +2926,7 @@ window.handleAiChatSubmit = async function(e) {
             }
 
             // Si l'IA propose des photos
-            if (data.action === 'PHOTO_SUGGESTIONS' && Array.isArray(data.photos)) {
+            else if (data.action === 'PHOTO_SUGGESTIONS' && Array.isArray(data.photos)) {
                 extraHtml = `
                     <div style="margin-top: 8px; display: flex; gap: 6px; overflow-x: auto; padding-bottom: 4px;">
                         ${data.photos.map(url => `
@@ -2831,7 +2937,7 @@ window.handleAiChatSubmit = async function(e) {
             }
 
             container.innerHTML += `
-                <div style="background: #eef2ff; border: 1px solid #c7d2fe; border-radius: 14px; padding: 10px 12px; color: #1e1b4b; align-self: flex-start; max-width: 90%;">
+                <div style="background: #eef2ff; border: 1px solid #c7d2fe; border-radius: 14px; padding: 10px 12px; color: #1e1b4b; align-self: flex-start; max-width: 92%;">
                     <div style="font-weight: 800; font-size: 11px; margin-bottom: 2px; color: #4338ca;">🤖 Copilote IA BABI :</div>
                     <div>${(data.reply || '').replace(/\n/g, '<br>')}</div>
                     ${extraHtml}
@@ -2878,6 +2984,7 @@ window.applyAiProductFromChat = function(nom, categorie, prix, stock, image, des
     toggleAiCopilotDrawer();
     showAdminToast(`✨ Produit "${nom}" pré-rempli dans le formulaire !`, "success");
 };
+
 
 
 
