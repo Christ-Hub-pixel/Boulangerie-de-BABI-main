@@ -50,89 +50,60 @@
     };
 
     // ------------------------------------------------------------------------
-    // 3. CATALOGUE EMBARQUÉ (Initialement vide pour saisie manuelle officielle)
+    // 3. CATALOGUE EMBARQUÉ & CACHE SYNCHRONE DIRECT
     // ------------------------------------------------------------------------
-    const RAW_EMBEDDED_CATALOG = [];
-    window.BABI_EMBEDDED_CATALOG = RAW_EMBEDDED_CATALOG;
+    window.BABI_EMBEDDED_CATALOG = [];
 
-    // ------------------------------------------------------------------------
-    // 4. GESTIONNAIRE DE PERSISTANCE & SUPPRESSION DÉFINITIVE
-    // ------------------------------------------------------------------------
-    window.babiGetDeletedProductIds = function() {
-        try {
-            const raw = localStorage.getItem('babi_deleted_product_ids');
-            if (raw) {
-                const parsed = JSON.parse(raw);
-                if (Array.isArray(parsed)) return parsed.map(String);
-            }
-        } catch (_) {}
-        return [];
-    };
-
-    window.babiMarkProductAsDeleted = function(id) {
-        try {
-            const deleted = window.babiGetDeletedProductIds();
-            const strId = String(id);
-            if (!deleted.includes(strId)) {
-                deleted.push(strId);
-                localStorage.setItem('babi_deleted_product_ids', JSON.stringify(deleted));
-            }
-            // Retirer du cache local
-            const cached = localStorage.getItem('babi_cached_products');
-            let current = [];
-            if (cached) {
-                try { current = JSON.parse(cached) || []; } catch (_) {}
-            } else {
-                current = RAW_EMBEDDED_CATALOG ? [...RAW_EMBEDDED_CATALOG] : [];
-            }
-            const updated = current.filter(p => String(p.id) !== strId && p.id !== id);
-            localStorage.setItem('babi_cached_products', JSON.stringify(updated));
-            localStorage.setItem('babi_catalog_user_modified', 'true');
-        } catch (_) {}
-    };
+    // Nettoyage automatique des anciens filtres de suppression pour ne pas bloquer les nouveaux produits
+    try {
+        localStorage.removeItem('babi_deleted_product_ids');
+    } catch (_) {}
 
     window.babiGetCachedProducts = function() {
-        const deletedIds = new Set(window.babiGetDeletedProductIds());
-        let list = [];
         try {
             const cached = localStorage.getItem('babi_cached_products');
             if (cached !== null) {
                 const parsed = JSON.parse(cached);
                 if (Array.isArray(parsed)) {
-                    list = parsed;
+                    return parsed;
                 }
-            } else if (localStorage.getItem('babi_catalog_user_modified') !== 'true') {
-                list = RAW_EMBEDDED_CATALOG ? [...RAW_EMBEDDED_CATALOG] : [];
             }
-        } catch (_) {
-            list = RAW_EMBEDDED_CATALOG ? [...RAW_EMBEDDED_CATALOG] : [];
-        }
-        // Filtrage strict : tout produit supprimé ne réapparaît JAMAIS
-        return list.filter(p => !deletedIds.has(String(p.id)) && !deletedIds.has(String(p.id_produit || '')));
+        } catch (_) {}
+        return [];
     };
 
     window.babiSetCachedProducts = function(products) {
         try {
             if (Array.isArray(products)) {
-                const deletedIds = new Set(window.babiGetDeletedProductIds());
-                const filtered = products.filter(p => !deletedIds.has(String(p.id)) && !deletedIds.has(String(p.id_produit || '')));
-                localStorage.setItem('babi_cached_products', JSON.stringify(filtered));
-                localStorage.setItem('babi_catalog_user_modified', 'true');
+                localStorage.setItem('babi_cached_products', JSON.stringify(products));
             }
         } catch (_) {}
     };
 
-    window.babiClearAllProducts = function() {
+    window.babiAddCustomProduct = function(product) {
         try {
-            localStorage.setItem('babi_cached_products', JSON.stringify([]));
-            localStorage.setItem('babi_catalog_user_modified', 'true');
-            const allIds = RAW_EMBEDDED_CATALOG.map(p => String(p.id));
-            localStorage.setItem('babi_deleted_product_ids', JSON.stringify(allIds));
-        } catch (_) {}
+            const list = window.babiGetCachedProducts();
+            const existingIdx = list.findIndex(p => String(p.id) === String(product.id));
+            if (existingIdx >= 0) {
+                list[existingIdx] = product;
+            } else {
+                list.unshift(product);
+            }
+            window.babiSetCachedProducts(list);
+            return list;
+        } catch (_) {
+            return [];
+        }
     };
 
-    // Initialisation du cache
-    if (!localStorage.getItem('babi_cached_products') && localStorage.getItem('babi_catalog_user_modified') !== 'true') {
-        window.babiSetCachedProducts(RAW_EMBEDDED_CATALOG);
-    }
+    window.babiRemoveCustomProduct = function(productId) {
+        try {
+            const list = window.babiGetCachedProducts();
+            const filtered = list.filter(p => String(p.id) !== String(productId) && p.id !== productId);
+            window.babiSetCachedProducts(filtered);
+            return filtered;
+        } catch (_) {
+            return [];
+        }
+    };
 })();

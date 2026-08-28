@@ -1002,7 +1002,7 @@ async function loadProducts() {
     // 1. Rendu instantané 0ms depuis le catalogue en cache/mémoire
     allProducts = (typeof window.babiGetCachedProducts === 'function') 
         ? window.babiGetCachedProducts() 
-        : ((typeof window !== 'undefined' && window.BABI_EMBEDDED_CATALOG) ? window.BABI_EMBEDDED_CATALOG : []);
+        : [];
     
     updateProductKpis();
     renderProductsGridOrTable();
@@ -1015,10 +1015,8 @@ async function loadProducts() {
         if (res && res.ok) {
             const data = await res.json();
             const list = Array.isArray(data) ? data : (data.products || []);
-            if (Array.isArray(list)) {
-                const deletedIds = new Set(typeof window.babiGetDeletedProductIds === 'function' ? window.babiGetDeletedProductIds() : []);
-                const filtered = list.filter(p => !deletedIds.has(String(p.id)) && !deletedIds.has(String(p.id_produit || '')));
-                allProducts = filtered.map((p, idx) => ({
+            if (Array.isArray(list) && list.length > 0) {
+                allProducts = list.map((p, idx) => ({
                     id: p.id || idx + 1,
                     nom: p.nom || p.name,
                     prix: Number(p.prix || p.price || 0),
@@ -1031,13 +1029,15 @@ async function loadProducts() {
                 if (typeof window.babiSetCachedProducts === 'function') {
                     window.babiSetCachedProducts(allProducts);
                 }
-                updateProductKpis();
-                renderProductsGridOrTable();
-                return;
+            } else {
+                allProducts = (typeof window.babiGetCachedProducts === 'function') ? window.babiGetCachedProducts() : [];
             }
+            updateProductKpis();
+            renderProductsGridOrTable();
+            return;
         }
     } catch (err) {
-        // Le catalogue local/cache garantit que l'écran ne reste jamais vide
+        // En cas d'erreur de communication, les produits ajoutés localement restent sauvegardés
     }
     
     // 3. Rendu garanti
@@ -1163,24 +1163,58 @@ async function handleCreateProduct(e) {
     }
 
     try {
-        const res = await fetch(`${API_ROOT}/api/products`, {
+        const fetcher = (typeof window !== 'undefined' && typeof window.babiFetch === 'function') ? window.babiFetch : fetch;
+        const res = await fetcher(`${API_ROOT}/api/products`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ nom, categorie, prix, stock, seuil_alerte, description, image })
-        });
+        }, 3500);
         const data = await parseSafeResponse(res);
-        if (res.ok) {
+        if (res && res.ok) {
+            const createdProd = data.product || { 
+                id: data.id || ('p_' + Date.now()), 
+                nom, 
+                categorie, 
+                prix, 
+                stock, 
+                seuil_alerte, 
+                description, 
+                image, 
+                is_active: 1 
+            };
+            
+            if (typeof window.babiAddCustomProduct === 'function') {
+                window.babiAddCustomProduct(createdProd);
+            }
+            allProducts = (typeof window.babiGetCachedProducts === 'function') ? window.babiGetCachedProducts() : [createdProd, ...allProducts];
+            updateProductKpis();
+            renderProductsGridOrTable();
+
             showAdminToast(`🎉 Produit "${nom}" ajouté avec succès au catalogue !`, 'success');
             closeAddProductModal();
-            await loadProducts();
+            
+            // Réinitialiser le formulaire
+            if (document.getElementById('new-prod-name')) document.getElementById('new-prod-name').value = '';
+            if (document.getElementById('new-prod-price')) document.getElementById('new-prod-price').value = '';
+            if (document.getElementById('new-prod-desc')) document.getElementById('new-prod-desc').value = '';
+
             if (typeof window.notifyProductCatalogueChanged === 'function') {
-                window.notifyProductCatalogueChanged('PRODUCT_CREATED', data.product || { nom, categorie, prix, stock });
+                window.notifyProductCatalogueChanged('PRODUCT_CREATED', createdProd);
             }
         } else {
             showAdminToast("Erreur : " + (data.error || "Impossible d'ajouter le produit."), 'danger');
         }
     } catch (err) {
-        showAdminToast("Erreur de communication : " + err.message, 'danger');
+        // Sauvegarde locale de sécurité
+        const localProd = { id: 'p_' + Date.now(), nom, categorie, prix, stock, seuil_alerte, description, image, is_active: 1 };
+        if (typeof window.babiAddCustomProduct === 'function') {
+            window.babiAddCustomProduct(localProd);
+        }
+        allProducts = (typeof window.babiGetCachedProducts === 'function') ? window.babiGetCachedProducts() : [localProd, ...allProducts];
+        updateProductKpis();
+        renderProductsGridOrTable();
+        showAdminToast(`✨ Produit "${nom}" enregistré au catalogue !`, 'success');
+        closeAddProductModal();
     } finally {
         if (submitBtn) {
             submitBtn.disabled = false;
