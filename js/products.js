@@ -1,75 +1,6 @@
-// Fetch and render products dynamically with real photos & dynamic pagination everywhere across the site
-
-const realProductImages = {
-    "Chill": "assets/chill.png",
-    "Youyou": "assets/youzou.png",
-    "Word Cola": "assets/world cola.png",
-    "Youki Orange": "assets/youki moka cafe.png",
-    "Youki Pomme": "assets/youki pomme.png",
-    "Énergie Malt": "assets/energie malt .png",
-    "Energie Malt": "assets/energie malt .png",
-    "Orangina": "assets/Orangina.png",
-    "Sprite": "assets/sprite.png",
-    "Jus Naturel (Petit)": "assets/Jus Naturel (Petit).png",
-    "Jus Naturel (Moyen)": "assets/Jus Naturel (Moyen).png",
-    "Jus Naturel (Grand)": "assets/Jus Naturel (Grand).png",
-    "Eau Minérale (Petite)": "assets/bouteille celeste.png",
-    "Eau Minérale (Grande)": "assets/bouteille celeste.png",
-    "Dégué": "assets/jus de bissap.png",
-    "Passion (Grand Format)": "assets/jus de passion.png",
-    "Passion (Petite Bouteille)": "assets/jus de passion.png",
-    "Baobab": "assets/jus de baobab.png",
-    "Baobab (Petit)": "assets/jus de baobab petit.png",
-    "Bissap": "assets/jus de bissap.png",
-    "Gingembre": "assets/jus de gingembre.png",
-    "Tamarin": "assets/jus de tamari.png",
-    "Cocktail": "assets/cocktail.png",
-    "Citron": "assets/jus de citron.png",
-    "Chocolat Chaud": "assets/Chocolat Chaud.png",
-    "Baguette 150": "assets/baguette 150.png",
-    "Baguette 200": "assets/baguette 200.png",
-    "Ficelle": "assets/baguette 150.png",
-    "Pain Complet (Grand)": "assets/Pain Complet (Grand).png",
-    "Pain Complet (Petit)": "assets/pain complet 2.png",
-    "Pain Sans Sel": "assets/pain sans sel.png",
-    "Petit Pain (50F)": "assets/pain individuel.png",
-    "Petit Pain (100F)": "assets/pain individuel.png",
-    "Biscotte": "assets/biscottes.png",
-    "Charaphe au Raisin": "assets/charaphe au raisin.png",
-    "Chausson aux Pommes": "assets/chausson aux pommes.png",
-    "Choco Suisse": "assets/choco suisse.png",
-    "Cookies (l'unité)": "assets/cookies.png",
-    "Lot de Cookies": "assets/cookies.png",
-    "Croissant": "assets/Croissant.png",
-    "Flan": "assets/Flan.png",
-    "Pain au Chocolat": "assets/pain au chocolat.png",
-    "Pain aux Raisins": "assets/pain au raisin.png",
-    "Palmiers": "assets/palmier.png",
-    "Torsade": "assets/torsade.png",
-    "Madeleine": "assets/madeleine unite.png",
-    "Madeleines (l'unité)": "assets/madeleine unite.png",
-    "Lot de Madeleines": "assets/lots de madeleine.png",
-    "Gâteau (10 000F)": "assets/Gateau1.png",
-    "Gâteau (15 000F)": "assets/Gateau1.1.png",
-    "Gâteau (20 000F)": "assets/Gateau1.2.png",
-    "Gâteau (25 000F)": "assets/gateau2.png",
-    "Gâteau de Mariage": "assets/gateau de mariiage.png",
-    "Bûche de Noël (7000F)": "assets/buche de noel.png",
-    "Bûche de Noël (5000F)": "assets/buche de noel.png",
-    "Moka": "assets/moka1.png",
-    "Cup Cake": "assets/moka1.1.png",
-    "Cake (300F)": "assets/cake.png",
-    "Cake (700F)": "assets/cake1.png",
-    "Crêpe au Nutella": "assets/crepe au nutella.png",
-    "Crêpe à la Vanille": "assets/crepe a la vanille.png",
-    "Crêpe Suzette": "assets/Crêpe Suzette.png",
-    "Fondant au Chocolat": "assets/Fondant au Chocolat.png",
-    "Glace": "assets/glace.png",
-    "Pain au Lait Sucré": "assets/cabre.png",
-    "Pain Cabré": "assets/cabre.png",
-    "Pain Marbré": "assets/marbre.png",
-    "Pain de Mie": "assets/pain de mie.png"
-};
+// ================================================================
+// BOULANGERIE DE BABI — GESTIONNAIRE DYNAMIQUE DU CATALOGUE CLIENT
+// ================================================================
 
 const catIcons = {
     'pain': '🥖',
@@ -78,105 +9,15 @@ const catIcons = {
     'cafe': '☕',
     'jus': '🥤',
     'glace': '🍨',
-    'boisson': '🥤'
+    'boisson': '🧃',
+    'autre': '🥖'
 };
 
-const FALLBACK_PRODUCTS = [
-    // === BOISSONS ===
-    { id: 1, nom: "Chill", prix: 700, categorie: "boisson" },
-    { id: 2, nom: "Youyou", prix: 500, categorie: "boisson" },
-    { id: 3, nom: "Word Cola", prix: 500, categorie: "boisson" },
-    { id: 4, nom: "Youki Orange", prix: 500, categorie: "boisson" },
-    { id: 5, nom: "Youki Pomme", prix: 500, categorie: "boisson" },
-    { id: 6, nom: "Jus Naturel (Petit)", prix: 300, categorie: "jus" },
-    { id: 7, nom: "Jus Naturel (Moyen)", prix: 500, categorie: "jus" },
-    { id: 8, nom: "Jus Naturel (Grand)", prix: 2000, categorie: "jus" },
-    { id: 9, nom: "Orangina", prix: 500, categorie: "boisson" },
-    { id: 10, nom: "Sprite", prix: 500, categorie: "boisson" },
-    { id: 11, nom: "Énergie Malt", prix: 700, categorie: "boisson" },
-    { id: 12, nom: "Eau Minérale (Petite)", prix: 200, categorie: "boisson" },
-    { id: 13, nom: "Eau Minérale (Grande)", prix: 1000, categorie: "boisson" },
-    { id: 14, nom: "Dégué", prix: 500, categorie: "boisson" },
-    { id: 15, nom: "Lait", prix: 500, categorie: "boisson" },
-    { id: 16, nom: "Passion (Grand Format)", prix: 3000, categorie: "jus" },
-    { id: 17, nom: "Passion (Petite Bouteille)", prix: 700, categorie: "jus" },
-    { id: 18, nom: "Baobab", prix: 500, categorie: "jus" },
-    { id: 86, nom: "Baobab (Petit)", prix: 300, categorie: "jus" },
-    { id: 19, nom: "Bissap", prix: 2000, categorie: "jus" },
-    { id: 20, nom: "Gingembre", prix: 3000, categorie: "jus" },
-    { id: 21, nom: "Tamarin", prix: 2000, categorie: "jus" },
-    { id: 22, nom: "Cocktail", prix: 3000, categorie: "jus" },
-    { id: 23, nom: "Citron", prix: 2000, categorie: "jus" },
-    { id: 24, nom: "Chocolat Chaud", prix: 3000, categorie: "cafe" },
-
-    // === BOULANGERIE ===
-    { id: 25, nom: "Baguette 150", prix: 150, categorie: "pain" },
-    { id: 26, nom: "Baguette 200", prix: 200, categorie: "pain" },
-    { id: 27, nom: "Ficelle", prix: 500, categorie: "pain" },
-    { id: 28, nom: "Pain Complet (Grand)", prix: 1000, categorie: "pain" },
-    { id: 29, nom: "Pain Complet (Petit)", prix: 500, categorie: "pain" },
-    { id: 30, nom: "Pain Sans Sel", prix: 150, categorie: "pain" },
-    { id: 32, nom: "Petit Pain (50F)", prix: 50, categorie: "pain" },
-    { id: 33, nom: "Petit Pain (100F)", prix: 100, categorie: "pain" },
-
-    // === VIENNOISERIES ===
-    { id: 38, nom: "Biscotte", prix: 1000, categorie: "viennoiserie" },
-    { id: 39, nom: "Charaphe au Raisin", prix: 700, categorie: "viennoiserie" },
-    { id: 40, nom: "Chausson aux Pommes", prix: 1000, categorie: "viennoiserie" },
-    { id: 41, nom: "Choco Suisse", prix: 800, categorie: "viennoiserie" },
-    { id: 42, nom: "Cookies (l'unité)", prix: 200, categorie: "viennoiserie" },
-    { id: 43, nom: "Croissant", prix: 500, categorie: "viennoiserie" },
-    { id: 44, nom: "Escargots", prix: 700, categorie: "viennoiserie" },
-    { id: 45, nom: "Flan", prix: 1000, categorie: "patisserie" },
-    { id: 47, nom: "Lot de Cookies", prix: 1000, categorie: "viennoiserie" },
-    { id: 48, nom: "Pain au Chocolat", prix: 500, categorie: "viennoiserie" },
-    { id: 49, nom: "Pain au Lait", prix: 200, categorie: "viennoiserie" },
-    { id: 50, nom: "Pain aux Raisins", prix: 700, categorie: "viennoiserie" },
-    { id: 51, nom: "Pain Évêque", prix: 800, categorie: "viennoiserie" },
-    { id: 52, nom: "Pain Suisse", prix: 800, categorie: "viennoiserie" },
-    { id: 53, nom: "Palmiers", prix: 200, categorie: "viennoiserie" },
-    { id: 54, nom: "Star Suisse", prix: 800, categorie: "viennoiserie" },
-    { id: 55, nom: "Torsade", prix: 800, categorie: "viennoiserie" },
-    { id: 57, nom: "Madeleines (l'unité)", prix: 100, categorie: "viennoiserie" },
-
-    // === GATEAU & CAKE ===
-    { id: 58, nom: "Gâteau (10 000F)", prix: 10000, categorie: "patisserie" },
-    { id: 59, nom: "Gâteau (15 000F)", prix: 15000, categorie: "patisserie" },
-    { id: 60, nom: "Gâteau (20 000F)", prix: 20000, categorie: "patisserie" },
-    { id: 61, nom: "Gâteau (25 000F)", prix: 25000, categorie: "patisserie" },
-    { id: 62, nom: "Bûche de Noël (7000F)", prix: 7000, categorie: "patisserie" },
-    { id: 63, nom: "Bûche de Noël (5000F)", prix: 5000, categorie: "patisserie" },
-    { id: 64, nom: "Moka", prix: 1500, categorie: "patisserie" },
-    { id: 65, nom: "Lot de Madeleines", prix: 500, categorie: "viennoiserie" },
-    { id: 66, nom: "Madeleine", prix: 100, categorie: "viennoiserie" },
-    { id: 67, nom: "Cup Cake", prix: 500, categorie: "patisserie" },
-    { id: 68, nom: "Cake (300F)", prix: 300, categorie: "patisserie" },
-    { id: 69, nom: "Cake (700F)", prix: 700, categorie: "patisserie" },
-
-    // === DESSERT ===
-    { id: 70, nom: "Crêpe au Nutella", prix: 2000, categorie: "patisserie" },
-    { id: 71, nom: "Crêpe à la Vanille", prix: 1500, categorie: "patisserie" },
-    { id: 72, nom: "Crêpe Suzette", prix: 1500, categorie: "patisserie" },
-    { id: 73, nom: "Fondant au Chocolat", prix: 1000, categorie: "patisserie" },
-    { id: 74, nom: "Glace", prix: 1000, categorie: "glace" },
-
-    // === PAINS SPECIAUX & VIENNOISERIES ===
-    { id: 75, nom: "Pain au Lait Sucré", prix: 700, categorie: "pain" },
-    { id: 76, nom: "Pain Breton", prix: 700, categorie: "pain" },
-    { id: 77, nom: "Pain Délice", prix: 700, categorie: "pain" },
-    { id: 78, nom: "Pain Marbré", prix: 500, categorie: "pain" },
-    { id: 79, nom: "Pain Amour", prix: 1000, categorie: "pain" },
-    { id: 80, nom: "Pain Canadien", prix: 700, categorie: "pain" },
-    { id: 81, nom: "Pain de Mie", prix: 2000, categorie: "pain" },
-    { id: 82, nom: "Pain Parisien", prix: 300, categorie: "pain" },
-    { id: 83, nom: "Pain Viennois (500F)", prix: 500, categorie: "pain" },
-    { id: 84, nom: "Pain Viennois (700F)", prix: 700, categorie: "pain" },
-    { id: 85, nom: "Suzette", prix: 300, categorie: "pain" }
-];
+const FALLBACK_PRODUCTS = [];
 
 let allProducts = (typeof window !== 'undefined' && typeof window.babiGetCachedProducts === 'function')
     ? window.babiGetCachedProducts()
-    : FALLBACK_PRODUCTS.filter(p => p.is_active !== 0 && p.is_active !== '0');
+    : [];
 
 allProducts.sort((a, b) => (a.nom || a.name || '').localeCompare(b.nom || b.name || '', 'fr', { sensitivity: 'base' }));
 let currentFilteredList = [...allProducts];
@@ -186,7 +27,7 @@ const itemsPerPage = 12;
 // ⚡ Rendu immédiat 0ms synchrone (dès l'évaluation du script si le DOM est prêt)
 if (typeof document !== 'undefined') {
     if (document.readyState === 'complete' || document.readyState === 'interactive') {
-        try { loadHomepageProducts(); } catch (_) {}
+        try { loadHomepageProducts(); } catch (_) { }
     }
 }
 
@@ -199,7 +40,7 @@ async function loadProducts() {
     }
     allProducts.sort((a, b) => (a.nom || a.name || '').localeCompare(b.nom || b.name || '', 'fr', { sensitivity: 'base' }));
     currentFilteredList = [...allProducts];
-    
+
     // Rendu immédiat sans attendre le réseau
     loadHomepageProducts();
     const container = document.getElementById('product-grid');
@@ -260,7 +101,7 @@ async function loadProducts() {
                 }
             }
         }
-    } catch(err) {
+    } catch (err) {
         // En cas de lenteur réseau ou serveur hors ligne, la vitrine fonctionne parfaitement à 100%
     }
 }
@@ -268,10 +109,10 @@ async function loadProducts() {
 function loadHomepageProducts() {
     const recommendedContainer = document.getElementById('index-recommended-grid');
     const delicesContainer = document.getElementById('index-delices-grid');
-    
+
     // Pick top products with real photos for the homepage
     const featured = allProducts.filter(p => realProductImages[p.nom] || (p.image && p.image !== 'null'));
-    
+
     const buildCardHtml = (p) => {
         const imgSrc = realProductImages[p.nom] || p.image;
         const isFav = typeof isWishlisted === 'function' && isWishlisted(p.nom);
@@ -291,7 +132,7 @@ function loadHomepageProducts() {
                     <h6 class="card-title fw-semibold mb-1" style="color:#2b160c;">${p.nom}</h6>
                     <div class="d-flex align-items-center gap-1 mb-2">
                         <span class="text-warning" style="font-size:0.68rem;">★★★★<span class="text-muted">★</span></span>
-                        <span class="text-muted" style="font-size:0.7rem;">(${Math.floor(Math.random()*150)+20})</span>
+                        <span class="text-muted" style="font-size:0.7rem;">(${Math.floor(Math.random() * 150) + 20})</span>
                     </div>
                     <div class="d-flex align-items-baseline gap-2 mb-2">
                         <span class="fw-bold text-dark product-price">${(p.prix || 0).toLocaleString()} <small>FCFA</small></span>
@@ -309,7 +150,7 @@ function loadHomepageProducts() {
     if (recommendedContainer) {
         recommendedContainer.innerHTML = featured.slice(0, 10).map(buildCardHtml).join('');
     }
-    
+
     if (delicesContainer) {
         delicesContainer.innerHTML = featured.slice(10, 20).map(buildCardHtml).join('');
     }
@@ -335,21 +176,21 @@ function renderProductsPage() {
 
 function renderProducts(productsList) {
     const container = document.getElementById('product-grid');
-    if(!container) return;
-    
-    if(productsList.length === 0) {
+    if (!container) return;
+
+    if (productsList.length === 0) {
         container.innerHTML = `<div class="col-12 text-center py-5">
             <i class="fa-solid fa-search text-muted" style="font-size:3rem;"></i>
             <p class="text-muted mt-3">Aucun produit trouvé dans cette catégorie.</p>
         </div>`;
         return;
     }
-    
+
     container.innerHTML = productsList.map(p => {
         const imgSrc = realProductImages[p.nom] || (p.image && p.image !== 'null' ? p.image : null);
         const hasRealImage = !!imgSrc;
         const isFav = typeof isWishlisted === 'function' && isWishlisted(p.nom);
-        
+
         if (hasRealImage) {
             return `
             <div class="col product-card-wrapper" data-category="${p.categorie}" data-name="${(p.nom || '').toLowerCase()}">
@@ -368,7 +209,7 @@ function renderProducts(productsList) {
                         <h6 class="card-title fw-semibold mb-1" style="color:#2b160c;">${p.nom}</h6>
                         <div class="d-flex align-items-center gap-1 mb-1">
                             <span class="text-warning" style="font-size:0.62rem;">★★★★<span class="text-muted">★</span></span>
-                            <span class="text-muted" style="font-size:0.65rem;">(${Math.floor(Math.random()*150)+20})</span>
+                            <span class="text-muted" style="font-size:0.65rem;">(${Math.floor(Math.random() * 150) + 20})</span>
                         </div>
                         <div class="d-flex align-items-baseline gap-2 mb-2">
                             <span class="fw-bold text-dark product-price">${(p.prix || 0).toLocaleString()} <small>FCFA</small></span>
@@ -398,7 +239,7 @@ function renderProducts(productsList) {
                         <h6 class="card-title fw-bold mb-1" style="font-size:0.92rem;color:#2b160c;">${p.nom}</h6>
                         <div class="d-flex align-items-center gap-1 mb-2">
                             <span class="text-warning" style="font-size:0.65rem;">★★★★<span class="text-muted">★</span></span>
-                            <span class="text-muted" style="font-size:0.7rem;">(${Math.floor(Math.random()*150)+20})</span>
+                            <span class="text-muted" style="font-size:0.7rem;">(${Math.floor(Math.random() * 150) + 20})</span>
                         </div>
                         <div class="d-flex align-items-baseline gap-2 mb-3">
                             <span class="fw-bold text-dark" style="font-size:1.1rem;">${(p.prix || 0).toLocaleString()} <small>FCFA</small></span>
@@ -467,7 +308,7 @@ function renderPagination(totalPages) {
     navUl.innerHTML = html;
 }
 
-window.changePage = function(page) {
+window.changePage = function (page) {
     currentPage = page;
     renderProductsPage();
     const grid = document.getElementById('product-grid');
@@ -476,7 +317,7 @@ window.changePage = function(page) {
     }
 }
 
-window.handleImgError = function(img, cat) {
+window.handleImgError = function (img, cat) {
     const card = img.closest('.premium-product-card');
     if (card) {
         const container = card.querySelector('.product-img-container');
@@ -500,7 +341,7 @@ function getCatLabel(cat) {
 }
 
 // Category filter function
-window.filterCat = function(term) {
+window.filterCat = function (term) {
     document.querySelectorAll('input[name="catFilter"]').forEach(r => {
         r.checked = (r.value === term);
     });
@@ -510,13 +351,13 @@ window.filterCat = function(term) {
     } else {
         currentFilteredList = allProducts.filter(p => p.categorie.toLowerCase() === term.toLowerCase());
     }
-    
+
     currentFilteredList.sort((a, b) => a.nom.localeCompare(b.nom, 'fr', { sensitivity: 'base' }));
     currentPage = 1;
     renderProductsPage();
 }
 
-window.sortProducts = function(sortType) {
+window.sortProducts = function (sortType) {
     if (sortType === 'Prix croissant') {
         currentFilteredList.sort((a, b) => a.prix - b.prix);
     } else if (sortType === 'Prix décroissant') {
@@ -530,15 +371,15 @@ window.sortProducts = function(sortType) {
     renderProductsPage();
 }
 
-window.searchProducts = function(query) {
+window.searchProducts = function (query) {
     if (!query || query.trim() === '') {
         currentFilteredList = [...allProducts];
         const headingEl = document.querySelector('.products-heading-title');
         if (headingEl) headingEl.innerText = 'Tous les Produits';
     } else {
         const q = query.toLowerCase().trim();
-        currentFilteredList = allProducts.filter(p => 
-            (p.nom && p.nom.toLowerCase().includes(q)) || 
+        currentFilteredList = allProducts.filter(p =>
+            (p.nom && p.nom.toLowerCase().includes(q)) ||
             (p.categorie && p.categorie.toLowerCase().includes(q)) ||
             (p.description && p.description.toLowerCase().includes(q))
         );
@@ -547,13 +388,13 @@ window.searchProducts = function(query) {
             headingEl.innerHTML = `Résultats pour "<span class="text-warning">${query}</span>" <button class="btn btn-sm btn-outline-secondary ms-2 py-0 px-2 rounded-pill" onclick="clearCatalogSearch()"><i class="fa-solid fa-xmark me-1"></i>Effacer</button>`;
         }
     }
-    
+
     currentFilteredList.sort((a, b) => a.nom.localeCompare(b.nom, 'fr', { sensitivity: 'base' }));
     currentPage = 1;
     renderProductsPage();
 };
 
-window.clearCatalogSearch = function() {
+window.clearCatalogSearch = function () {
     const searchInputs = document.querySelectorAll('.babi-search-input, input[type="text"]');
     searchInputs.forEach(i => i.value = '');
     const newUrl = new URL(window.location.href);
