@@ -5,7 +5,11 @@
   "rewrites": [
     {
       "source": "/api/(.*)",
-      "destination": "/api/index.js"
+      "destination": "/api"
+    },
+    {
+      "source": "/api",
+      "destination": "/api"
     },
     {
       "source": "/",
@@ -21,11 +25,6 @@
       "source": "/",
       "has": [{ "type": "host", "value": "admin.boulangeriedebabi.com" }],
       "destination": "/admin.html"
-    },
-    {
-      "source": "/(.*)",
-      "has": [{ "type": "host", "value": "api.boulangeriedebabi.com" }],
-      "destination": "/api/index.js"
     },
     {
       "source": "/app",

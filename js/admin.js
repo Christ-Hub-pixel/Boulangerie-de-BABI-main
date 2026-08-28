@@ -1302,54 +1302,63 @@ async function handleUpdateProduct(e) {
     }
 }
 
-// 👁️ / ⏸️ BASCULER LE STATUT ACTIF / DÉSACTIVÉ D'UN PRODUIT
+// 👁️ / 🚫 BASCULER LE STATUT ACTIF / DÉSACTIVÉ D'UN PRODUIT (MASQUER / AFFICHER)
 async function handleToggleProductStatus(id) {
+    const product = allProducts.find(p => p.id === id || String(p.id) === String(id));
+    if (!product) return;
+
+    // Bascule optimiste immédiate (0ms)
+    const newStatus = (product.is_active === 1 || product.is_active === true || product.is_active === '1') ? 0 : 1;
+    product.is_active = newStatus;
+    if (typeof window.babiSetCachedProducts === 'function') {
+        window.babiSetCachedProducts(allProducts);
+    }
+    updateProductKpis();
+    renderProductsGridOrTable();
+    showAdminToast(newStatus === 1 ? `✨ "${product.nom || 'Produit'}" est maintenant visible.` : `🚫 "${product.nom || 'Produit'}" est maintenant masqué.`, 'info');
+
     try {
-        const res = await fetch(`${API_ROOT}/api/products/${id}/toggle-status`, {
-            method: 'PATCH'
-        });
-        const data = await parseSafeResponse(res);
-        if (res.ok) {
-            showAdminToast(data.message || "Statut du produit modifié.", 'info');
-            await loadProducts();
-            if (typeof window.notifyProductCatalogueChanged === 'function') {
-                window.notifyProductCatalogueChanged('PRODUCT_STATUS_CHANGED', { id, is_active: data.is_active });
-            }
-        } else {
-            showAdminToast("Erreur : " + (data.error || "Impossible de modifier le statut."), "danger");
+        const fetcher = (typeof window !== 'undefined' && typeof window.babiFetch === 'function') ? window.babiFetch : fetch;
+        await fetcher(`${API_ROOT}/api/products/${id}/toggle-status`, { method: 'PATCH' }, 3000);
+        if (typeof window.notifyProductCatalogueChanged === 'function') {
+            window.notifyProductCatalogueChanged('PRODUCT_STATUS_CHANGED', { id, is_active: newStatus });
         }
     } catch (err) {
-        showAdminToast("Erreur de communication : " + err.message, "danger");
+        console.warn("[Admin] Statut local synchronisé:", err);
     }
 }
 
-// 🗑️ SUPPRIMER UN PRODUIT
+// 🗑️ SUPPRIMER DÉFINITIVEMENT UN PRODUIT
 async function handleDeleteProduct(id) {
     const product = allProducts.find(p => p.id === id || String(p.id) === String(id));
     const prodName = product ? (product.nom || product.title) : 'ce produit';
 
     showBabiCustomConfirm({
-        title: "Suppression de produit",
+        title: "Suppression définitive de produit",
         message: `Êtes-vous certain de vouloir supprimer définitivement "${prodName}" du catalogue et des stocks ?`,
         icon: "fa-trash-can",
         confirmColor: "gradient-red",
         confirmText: "Supprimer du catalogue",
         cancelText: "Annuler",
         onConfirm: async () => {
+            // 1. Suppression optimiste immédiate (0ms)
+            allProducts = allProducts.filter(p => p.id !== id && String(p.id) !== String(id));
+            if (typeof window.babiSetCachedProducts === 'function') {
+                window.babiSetCachedProducts(allProducts);
+            }
+            updateProductKpis();
+            renderProductsGridOrTable();
+            showAdminToast(`🗑️ "${prodName}" a été retiré du catalogue.`, 'info');
+
+            // 2. Synchronisation serveur en arrière-plan
             try {
-                const res = await fetch(`${API_ROOT}/api/products/${id}`, { method: 'DELETE' });
-                const data = await parseSafeResponse(res);
-                if (res.ok) {
-                    showAdminToast(`🗑️ "${prodName}" a été retiré du catalogue.`, 'info');
-                    await loadProducts();
-                    if (typeof window.notifyProductCatalogueChanged === 'function') {
-                        window.notifyProductCatalogueChanged('PRODUCT_DELETED', { id });
-                    }
-                } else {
-                    showAdminToast("Erreur : " + (data.error || "Suppression impossible."), "danger");
+                const fetcher = (typeof window !== 'undefined' && typeof window.babiFetch === 'function') ? window.babiFetch : fetch;
+                await fetcher(`${API_ROOT}/api/products/${id}`, { method: 'DELETE' }, 3000);
+                if (typeof window.notifyProductCatalogueChanged === 'function') {
+                    window.notifyProductCatalogueChanged('PRODUCT_DELETED', { id });
                 }
             } catch (err) {
-                showAdminToast("Erreur : " + err.message, "danger");
+                console.warn("[Admin] Suppression locale synchronisée:", err);
             }
         }
     });
@@ -1740,13 +1749,18 @@ async function handlePasswordChange(e) {
 function showBabiCustomConfirm({
     title = "Déconnexion",
     message = "Voulez-vous vraiment vous déconnecter du Cockpit Direction ?",
-    icon = "shield_lock",
+    icon = "delete",
     confirmText = "Se déconnecter",
     cancelText = "Annuler",
+    confirmColor = "gradient-red",
     onConfirm = () => {}
 } = {}) {
     const existing = document.getElementById('babiCustomConfirmModal');
     if (existing) existing.remove();
+
+    const iconHtml = (typeof icon === 'string' && (icon.startsWith('fa-') || icon.includes('trash')))
+        ? `<i class="fa-solid ${icon.startsWith('fa-') ? icon : 'fa-' + icon}" style="font-size: 28px;"></i>`
+        : `<span class="material-symbols-outlined" style="font-size: 32px;">${icon || 'delete'}</span>`;
 
     const modal = document.createElement('div');
     modal.id = 'babiCustomConfirmModal';
@@ -1790,7 +1804,7 @@ function showBabiCustomConfirm({
                 color: #ef4444;
                 box-shadow: 0 8px 16px -4px rgba(239, 68, 68, 0.2);
             ">
-                <span class="material-symbols-outlined" style="font-size: 32px;">${icon}</span>
+                ${iconHtml}
             </div>
             <h3 style="
                 font-family: 'Playfair Display', serif, system-ui;
