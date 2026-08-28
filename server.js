@@ -2415,6 +2415,42 @@ app.post('/api/ai/assistant/chat', async (req, res) => {
     }
 });
 
+// ✨ 8.1 Auto-Suggestion IA de Produit & Remplissage Intelligent
+app.post('/api/ai/suggest-product', async (req, res) => {
+    try {
+        const query = req.body.query || req.body.name || req.body.nom || '';
+        const suggestion = aiAssistantCopilot.suggestProductDetails(query);
+        res.json({ success: true, suggestion });
+    } catch (err) {
+        res.status(500).json({ success: false, error: err.message });
+    }
+});
+
+// 📸 8.2 Studio Photo IA (Génération & Suggestions de Visuels HD)
+app.post('/api/ai/generate-photo', async (req, res) => {
+    try {
+        const prompt = req.body.prompt || req.body.query || '';
+        const category = req.body.category || req.body.categorie || 'pain';
+        const photos = aiAssistantCopilot.getPhotoSuggestions(prompt, category);
+        res.json({ success: true, photos });
+    } catch (err) {
+        res.status(500).json({ success: false, error: err.message });
+    }
+});
+
+// ⚡ 8.3 Exécuteur de Commandes Naturelles Admin IA
+app.post('/api/ai/admin-command', async (req, res) => {
+    try {
+        const { command } = req.body;
+        if (!command) return res.status(400).json({ error: "Commande requise." });
+        const result = await aiAssistantCopilot.executeAdminAiCommand(command, db);
+        res.json({ success: true, ...result });
+    } catch (err) {
+        res.status(500).json({ success: false, error: err.message });
+    }
+});
+
+
 // 🔑 9. Validation Universelle & Instantanée de Code PIN
 app.post('/api/pin/validate', async (req, res) => {
     try {

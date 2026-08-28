@@ -2512,32 +2512,372 @@ function togglePasswordVisibility(inputId, btnOrIcon) {
     }
 }
 
-// 📱 GESTION DE LA NAVIGATION MOBILE & SMARTPHONE DU DASHBOARD ADMIN
-window.toggleMobileSidebar = function() {
-    const sidebar = document.getElementById('saasSidebar') || document.querySelector('.saas-sidebar');
-    const backdrop = document.getElementById('saasSidebarBackdrop') || document.querySelector('.saas-sidebar-backdrop');
-    if (sidebar) {
-        const isOpen = sidebar.classList.toggle('mobile-open');
-        if (backdrop) {
-            backdrop.classList.toggle('active', isOpen);
+// =========================================================================
+// 🤖 BABI BRAIN IA : AUTO-COMPLÉTION PRODUITS, STUDIO PHOTO & COPILOTE ADMIN
+// =========================================================================
+
+let currentAiStudioTarget = 'new'; // 'new' ou 'edit'
+let allAiStudioPhotos = [
+    { title: 'Baguette Dorée', cat: 'pain', url: 'assets/product_baguette.png' },
+    { title: 'Baguette Tradition', cat: 'pain', url: 'assets/baguette 200.png' },
+    { title: 'Baguette 150', cat: 'pain', url: 'assets/baguette 150.png' },
+    { title: 'Pain Complet', cat: 'pain', url: 'assets/Pain Complet (Grand).png' },
+    { title: 'Pain sans Sel', cat: 'pain', url: 'assets/pain sans sel.png' },
+    { title: 'Pain Individuel', cat: 'pain', url: 'assets/pain individuel.png' },
+    { title: 'Pain de Mie Frais', cat: 'pain', url: 'assets/pain de mie.png' },
+    { title: 'Marbré Chocolat', cat: 'pain', url: 'assets/marbre.png' },
+    { title: 'Croissant Pur Beurre', cat: 'viennoiserie', url: 'assets/Croissant.png' },
+    { title: 'Pain au Chocolat', cat: 'viennoiserie', url: 'assets/pain au chocolat.png' },
+    { title: 'Pain aux Raisins', cat: 'viennoiserie', url: 'assets/pain au raisin.png' },
+    { title: 'Chausson aux Pommes', cat: 'viennoiserie', url: 'assets/chausson aux pommes.png' },
+    { title: 'Chocolat Suisse', cat: 'viennoiserie', url: 'assets/choco suisse.png' },
+    { title: 'Torsade Feuilletée', cat: 'viennoiserie', url: 'assets/torsade.png' },
+    { title: 'Palmier Croustillant', cat: 'viennoiserie', url: 'assets/palmier.png' },
+    { title: 'Gâteau Anniversaire Prestige', cat: 'patisserie', url: 'assets/Gateau1.png' },
+    { title: 'Gâteau Chocolat & Fruits', cat: 'patisserie', url: 'assets/Gateau1.1.png' },
+    { title: 'Gâteau Fraise & Crème', cat: 'patisserie', url: 'assets/Gateau1.2.png' },
+    { title: 'Gâteau Chocolat Suprême', cat: 'patisserie', url: 'assets/gateau2.png' },
+    { title: 'Gâteau de Mariage Pièce Montée', cat: 'patisserie', url: 'assets/gateau de mariiage.png' },
+    { title: 'Flan Pâtissier Traditionnel', cat: 'patisserie', url: 'assets/Flan.png' },
+    { title: 'Moka au Café', cat: 'patisserie', url: 'assets/moka1.png' },
+    { title: 'Fondant au Chocolat', cat: 'patisserie', url: 'assets/Fondant au Chocolat.png' },
+    { title: 'Crêpe au Nutella', cat: 'patisserie', url: 'assets/crepe au nutella.png' },
+    { title: 'Crêpe à la Vanille', cat: 'patisserie', url: 'assets/crepe a la vanille.png' },
+    { title: 'Bûche Festve', cat: 'patisserie', url: 'assets/buche de noel.png' },
+    { title: 'Jus de Bissap Naturel', cat: 'jus', url: 'assets/jus de bissap.png' },
+    { title: 'Jus de Passion d\'Abidjan', cat: 'jus', url: 'assets/jus de passion.png' },
+    { title: 'Jus de Gingembre Pur', cat: 'jus', url: 'assets/jus de gingembre.png' },
+    { title: 'Jus de Baobab Onctueux', cat: 'jus', url: 'assets/jus de baobab.png' },
+    { title: 'Jus de Tamarin', cat: 'jus', url: 'assets/jus de tamari.png' },
+    { title: 'Cocktail Tropical BABI', cat: 'jus', url: 'assets/cocktail.png' },
+    { title: 'Jus de Citron Pressé', cat: 'jus', url: 'assets/jus de citron.png' },
+    { title: 'Pizza Royale Fromage & Viande', cat: 'sale', url: 'assets/Pizza.png' },
+    { title: 'Panini Poulet Toasté', cat: 'sale', url: 'assets/Panini.png' },
+    { title: 'Burger Artisanal', cat: 'sale', url: 'assets/burger.png' },
+    { title: 'Sandwich Baguette', cat: 'sale', url: 'assets/sandwich.png' },
+    { title: 'Cookies Pépites Chocolat', cat: 'snack', url: 'assets/cookies.png' },
+    { title: 'Madeleines Pur Beurre', cat: 'snack', url: 'assets/madeleine unite.png' },
+    { title: 'Glace Artisanale', cat: 'snack', url: 'assets/glace.png' }
+];
+
+/**
+ * 1. Auto-complétion & suggestion intelligente du produit par l'IA
+ */
+window.autoCompleteProductWithAI = async function(target = 'new') {
+    const nameInput = document.getElementById(target === 'new' ? 'new-prod-name' : 'edit-prod-name');
+    const query = nameInput ? nameInput.value.trim() : '';
+
+    if (!query) {
+        showAdminToast("Veuillez saisir un début de nom (ex: Baguette céréales, Croissant, Jus bissap...)", "warning");
+        if (nameInput) nameInput.focus();
+        return;
+    }
+
+    showAdminToast("✨ L'IA BABI génère la fiche produit...", "info");
+
+    try {
+        const res = await fetch(`${API_BASE_URL}/ai/suggest-product`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ query: query })
+        });
+        const data = await parseSafeResponse(res);
+
+        if (data && data.success && data.suggestion) {
+            const s = data.suggestion;
+
+            // Remplissage des champs du formulaire
+            const catEl = document.getElementById(target === 'new' ? 'new-prod-category' : 'edit-prod-category');
+            const priceEl = document.getElementById(target === 'new' ? 'new-prod-price' : 'edit-prod-price');
+            const stockEl = document.getElementById(target === 'new' ? 'new-prod-stock' : 'edit-prod-stock');
+            const alertEl = document.getElementById(target === 'new' ? 'new-prod-alert' : 'edit-prod-alert');
+            const descEl = document.getElementById(target === 'new' ? 'new-prod-desc' : 'edit-prod-desc');
+            const prevImg = document.getElementById(target === 'new' ? 'new-prod-preview-img' : 'edit-prod-preview-img');
+            const dataImg = document.getElementById(target === 'new' ? 'new-prod-image-data' : 'edit-prod-image-data');
+
+            if (catEl && s.categorie) catEl.value = s.categorie;
+            if (priceEl && s.prix) priceEl.value = s.prix;
+            if (stockEl && s.stock && (!stockEl.value || stockEl.value === '50')) stockEl.value = s.stock;
+            if (alertEl && s.seuil_alerte) alertEl.value = s.seuil_alerte;
+            if (descEl && s.description) descEl.value = s.description;
+            if (prevImg && s.image) prevImg.src = s.image;
+            if (dataImg && s.image) dataImg.value = s.image;
+
+            showAdminToast(`✨ IA : Fiche optimisée pour "${s.nom}" (${s.prix} FCFA)`, "success");
+        } else {
+            showAdminToast("Suggestion IA prête avec les valeurs par défaut.", "info");
         }
+    } catch (err) {
+        console.warn("Erreur Suggestion IA :", err);
+        showAdminToast("L'IA locale a ajusté les paramètres de base.", "info");
     }
 };
 
-// Auto-fermeture de la sidebar mobile lors du clic sur un lien de navigation
-document.addEventListener('DOMContentLoaded', () => {
-    const navLinks = document.querySelectorAll('.saas-nav-item, .saas-subnav-item');
-    navLinks.forEach(link => {
-        link.addEventListener('click', () => {
-            if (window.innerWidth < 1024) {
-                const sidebar = document.getElementById('saasSidebar');
-                const backdrop = document.getElementById('saasSidebarBackdrop');
-                if (sidebar) sidebar.classList.remove('mobile-open');
-                if (backdrop) backdrop.classList.remove('active');
-            }
+/**
+ * 2. Studio Photo & Visuels IA
+ */
+window.openAiPhotoStudio = function(target = 'new') {
+    currentAiStudioTarget = target;
+    const studioModal = document.getElementById('aiPhotoStudioModal');
+    if (!studioModal) return;
+
+    // Récupération du nom du produit courant pour pré-remplir la recherche
+    const nameInput = document.getElementById(target === 'new' ? 'new-prod-name' : 'edit-prod-name');
+    const promptInput = document.getElementById('ai-studio-prompt');
+    if (promptInput) {
+        promptInput.value = nameInput && nameInput.value.trim() ? nameInput.value.trim() : '';
+    }
+
+    studioModal.classList.remove('hidden');
+    studioModal.style.display = 'flex';
+
+    if (promptInput && promptInput.value) {
+        generateAiPhotos();
+    } else {
+        renderAiPhotoGrid(allAiStudioPhotos);
+    }
+};
+
+window.closeAiPhotoStudio = function() {
+    const studioModal = document.getElementById('aiPhotoStudioModal');
+    if (studioModal) {
+        studioModal.classList.add('hidden');
+        studioModal.style.display = 'none';
+    }
+};
+
+window.generateAiPhotos = async function() {
+    const promptInput = document.getElementById('ai-studio-prompt');
+    const prompt = promptInput ? promptInput.value.toLowerCase().trim() : '';
+    const grid = document.getElementById('ai-studio-grid');
+    if (!grid) return;
+
+    grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 20px; color: #6366f1;"><i class="fa-solid fa-spinner fa-spin fa-2x mb-2"></i><br>Recherche et rendu des visuels HD...</div>';
+
+    try {
+        const res = await fetch(`${API_BASE_URL}/ai/generate-photo`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ prompt: prompt })
         });
-    });
-});
+        const data = await parseSafeResponse(res);
+
+        if (data && data.success && Array.isArray(data.photos) && data.photos.length > 0) {
+            const mapped = data.photos.map(url => {
+                const found = allAiStudioPhotos.find(p => p.url === url);
+                return found || { title: prompt || 'Visuel BABI', cat: 'pain', url: url };
+            });
+            renderAiPhotoGrid(mapped);
+        } else {
+            // Filtrage local dynamique
+            const filtered = allAiStudioPhotos.filter(p => 
+                p.title.toLowerCase().includes(prompt) || 
+                p.cat.toLowerCase().includes(prompt) ||
+                prompt.includes(p.cat.toLowerCase())
+            );
+            renderAiPhotoGrid(filtered.length > 0 ? filtered : allAiStudioPhotos);
+        }
+    } catch (_) {
+        // Fallback local
+        const filtered = allAiStudioPhotos.filter(p => 
+            p.title.toLowerCase().includes(prompt) || 
+            p.cat.toLowerCase().includes(prompt)
+        );
+        renderAiPhotoGrid(filtered.length > 0 ? filtered : allAiStudioPhotos);
+    }
+};
+
+window.filterStudioCategory = function(cat) {
+    if (cat === 'all') {
+        renderAiPhotoGrid(allAiStudioPhotos);
+    } else {
+        const filtered = allAiStudioPhotos.filter(p => p.cat === cat);
+        renderAiPhotoGrid(filtered);
+    }
+};
+
+function renderAiPhotoGrid(photosList) {
+    const grid = document.getElementById('ai-studio-grid');
+    if (!grid) return;
+
+    if (!photosList || photosList.length === 0) {
+        grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 30px; color: #94a3b8;"><i class="fa-solid fa-image text-muted" style="font-size: 2rem;"></i><p class="mt-2">Aucun visuel trouvé. Essayez un autre mot-clé.</p></div>';
+        return;
+    }
+
+    grid.innerHTML = photosList.map(item => `
+        <div onclick="selectAiPhoto('${item.url.replace(/'/g, "\\'")}', '${item.title.replace(/'/g, "\\'")}')" 
+             style="cursor: pointer; border: 2px solid #e2e8f0; border-radius: 14px; overflow: hidden; background: #fff; transition: all 0.2s ease; box-shadow: 0 2px 6px rgba(0,0,0,0.05);"
+             onmouseover="this.style.borderColor='#4f46e5'; this.style.transform='translateY(-3px)'; this.style.boxShadow='0 8px 16px rgba(79, 70, 229, 0.2)';"
+             onmouseout="this.style.borderColor='#e2e8f0'; this.style.transform='none'; this.style.boxShadow='0 2px 6px rgba(0,0,0,0.05)';">
+            <div style="height: 100px; width: 100%; background: #f8fafc; display: flex; align-items: center; justify-content: center; overflow: hidden;">
+                <img src="${item.url}" alt="${item.title}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.src='assets/product_baguette.png'"/>
+            </div>
+            <div style="padding: 6px 8px; text-align: center; background: #ffffff;">
+                <span style="font-size: 11px; font-weight: 700; color: #1e293b; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${item.title}</span>
+                <span style="font-size: 9.5px; color: #4f46e5; font-weight: 800;">✨ Choisir ce visuel</span>
+            </div>
+        </div>
+    `).join('');
+}
+
+window.selectAiPhoto = function(imageUrl, imageTitle) {
+    const target = currentAiStudioTarget;
+    const prevImg = document.getElementById(target === 'new' ? 'new-prod-preview-img' : 'edit-prod-preview-img');
+    const dataImg = document.getElementById(target === 'new' ? 'new-prod-image-data' : 'edit-prod-image-data');
+
+    if (prevImg) prevImg.src = imageUrl;
+    if (dataImg) dataImg.value = imageUrl;
+
+    closeAiPhotoStudio();
+    showAdminToast(`📸 Visuel appliqué : ${imageTitle || 'Image HD'}`, "success");
+};
+
+/**
+ * 3. BABI Brain Copilot Widget & Assistant Conversationnel
+ */
+window.toggleAiCopilotDrawer = function() {
+    const drawer = document.getElementById('babi-ai-drawer');
+    if (!drawer) return;
+
+    const isHidden = drawer.classList.contains('hidden');
+    if (isHidden) {
+        drawer.classList.remove('hidden');
+        drawer.style.display = 'flex';
+        const chatInput = document.getElementById('ai-chat-input');
+        if (chatInput) chatInput.focus();
+    } else {
+        drawer.classList.add('hidden');
+        drawer.style.display = 'none';
+    }
+};
+
+window.sendAiQuickPrompt = function(promptText) {
+    const input = document.getElementById('ai-chat-input');
+    if (input) {
+        input.value = promptText;
+        handleAiChatSubmit();
+    }
+};
+
+window.handleAiChatSubmit = async function(e) {
+    if (e && e.preventDefault) e.preventDefault();
+
+    const input = document.getElementById('ai-chat-input');
+    const container = document.getElementById('ai-chat-messages');
+    if (!input || !container) return;
+
+    const text = input.value.trim();
+    if (!text) return;
+
+    // 1. Bulle Utilisateur
+    container.innerHTML += `
+        <div style="background: #4f46e5; color: #fff; border-radius: 14px; padding: 8px 12px; align-self: flex-end; max-width: 85%; font-weight: 500;">
+            ${text}
+        </div>
+    `;
+    input.value = '';
+    container.scrollTop = container.scrollHeight;
+
+    // 2. Indicateur de chargement
+    const loadingId = 'ai-load-' + Date.now();
+    container.innerHTML += `
+        <div id="${loadingId}" style="background: #f1f5f9; border-radius: 14px; padding: 8px 12px; align-self: flex-start; color: #64748b; font-size: 11.5px;">
+            <i class="fa-solid fa-circle-notch fa-spin me-1"></i> Réflexion du Copilote IA...
+        </div>
+    `;
+    container.scrollTop = container.scrollHeight;
+
+    try {
+        const res = await fetch(`${API_BASE_URL}/ai/admin-command`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ command: text })
+        });
+        const data = await parseSafeResponse(res);
+
+        const loadEl = document.getElementById(loadingId);
+        if (loadEl) loadEl.remove();
+
+        if (data && data.success) {
+            let extraHtml = '';
+
+            // Si l'IA propose un produit
+            if (data.action === 'SUGGEST_NEW_PRODUCT' && data.product) {
+                const p = data.product;
+                extraHtml = `
+                    <div style="margin-top: 8px; padding: 8px; background: #ffffff; border: 1.5px dashed #4f46e5; border-radius: 12px; display: flex; align-items: center; gap: 10px;">
+                        <img src="${p.image}" style="width: 44px; height: 44px; border-radius: 8px; object-fit: cover;" onerror="this.src='assets/product_baguette.png'"/>
+                        <div style="flex: 1;">
+                            <div style="font-weight: 800; color: #1e1b4b; font-size: 12px;">${p.nom}</div>
+                            <div style="font-size: 11px; color: #059669; font-weight: 700;">${p.prix} FCFA • ${p.stock} unités</div>
+                        </div>
+                        <button type="button" onclick="applyAiProductFromChat('${p.nom.replace(/'/g, "\\'")}', '${p.categorie}', ${p.prix}, ${p.stock}, '${p.image.replace(/'/g, "\\'")}', '${(p.description || '').replace(/'/g, "\\'")}')" style="background: #4f46e5; color: #fff; border: none; border-radius: 8px; padding: 6px 10px; font-size: 11px; font-weight: 800; cursor: pointer;">
+                            ➕ Remplir & Publier
+                        </button>
+                    </div>
+                `;
+            }
+
+            // Si l'IA propose des photos
+            if (data.action === 'PHOTO_SUGGESTIONS' && Array.isArray(data.photos)) {
+                extraHtml = `
+                    <div style="margin-top: 8px; display: flex; gap: 6px; overflow-x: auto; padding-bottom: 4px;">
+                        ${data.photos.map(url => `
+                            <img src="${url}" onclick="openAiPhotoStudio('new')" style="width: 50px; height: 50px; border-radius: 8px; object-fit: cover; cursor: pointer; border: 1.5px solid #cbd5e1;" title="Cliquer pour voir dans le studio" onerror="this.src='assets/product_baguette.png'"/>
+                        `).join('')}
+                    </div>
+                `;
+            }
+
+            container.innerHTML += `
+                <div style="background: #eef2ff; border: 1px solid #c7d2fe; border-radius: 14px; padding: 10px 12px; color: #1e1b4b; align-self: flex-start; max-width: 90%;">
+                    <div style="font-weight: 800; font-size: 11px; margin-bottom: 2px; color: #4338ca;">🤖 Copilote IA BABI :</div>
+                    <div>${(data.reply || '').replace(/\n/g, '<br>')}</div>
+                    ${extraHtml}
+                </div>
+            `;
+        } else {
+            container.innerHTML += `
+                <div style="background: #fef2f2; border: 1px solid #fecaca; border-radius: 14px; padding: 8px 12px; color: #991b1b; align-self: flex-start;">
+                    Erreur de traitement IA : ${data.error || 'Veuillez réessayer.'}
+                </div>
+            `;
+        }
+    } catch (err) {
+        const loadEl = document.getElementById(loadingId);
+        if (loadEl) loadEl.remove();
+        container.innerHTML += `
+            <div style="background: #fef2f2; border: 1px solid #fecaca; border-radius: 14px; padding: 8px 12px; color: #991b1b; align-self: flex-start;">
+                Impossible de joindre le service IA : ${err.message}
+            </div>
+        `;
+    }
+
+    container.scrollTop = container.scrollHeight;
+};
+
+window.applyAiProductFromChat = function(nom, categorie, prix, stock, image, description) {
+    openAddProductModal();
+    const nameEl = document.getElementById('new-prod-name');
+    const catEl = document.getElementById('new-prod-category');
+    const priceEl = document.getElementById('new-prod-price');
+    const stockEl = document.getElementById('new-prod-stock');
+    const descEl = document.getElementById('new-prod-desc');
+    const prevImg = document.getElementById('new-prod-preview-img');
+    const dataImg = document.getElementById('new-prod-image-data');
+
+    if (nameEl) nameEl.value = nom;
+    if (catEl) catEl.value = categorie;
+    if (priceEl) priceEl.value = prix;
+    if (stockEl) stockEl.value = stock;
+    if (descEl) descEl.value = description;
+    if (prevImg) prevImg.src = image;
+    if (dataImg) dataImg.value = image;
+
+    toggleAiCopilotDrawer();
+    showAdminToast(`✨ Produit "${nom}" pré-rempli dans le formulaire !`, "success");
+};
 
 
 
