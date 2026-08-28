@@ -1173,7 +1173,21 @@
             </div>
 
             <form onsubmit="handleCreateProduct(event)" style="display: flex; flex-direction: column; gap: 14px;">
-                <!-- Nom & Catégorie -->
+                <!-- 📸 1. PHOTO DU PRODUIT (TOUT EN HAUT) -->
+                <div style="background: linear-gradient(135deg, #f8fafc, #f1f5f9); border: 2px dashed #cbd5e1; border-radius: 16px; padding: 14px; display: flex; align-items: center; gap: 16px;">
+                    <img id="new-prod-preview-img" src="assets/product_baguette.png" alt="Aperçu" style="width: 72px; height: 72px; border-radius: 14px; object-fit: cover; border: 2px solid #f59e0b; box-shadow: 0 4px 12px rgba(0,0,0,0.12); flex-shrink: 0;"/>
+                    <div style="flex: 1;">
+                        <label class="prestige-form-label" style="font-weight: 800; font-size: 12.5px; margin-bottom: 6px; display: block; color: #1e293b;">📸 1. Photo du Produit * :</label>
+                        <input type="file" id="new-prod-file" accept="image/*" onchange="handleProductImageSelect(event, 'new')" style="display: none;"/>
+                        <input type="hidden" id="new-prod-image-data" value="assets/product_baguette.png"/>
+                        <button type="button" onclick="document.getElementById('new-prod-file').click()" class="btn-xs btn-outline-primary" style="padding: 8px 16px; border-radius: 10px; font-weight: 800; font-size: 12px; display: inline-flex; align-items: center; gap: 6px; background: #fff;">
+                            <i class="fa-solid fa-camera me-1"></i> Importer une photo depuis l'appareil...
+                        </button>
+                        <small class="text-muted d-block mt-1" style="font-size: 11px;">Formats acceptés : JPG, PNG, WEBP (compression & affichage automatiques)</small>
+                    </div>
+                </div>
+
+                <!-- 🏷️ 2. Nom & Catégorie -->
                 <div class="row g-2">
                     <div class="col-md-7">
                         <label class="prestige-form-label" style="font-weight: 700; font-size: 12px; margin-bottom: 4px; display: block;">Nom du Produit * :</label>
@@ -1193,7 +1207,7 @@
                     </div>
                 </div>
 
-                <!-- Prix & Stocks -->
+                <!-- 💰 3. Prix & Stocks -->
                 <div class="row g-2">
                     <div class="col-md-4">
                         <label class="prestige-form-label" style="font-weight: 700; font-size: 12px; margin-bottom: 4px; display: block;">Prix TTC (FCFA) * :</label>
@@ -1209,23 +1223,7 @@
                     </div>
                 </div>
 
-                <!-- Photo du Produit -->
-                <div style="background: #f8fafc; border: 1.5px dashed #cbd5e1; border-radius: 16px; padding: 14px;">
-                    <label class="prestige-form-label" style="font-weight: 700; font-size: 12px; margin-bottom: 8px; display: block;">📷 Photo du Produit :</label>
-                    <div style="display: flex; align-items: center; gap: 14px;">
-                        <img id="new-prod-preview-img" src="assets/product_baguette.png" alt="Aperçu" style="width: 64px; height: 64px; border-radius: 12px; object-fit: cover; border: 2px solid #f59e0b; box-shadow: 0 4px 10px rgba(0,0,0,0.1); flex-shrink: 0;"/>
-                        <div style="flex: 1;">
-                            <input type="file" id="new-prod-file" accept="image/*" onchange="handleProductImageSelect(event, 'new')" style="display: none;"/>
-                            <input type="hidden" id="new-prod-image-data" value="assets/product_baguette.png"/>
-                            <button type="button" onclick="document.getElementById('new-prod-file').click()" class="btn-xs btn-outline-primary" style="padding: 7px 14px; border-radius: 10px; font-weight: 700; font-size: 11.5px;">
-                                <i class="fa-solid fa-cloud-arrow-up me-1"></i> Importer photo appareil...
-                            </button>
-                            <small class="text-muted d-block mt-1" style="font-size: 11px;">Format JPG, PNG ou WEBP (redimensionnement automatique)</small>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Description -->
+                <!-- 📝 4. Description -->
                 <div>
                     <label class="prestige-form-label" style="font-weight: 700; font-size: 12px; margin-bottom: 4px; display: block;">Description / Ingrédients :</label>
                     <textarea id="new-prod-desc" rows="2" class="prestige-form-input" placeholder="Ex: Farine label rouge, levain naturel, cuisson sur sole de pierre..." style="width: 100%; padding: 8px 12px; border-radius: 12px; border: 1.5px solid #cbd5e1; font-size: 12.5px; outline: none; resize: none;"></textarea>
@@ -1261,7 +1259,21 @@
             <form onsubmit="handleUpdateProduct(event)" style="display: flex; flex-direction: column; gap: 14px;">
                 <input type="hidden" id="edit-prod-id"/>
 
-                <!-- Nom & Catégorie -->
+                <!-- 📸 1. PHOTO DU PRODUIT (TOUT EN HAUT) -->
+                <div style="background: linear-gradient(135deg, #f8fafc, #f1f5f9); border: 2px dashed #cbd5e1; border-radius: 16px; padding: 14px; display: flex; align-items: center; gap: 16px;">
+                    <img id="edit-prod-preview-img" src="assets/product_baguette.png" alt="Aperçu" style="width: 72px; height: 72px; border-radius: 14px; object-fit: cover; border: 2px solid #f59e0b; box-shadow: 0 4px 12px rgba(0,0,0,0.12); flex-shrink: 0;"/>
+                    <div style="flex: 1;">
+                        <label class="prestige-form-label" style="font-weight: 800; font-size: 12.5px; margin-bottom: 6px; display: block; color: #1e293b;">📸 1. Photo du Produit :</label>
+                        <input type="file" id="edit-prod-file" accept="image/*" onchange="handleProductImageSelect(event, 'edit')" style="display: none;"/>
+                        <input type="hidden" id="edit-prod-image-data"/>
+                        <button type="button" onclick="document.getElementById('edit-prod-file').click()" class="btn-xs btn-outline-primary" style="padding: 8px 16px; border-radius: 10px; font-weight: 800; font-size: 12px; display: inline-flex; align-items: center; gap: 6px; background: #fff;">
+                            <i class="fa-solid fa-camera me-1"></i> Remplacer la photo...
+                        </button>
+                        <small class="text-muted d-block mt-1" style="font-size: 11px;">Format JPG, PNG ou WEBP (redimensionnement automatique)</small>
+                    </div>
+                </div>
+
+                <!-- 🏷️ 2. Nom & Catégorie -->
                 <div class="row g-2">
                     <div class="col-md-7">
                         <label class="prestige-form-label" style="font-weight: 700; font-size: 12px; margin-bottom: 4px; display: block;">Nom du Produit * :</label>
@@ -1280,7 +1292,7 @@
                     </div>
                 </div>
 
-                <!-- Prix & Stocks & Statut -->
+                <!-- 💰 3. Prix & Stocks & Statut -->
                 <div class="row g-2">
                     <div class="col-md-3">
                         <label class="prestige-form-label" style="font-weight: 700; font-size: 12px; margin-bottom: 4px; display: block;">Prix TTC (FCFA) * :</label>
@@ -1303,23 +1315,7 @@
                     </div>
                 </div>
 
-                <!-- Photo du Produit -->
-                <div style="background: #f8fafc; border: 1.5px dashed #cbd5e1; border-radius: 16px; padding: 14px;">
-                    <label class="prestige-form-label" style="font-weight: 700; font-size: 12px; margin-bottom: 8px; display: block;">📷 Photo du Produit :</label>
-                    <div style="display: flex; align-items: center; gap: 14px;">
-                        <img id="edit-prod-preview-img" src="assets/product_baguette.png" alt="Aperçu" style="width: 64px; height: 64px; border-radius: 12px; object-fit: cover; border: 2px solid #f59e0b; box-shadow: 0 4px 10px rgba(0,0,0,0.1); flex-shrink: 0;"/>
-                        <div style="flex: 1;">
-                            <input type="file" id="edit-prod-file" accept="image/*" onchange="handleProductImageSelect(event, 'edit')" style="display: none;"/>
-                            <input type="hidden" id="edit-prod-image-data"/>
-                            <button type="button" onclick="document.getElementById('edit-prod-file').click()" class="btn-xs btn-outline-primary" style="padding: 7px 14px; border-radius: 10px; font-weight: 700; font-size: 11.5px;">
-                                <i class="fa-solid fa-cloud-arrow-up me-1"></i> Remplacer la photo...
-                            </button>
-                            <small class="text-muted d-block mt-1" style="font-size: 11px;">Format JPG, PNG ou WEBP (redimensionnement automatique)</small>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Description -->
+                <!-- 📝 4. Description -->
                 <div>
                     <label class="prestige-form-label" style="font-weight: 700; font-size: 12px; margin-bottom: 4px; display: block;">Description / Ingrédients :</label>
                     <textarea id="edit-prod-desc" rows="2" class="prestige-form-input" style="width: 100%; padding: 8px 12px; border-radius: 12px; border: 1.5px solid #cbd5e1; font-size: 12.5px; outline: none; resize: none;"></textarea>

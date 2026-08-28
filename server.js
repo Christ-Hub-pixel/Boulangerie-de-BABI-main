@@ -739,21 +739,45 @@ app.post('/api/products', async (req, res) => {
             [nom.trim(), numPrice, categorie.trim(), img, description || '', stockQty, alertThreshold]
         );
         
-        // Also add or sync stock entry
-        await db.run(
-            "INSERT INTO stocks (product_id, nom_produit, categorie, quantite_disponible, seuil_alerte, unite, prix_unitaire) VALUES (?, ?, ?, ?, ?, 'pièce', ?)",
-            [result.lastID, nom.trim(), categorie.trim(), stockQty, alertThreshold, numPrice]
-        );
+        const newId = result.lastID || Date.now();
 
-        const createdProduct = await db.get("SELECT p.*, s.quantite_disponible as stock, s.seuil_alerte FROM products p LEFT JOIN stocks s ON p.id = s.product_id WHERE p.id = ?", [result.lastID]);
+        // Also add or sync stock entry
+        try {
+            await db.run(
+                "INSERT INTO stocks (product_id, nom_produit, categorie, quantite_disponible, seuil_alerte, unite, prix_unitaire) VALUES (?, ?, ?, ?, ?, 'pièce', ?)",
+                [newId, nom.trim(), categorie.trim(), stockQty, alertThreshold, numPrice]
+            );
+        } catch (_) {}
+
+        let createdProduct = null;
+        try {
+            createdProduct = await db.get("SELECT p.*, s.quantite_disponible as stock, s.seuil_alerte FROM products p LEFT JOIN stocks s ON p.id = s.product_id WHERE p.id = ?", [newId]);
+        } catch (_) {}
+
+        if (!createdProduct) {
+            createdProduct = {
+                id: newId,
+                nom: nom.trim(),
+                prix: numPrice,
+                categorie: categorie.trim(),
+                image: img,
+                description: description || '',
+                stock: stockQty,
+                seuil_alerte: alertThreshold,
+                is_active: 1
+            };
+        }
 
         // 📡 Diffusion simultanée en temps réel vers tous les clients Web & Mobile
         try {
-            aiRealtimeOrchestrator.broadcastProductCreated(createdProduct || { id: result.lastID, nom: nom.trim(), prix: numPrice, categorie: categorie.trim(), image: img, stock: stockQty, is_active: 1 });
+            if (typeof aiRealtimeOrchestrator !== 'undefined' && aiRealtimeOrchestrator.broadcastProductCreated) {
+                aiRealtimeOrchestrator.broadcastProductCreated(createdProduct);
+            }
         } catch (_) {}
 
-        res.status(201).json({ success: true, id: result.lastID, product: createdProduct, message: "Produit ajouté avec succès." });
+        res.status(201).json({ success: true, id: newId, product: createdProduct, message: "Produit ajouté avec succès." });
     } catch (err) {
+        console.error("Erreur création produit :", err);
         res.status(500).json({ error: err.message });
     }
 });
