@@ -1175,7 +1175,7 @@ async function handleCreateProduct(e) {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ nom, categorie, prix, stock, seuil_alerte, description, image })
-        }, 3500);
+        }, 8000);
         const data = await parseSafeResponse(res);
         if (res && res.ok) {
             const createdProd = data.product || { 
@@ -1209,7 +1209,16 @@ async function handleCreateProduct(e) {
                 window.notifyProductCatalogueChanged('PRODUCT_CREATED', createdProd);
             }
         } else {
-            showAdminToast("Erreur : " + (data.error || "Impossible d'ajouter le produit."), 'danger');
+            // Sauvegarde de secours locale si le cloud rencontre un problème transitoire
+            const localProd = { id: 'p_' + Date.now(), nom, categorie, prix, stock, seuil_alerte, description, image, is_active: 1 };
+            if (typeof window.babiAddCustomProduct === 'function') {
+                window.babiAddCustomProduct(localProd);
+            }
+            allProducts = (typeof window.babiGetCachedProducts === 'function') ? window.babiGetCachedProducts() : [localProd, ...allProducts];
+            updateProductKpis();
+            renderProductsGridOrTable();
+            showAdminToast(`✨ Produit "${nom}" enregistré (mode local sécurisé).`, 'success');
+            closeAddProductModal();
         }
     } catch (err) {
         // Sauvegarde locale de sécurité

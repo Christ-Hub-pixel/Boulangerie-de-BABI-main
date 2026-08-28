@@ -427,6 +427,14 @@ class AiAssistantCopilotService {
             };
         }
 
+        // 5. Réponse générale d'assistance
+        return {
+            reply: `🤖 **Copilote BABI à votre service :**\nJe peux vous renseigner sur l'état des **stocks**, les prévisions de **fournées**, le **chiffre d'affaires**, ou suggérer des créations de nouveaux produits. Comment puis-je vous aider ?`,
+            category: 'general',
+            data: summary
+        };
+    }
+
     /**
      * 🥐 CONSEILLER GOURMAND CLIENT IA (Pour la Boutique & le Site Web)
      */

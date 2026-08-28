@@ -2546,12 +2546,27 @@ app.post('/api/pin/lookup', async (req, res) => {
     }
 });
 
-// Serve frontend SPA fallback
-app.use((req, res) => {
+// 404 Handler for unmatched API routes vs Frontend SPA fallback
+app.use((req, res, next) => {
+    if (req.path.startsWith('/api')) {
+        return res.status(404).json({ success: false, error: `Route API non trouvée : ${req.method} ${req.path}` });
+    }
     res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-// Automated 15-Minute Refund Rule Worker
+// 🔥 Global Express Error Handler (Prévient les FUNCTION_INVOCATION_FAILED sur Vercel)
+app.use((err, req, res, next) => {
+    console.error('🔥 [Express Serverless Error Handler]:', err);
+    if (res.headersSent) {
+        return next(err);
+    }
+    res.status(err.status || 500).json({
+        success: false,
+        error: err.message || "Une erreur interne du serveur est survenue."
+    });
+});
+
+// Automated 15-Minute Refund Rule Worker (Désactivé en mode Serverless Vercel)
 function startAutomatedRefundWorker(database) {
     setInterval(async () => {
         try {
@@ -2591,3 +2606,4 @@ ensureDBReady().then(() => {
 });
 
 module.exports = app;
+
