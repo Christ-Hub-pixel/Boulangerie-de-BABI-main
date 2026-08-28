@@ -447,6 +447,23 @@ async function initDB() {
         }
     }
 
+    // Initialisation / Vérification du Compte Administrateur Principal
+    try {
+        const secureAuth = require('./services/secure_auth.service.js');
+        const adminEmail = 'admin@boulangeriedebabi.com';
+        const existingAdmin = await db.get("SELECT id FROM users WHERE email = ? OR role = 'admin'", [adminEmail]);
+        if (!existingAdmin) {
+            const hashedPassword = secureAuth.hashPassword('Admin@Babi2026!');
+            await db.run(
+                "INSERT INTO users (nom, prenom, email, telephone, mot_de_passe, role, avatar) VALUES (?, ?, ?, ?, ?, 'admin', 'assets/avatar_admin.png')",
+                ['BABI', 'Administrateur', adminEmail, '+225 07 04 38 92 01', hashedPassword]
+            );
+            console.log(`[DB] Compte Administrateur créé avec succès : ${adminEmail}`);
+        }
+    } catch (e) {
+        console.warn("[DB] Note initialisation administrateur:", e.message);
+    }
+
     console.log("Database initialized & seeded at " + dbPath);
     return db;
 }
