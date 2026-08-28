@@ -999,24 +999,27 @@ function renderProductsGridOrTable() {
 }
 
 async function loadProducts() {
-    // 1. Rendu instantané 0ms depuis le catalogue en cache/mémoire
-    allProducts = (typeof window.babiGetCachedProducts === 'function') 
+    // 1. Charger depuis le stockage local permanent (Source de vérité maître)
+    const localProds = (typeof window.babiGetCachedProducts === 'function') 
         ? window.babiGetCachedProducts() 
-        : [];
+        : (allProducts || []);
     
+    allProducts = Array.isArray(localProds) ? localProds : [];
     updateProductKpis();
     renderProductsGridOrTable();
 
-    // 2. Synchronisation en tâche de fond avec la Base de Données Cloud (timeout 2.5s)
+    // 2. Synchronisation non-destructrice avec le serveur cloud
     try {
         const apiBase = (typeof window !== 'undefined' && window.API_BASE_URL) ? window.API_BASE_URL : (window.location.protocol.startsWith('http') ? '' : 'http://localhost:5000');
         const fetcher = (typeof window !== 'undefined' && typeof window.babiFetch === 'function') ? window.babiFetch : fetch;
-        const res = await fetcher(`${apiBase}/api/products?_t=${Date.now()}`, { cache: 'no-store' }, 2500);
+        const res = await fetcher(`${apiBase}/api/products?_t=${Date.now()}`, { cache: 'no-store' }, 2000);
         if (res && res.ok) {
             const data = await res.json();
-            const list = Array.isArray(data) ? data : (data.products || []);
-            if (Array.isArray(list) && list.length > 0) {
-                allProducts = list.map((p, idx) => ({
+            const serverList = Array.isArray(data) ? data : (data.products || []);
+            
+            if (serverList.length > 0) {
+                // Fusionner avec le serveur sans écraser les ajouts locaux
+                const serverMapped = serverList.map((p, idx) => ({
                     id: p.id || idx + 1,
                     nom: p.nom || p.name,
                     prix: Number(p.prix || p.price || 0),
@@ -1026,23 +1029,27 @@ async function loadProducts() {
                     seuil_alerte: p.seuil_alerte != null ? Number(p.seuil_alerte) : 10,
                     is_active: (p.is_active === 0 || p.is_active === '0' || p.is_active === false) ? 0 : 1
                 }));
+
+                // Préserver les produits créés localement
+                const mergedMap = new Map();
+                serverMapped.forEach(p => mergedMap.set(String(p.id), p));
+                allProducts.forEach(p => {
+                    if (!mergedMap.has(String(p.id))) {
+                        mergedMap.set(String(p.id), p);
+                    }
+                });
+
+                allProducts = Array.from(mergedMap.values());
                 if (typeof window.babiSetCachedProducts === 'function') {
                     window.babiSetCachedProducts(allProducts);
                 }
-            } else {
-                allProducts = (typeof window.babiGetCachedProducts === 'function') ? window.babiGetCachedProducts() : [];
+                updateProductKpis();
+                renderProductsGridOrTable();
             }
-            updateProductKpis();
-            renderProductsGridOrTable();
-            return;
         }
-    } catch (err) {
-        // En cas d'erreur de communication, les produits ajoutés localement restent sauvegardés
+    } catch (_) {
+        // En cas d'échec ou d'absence réseau, les produits locaux restent intacts
     }
-    
-    // 3. Rendu garanti
-    updateProductKpis();
-    renderProductsGridOrTable();
 }
 
 // 🖼️ GESTION DU SÉLECTEUR DE PHOTO PRODUIT (COMPRESSION CANVAS AUTOMATIQUE)
@@ -1376,7 +1383,10 @@ async function handleDeleteProduct(id) {
         confirmText: "Supprimer du catalogue",
         cancelText: "Annuler",
         onConfirm: async () => {
-            // 1. Suppression optimiste immédiate (0ms)
+            // 1. Suppression définitive immédiate du cache local (0ms)
+            if (typeof window.babiRemoveCustomProduct === 'function') {
+                window.babiRemoveCustomProduct(id);
+            }
             allProducts = allProducts.filter(p => p.id !== id && String(p.id) !== String(id));
             if (typeof window.babiSetCachedProducts === 'function') {
                 window.babiSetCachedProducts(allProducts);

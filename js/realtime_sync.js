@@ -103,29 +103,9 @@
         }
     }
 
-    // 3. Fallback Polling (Every 30 seconds)
+    // 3. Fallback Polling (Désactivé pour garantir la stabilité sans clignotement)
     function startFallbackPolling() {
-        if (pollInterval) return;
-        pollInterval = setInterval(async () => {
-            try {
-                const res = await fetch(`${API_BASE}/api/ai/live-feed?channel=all&since=${lastEventTimestamp}`);
-                if (res.ok) {
-                    const data = await res.json();
-                    if (data.events && Array.isArray(data.events) && data.events.length > 0) {
-                        let hasProductChange = false;
-                        data.events.forEach(evt => {
-                            lastEventTimestamp = Math.max(lastEventTimestamp, new Date(evt.timestamp).getTime());
-                            if (['PRODUCT_CREATED', 'PRODUCT_UPDATED', 'PRODUCT_STATUS_CHANGED', 'PRODUCT_DELETED'].includes(evt.type)) {
-                                hasProductChange = true;
-                            }
-                        });
-                        if (hasProductChange) {
-                            triggerProductUpdate({ type: 'POLL_SYNC' }, true);
-                        }
-                    }
-                }
-            } catch (_) {}
-        }, 8000);
+        // La synchronisation se fait via BroadcastChannel et les actions manuelles
     }
 
     // Expose global manual broadcast function for local actions
