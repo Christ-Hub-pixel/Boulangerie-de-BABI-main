@@ -1185,8 +1185,9 @@
                             <option value="pain">🥖 Pains & Traditions</option>
                             <option value="viennoiserie">🥐 Viennoiseries</option>
                             <option value="patisserie">🍰 Pâtisseries & Gâteaux</option>
-                            <option value="boisson">🧃 Boissons & Jus Naturels</option>
+                            <option value="boisson">🧃 Boissons </option>
                             <option value="sale">🥪 Salés, Pizzas & Paninis</option>
+                            <option value="jus">🥤 Jus Naturels</option>
                             <option value="snack">🍪 Biscuits & Cookies</option>
                         </select>
                     </div>
@@ -1208,38 +1209,23 @@
                     </div>
                 </div>
 
-                <!-- Photo du Produit (Aperçu + Upload + Modèles rapides) -->
+                <!-- Photo du Produit (Upload Direct) -->
                 <div style="background: #f8fafc; border: 1.5px dashed #cbd5e1; border-radius: 16px; padding: 14px;">
                     <label class="prestige-form-label" style="font-weight: 700; font-size: 12px; margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between;">
                         <span>📷 Photo & Visuel Produit :</span>
-                        <span class="text-muted" style="font-size: 11px;">Upload ou choisir un modèle</span>
+                        <span class="text-muted" style="font-size: 11px;">Importer une image depuis votre appareil</span>
                     </label>
 
-                    <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 12px;">
+                    <div style="display: flex; align-items: center; gap: 14px;">
                         <img id="new-prod-preview-img" src="assets/product_baguette.png" alt="Aperçu" style="width: 64px; height: 64px; border-radius: 12px; object-fit: cover; border: 2px solid #f59e0b; box-shadow: 0 4px 10px rgba(0,0,0,0.1); shrink-0;"/>
                         <div style="flex: 1;">
                             <input type="file" id="new-prod-file" accept="image/*" onchange="handleProductImageSelect(event, 'new')" style="display: none;"/>
                             <input type="hidden" id="new-prod-image-data" value="assets/product_baguette.png"/>
-                            <button type="button" onclick="document.getElementById('new-prod-file').click()" class="btn-xs btn-outline-primary" style="padding: 7px 14px; border-radius: 10px; font-weight: 700; font-size: 12px;">
+                            <button type="button" onclick="document.getElementById('new-prod-file').click()" class="btn-xs btn-outline-primary" style="padding: 8px 16px; border-radius: 10px; font-weight: 700; font-size: 12px;">
                                 <i class="fa-solid fa-cloud-arrow-up me-1"></i> Importer une photo depuis mon appareil...
                             </button>
                             <small class="text-muted d-block mt-1" style="font-size: 11px;">Format JPG, PNG ou WEBP (redimensionnement automatique)</small>
                         </div>
-                    </div>
-
-                    <!-- Modèles rapides de photos -->
-                    <div style="font-size: 11px; font-weight: 700; color: #64748b; margin-bottom: 6px;">Ou choisir un visuel prédéfini :</div>
-                    <div style="display: flex; gap: 6px; overflow-x: auto; padding-bottom: 4px;" class="custom-scrollbar">
-                        <button type="button" onclick="selectProductPresetImage('new', 'assets/baguette 200.png')" class="btn-preset-img" title="Baguette"><img src="assets/baguette 200.png" style="width:36px;height:36px;border-radius:8px;object-fit:cover;"/></button>
-                        <button type="button" onclick="selectProductPresetImage('new', 'assets/Croissant.png')" class="btn-preset-img" title="Croissant"><img src="assets/Croissant.png" style="width:36px;height:36px;border-radius:8px;object-fit:cover;"/></button>
-                        <button type="button" onclick="selectProductPresetImage('new', 'assets/pain au chocolat.png')" class="btn-preset-img" title="Pain au chocolat"><img src="assets/pain au chocolat.png" style="width:36px;height:36px;border-radius:8px;object-fit:cover;"/></button>
-                        <button type="button" onclick="selectProductPresetImage('new', 'assets/Pain Complet (Grand).png')" class="btn-preset-img" title="Pain complet"><img src="assets/Pain Complet (Grand).png" style="width:36px;height:36px;border-radius:8px;object-fit:cover;"/></button>
-                        <button type="button" onclick="selectProductPresetImage('new', 'assets/Gateau1.png')" class="btn-preset-img" title="Gâteau"><img src="assets/Gateau1.png" style="width:36px;height:36px;border-radius:8px;object-fit:cover;"/></button>
-                        <button type="button" onclick="selectProductPresetImage('new', 'assets/jus de bissap.png')" class="btn-preset-img" title="Jus Bissap"><img src="assets/jus de bissap.png" style="width:36px;height:36px;border-radius:8px;object-fit:cover;"/></button>
-                        <button type="button" onclick="selectProductPresetImage('new', 'assets/jus de passion.png')" class="btn-preset-img" title="Jus Passion"><img src="assets/jus de passion.png" style="width:36px;height:36px;border-radius:8px;object-fit:cover;"/></button>
-                        <button type="button" onclick="selectProductPresetImage('new', 'assets/Pizza.png')" class="btn-preset-img" title="Pizza"><img src="assets/Pizza.png" style="width:36px;height:36px;border-radius:8px;object-fit:cover;"/></button>
-                        <button type="button" onclick="selectProductPresetImage('new', 'assets/Panini.png')" class="btn-preset-img" title="Panini"><img src="assets/Panini.png" style="width:36px;height:36px;border-radius:8px;object-fit:cover;"/></button>
-                        <button type="button" onclick="selectProductPresetImage('new', 'assets/cookies.png')" class="btn-preset-img" title="Cookies"><img src="assets/cookies.png" style="width:36px;height:36px;border-radius:8px;object-fit:cover;"/></button>
                     </div>
                 </div>
 
@@ -1273,7 +1259,7 @@
                         <p class="small text-white-50 mb-0">Mise à jour des prix, stocks et visuels</p>
                     </div>
                 </div>
-                <button type="button" onclick="closeEditProductModal()" class="prestige-modal-close-btn text-white" style="background: rgba(255,255,255,0.1); border: none;">✕</button>
+                <button type="button" onclick="closeEditProductModal()" class="prestige-modal-close-btn text-white" style="background: rgba(0,0,0,0.2); border: none;">✕</button>
             </div>
 
             <form onsubmit="handleUpdateProduct(event)" style="display: flex; flex-direction: column; gap: 14px;">
@@ -1321,37 +1307,23 @@
                     </div>
                 </div>
 
-                <!-- Photo du Produit -->
+                <!-- Photo du Produit (Upload Direct) -->
                 <div style="background: #f8fafc; border: 1.5px dashed #cbd5e1; border-radius: 16px; padding: 14px;">
                     <label class="prestige-form-label" style="font-weight: 700; font-size: 12px; margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between;">
                         <span>📷 Photo & Visuel Produit :</span>
-                        <span class="text-muted" style="font-size: 11px;">Upload ou choisir un modèle</span>
+                        <span class="text-muted" style="font-size: 11px;">Remplacer l'image</span>
                     </label>
 
-                    <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 12px;">
+                    <div style="display: flex; align-items: center; gap: 14px;">
                         <img id="edit-prod-preview-img" src="assets/product_baguette.png" alt="Aperçu" style="width: 64px; height: 64px; border-radius: 12px; object-fit: cover; border: 2px solid #f59e0b; box-shadow: 0 4px 10px rgba(0,0,0,0.1); shrink-0;"/>
                         <div style="flex: 1;">
                             <input type="file" id="edit-prod-file" accept="image/*" onchange="handleProductImageSelect(event, 'edit')" style="display: none;"/>
                             <input type="hidden" id="edit-prod-image-data"/>
-                            <button type="button" onclick="document.getElementById('edit-prod-file').click()" class="btn-xs btn-outline-primary" style="padding: 7px 14px; border-radius: 10px; font-weight: 700; font-size: 12px;">
+                            <button type="button" onclick="document.getElementById('edit-prod-file').click()" class="btn-xs btn-outline-primary" style="padding: 8px 16px; border-radius: 10px; font-weight: 700; font-size: 12px;">
                                 <i class="fa-solid fa-cloud-arrow-up me-1"></i> Remplacer la photo...
                             </button>
+                            <small class="text-muted d-block mt-1" style="font-size: 11px;">Format JPG, PNG ou WEBP (redimensionnement automatique)</small>
                         </div>
-                    </div>
-
-                    <!-- Modèles rapides de photos -->
-                    <div style="font-size: 11px; font-weight: 700; color: #64748b; margin-bottom: 6px;">Ou choisir un visuel prédéfini :</div>
-                    <div style="display: flex; gap: 6px; overflow-x: auto; padding-bottom: 4px;" class="custom-scrollbar">
-                        <button type="button" onclick="selectProductPresetImage('edit', 'assets/baguette 200.png')" class="btn-preset-img" title="Baguette"><img src="assets/baguette 200.png" style="width:36px;height:36px;border-radius:8px;object-fit:cover;"/></button>
-                        <button type="button" onclick="selectProductPresetImage('edit', 'assets/Croissant.png')" class="btn-preset-img" title="Croissant"><img src="assets/Croissant.png" style="width:36px;height:36px;border-radius:8px;object-fit:cover;"/></button>
-                        <button type="button" onclick="selectProductPresetImage('edit', 'assets/pain au chocolat.png')" class="btn-preset-img" title="Pain au chocolat"><img src="assets/pain au chocolat.png" style="width:36px;height:36px;border-radius:8px;object-fit:cover;"/></button>
-                        <button type="button" onclick="selectProductPresetImage('edit', 'assets/Pain Complet (Grand).png')" class="btn-preset-img" title="Pain complet"><img src="assets/Pain Complet (Grand).png" style="width:36px;height:36px;border-radius:8px;object-fit:cover;"/></button>
-                        <button type="button" onclick="selectProductPresetImage('edit', 'assets/Gateau1.png')" class="btn-preset-img" title="Gâteau"><img src="assets/Gateau1.png" style="width:36px;height:36px;border-radius:8px;object-fit:cover;"/></button>
-                        <button type="button" onclick="selectProductPresetImage('edit', 'assets/jus de bissap.png')" class="btn-preset-img" title="Jus Bissap"><img src="assets/jus de bissap.png" style="width:36px;height:36px;border-radius:8px;object-fit:cover;"/></button>
-                        <button type="button" onclick="selectProductPresetImage('edit', 'assets/jus de passion.png')" class="btn-preset-img" title="Jus Passion"><img src="assets/jus de passion.png" style="width:36px;height:36px;border-radius:8px;object-fit:cover;"/></button>
-                        <button type="button" onclick="selectProductPresetImage('edit', 'assets/Pizza.png')" class="btn-preset-img" title="Pizza"><img src="assets/Pizza.png" style="width:36px;height:36px;border-radius:8px;object-fit:cover;"/></button>
-                        <button type="button" onclick="selectProductPresetImage('edit', 'assets/Panini.png')" class="btn-preset-img" title="Panini"><img src="assets/Panini.png" style="width:36px;height:36px;border-radius:8px;object-fit:cover;"/></button>
-                        <button type="button" onclick="selectProductPresetImage('edit', 'assets/cookies.png')" class="btn-preset-img" title="Cookies"><img src="assets/cookies.png" style="width:36px;height:36px;border-radius:8px;object-fit:cover;"/></button>
                     </div>
                 </div>
 
