@@ -210,7 +210,7 @@
         let html = '';
         wishlist.forEach(item => {
             const name = typeof item === 'string' ? item : item.name;
-            const imgSrc = realProductImages[name] || 'assets/baguette 200.png';
+            const imgSrc = (typeof item === 'object' && item.image) ? item.image : 'assets/product_baguette.png';
             
             const pObj = (typeof FALLBACK_PRODUCTS !== 'undefined' ? FALLBACK_PRODUCTS.find(p => p.nom === name) : null) || { prix: 500 };
             const price = pObj.prix || 500;

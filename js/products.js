@@ -110,8 +110,8 @@ function loadHomepageProducts() {
     const recommendedContainer = document.getElementById('index-recommended-grid');
     const delicesContainer = document.getElementById('index-delices-grid');
 
-    // Pick top products with real photos for the homepage
-    const featured = allProducts.filter(p => realProductImages[p.nom] || (p.image && p.image !== 'null'));
+    // Pick active products for the homepage
+    const featured = allProducts.filter(p => p.is_active !== 0 && p.is_active !== '0');
 
     const buildCardHtml = (p) => {
         const imgSrc = realProductImages[p.nom] || p.image;
@@ -121,7 +121,8 @@ function loadHomepageProducts() {
             <div class="card premium-product-card h-100 border-0 shadow-sm position-relative overflow-hidden" style="border-radius:12px;">
                 <div class="position-relative overflow-hidden product-img-container" style="background:#ffffff;">
                     <img loading="lazy" src="${imgSrc}" class="card-img-top product-img" alt="${p.nom}" 
-                        style="width:100%;object-fit:contain;transition:transform 0.4s ease;">
+                        style="width:100%;object-fit:contain;transition:transform 0.4s ease;"
+                        onerror="this.src='assets/product_baguette.png'">
                     <button class="wishlist-btn position-absolute top-0 end-0 m-2 btn btn-sm bg-white rounded-circle shadow-sm border-0 ${isFav ? 'text-danger' : 'text-muted'}"
                         title="Ajouter aux favoris" style="width:32px;height:32px;padding:0;" onclick="toggleWishlist('${p.nom.replace(/'/g, "\\'")}')">
                         <i class="${isFav ? 'fa-solid text-danger' : 'fa-regular'} fa-heart"></i>
@@ -187,72 +188,37 @@ function renderProducts(productsList) {
     }
 
     container.innerHTML = productsList.map(p => {
-        const imgSrc = realProductImages[p.nom] || (p.image && p.image !== 'null' ? p.image : null);
-        const hasRealImage = !!imgSrc;
+        const imgSrc = p.image || 'assets/product_baguette.png';
         const isFav = typeof isWishlisted === 'function' && isWishlisted(p.nom);
 
-        if (hasRealImage) {
-            return `
-            <div class="col product-card-wrapper" data-category="${p.categorie}" data-name="${(p.nom || '').toLowerCase()}">
-                <div class="card premium-product-card h-100 border-0 shadow-sm position-relative overflow-hidden" style="border-radius:12px;">
-                    <div class="position-relative overflow-hidden product-img-container" style="background:#ffffff;">
-                        <img loading="lazy" src="${imgSrc}" class="card-img-top product-img" alt="${p.nom}" 
-                            style="width:100%;object-fit:contain;transition:transform 0.4s ease;"
-                            onerror="handleImgError(this, '${p.categorie}')">
-                        <button class="wishlist-btn position-absolute top-0 end-0 m-2 btn btn-sm bg-white rounded-circle shadow-sm border-0 ${isFav ? 'text-danger' : 'text-muted'}"
-                            title="Ajouter aux favoris" style="width:32px;height:32px;padding:0;" onclick="toggleWishlist('${p.nom.replace(/'/g, "\\'")}')">
-                            <i class="${isFav ? 'fa-solid text-danger' : 'fa-regular'} fa-heart"></i>
-                        </button>
-                        <span class="badge position-absolute top-0 start-0 m-2" style="background:rgba(43,22,12,0.85);font-size:0.65rem;">${getCatLabel(p.categorie)}</span>
-                    </div>
-                    <div class="card-body p-2 d-flex flex-column">
-                        <h6 class="card-title fw-semibold mb-1" style="color:#2b160c;">${p.nom}</h6>
-                        <div class="d-flex align-items-center gap-1 mb-1">
-                            <span class="text-warning" style="font-size:0.62rem;">★★★★<span class="text-muted">★</span></span>
-                            <span class="text-muted" style="font-size:0.65rem;">(${Math.floor(Math.random() * 150) + 20})</span>
-                        </div>
-                        <div class="d-flex align-items-baseline gap-2 mb-2">
-                            <span class="fw-bold text-dark product-price">${(p.prix || 0).toLocaleString()} <small>FCFA</small></span>
-                        </div>
-                        <button class="btn btn-primary btn-sm w-100 fw-bold text-dark mt-auto add-to-cart-btn"
-                            onclick="addToCart('${p.nom.replace(/'/g, "\\'")}', ${p.prix}, '${imgSrc || ''}')">
-                            <i class="fa-solid fa-cart-plus me-1"></i>AJOUTER
+        return `
+        <div class="col product-card-wrapper" data-category="${p.categorie}" data-name="${(p.nom || '').toLowerCase()}">
+            <div class="card premium-product-card h-100 border-0 shadow-sm position-relative overflow-hidden" 
+                style="border-radius:12px; background: linear-gradient(145deg, #ffffff 0%, #fcf8f2 100%); border: 1px solid #f3ece0 !important;">
+                <div class="card-body p-3 d-flex flex-column position-relative" style="z-index: 1;">
+                    <span class="position-absolute" style="right:12px; bottom:60px; font-size:4rem; opacity:0.06; pointer-events:none; user-select:none;">${catIcons[p.categorie] || '🥖'}</span>
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="badge" style="background:#2b160c;color:#ffffff;font-size:0.65rem;">${getCatLabel(p.categorie)}</span>
+                        <button class="wishlist-btn btn btn-sm p-0 border-0 ${isFav ? 'text-danger' : 'text-muted'}" title="Ajouter aux favoris" onclick="toggleWishlist('${p.nom.replace(/'/g, "\\'")}')">
+                            <i class="${isFav ? 'fa-solid' : 'fa-regular'} fa-heart"></i>
                         </button>
                     </div>
+                    <h6 class="card-title fw-bold mb-1" style="font-size:0.92rem;color:#2b160c;">${p.nom}</h6>
+                    <div class="d-flex align-items-center gap-1 mb-2">
+                        <span class="text-warning" style="font-size:0.65rem;">★★★★<span class="text-muted">★</span></span>
+                        <span class="text-muted" style="font-size:0.7rem;">(${Math.floor(Math.random() * 150) + 20})</span>
+                    </div>
+                    <div class="d-flex align-items-baseline gap-2 mb-3">
+                        <span class="fw-bold text-dark" style="font-size:1.1rem;">${(p.prix || 0).toLocaleString()} <small>FCFA</small></span>
+                    </div>
+                    <button class="btn btn-primary btn-sm w-100 fw-bold text-dark mt-auto add-to-cart-btn"
+                        style="font-size:0.78rem;" onclick="addToCart('${p.nom.replace(/'/g, "\\'")}', ${p.prix}, '${imgSrc || ''}')">
+                        <i class="fa-solid fa-cart-plus me-1"></i>AJOUTER
+                    </button>
                 </div>
             </div>
-            `;
-        } else {
-            // Elegant compact menu card with warm cream gradient & subtle watermark icon
-            return `
-            <div class="col product-card-wrapper" data-category="${p.categorie}" data-name="${(p.nom || '').toLowerCase()}">
-                <div class="card premium-product-card h-100 border-0 shadow-sm position-relative overflow-hidden" 
-                    style="border-radius:12px; background: linear-gradient(145deg, #ffffff 0%, #fcf8f2 100%); border: 1px solid #f3ece0 !important;">
-                    <div class="card-body p-3 d-flex flex-column position-relative" style="z-index: 1;">
-                        <span class="position-absolute" style="right:12px; bottom:60px; font-size:4rem; opacity:0.06; pointer-events:none; user-select:none;">${catIcons[p.categorie] || '🥖'}</span>
-                        <div class="d-flex justify-content-between align-items-center mb-2">
-                            <span class="badge" style="background:#2b160c;color:#ffffff;font-size:0.65rem;">${getCatLabel(p.categorie)}</span>
-                            <button class="wishlist-btn btn btn-sm p-0 border-0 text-danger" title="Ajouter aux favoris">
-                                <i class="fa-regular fa-heart"></i>
-                            </button>
-                        </div>
-                        <h6 class="card-title fw-bold mb-1" style="font-size:0.92rem;color:#2b160c;">${p.nom}</h6>
-                        <div class="d-flex align-items-center gap-1 mb-2">
-                            <span class="text-warning" style="font-size:0.65rem;">★★★★<span class="text-muted">★</span></span>
-                            <span class="text-muted" style="font-size:0.7rem;">(${Math.floor(Math.random() * 150) + 20})</span>
-                        </div>
-                        <div class="d-flex align-items-baseline gap-2 mb-3">
-                            <span class="fw-bold text-dark" style="font-size:1.1rem;">${(p.prix || 0).toLocaleString()} <small>FCFA</small></span>
-                        </div>
-                        <button class="btn btn-primary btn-sm w-100 fw-bold text-dark mt-auto add-to-cart-btn"
-                            style="font-size:0.78rem;" onclick="addToCart('${p.nom.replace(/'/g, "\\'")}', ${p.prix}, '')">
-                            <i class="fa-solid fa-cart-plus me-1"></i>AJOUTER
-                        </button>
-                    </div>
-                </div>
-            </div>
-            `;
-        }
+        </div>
+        `;
     }).join('');
 }
 
