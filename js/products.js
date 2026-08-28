@@ -219,12 +219,14 @@ async function loadProducts() {
     // 2. Synchronisation transparente en arrière-plan avec l'API Cloud (timeout 2s)
     try {
         const apiBase = window.API_BASE_URL || (window.location.protocol.startsWith('http') ? '' : 'http://localhost:5000');
-        const apiUrl = `${apiBase}/api/products`;
+        const apiUrl = `${apiBase}/api/products?_t=${Date.now()}`;
         const fetcher = (typeof window !== 'undefined' && typeof window.babiFetch === 'function') ? window.babiFetch : fetch;
-        const response = await fetcher(apiUrl, {}, 2000);
+        const response = await fetcher(apiUrl, { cache: 'no-store' }, 2000);
         if (response && response.ok) {
             const rawProducts = await response.json();
+            const deletedIds = new Set(typeof window.babiGetDeletedProductIds === 'function' ? window.babiGetDeletedProductIds() : []);
             const valid = (Array.isArray(rawProducts) ? rawProducts : (rawProducts.products || []))
+                .filter(p => !deletedIds.has(String(p.id)) && !deletedIds.has(String(p.id_produit || '')))
                 .filter(p => p.is_active !== 0 && p.is_active !== '0' && p.is_active !== false)
                 .map(p => ({
                     id: p.id,
@@ -236,7 +238,7 @@ async function loadProducts() {
                     seuil_alerte: p.seuil_alerte != null ? Number(p.seuil_alerte) : 10,
                     is_active: 1
                 }));
-            if (valid.length > 0) {
+            if (Array.isArray(valid)) {
                 allProducts = valid;
                 if (typeof window.babiSetCachedProducts === 'function') {
                     window.babiSetCachedProducts(allProducts);
@@ -245,7 +247,6 @@ async function loadProducts() {
                 currentFilteredList = [...allProducts];
                 loadHomepageProducts();
                 if (container) {
-                    const urlParams = new URLSearchParams(window.location.search);
                     const searchQuery = urlParams.get('search');
                     const cat = urlParams.get('cat');
                     if (searchQuery) searchProducts(searchQuery);

@@ -706,6 +706,7 @@ app.delete('/api/users/:id', async (req, res) => {
 // Get all products with stock & active status
 app.get('/api/products', async (req, res) => {
     try {
+        res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, private');
         const products = await db.all(`
             SELECT p.*, 
                    COALESCE(s.quantite_disponible, p.stock, 50) as stock, 

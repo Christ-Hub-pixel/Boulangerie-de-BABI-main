@@ -1000,11 +1000,10 @@ function renderProductsGridOrTable() {
 
 async function loadProducts() {
     // 1. Rendu instantané 0ms depuis le catalogue en cache/mémoire
-    if (!allProducts || allProducts.length === 0) {
-        allProducts = (typeof window.babiGetCachedProducts === 'function') 
-            ? window.babiGetCachedProducts() 
-            : ((typeof window !== 'undefined' && window.BABI_EMBEDDED_CATALOG) ? window.BABI_EMBEDDED_CATALOG : []);
-    }
+    allProducts = (typeof window.babiGetCachedProducts === 'function') 
+        ? window.babiGetCachedProducts() 
+        : ((typeof window !== 'undefined' && window.BABI_EMBEDDED_CATALOG) ? window.BABI_EMBEDDED_CATALOG : []);
+    
     updateProductKpis();
     renderProductsGridOrTable();
 
@@ -1012,12 +1011,14 @@ async function loadProducts() {
     try {
         const apiBase = (typeof window !== 'undefined' && window.API_BASE_URL) ? window.API_BASE_URL : (window.location.protocol.startsWith('http') ? '' : 'http://localhost:5000');
         const fetcher = (typeof window !== 'undefined' && typeof window.babiFetch === 'function') ? window.babiFetch : fetch;
-        const res = await fetcher(`${apiBase}/api/products`, {}, 2500);
+        const res = await fetcher(`${apiBase}/api/products?_t=${Date.now()}`, { cache: 'no-store' }, 2500);
         if (res && res.ok) {
             const data = await res.json();
             const list = Array.isArray(data) ? data : (data.products || []);
-            if (list.length > 0) {
-                allProducts = list.map((p, idx) => ({
+            if (Array.isArray(list)) {
+                const deletedIds = new Set(typeof window.babiGetDeletedProductIds === 'function' ? window.babiGetDeletedProductIds() : []);
+                const filtered = list.filter(p => !deletedIds.has(String(p.id)) && !deletedIds.has(String(p.id_produit || '')));
+                allProducts = filtered.map((p, idx) => ({
                     id: p.id || idx + 1,
                     nom: p.nom || p.name,
                     prix: Number(p.prix || p.price || 0),
