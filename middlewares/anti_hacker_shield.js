@@ -154,8 +154,8 @@ class UniversalAntiHackerShield {
      */
     inspectPayload(content) {
         if (typeof content === 'string') {
-            // Ignorer les blobs images base64 ou URLs internes
-            if (content.startsWith('data:image/') || content.startsWith('assets/')) {
+            // Ignorer les blobs images base64 ou URLs internes et longs payloads sains
+            if (content.startsWith('data:image/') || content.startsWith('data:') || content.startsWith('assets/') || content.length > 2000) {
                 return null;
             }
             for (const sig of this.attackSignatures) {
@@ -184,63 +184,72 @@ class UniversalAntiHackerShield {
      */
     middleware() {
         return (req, res, next) => {
-            const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || '127.0.0.1';
-            const userAgent = (req.headers['user-agent'] || '').toLowerCase();
+            try {
+                const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || '127.0.0.1';
+                const userAgent = (req.headers['user-agent'] || '').toLowerCase();
 
-            // Immunité totale et immédiate pour tout le trafic local / LAN / Démo
-            if (this.isLocalOrPrivateIp(ip)) {
-                return next();
-            }
+                // Immunité totale et immédiate pour tout le trafic local / LAN / Démo
+                if (this.isLocalOrPrivateIp(ip)) {
+                    return next();
+                }
 
-            // 1. Contrôle IP Bannie
-            const banInfo = this.isIpBlocked(ip);
-            if (banInfo) {
-                const remainingMin = Math.ceil((banInfo.blockedUntil - Date.now()) / 60000);
-                return res.status(403).json({
-                    error: "⛔ ACCÈS BLOQUÉ PAR LE BOUCLIER DE CYBER-DÉFENSE",
-                    threat_category: banInfo.category,
-                    reason: `Votre IP (${ip}) a été bannie suite à une tentative d'attaque (${banInfo.reason}).`,
-                    remaining_quarantine_minutes: remainingMin,
-                    incident_code: "CYBER_SHIELD_QUARANTINE"
-                });
-            }
-
-            // 2. Détection immédiate des Outils de Piratage (Scanners)
-            for (const tool of this.hackerToolSignatures) {
-                if (userAgent.includes(tool)) {
-                    this.banIp(ip, `AUTOMATED_HACKING_TOOL_${tool.toUpperCase()}`, 'Scanners & Bots', 120);
+                // 1. Contrôle IP Bannie
+                const banInfo = this.isIpBlocked(ip);
+                if (banInfo) {
+                    const remainingMin = Math.ceil((banInfo.blockedUntil - Date.now()) / 60000);
                     return res.status(403).json({
-                        error: "⛔ Outil de piratage automatisé détecté. Connexion immédiatement interrompue.",
-                        tool_detected: tool,
-                        incident_id: "BOT_TRAPPED_" + Date.now()
+                        error: "⛔ ACCÈS BLOQUÉ PAR LE BOUCLIER DE CYBER-DÉFENSE",
+                        threat_category: banInfo.category,
+                        reason: `Votre IP (${ip}) a été bannie suite à une tentative d'attaque (${banInfo.reason}).`,
+                        remaining_quarantine_minutes: remainingMin,
+                        incident_code: "CYBER_SHIELD_QUARANTINE"
                     });
                 }
+
+                // 2. Détection immédiate des Outils de Piratage (Scanners)
+                for (const tool of this.hackerToolSignatures) {
+                    if (userAgent.includes(tool)) {
+                        this.banIp(ip, `AUTOMATED_HACKING_TOOL_${tool.toUpperCase()}`, 'Scanners & Bots', 120);
+                        return res.status(403).json({
+                            error: "⛔ Outil de piratage automatisé détecté. Connexion immédiatement interrompue.",
+                            tool_detected: tool,
+                            incident_id: "BOT_TRAPPED_" + Date.now()
+                        });
+                    }
+                }
+
+                // 3. Inspection de l'URL & des Paramètres
+                let rawUrl = req.originalUrl || req.url || '';
+                try {
+                    rawUrl = decodeURIComponent(rawUrl);
+                } catch (_) {}
+                let detected = this.inspectPayload(rawUrl);
+
+                // 4. Inspection du Body JSON / Form
+                if (!detected && req.body) {
+                    detected = this.inspectPayload(req.body);
+                }
+
+                // 5. Neutralisation si attaque détectée
+                if (detected) {
+                    this.banIp(ip, detected.type, detected.category, 60);
+
+                    return res.status(403).json({
+                        error: "🚨 TENTATIVE D'INTRUSION DÉTECTÉE ET NEUTRALISÉE",
+                        threat_category: detected.category,
+                        threat_signature: detected.type,
+                        action_taken: "IP_BANNED_IMMEDIATELY",
+                        incident_id: "HACK_PREVENTED_" + Date.now(),
+                        defense_message: "Votre tentative d'attaque a été enregistrée et transmise au centre de sécurité."
+                    });
+                }
+
+                next();
+            } catch (shieldErr) {
+                // Failsafe : Ne jamais faire crasher une requête valide
+                console.warn("[Cyber-Shield Failsafe] Ignored exception :", shieldErr.message);
+                next();
             }
-
-            // 3. Inspection de l'URL & des Paramètres
-            const rawUrl = decodeURIComponent(req.originalUrl || req.url || '');
-            let detected = this.inspectPayload(rawUrl);
-
-            // 4. Inspection du Body JSON / Form
-            if (!detected && req.body) {
-                detected = this.inspectPayload(req.body);
-            }
-
-            // 5. Neutralisation si attaque détectée
-            if (detected) {
-                this.banIp(ip, detected.type, detected.category, 60);
-
-                return res.status(403).json({
-                    error: "🚨 TENTATIVE D'INTRUSION DÉTECTÉE ET NEUTRALISÉE",
-                    threat_category: detected.category,
-                    threat_signature: detected.type,
-                    action_taken: "IP_BANNED_IMMEDIATELY",
-                    incident_id: "HACK_PREVENTED_" + Date.now(),
-                    defense_message: "Votre tentative d'attaque a été enregistrée et transmise au centre de sécurité."
-                });
-            }
-
-            next();
         };
     }
 }

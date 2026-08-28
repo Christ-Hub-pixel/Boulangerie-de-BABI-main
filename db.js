@@ -60,10 +60,13 @@ class LibSqlDbWrapper {
     }
 }
 
+const DEFAULT_TURSO_URL = 'libsql://babi-db-christ-hub-pixel.aws-eu-west-1.turso.io';
+const DEFAULT_TURSO_TOKEN = 'eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCJ9.eyJhIjoicnciLCJpYXQiOjE3ODc4MTczNDAsImlkIjoiMDFhMDQyMzMtZDEwMS03ZGY0LWJmYzctOGFjZGRlMzEzNjE2Iiwia2lkIjoiRFJBeGs0UHdSb2tqcmZyckY4MEFwN3hOUHpYXy10RVRrSjZnVFBlWDBKYyIsInJpZCI6ImE0NWJiNDhmLTc5MGItNDdhYS1hYmYxLTRiYjAxM2EzMGYyNCJ9.HQxQU_w_ESoZKGbwKhE0WLabn-hzb5Amvraz_my_zNMLqZw6y14u7B_IcDz_rhpw20ewkiAIpnh01VL_hTjPCQ';
+
 async function initDB() {
     let db;
-    const tursoUrl = process.env.TURSO_DATABASE_URL || process.env.DATABASE_URL;
-    const tursoAuthToken = process.env.TURSO_AUTH_TOKEN;
+    const tursoUrl = process.env.TURSO_DATABASE_URL || process.env.DATABASE_URL || DEFAULT_TURSO_URL;
+    const tursoAuthToken = process.env.TURSO_AUTH_TOKEN || DEFAULT_TURSO_TOKEN;
 
     if (tursoUrl && (tursoUrl.startsWith('libsql://') || tursoUrl.startsWith('https://') || tursoUrl.startsWith('http://'))) {
         try {
@@ -86,12 +89,18 @@ async function initDB() {
             const dbSync = new DatabaseSync(effectiveDbPath);
             db = new SqliteDbWrapper(dbSync);
         } catch (e) {
-            const sqlite3 = require('sqlite3').verbose();
-            const { open } = require('sqlite');
-            db = await open({
-                filename: effectiveDbPath,
-                driver: sqlite3.Database
-            });
+            console.warn("⚠️ Mode SQLite mémoire d'urgence :", e.message);
+            // Fallback ultra-léger si ni Turso ni node:sqlite ne sont disponibles
+            try {
+                const sqlite3 = require('sqlite3').verbose();
+                const { open } = require('sqlite');
+                db = await open({
+                    filename: effectiveDbPath,
+                    driver: sqlite3.Database
+                });
+            } catch (err2) {
+                console.error("Erreur critique chargement SQLite :", err2.message);
+            }
         }
     }
 
