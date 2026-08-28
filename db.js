@@ -399,50 +399,23 @@ async function initDB() {
             try {
                 const raw = fs.readFileSync(jsonPath, 'utf8');
                 const productsData = JSON.parse(raw);
-                for (const p of productsData) {
-                    const res = await db.run(
-                        "INSERT INTO products (nom, prix, categorie, image, description) VALUES (?, ?, ?, ?, ?)",
-                        [p.name, p.price, p.category, p.image || 'assets/product_baguette.png', p.description || 'Produit artisanal de la Boulangerie de BABI.']
-                    );
-                    const prodId = res.lastID;
-                    // Stock initial
-                    const initialStock = Math.floor(Math.random() * 40) + 15; // 15 to 55 units
-                    await db.run(
-                        "INSERT INTO stocks (product_id, nom_produit, categorie, quantite_disponible, seuil_alerte, unite, prix_unitaire) VALUES (?, ?, ?, ?, ?, ?, ?)",
-                        [prodId, p.name, p.category, initialStock, 10, 'pièce', p.price]
-                    );
+                if (Array.isArray(productsData) && productsData.length > 0) {
+                    for (const p of productsData) {
+                        const res = await db.run(
+                            "INSERT INTO products (nom, prix, categorie, image, description) VALUES (?, ?, ?, ?, ?)",
+                            [p.name, p.price, p.category, p.image || 'assets/product_baguette.png', p.description || 'Produit artisanal de la Boulangerie de BABI.']
+                        );
+                        const prodId = res.lastID;
+                        const initialStock = Math.floor(Math.random() * 40) + 15;
+                        await db.run(
+                            "INSERT INTO stocks (product_id, nom_produit, categorie, quantite_disponible, seuil_alerte, unite, prix_unitaire) VALUES (?, ?, ?, ?, ?, ?, ?)",
+                            [prodId, p.name, p.category, initialStock, 10, 'pièce', p.price]
+                        );
+                    }
+                    console.log(`Initialisation de ${productsData.length} produits et stocks effectuée avec succès.`);
                 }
-                console.log(`Initialisation de ${productsData.length} produits et stocks effectuée avec succès.`);
             } catch (err) {
                 console.error("Erreur chargement data/products.json:", err.message);
-            }
-        }
-    } else {
-        // Sync & update existing products with real images from data/products.json
-        const jsonPath = path.resolve(__dirname, 'data', 'products.json');
-        if (fs.existsSync(jsonPath)) {
-            try {
-                const raw = fs.readFileSync(jsonPath, 'utf8');
-                const productsData = JSON.parse(raw);
-                for (const p of productsData) {
-                    if (p.image && p.image !== 'null') {
-                        await db.run("UPDATE products SET image = ? WHERE nom = ? OR nom = ?", [p.image, p.name, p.nom || p.name]);
-                    }
-                }
-            } catch (err) {
-                console.error("Erreur synchronisation images:", err.message);
-            }
-        }
-
-        // Sync stocks table if empty
-        const stockCount = await db.get("SELECT COUNT(*) as count FROM stocks");
-        if (stockCount.count === 0) {
-            const allP = await db.all("SELECT * FROM products");
-            for (const p of allP) {
-                await db.run(
-                    "INSERT INTO stocks (product_id, nom_produit, categorie, quantite_disponible, seuil_alerte, unite, prix_unitaire) VALUES (?, ?, ?, ?, ?, ?, ?)",
-                    [p.id, p.nom, p.categorie, 35, 10, 'pièce', p.prix]
-                );
             }
         }
     }
