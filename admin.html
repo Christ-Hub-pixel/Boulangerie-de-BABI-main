@@ -1173,16 +1173,11 @@
             </div>
 
             <form onsubmit="handleCreateProduct(event)" style="display: flex; flex-direction: column; gap: 14px;">
-                <!-- Nom & Catégorie avec Bouton IA -->
+                <!-- Nom & Catégorie -->
                 <div class="row g-2">
                     <div class="col-md-7">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
-                            <label class="prestige-form-label" style="font-weight: 700; font-size: 12px; margin: 0;">Nom du Produit * :</label>
-                            <button type="button" onclick="autoCompleteProductWithAI('new')" class="btn-xs shadow-sm" style="background: linear-gradient(135deg, #6366f1, #8b5cf6); color: #ffffff; border: none; border-radius: 6px; padding: 2px 8px; font-size: 11px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 4px;" title="L'IA remplit la catégorie, le prix conseillé, la description et propose un visuel">
-                                <span class="material-symbols-outlined" style="font-size: 13px;">auto_awesome</span> Remplir avec l'IA
-                            </button>
-                        </div>
-                        <input type="text" id="new-prod-name" class="prestige-form-input" placeholder="Ex: Baguette Tradition, Croissant Beurre, Jus Bissap..." required style="width: 100%; padding: 10px 12px; border-radius: 12px; border: 1.5px solid #cbd5e1; font-size: 13px; outline: none;" onkeydown="if(event.key==='Enter'){event.preventDefault(); autoCompleteProductWithAI('new');}"/>
+                        <label class="prestige-form-label" style="font-weight: 700; font-size: 12px; margin-bottom: 4px; display: block;">Nom du Produit * :</label>
+                        <input type="text" id="new-prod-name" class="prestige-form-input" placeholder="Ex: Baguette Tradition, Croissant Beurre, Jus Bissap..." required style="width: 100%; padding: 10px 12px; border-radius: 12px; border: 1.5px solid #cbd5e1; font-size: 13px; outline: none;"/>
                     </div>
                     <div class="col-md-5">
                         <label class="prestige-form-label" style="font-weight: 700; font-size: 12px; margin-bottom: 4px; display: block;">Catégorie * :</label>
@@ -1214,28 +1209,17 @@
                     </div>
                 </div>
 
-                <!-- Photo du Produit (Upload Direct + Studio Photo IA) -->
+                <!-- Photo du Produit -->
                 <div style="background: #f8fafc; border: 1.5px dashed #cbd5e1; border-radius: 16px; padding: 14px;">
-                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
-                        <label class="prestige-form-label" style="font-weight: 700; font-size: 12px; margin: 0;">📷 Photo & Visuel Produit :</label>
-                        <button type="button" onclick="openAiPhotoStudio('new')" class="btn-xs shadow-sm" style="background: linear-gradient(135deg, #0ea5e9, #2563eb); color: #fff; border: none; padding: 4px 10px; border-radius: 8px; font-weight: 700; font-size: 11px; cursor: pointer; display: flex; align-items: center; gap: 4px;">
-                            <span class="material-symbols-outlined" style="font-size: 13px;">auto_awesome</span> ✨ Studio Photo IA
-                        </button>
-                    </div>
-
+                    <label class="prestige-form-label" style="font-weight: 700; font-size: 12px; margin-bottom: 8px; display: block;">📷 Photo du Produit :</label>
                     <div style="display: flex; align-items: center; gap: 14px;">
                         <img id="new-prod-preview-img" src="assets/product_baguette.png" alt="Aperçu" style="width: 64px; height: 64px; border-radius: 12px; object-fit: cover; border: 2px solid #f59e0b; box-shadow: 0 4px 10px rgba(0,0,0,0.1); flex-shrink: 0;"/>
                         <div style="flex: 1;">
                             <input type="file" id="new-prod-file" accept="image/*" onchange="handleProductImageSelect(event, 'new')" style="display: none;"/>
                             <input type="hidden" id="new-prod-image-data" value="assets/product_baguette.png"/>
-                            <div style="display: flex; flex-wrap: wrap; gap: 6px;">
-                                <button type="button" onclick="document.getElementById('new-prod-file').click()" class="btn-xs btn-outline-primary" style="padding: 7px 14px; border-radius: 10px; font-weight: 700; font-size: 11.5px;">
-                                    <i class="fa-solid fa-cloud-arrow-up me-1"></i> Importer photo appareil...
-                                </button>
-                                <button type="button" onclick="openAiPhotoStudio('new')" class="btn-xs btn-outline-secondary" style="padding: 7px 14px; border-radius: 10px; font-weight: 700; font-size: 11.5px; border-color: #0ea5e9; color: #0284c7;">
-                                    <i class="fa-solid fa-wand-magic-sparkles me-1"></i> Galerie HD & Suggestions IA
-                                </button>
-                            </div>
+                            <button type="button" onclick="document.getElementById('new-prod-file').click()" class="btn-xs btn-outline-primary" style="padding: 7px 14px; border-radius: 10px; font-weight: 700; font-size: 11.5px;">
+                                <i class="fa-solid fa-cloud-arrow-up me-1"></i> Importer photo appareil...
+                            </button>
                             <small class="text-muted d-block mt-1" style="font-size: 11px;">Format JPG, PNG ou WEBP (redimensionnement automatique)</small>
                         </div>
                     </div>
@@ -1277,15 +1261,10 @@
             <form onsubmit="handleUpdateProduct(event)" style="display: flex; flex-direction: column; gap: 14px;">
                 <input type="hidden" id="edit-prod-id"/>
 
-                <!-- Nom & Catégorie avec Bouton IA -->
+                <!-- Nom & Catégorie -->
                 <div class="row g-2">
                     <div class="col-md-7">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
-                            <label class="prestige-form-label" style="font-weight: 700; font-size: 12px; margin: 0;">Nom du Produit * :</label>
-                            <button type="button" onclick="autoCompleteProductWithAI('edit')" class="btn-xs shadow-sm" style="background: linear-gradient(135deg, #6366f1, #8b5cf6); color: #ffffff; border: none; border-radius: 6px; padding: 2px 8px; font-size: 11px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 4px;" title="Optimiser avec l'IA">
-                                <span class="material-symbols-outlined" style="font-size: 13px;">auto_awesome</span> Améliorer avec l'IA
-                            </button>
-                        </div>
+                        <label class="prestige-form-label" style="font-weight: 700; font-size: 12px; margin-bottom: 4px; display: block;">Nom du Produit * :</label>
                         <input type="text" id="edit-prod-name" class="prestige-form-input" required style="width: 100%; padding: 10px 12px; border-radius: 12px; border: 1.5px solid #cbd5e1; font-size: 13px; outline: none;"/>
                     </div>
                     <div class="col-md-5">
@@ -1324,28 +1303,17 @@
                     </div>
                 </div>
 
-                <!-- Photo du Produit (Upload Direct + Studio Photo IA) -->
+                <!-- Photo du Produit -->
                 <div style="background: #f8fafc; border: 1.5px dashed #cbd5e1; border-radius: 16px; padding: 14px;">
-                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
-                        <label class="prestige-form-label" style="font-weight: 700; font-size: 12px; margin: 0;">📷 Photo & Visuel Produit :</label>
-                        <button type="button" onclick="openAiPhotoStudio('edit')" class="btn-xs shadow-sm" style="background: linear-gradient(135deg, #0ea5e9, #2563eb); color: #fff; border: none; padding: 4px 10px; border-radius: 8px; font-weight: 700; font-size: 11px; cursor: pointer; display: flex; align-items: center; gap: 4px;">
-                            <span class="material-symbols-outlined" style="font-size: 13px;">auto_awesome</span> ✨ Studio Photo IA
-                        </button>
-                    </div>
-
+                    <label class="prestige-form-label" style="font-weight: 700; font-size: 12px; margin-bottom: 8px; display: block;">📷 Photo du Produit :</label>
                     <div style="display: flex; align-items: center; gap: 14px;">
                         <img id="edit-prod-preview-img" src="assets/product_baguette.png" alt="Aperçu" style="width: 64px; height: 64px; border-radius: 12px; object-fit: cover; border: 2px solid #f59e0b; box-shadow: 0 4px 10px rgba(0,0,0,0.1); flex-shrink: 0;"/>
                         <div style="flex: 1;">
                             <input type="file" id="edit-prod-file" accept="image/*" onchange="handleProductImageSelect(event, 'edit')" style="display: none;"/>
                             <input type="hidden" id="edit-prod-image-data"/>
-                            <div style="display: flex; flex-wrap: wrap; gap: 6px;">
-                                <button type="button" onclick="document.getElementById('edit-prod-file').click()" class="btn-xs btn-outline-primary" style="padding: 7px 14px; border-radius: 10px; font-weight: 700; font-size: 11.5px;">
-                                    <i class="fa-solid fa-cloud-arrow-up me-1"></i> Remplacer la photo...
-                                </button>
-                                <button type="button" onclick="openAiPhotoStudio('edit')" class="btn-xs btn-outline-secondary" style="padding: 7px 14px; border-radius: 10px; font-weight: 700; font-size: 11.5px; border-color: #0ea5e9; color: #0284c7;">
-                                    <i class="fa-solid fa-wand-magic-sparkles me-1"></i> Galerie HD & Suggestions IA
-                                </button>
-                            </div>
+                            <button type="button" onclick="document.getElementById('edit-prod-file').click()" class="btn-xs btn-outline-primary" style="padding: 7px 14px; border-radius: 10px; font-weight: 700; font-size: 11.5px;">
+                                <i class="fa-solid fa-cloud-arrow-up me-1"></i> Remplacer la photo...
+                            </button>
                             <small class="text-muted d-block mt-1" style="font-size: 11px;">Format JPG, PNG ou WEBP (redimensionnement automatique)</small>
                         </div>
                     </div>
@@ -1595,144 +1563,10 @@
             </button>
         </div>
     </div>
-
-    <!-- =============================================================
-         MODAL : STUDIO PHOTO & VISUELS IA
-         ============================================================= -->
-    <div id="aiPhotoStudioModal" class="prestige-modal-backdrop hidden" style="z-index: 999999;">
-        <div class="prestige-modal-card" style="max-width: 680px; max-height: 90vh; overflow-y: auto; background: #ffffff; border-radius: 24px; box-shadow: 0 25px 60px rgba(0,0,0,0.3);">
-            <div style="background: linear-gradient(135deg, #1e1b4b, #312e81); color: #fff; margin: -28px -28px 16px -28px; padding: 20px 24px; border-radius: 24px 24px 0 0; border-bottom: 2px solid #818cf8; display: flex; align-items: center; justify-content: space-between;">
-                <div class="d-flex align-items-center gap-2">
-                    <span class="material-symbols-outlined text-3xl" style="color: #a5b4fc;">auto_awesome</span>
-                    <div>
-                        <h3 class="text-white mb-0" style="font-size: 18px; font-weight: 800;">Studio Photo & Visuels IA BABI</h3>
-                        <p class="small text-white-50 mb-0" style="font-size: 11.5px;">Générez et choisissez des visuels HD pour vos produits du catalogue</p>
-                    </div>
-                </div>
-                <button type="button" onclick="closeAiPhotoStudio()" style="background: rgba(255,255,255,0.15); border: none; color: #fff; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; font-size: 14px;">✕</button>
-            </div>
-
-            <!-- Barre de recherche / Prompt IA -->
-            <div style="margin-bottom: 16px;">
-                <label style="font-weight: 700; font-size: 12px; color: #334155; margin-bottom: 6px; display: block;">🎯 Décrivez le produit ou tapez un mot-clé :</label>
-                <div style="display: flex; gap: 8px;">
-                    <input type="text" id="ai-studio-prompt" placeholder="Ex: Baguette croustillante, Croissant amande, Gâteau d'anniversaire fraise, Jus de bissap..." style="flex: 1; padding: 10px 14px; border-radius: 12px; border: 1.5px solid #cbd5e1; font-size: 13px; outline: none;" onkeydown="if(event.key==='Enter'){event.preventDefault(); generateAiPhotos();}">
-                    <button type="button" onclick="generateAiPhotos()" style="padding: 10px 18px; background: linear-gradient(135deg, #6366f1, #4f46e5); color: #fff; border: none; border-radius: 12px; font-weight: 800; font-size: 12.5px; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);">
-                        <span class="material-symbols-outlined" style="font-size: 16px;">search</span> Rechercher / Générer
-                    </button>
-                </div>
-            </div>
-
-            <!-- Filtres rapides par catégorie -->
-            <div style="display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px;">
-                <button type="button" class="btn-xs" onclick="filterStudioCategory('all')" style="padding: 4px 10px; border-radius: 20px; border: 1px solid #e2e8f0; background: #f8fafc; font-size: 11px; font-weight: 700; cursor: pointer;">✨ Tout</button>
-                <button type="button" class="btn-xs" onclick="filterStudioCategory('pain')" style="padding: 4px 10px; border-radius: 20px; border: 1px solid #e2e8f0; background: #fff; font-size: 11px; font-weight: 700; cursor: pointer;">🥖 Pains</button>
-                <button type="button" class="btn-xs" onclick="filterStudioCategory('viennoiserie')" style="padding: 4px 10px; border-radius: 20px; border: 1px solid #e2e8f0; background: #fff; font-size: 11px; font-weight: 700; cursor: pointer;">🥐 Viennoiseries</button>
-                <button type="button" class="btn-xs" onclick="filterStudioCategory('patisserie')" style="padding: 4px 10px; border-radius: 20px; border: 1px solid #e2e8f0; background: #fff; font-size: 11px; font-weight: 700; cursor: pointer;">🍰 Gâteaux & Pâtisseries</button>
-                <button type="button" class="btn-xs" onclick="filterStudioCategory('jus')" style="padding: 4px 10px; border-radius: 20px; border: 1px solid #e2e8f0; background: #fff; font-size: 11px; font-weight: 700; cursor: pointer;">🥤 Jus Naturels</button>
-                <button type="button" class="btn-xs" onclick="filterStudioCategory('sale')" style="padding: 4px 10px; border-radius: 20px; border: 1px solid #e2e8f0; background: #fff; font-size: 11px; font-weight: 700; cursor: pointer;">🍕 Pizzas & Salés</button>
-                <button type="button" class="btn-xs" onclick="filterStudioCategory('snack')" style="padding: 4px 10px; border-radius: 20px; border: 1px solid #e2e8f0; background: #fff; font-size: 11px; font-weight: 700; cursor: pointer;">🍪 Biscuits & Glaces</button>
-            </div>
-
-            <!-- Grille de prévisualisation des photos IA -->
-            <div id="ai-studio-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 12px; max-height: 380px; overflow-y: auto; padding: 4px;">
-                <!-- Rempli dynamiquement par JS -->
-            </div>
-
-            <div style="margin-top: 16px; display: flex; justify-content: flex-end; gap: 8px;">
-                <button type="button" onclick="closeAiPhotoStudio()" style="padding: 10px 18px; border: 1px solid #cbd5e1; background: #f8fafc; border-radius: 12px; font-weight: 700; font-size: 12px; cursor: pointer;">Fermer</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- =============================================================
-         🤖 WIDGET FLOTTANT & HUB COPILOTE IA BABI
-         ============================================================= -->
-    <!-- Bouton Flottant -->
-    <div id="babi-ai-fab" onclick="toggleAiCopilotDrawer(event)" role="button" tabindex="0" style="position: fixed; bottom: 24px; right: 24px; z-index: 999999; display: flex; align-items: center; gap: 8px; background: linear-gradient(135deg, #1e1b4b, #4338ca); color: #fff; padding: 12px 18px; border-radius: 9999px; cursor: pointer; box-shadow: 0 10px 25px rgba(67, 56, 202, 0.45); border: 2px solid #818cf8; user-select: none; -webkit-tap-highlight-color: transparent; transition: transform 0.15s ease, box-shadow 0.15s ease;" onmousedown="this.style.transform='scale(0.95)'" onmouseup="this.style.transform='scale(1)'">
-        <span class="material-symbols-outlined" style="font-size: 22px; color: #fbbf24;">auto_awesome</span>
-        <span style="font-weight: 800; font-size: 13px; letter-spacing: 0.3px;">IA Administrateur</span>
-        <span id="ai-status-dot" style="width: 8px; height: 8px; border-radius: 50%; background: #4ade80; box-shadow: 0 0 8px #4ade80;"></span>
-    </div>
-
-    <!-- Panneau Drawer Copilote IA -->
-    <div id="babi-ai-drawer" style="display: none; position: fixed; bottom: 90px; right: 24px; z-index: 999999; width: 380px; max-width: calc(100vw - 32px); height: 550px; max-height: calc(100vh - 120px); background: #ffffff; border-radius: 20px; box-shadow: 0 20px 50px rgba(0,0,0,0.3); border: 1.5px solid #e0e7ff; flex-direction: column; overflow: hidden;">
-        <!-- Header Drawer -->
-        <div style="background: linear-gradient(135deg, #1e1b4b, #312e81); color: #fff; padding: 14px 16px; display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid #6366f1;">
-            <div style="display: flex; align-items: center; gap: 10px;">
-                <div style="width: 34px; height: 34px; border-radius: 10px; background: rgba(255,255,255,0.15); display: flex; align-items: center; justify-content: center;">
-                    <span class="material-symbols-outlined" style="color: #fbbf24; font-size: 20px;">smart_toy</span>
-                </div>
-                <div>
-                    <h4 style="margin: 0; font-size: 14px; font-weight: 800; color: #fff;">BABI Brain Copilot</h4>
-                    <span style="font-size: 11px; color: #a5b4fc;">Assistant IA & Automatisation</span>
-                </div>
-            </div>
-            <button type="button" onclick="toggleAiCopilotDrawer(event)" style="background: rgba(255,255,255,0.15); border: none; color: #fff; width: 28px; height: 28px; border-radius: 50%; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center;">✕</button>
-        </div>
-
-        <!-- Suggestions rapides Chips -->
-        <div style="background: #f8fafc; padding: 8px 12px; border-bottom: 1px solid #e2e8f0; display: flex; gap: 6px; overflow-x: auto; white-space: nowrap;">
-            <button type="button" class="btn-xs" onclick="sendAiQuickPrompt('Quel est le produit le plus utilisé par les clients ?')" style="padding: 3px 8px; border-radius: 12px; border: 1px solid #cbd5e1; background: #fff; font-size: 10.5px; font-weight: 700; color: #4338ca; cursor: pointer;">🏆 Produit le plus vendu</button>
-            <button type="button" class="btn-xs" onclick="triggerAiChatPhoto()" style="padding: 3px 8px; border-radius: 12px; border: 1px solid #cbd5e1; background: #fff; font-size: 10.5px; font-weight: 700; color: #0284c7; cursor: pointer;">📷 Publier avec Photo</button>
-            <button type="button" class="btn-xs" onclick="sendAiQuickPrompt('Ajoute Baguette Tradition à 250F avec 60 en stock')" style="padding: 3px 8px; border-radius: 12px; border: 1px solid #cbd5e1; background: #fff; font-size: 10.5px; font-weight: 700; color: #334155; cursor: pointer;">🥖 Ajouter Baguette</button>
-            <button type="button" class="btn-xs" onclick="sendAiQuickPrompt('Ajoute Croissant Pur Beurre à 500F avec 40 en stock')" style="padding: 3px 8px; border-radius: 12px; border: 1px solid #cbd5e1; background: #fff; font-size: 10.5px; font-weight: 700; color: #334155; cursor: pointer;">🥐 Ajouter Croissant</button>
-            <button type="button" class="btn-xs" onclick="sendAiQuickPrompt('Quel est l etat des stocks ?')" style="padding: 3px 8px; border-radius: 12px; border: 1px solid #cbd5e1; background: #fff; font-size: 10.5px; font-weight: 700; color: #334155; cursor: pointer;">📦 Stocks & Alertes</button>
-        </div>
-
-        <!-- Chat Conversation Messages -->
-        <div id="ai-chat-messages" style="flex: 1; padding: 14px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; font-size: 12.5px; background: #fdfdfd;">
-            <!-- Message de bienvenue -->
-            <div style="background: #eef2ff; border: 1px solid #c7d2fe; border-radius: 14px; padding: 10px 12px; color: #1e1b4b; align-self: flex-start; max-width: 90%;">
-                <div style="font-weight: 800; font-size: 11.5px; margin-bottom: 2px; color: #4338ca;">🤖 Copilote IA BABI :</div>
-                Bonjour Administrateur ! Je peux **enregistrer et publier vos produits directement en base de données** à partir d'une photo et d'une simple phrase (*« Baguette 250F »*), ou vous donner les **statistiques de vos produits les plus vendus**.
-            </div>
-        </div>
-
-        <!-- Aperçu de photo attachée -->
-        <div id="ai-chat-photo-preview-bar" style="display: none; padding: 6px 12px; background: #f0fdf4; border-top: 1px solid #bbf7d0; align-items: center; justify-content: space-between;">
-            <div style="display: flex; align-items: center; gap: 8px;">
-                <img id="ai-chat-attached-thumb" src="" style="width: 28px; height: 28px; border-radius: 6px; object-fit: cover; border: 1px solid #16a34a;"/>
-                <span style="font-size: 11px; font-weight: 700; color: #166534;">Photo prête à être publiée</span>
-            </div>
-            <button type="button" onclick="removeAiChatPhoto()" style="background: transparent; border: none; color: #dc2626; font-size: 13px; cursor: pointer;">✕</button>
-        </div>
-
-        <!-- Input Chat -->
-        <form onsubmit="handleAiChatSubmit(event)" style="padding: 10px 12px; border-top: 1px solid #e2e8f0; background: #ffffff; display: flex; gap: 6px; align-items: center;">
-            <input type="file" id="ai-chat-photo-input" accept="image/*" onchange="handleAiChatPhotoSelect(event)" style="display: none;"/>
-            <button type="button" onclick="document.getElementById('ai-chat-photo-input').click()" style="background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; width: 34px; height: 34px; border-radius: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center;" title="Joindre une photo de produit">
-                <span class="material-symbols-outlined" style="font-size: 18px; color: #0284c7;">add_photo_alternate</span>
-            </button>
-            <input type="text" id="ai-chat-input" placeholder="Ex: Ajoute Pain Complet à 500F (ou joindre photo)..." style="flex: 1; padding: 8px 12px; border-radius: 12px; border: 1.5px solid #cbd5e1; font-size: 12px; outline: none;"/>
-            <button type="submit" style="background: #4f46e5; color: #fff; border: none; width: 34px; height: 34px; border-radius: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center;">
-                <span class="material-symbols-outlined" style="font-size: 18px;">send</span>
-            </button>
-        </form>
-    </div>
-
-    <!-- Inline Fail-safe Script for Instant AI Drawer Response -->
-    <script>
-        window.toggleAiCopilotDrawer = function(e) {
-            if (e && e.stopPropagation) e.stopPropagation();
-            const drawer = document.getElementById('babi-ai-drawer');
-            if (!drawer) return;
-
-            const isHidden = drawer.style.display === 'none' || !drawer.style.display;
-            if (isHidden) {
-                drawer.style.display = 'flex';
-                const chatInput = document.getElementById('ai-chat-input');
-                if (chatInput) setTimeout(() => chatInput.focus(), 80);
-            } else {
-                drawer.style.display = 'none';
-            }
-        };
-    </script>
-
     <!-- Scripts -->
     <script src="js/api_config.js"></script>
-    <script src="js/admin.js?v=3.2"></script>
-    <script src="js/realtime_sync.js?v=3.2"></script>
-    <script src="js/anti_hacker_client.js?v=3.2"></script>
+    <script src="js/admin.js?v=3.5"></script>
+    <script src="js/realtime_sync.js?v=3.5"></script>
+    <script src="js/anti_hacker_client.js?v=3.5"></script>
 </body>
 </html>
