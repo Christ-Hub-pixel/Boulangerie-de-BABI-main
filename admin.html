@@ -10,8 +10,263 @@
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
     
-    <!-- Stylesheets -->
-    <link rel="stylesheet" href="css/admin.css"/>
+    <!-- Stylesheets with Cache Busting -->
+    <link rel="stylesheet" href="css/admin.css?v=20260829_v4"/>
+    <style>
+        /* =============================================================
+           💎 BABI HAUTE COUTURE BUTTONS & BULK TOOLBAR (EMBEDDED SHIELD)
+           ============================================================= */
+        .babi-bulk-bar {
+            display: none;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            padding: 14px 22px !important;
+            margin: 16px 20px !important;
+            background: linear-gradient(135deg, #0b1120 0%, #1e293b 100%) !important;
+            border: 1px solid rgba(245, 158, 11, 0.45) !important;
+            border-radius: 16px !important;
+            box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.5), 0 0 20px rgba(245, 158, 11, 0.2) !important;
+            animation: bulkBarSlideDown 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+        }
+        .babi-bulk-bar.active {
+            display: flex !important;
+        }
+        @keyframes bulkBarSlideDown {
+            from { opacity: 0; transform: translateY(-8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .babi-bulk-badge {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%) !important;
+            color: #000000 !important;
+            font-weight: 800 !important;
+            font-size: 13px !important;
+            padding: 7px 16px !important;
+            border-radius: 9999px !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            gap: 6px !important;
+            box-shadow: 0 2px 8px rgba(245, 158, 11, 0.4) !important;
+            letter-spacing: -0.2px !important;
+        }
+        .babi-bulk-desc {
+            color: #94a3b8 !important;
+            font-size: 13px !important;
+            font-weight: 500 !important;
+        }
+        .babi-bulk-actions {
+            display: flex !important;
+            align-items: center !important;
+            gap: 10px !important;
+            flex-wrap: wrap !important;
+        }
+        .babi-btn-bulk-delete {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%) !important;
+            color: #ffffff !important;
+            border: 1px solid rgba(255, 255, 255, 0.2) !important;
+            padding: 9px 20px !important;
+            border-radius: 9999px !important;
+            font-weight: 700 !important;
+            font-size: 13px !important;
+            cursor: pointer !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            gap: 8px !important;
+            box-shadow: 0 4px 14px rgba(239, 68, 68, 0.4) !important;
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+        }
+        .babi-btn-bulk-delete:hover {
+            background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%) !important;
+            transform: translateY(-1.5px) !important;
+            box-shadow: 0 6px 20px rgba(239, 68, 68, 0.5) !important;
+        }
+        .babi-btn-bulk-hide {
+            background: rgba(255, 255, 255, 0.1) !important;
+            color: #f8fafc !important;
+            border: 1px solid rgba(255, 255, 255, 0.25) !important;
+            padding: 9px 18px !important;
+            border-radius: 9999px !important;
+            font-weight: 600 !important;
+            font-size: 13px !important;
+            cursor: pointer !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            gap: 8px !important;
+            backdrop-filter: blur(4px) !important;
+            transition: all 0.2s ease !important;
+        }
+        .babi-btn-bulk-hide:hover {
+            background: rgba(255, 255, 255, 0.2) !important;
+            border-color: rgba(255, 255, 255, 0.4) !important;
+            color: #ffffff !important;
+            transform: translateY(-1.5px) !important;
+        }
+        .babi-btn-bulk-show {
+            background: rgba(16, 185, 129, 0.2) !important;
+            color: #34d399 !important;
+            border: 1px solid rgba(16, 185, 129, 0.5) !important;
+            padding: 9px 18px !important;
+            border-radius: 9999px !important;
+            font-weight: 600 !important;
+            font-size: 13px !important;
+            cursor: pointer !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            gap: 8px !important;
+            backdrop-filter: blur(4px) !important;
+            transition: all 0.2s ease !important;
+        }
+        .babi-btn-bulk-show:hover {
+            background: rgba(16, 185, 129, 0.3) !important;
+            border-color: rgba(16, 185, 129, 0.7) !important;
+            color: #6ee7b7 !important;
+            transform: translateY(-1.5px) !important;
+        }
+        .babi-btn-bulk-cancel {
+            background: transparent !important;
+            color: #94a3b8 !important;
+            border: none !important;
+            padding: 9px 14px !important;
+            font-weight: 600 !important;
+            font-size: 13px !important;
+            cursor: pointer !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            gap: 6px !important;
+            transition: color 0.2s ease !important;
+        }
+        .babi-btn-bulk-cancel:hover {
+            color: #ffffff !important;
+            text-decoration: underline !important;
+        }
+        .prod-select-cb, #select-all-prods {
+            appearance: none !important;
+            -webkit-appearance: none !important;
+            width: 20px !important;
+            height: 20px !important;
+            border: 2px solid #cbd5e1 !important;
+            border-radius: 6px !important;
+            background-color: #ffffff !important;
+            cursor: pointer !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            vertical-align: middle !important;
+            position: relative !important;
+            transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1) !important;
+            outline: none !important;
+        }
+        .prod-select-cb:hover, #select-all-prods:hover {
+            border-color: #c2850c !important;
+            transform: scale(1.1) !important;
+            box-shadow: 0 2px 8px rgba(194, 133, 12, 0.2) !important;
+        }
+        .prod-select-cb:checked, #select-all-prods:checked {
+            background: linear-gradient(135deg, #c2850c 0%, #a16207 100%) !important;
+            border-color: #a16207 !important;
+            box-shadow: 0 2px 6px rgba(194, 133, 12, 0.35) !important;
+        }
+        .prod-select-cb:checked::after, #select-all-prods:checked::after {
+            content: '' !important;
+            width: 5px !important;
+            height: 9px !important;
+            border: solid #ffffff !important;
+            border-width: 0 2px 2px 0 !important;
+            transform: rotate(45deg) translate(-0.5px, -0.5px) !important;
+            display: block !important;
+        }
+        #select-all-prods:indeterminate {
+            background: #c2850c !important;
+            border-color: #a16207 !important;
+        }
+        #select-all-prods:indeterminate::after {
+            content: '' !important;
+            width: 8px !important;
+            height: 2px !important;
+            background: #ffffff !important;
+            display: block !important;
+        }
+        .saas-table tbody tr.row-selected {
+            background: #fffbeb !important;
+            border-left: 4px solid #c2850c !important;
+        }
+        .saas-table tbody tr.row-selected td {
+            background: #fffbeb !important;
+        }
+        .saas-price-tag {
+            color: #b45309 !important;
+            font-weight: 800 !important;
+            font-size: 13.5px !important;
+            font-family: 'Space Grotesk', system-ui, -apple-system, sans-serif !important;
+            white-space: nowrap !important;
+            letter-spacing: -0.2px !important;
+        }
+        .btn-xs {
+            min-width: 32px !important;
+            height: 32px !important;
+            padding: 0 10px !important;
+            font-size: 12px !important;
+            font-weight: 700 !important;
+            border-radius: 8px !important;
+            cursor: pointer !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            gap: 5px !important;
+            transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1) !important;
+            border: 1px solid transparent !important;
+            outline: none !important;
+            text-decoration: none !important;
+        }
+        .btn-xs:hover {
+            transform: translateY(-1.5px) scale(1.04) !important;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12) !important;
+        }
+        .btn-xs.btn-outline-primary {
+            background: #f0f9ff !important;
+            border: 1px solid #bae6fd !important;
+            color: #0284c7 !important;
+        }
+        .btn-xs.btn-outline-primary:hover {
+            background: #e0f2fe !important;
+            border-color: #38bdf8 !important;
+            color: #0369a1 !important;
+            box-shadow: 0 4px 12px rgba(2, 132, 199, 0.22) !important;
+        }
+        .btn-xs.btn-outline-warning {
+            background: #fffbeb !important;
+            border: 1px solid #fde68a !important;
+            color: #d97706 !important;
+        }
+        .btn-xs.btn-outline-warning:hover {
+            background: #fef3c7 !important;
+            border-color: #f59e0b !important;
+            color: #b45309 !important;
+            box-shadow: 0 4px 12px rgba(217, 119, 6, 0.25) !important;
+        }
+        .btn-xs.btn-outline-success {
+            background: #ecfdf5 !important;
+            border: 1px solid #a7f3d0 !important;
+            color: #059669 !important;
+        }
+        .btn-xs.btn-outline-success:hover {
+            background: #d1fae5 !important;
+            border-color: #34d399 !important;
+            color: #047857 !important;
+            box-shadow: 0 4px 12px rgba(5, 150, 105, 0.25) !important;
+        }
+        .btn-xs.btn-outline-danger {
+            background: #fef2f2 !important;
+            border: 1px solid #fecaca !important;
+            color: #dc2626 !important;
+        }
+        .btn-xs.btn-outline-danger:hover {
+            background: #fee2e2 !important;
+            border-color: #ef4444 !important;
+            color: #b91c1c !important;
+            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.25) !important;
+        }
+    </style>
     
     <!-- Chart.js for High-Fidelity Interactive Analytics -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -643,22 +898,22 @@
                     </div>
 
                     <!-- Bulk Actions Bar (Apparaît quand au moins 1 article est coché) -->
-                    <div id="products-bulk-actions-bar" class="babi-bulk-bar">
+                    <div id="products-bulk-actions-bar" class="babi-bulk-bar" style="display: none; align-items: center; justify-content: space-between; gap: 16px; padding: 14px 22px; margin: 16px 20px; background: linear-gradient(135deg, #0b1120 0%, #1e293b 100%); border: 1px solid rgba(245, 158, 11, 0.45); border-radius: 16px; box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.5), 0 0 20px rgba(245, 158, 11, 0.2);">
                         <div style="display: flex; align-items: center; gap: 12px;">
-                            <span class="babi-bulk-badge" id="bulk-selected-count"><i class="fa-solid fa-check-double"></i> 0 sélectionné(s)</span>
-                            <span class="babi-bulk-desc d-none d-md-inline">Actions rapides sur les articles cochés</span>
+                            <span class="babi-bulk-badge" id="bulk-selected-count" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: #000000; font-weight: 800; font-size: 13px; padding: 7px 16px; border-radius: 9999px; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 2px 8px rgba(245, 158, 11, 0.4);"><i class="fa-solid fa-check-double"></i> 0 sélectionné(s)</span>
+                            <span class="babi-bulk-desc d-none d-md-inline" style="color: #94a3b8; font-size: 13px; font-weight: 500;">Actions rapides sur les articles cochés</span>
                         </div>
-                        <div class="babi-bulk-actions">
-                            <button type="button" class="babi-btn-bulk-delete" onclick="handleBulkDeleteProducts()" title="Supprimer définitivement la sélection">
+                        <div class="babi-bulk-actions" style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                            <button type="button" class="babi-btn-bulk-delete" onclick="handleBulkDeleteProducts()" title="Supprimer définitivement la sélection" style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: #ffffff; border: 1px solid rgba(255, 255, 255, 0.2); padding: 9px 20px; border-radius: 9999px; font-weight: 700; font-size: 13px; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 4px 14px rgba(239, 68, 68, 0.4);">
                                 <i class="fa-solid fa-trash"></i> Supprimer la sélection
                             </button>
-                            <button type="button" class="babi-btn-bulk-hide" onclick="handleBulkToggleStatus(0)" title="Masquer de la vitrine">
+                            <button type="button" class="babi-btn-bulk-hide" onclick="handleBulkToggleStatus(0)" title="Masquer de la vitrine" style="background: rgba(255, 255, 255, 0.1); color: #f8fafc; border: 1px solid rgba(255, 255, 255, 0.25); padding: 9px 18px; border-radius: 9999px; font-weight: 600; font-size: 13px; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; backdrop-filter: blur(4px);">
                                 <i class="fa-solid fa-eye-slash"></i> Masquer
                             </button>
-                            <button type="button" class="babi-btn-bulk-show" onclick="handleBulkToggleStatus(1)" title="Rendre visible dans la vitrine">
+                            <button type="button" class="babi-btn-bulk-show" onclick="handleBulkToggleStatus(1)" title="Rendre visible dans la vitrine" style="background: rgba(16, 185, 129, 0.2); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.5); padding: 9px 18px; border-radius: 9999px; font-weight: 600; font-size: 13px; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; backdrop-filter: blur(4px);">
                                 <i class="fa-solid fa-eye"></i> Rendre Visible
                             </button>
-                            <button type="button" class="babi-btn-bulk-cancel" onclick="clearSelectedProducts()" title="Désélectionner tout">
+                            <button type="button" class="babi-btn-bulk-cancel" onclick="clearSelectedProducts()" title="Désélectionner tout" style="background: transparent; color: #94a3b8; border: none; padding: 9px 14px; font-weight: 600; font-size: 13px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
                                 <i class="fa-solid fa-xmark"></i> Annuler
                             </button>
                         </div>

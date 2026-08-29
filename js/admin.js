@@ -850,9 +850,11 @@ function updateBulkActionsBar() {
     const count = selectedProductIds.size;
     if (count > 0) {
         bar.classList.add('active');
+        bar.style.display = 'flex';
         if (countEl) countEl.innerHTML = `<i class="fa-solid fa-check-double"></i> ${count} sélectionné${count > 1 ? 's' : ''}`;
     } else {
         bar.classList.remove('active');
+        bar.style.display = 'none';
     }
 
     if (selectAllCb) {
