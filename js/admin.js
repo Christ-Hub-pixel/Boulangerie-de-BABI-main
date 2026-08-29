@@ -1134,7 +1134,7 @@ function renderProductsGridOrTable() {
         const catName = p.categorie || p.category || 'Pain';
 
         return `
-        <tr style="${!isActive ? 'opacity: 0.65; background: #fafafa;' : ''} ${isChecked ? 'background: #fffbeb !important;' : ''}">
+        <tr class="${isChecked ? 'row-selected' : ''}" style="${!isActive ? 'opacity: 0.65; background: #fafafa;' : ''} ${isChecked ? 'background: #fffbeb !important;' : ''}">
             <td style="width: 44px; text-align: center;">
                 <input type="checkbox" class="prod-select-cb" data-id="${p.id}" onchange="handleProductCheckboxChange('${p.id}', this.checked)" ${isChecked ? 'checked' : ''} style="cursor: pointer; width: 16px; height: 16px; accent-color: #c2850c; border-radius: 4px;">
             </td>

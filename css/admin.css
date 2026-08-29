@@ -3530,5 +3530,50 @@ img.profile-avatar, .profile-avatar, img.logo-avatar, .logo-avatar {
     }
 }
 
+/* =========================================================
+   BULK ACTIONS FLOATING & STICKY LUXURY TOOLBAR
+   ========================================================= */
+#products-bulk-actions-bar {
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%) !important;
+    border: 1px solid rgba(245, 158, 11, 0.4) !important;
+    box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.4), 0 0 15px rgba(245, 158, 11, 0.15) !important;
+    animation: bulkBarSlideDown 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    backdrop-filter: blur(8px) !important;
+    border-radius: 14px !important;
+}
+
+@keyframes bulkBarSlideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.prod-select-cb, #select-all-prods {
+    width: 18px !important;
+    height: 18px !important;
+    cursor: pointer !important;
+    accent-color: #c2850c !important;
+    border-radius: 5px !important;
+    transition: transform 0.15s ease, box-shadow 0.15s ease !important;
+}
+
+.prod-select-cb:hover, #select-all-prods:hover {
+    transform: scale(1.15) !important;
+}
+
+.prod-select-cb:checked {
+    filter: drop-shadow(0 2px 4px rgba(194, 133, 12, 0.35)) !important;
+}
+
+.saas-table tbody tr.row-selected {
+    background: #fffbeb !important;
+    border-left: 4px solid #c2850c !important;
+}
+
 
 
