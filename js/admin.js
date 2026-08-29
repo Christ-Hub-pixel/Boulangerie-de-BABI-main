@@ -1042,18 +1042,23 @@ async function loadProducts() {
                 prix: Number(p.prix || p.price || 0),
                 categorie: p.categorie || p.category || 'pain',
                 image: p.image || p.image_url || 'assets/product_baguette.png',
-                stock: p.stock != null ? Number(p.stock) : 40,
+                stock: p.stock != null ? Number(p.stock) : 50,
                 seuil_alerte: p.seuil_alerte != null ? Number(p.seuil_alerte) : 10,
-                is_active: (p.is_active === 0 || p.is_active === '0' || p.is_active === false) ? 0 : 1
+                is_active: (p.is_active === 0 || p.is_active === '0' || p.is_active === false) ? 0 : 1,
+                description: p.description || ''
             }));
 
-            const mergedMap = new Map();
-            serverMapped.forEach(p => mergedMap.set(String(p.id), p));
+            const nameToProductMap = new Map();
+            serverMapped.forEach(p => {
+                const key = (p.nom || '').trim().toLowerCase();
+                if (key) nameToProductMap.set(key, p);
+            });
             
-            // Préserver les produits créés localement et les sauvegarder sur le serveur cloud
+            // Sauvegarder dans le Cloud les produits locaux qui n'y sont pas encore
             for (const localP of allProducts) {
-                if (!mergedMap.has(String(localP.id))) {
-                    mergedMap.set(String(localP.id), localP);
+                const key = (localP.nom || '').trim().toLowerCase();
+                if (key && !nameToProductMap.has(key)) {
+                    nameToProductMap.set(key, localP);
                     try {
                         fetcher(`${apiBase}/api/products`, {
                             method: 'POST',
@@ -1072,7 +1077,7 @@ async function loadProducts() {
                 }
             }
 
-            allProducts = Array.from(mergedMap.values());
+            allProducts = Array.from(nameToProductMap.values());
             if (typeof window.babiSetCachedProducts === 'function') {
                 window.babiSetCachedProducts(allProducts);
             }
@@ -1162,10 +1167,10 @@ function openAddProductModal() {
 }
 
 function closeAddProductModal() {
-    const modal = document.getElementById('addProductModal');
-    if (modal) {
-        modal.classList.add('hidden');
-        modal.style.display = 'none';
+    const form = document.getElementById('addProductModal');
+    if (form) {
+        form.classList.add('hidden');
+        form.style.display = 'none';
     }
 }
 
@@ -1207,95 +1212,78 @@ async function handleCreateProduct(e) {
         return;
     }
 
+    const newProdItem = {
+        id: 'p_' + Date.now() + '_' + Math.floor(Math.random() * 1000),
+        nom,
+        categorie,
+        prix,
+        stock,
+        seuil_alerte,
+        description,
+        image,
+        is_active: 1
+    };
+
+    // ⚡ 1. Insertion instantanée 0ms dans la mémoire pour affichage immédiat
+    allProducts.unshift(newProdItem);
+    
+    if (typeof window.babiSetCachedProducts === 'function') {
+        window.babiSetCachedProducts(allProducts);
+    }
+    if (typeof window.babiAddCustomProduct === 'function') {
+        window.babiAddCustomProduct(newProdItem);
+    }
+
+    // Basculer l'affichage sur "Tous" pour voir immédiatement le nouveau produit
+    currentProductCategoryFilter = 'all';
+    currentProductSearchQuery = '';
+    const searchInput = document.getElementById('admin-products-search');
+    if (searchInput) searchInput.value = '';
+    const filterPills = document.querySelectorAll('.saas-sub-filters .saas-filter-pill');
+    if (filterPills.length > 0) {
+        filterPills.forEach(p => p.classList.remove('active'));
+        filterPills[0].classList.add('active');
+    }
+
+    updateProductKpis();
+    renderProductsGridOrTable();
+    showAdminToast(`🎉 Produit "${nom}" ajouté avec succès !`, 'success');
+    closeAddProductModal();
+
+    // Réinitialiser le formulaire
+    if (document.getElementById('new-prod-name')) document.getElementById('new-prod-name').value = '';
+    if (document.getElementById('new-prod-price')) document.getElementById('new-prod-price').value = '';
+    if (document.getElementById('new-prod-desc')) document.getElementById('new-prod-desc').value = '';
+    if (document.getElementById('new-prod-image-data')) document.getElementById('new-prod-image-data').value = 'assets/baguette 200.png';
+    if (document.getElementById('new-prod-preview-img')) document.getElementById('new-prod-preview-img').src = 'assets/baguette 200.png';
+    if (document.getElementById('new-prod-file')) document.getElementById('new-prod-file').value = '';
+
+    if (typeof window.notifyProductCatalogueChanged === 'function') {
+        window.notifyProductCatalogueChanged('PRODUCT_CREATED', newProdItem);
+    }
+
+    // ⚡ 2. Synchronisation avec le serveur Cloud
     try {
         const fetcher = (typeof window !== 'undefined' && typeof window.babiFetch === 'function') ? window.babiFetch : fetch;
         const apiBase = (typeof window !== 'undefined' && window.API_BASE_URL) ? window.API_BASE_URL : (window.location.protocol.startsWith('http') ? '' : 'http://localhost:5000');
         
-        let createdProd = null;
-        try {
-            const res = await fetcher(`${apiBase}/api/products`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ nom, categorie, prix, stock, seuil_alerte, description, image })
-            }, 10000);
-            
-            if (res && res.ok) {
-                const data = await parseSafeResponse(res);
-                createdProd = data.product || { 
-                    id: data.id || Date.now(), 
-                    nom, 
-                    categorie, 
-                    prix, 
-                    stock, 
-                    seuil_alerte, 
-                    description, 
-                    image, 
-                    is_active: 1 
-                };
-            }
-        } catch (fetchErr) {
-            console.warn("[Admin] Cloud sync note:", fetchErr);
-        }
-
-        if (!createdProd) {
-            createdProd = { 
-                id: Date.now(), 
-                nom, 
-                categorie, 
-                prix, 
-                stock, 
-                seuil_alerte, 
-                description, 
-                image, 
-                is_active: 1 
-            };
-        }
-
-        // Ajouter sans restriction
-        const existingIdx = allProducts.findIndex(p => String(p.id) === String(createdProd.id));
-        if (existingIdx >= 0) {
-            allProducts[existingIdx] = createdProd;
-        } else {
-            allProducts.unshift(createdProd);
-        }
-
-        if (typeof window.babiAddCustomProduct === 'function') {
-            window.babiAddCustomProduct(createdProd);
-        }
-        if (typeof window.babiSetCachedProducts === 'function') {
-            window.babiSetCachedProducts(allProducts);
-        }
-
-        // Basculer l'affichage sur "Tous" pour voir immédiatement le nouveau produit
-        currentProductCategoryFilter = 'all';
-        currentProductSearchQuery = '';
-        const searchInput = document.getElementById('admin-products-search');
-        if (searchInput) searchInput.value = '';
-        const filterPills = document.querySelectorAll('.saas-sub-filters .saas-filter-pill');
-        if (filterPills.length > 0) {
-            filterPills.forEach(p => p.classList.remove('active'));
-            filterPills[0].classList.add('active');
-        }
-
-        updateProductKpis();
-        renderProductsGridOrTable();
-
-        showAdminToast(`🎉 Produit "${nom}" ajouté avec succès au catalogue !`, 'success');
-        closeAddProductModal();
+        const res = await fetcher(`${apiBase}/api/products`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ nom, categorie, prix, stock, seuil_alerte, description, image })
+        }, 8000);
         
-        // Réinitialiser le formulaire
-        if (document.getElementById('new-prod-name')) document.getElementById('new-prod-name').value = '';
-        if (document.getElementById('new-prod-price')) document.getElementById('new-prod-price').value = '';
-        if (document.getElementById('new-prod-desc')) document.getElementById('new-prod-desc').value = '';
-        if (document.getElementById('new-prod-image-data')) document.getElementById('new-prod-image-data').value = 'assets/baguette 200.png';
-        if (document.getElementById('new-prod-preview-img')) document.getElementById('new-prod-preview-img').src = 'assets/baguette 200.png';
-        if (document.getElementById('new-prod-file')) document.getElementById('new-prod-file').value = '';
-
-        if (typeof window.notifyProductCatalogueChanged === 'function') {
-            window.notifyProductCatalogueChanged('PRODUCT_CREATED', createdProd);
+        if (res && res.ok) {
+            const data = await parseSafeResponse(res);
+            if (data && data.product && data.product.id) {
+                newProdItem.id = data.product.id;
+                if (typeof window.babiSetCachedProducts === 'function') {
+                    window.babiSetCachedProducts(allProducts);
+                }
+            }
         }
     } catch (err) {
-        showAdminToast(`⚠️ Erreur : ${err.message || 'Impossible d\'ajouter le produit'}`, 'danger');
+        console.warn("[Admin] Cloud sync note:", err);
     } finally {
         if (submitBtn) {
             submitBtn.disabled = false;

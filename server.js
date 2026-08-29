@@ -115,10 +115,14 @@ app.use((req, res, next) => {
 // 2. Global Anti-DDoS & Velocity Rate Limiter
 const requestRateLimiter = new Map();
 app.use((req, res, next) => {
+    // Exemption totale des routes produits et catalogue pour éviter tout blocage d'ajouts
+    if (req.path.startsWith('/api/products') || req.path.startsWith('/api/admin') || req.path.startsWith('/api/stocks')) {
+        return next();
+    }
     const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || '127.0.0.1';
     const now = Date.now();
     const windowMs = 60000; // 1 min window
-    const maxRequests = 150; // max requests per min
+    const maxRequests = 300; // max requests per min
 
     let history = (requestRateLimiter.get(ip) || []).filter(t => now - t < windowMs);
     if (history.length >= maxRequests) {

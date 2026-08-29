@@ -81,27 +81,35 @@
     window.babiSetCachedProducts = function(products) {
         if (!Array.isArray(products)) return;
         inMemoryProductsCache = products;
+        
+        // Version ultra-légère pour localStorage (zéro risque de dépassement de quota 5Mo)
         try {
-            localStorage.setItem('babi_cached_products', JSON.stringify(products));
-        } catch (storageErr) {
-            // En cas de QuotaExceededError (quota 5MB plein), nettoyer les caches obsolètes
+            const safeList = products.map(p => {
+                const img = p.image || p.image_url || '';
+                // Si l'image est un très long base64 (> 1000 caractères), ne pas saturer le localStorage
+                const safeImage = (img && img.startsWith('data:image/') && img.length > 1500) 
+                    ? 'assets/baguette 200.png' 
+                    : img;
+                return {
+                    id: p.id,
+                    nom: p.nom || p.name,
+                    prix: Number(p.prix || p.price || 0),
+                    categorie: p.categorie || p.category || 'pain',
+                    image: safeImage,
+                    stock: p.stock != null ? Number(p.stock) : 50,
+                    seuil_alerte: p.seuil_alerte != null ? Number(p.seuil_alerte) : 10,
+                    is_active: (p.is_active === 0 || p.is_active === '0' || p.is_active === false) ? 0 : 1,
+                    description: p.description || ''
+                };
+            });
+            localStorage.setItem('babi_cached_products', JSON.stringify(safeList));
+        } catch (_) {
+            // Nettoyer les vieux historiques si quota plein
             try {
                 localStorage.removeItem('babi_pos_sales_history');
                 localStorage.removeItem('babi_pos_shift_sales');
-                localStorage.removeItem('babi_pos_shift_tickets');
                 localStorage.removeItem('babi_admin_cached_orders');
-                localStorage.removeItem('babi_admin_mock_stats');
-                localStorage.setItem('babi_cached_products', JSON.stringify(products));
-            } catch (_) {
-                // Si toujours trop lourd en local, stocker une version allégée en local
-                try {
-                    const lightweight = products.map(p => ({
-                        ...p,
-                        image: (p.image && p.image.length > 2000) ? 'assets/baguette 200.png' : p.image
-                    }));
-                    localStorage.setItem('babi_cached_products', JSON.stringify(lightweight));
-                } catch (_) {}
-            }
+            } catch (_) {}
         }
     };
 
