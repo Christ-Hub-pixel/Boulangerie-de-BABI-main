@@ -1038,6 +1038,72 @@ app.delete('/api/products/:id', async (req, res) => {
     }
 });
 
+// Bulk delete products
+app.post('/api/products/bulk-delete', async (req, res) => {
+    try {
+        const { ids } = req.body;
+        if (!Array.isArray(ids) || ids.length === 0) {
+            return res.status(400).json({ error: "Liste d'identifiants vide ou invalide." });
+        }
+        const database = db || (await ensureDBReady());
+        
+        for (const id of ids) {
+            const numId = Number(id);
+            await database.run("DELETE FROM products WHERE id = ? OR id = ?", [id, isNaN(numId) ? -1 : numId]);
+            await database.run("DELETE FROM stocks WHERE product_id = ? OR product_id = ?", [id, isNaN(numId) ? -1 : numId]);
+            try {
+                await database.run("INSERT OR REPLACE INTO deleted_products (id, deleted_at) VALUES (?, datetime('now'))", [String(id)]);
+            } catch (_) {}
+            try {
+                if (typeof aiRealtimeOrchestrator !== 'undefined' && aiRealtimeOrchestrator.broadcastProductDeleted) {
+                    aiRealtimeOrchestrator.broadcastProductDeleted(id);
+                }
+            } catch (_) {}
+        }
+
+        // 💾 Synchronisation persistante data/products.json
+        try {
+            const allRemaining = await database.all("SELECT * FROM products ORDER BY id ASC");
+            const jsonPath = path.resolve(__dirname, 'data/products.json');
+            fs.writeFileSync(jsonPath, JSON.stringify(allRemaining, null, 2), 'utf8');
+        } catch (fErr) {
+            console.warn("[Products] Bulk JSON sync notice:", fErr.message);
+        }
+
+        res.json({ success: true, count: ids.length, message: `${ids.length} produits supprimés définitivement du catalogue.` });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Bulk toggle status (Activer / Masquer plusieurs produits)
+app.patch('/api/products/bulk-status', async (req, res) => {
+    try {
+        const { ids, is_active } = req.body;
+        if (!Array.isArray(ids) || ids.length === 0) {
+            return res.status(400).json({ error: "Liste d'identifiants vide ou invalide." });
+        }
+        const newStatus = is_active === 1 || is_active === '1' || is_active === true ? 1 : 0;
+        const database = db || (await ensureDBReady());
+        
+        for (const id of ids) {
+            const numId = Number(id);
+            await database.run("UPDATE products SET is_active = ? WHERE id = ? OR id = ?", [newStatus, id, isNaN(numId) ? -1 : numId]);
+        }
+
+        // 💾 Synchronisation persistante data/products.json
+        try {
+            const allRemaining = await database.all("SELECT * FROM products ORDER BY id ASC");
+            const jsonPath = path.resolve(__dirname, 'data/products.json');
+            fs.writeFileSync(jsonPath, JSON.stringify(allRemaining, null, 2), 'utf8');
+        } catch (_) {}
+
+        res.json({ success: true, count: ids.length, is_active: newStatus, message: `${ids.length} produits mis à jour.` });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
 // ==========================================
 // 📦 3. STOCKS & FOURNIL API (GÉRANTE)
 // ==========================================

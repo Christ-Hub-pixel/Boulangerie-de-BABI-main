@@ -839,6 +839,160 @@ async function updateOrderStatusFromModal(orderId, newStatus) {
 // ================================================================
 let currentProductCategoryFilter = 'all';
 let currentProductSearchQuery = '';
+let selectedProductIds = new Set();
+
+function updateBulkActionsBar() {
+    const bar = document.getElementById('products-bulk-actions-bar');
+    const countEl = document.getElementById('bulk-selected-count');
+    const selectAllCb = document.getElementById('select-all-prods');
+    
+    if (!bar) return;
+    const count = selectedProductIds.size;
+    if (count > 0) {
+        bar.classList.remove('d-none');
+        bar.classList.add('d-flex');
+        if (countEl) countEl.textContent = `${count} sélectionné${count > 1 ? 's' : ''}`;
+    } else {
+        bar.classList.add('d-none');
+        bar.classList.remove('d-flex');
+    }
+
+    if (selectAllCb) {
+        const visibleCbs = document.querySelectorAll('.prod-select-cb');
+        if (visibleCbs.length > 0 && Array.from(visibleCbs).every(cb => cb.checked)) {
+            selectAllCb.checked = true;
+            selectAllCb.indeterminate = false;
+        } else if (count > 0) {
+            selectAllCb.checked = false;
+            selectAllCb.indeterminate = true;
+        } else {
+            selectAllCb.checked = false;
+            selectAllCb.indeterminate = false;
+        }
+    }
+}
+
+function handleProductCheckboxChange(id, checked) {
+    if (checked) {
+        selectedProductIds.add(String(id));
+    } else {
+        selectedProductIds.delete(String(id));
+    }
+    updateBulkActionsBar();
+}
+
+function handleToggleSelectAllProducts(checked) {
+    const visibleCbs = document.querySelectorAll('.prod-select-cb');
+    visibleCbs.forEach(cb => {
+        cb.checked = checked;
+        const id = cb.getAttribute('data-id');
+        if (id) {
+            if (checked) selectedProductIds.add(String(id));
+            else selectedProductIds.delete(String(id));
+        }
+    });
+    updateBulkActionsBar();
+}
+
+function clearSelectedProducts() {
+    selectedProductIds.clear();
+    document.querySelectorAll('.prod-select-cb').forEach(cb => cb.checked = false);
+    const selectAllCb = document.getElementById('select-all-prods');
+    if (selectAllCb) {
+        selectAllCb.checked = false;
+        selectAllCb.indeterminate = false;
+    }
+    updateBulkActionsBar();
+}
+
+async function handleBulkDeleteProducts() {
+    const idsToDelete = Array.from(selectedProductIds);
+    if (idsToDelete.length === 0) {
+        showAdminToast("Veuillez cocher au moins un article à supprimer.", "warning");
+        return;
+    }
+
+    showBabiCustomConfirm({
+        title: `Suppression groupée de ${idsToDelete.length} produit(s)`,
+        message: `Êtes-vous certain de vouloir supprimer définitivement ces ${idsToDelete.length} articles du catalogue et des stocks ? Cette action est irréversible.`,
+        icon: "fa-trash-can",
+        confirmColor: "gradient-red",
+        confirmText: `Supprimer ${idsToDelete.length} article(s)`,
+        cancelText: "Annuler",
+        onConfirm: async () => {
+            const count = idsToDelete.length;
+            
+            // 1. Suppression optimiste immédiate en local
+            idsToDelete.forEach(id => {
+                if (typeof window.babiRemoveCustomProduct === 'function') {
+                    window.babiRemoveCustomProduct(id);
+                }
+                allProducts = allProducts.filter(p => String(p.id) !== String(id) && p.id !== id);
+            });
+
+            if (typeof window.babiSetCachedProducts === 'function') {
+                window.babiSetCachedProducts(allProducts);
+            }
+
+            clearSelectedProducts();
+            updateProductKpis();
+            renderProductsGridOrTable();
+            showAdminToast(`🗑️ ${count} produit(s) supprimé(s) définitivement du catalogue.`, 'info');
+
+            // 2. Synchronisation groupée avec le serveur
+            try {
+                const fetcher = (typeof window !== 'undefined' && typeof window.babiFetch === 'function') ? window.babiFetch : fetch;
+                const apiBase = (typeof window !== 'undefined' && window.API_BASE_URL) ? window.API_BASE_URL : (window.location.protocol.startsWith('http') ? '' : 'http://localhost:5000');
+                
+                await fetcher(`${apiBase}/api/products/bulk-delete`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ ids: idsToDelete })
+                }, 8000);
+
+                if (typeof window.notifyProductCatalogueChanged === 'function') {
+                    window.notifyProductCatalogueChanged('PRODUCTS_BULK_DELETED', { ids: idsToDelete });
+                }
+            } catch (err) {
+                console.warn("[Admin] Bulk delete server sync:", err);
+            }
+        }
+    });
+}
+
+async function handleBulkToggleStatus(newStatus) {
+    const ids = Array.from(selectedProductIds);
+    if (ids.length === 0) {
+        showAdminToast("Veuillez cocher au moins un article.", "warning");
+        return;
+    }
+
+    const idSet = new Set(ids.map(String));
+    allProducts.forEach(p => {
+        if (idSet.has(String(p.id))) {
+            p.is_active = newStatus;
+        }
+    });
+
+    if (typeof window.babiSetCachedProducts === 'function') {
+        window.babiSetCachedProducts(allProducts);
+    }
+
+    renderProductsGridOrTable();
+    updateProductKpis();
+    showAdminToast(`${ids.length} produit(s) ${newStatus === 1 ? 'activés' : 'masqués'} avec succès.`, 'success');
+
+    try {
+        const fetcher = (typeof window !== 'undefined' && typeof window.babiFetch === 'function') ? window.babiFetch : fetch;
+        const apiBase = (typeof window !== 'undefined' && window.API_BASE_URL) ? window.API_BASE_URL : (window.location.protocol.startsWith('http') ? '' : 'http://localhost:5000');
+        
+        await fetcher(`${apiBase}/api/products/bulk-status`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ ids, is_active: newStatus })
+        }, 8000);
+    } catch (_) {}
+}
 
 function filterProductsByCategory(cat, btn) {
     currentProductCategoryFilter = cat;
@@ -925,8 +1079,8 @@ function updateProductKpis() {
     setCatCount('prod-cat-all-count', 'all');
     setCatCount('prod-cat-pain-count', 'pain');
     setCatCount('prod-cat-speciaux-count', 'pains_speciaux');
-    setCatCount('prod-cat-viennoiserie-count', 'viennois');
-    setCatCount('prod-cat-patisserie-count', 'patiss');
+    setCatCount('prod-cat-viennoiserie-count', 'viennoiserie');
+    setCatCount('prod-cat-patisserie-count', 'patisserie');
     setCatCount('prod-cat-boisson-count', 'boisson');
     setCatCount('prod-cat-sale-count', 'sale');
     setCatCount('prod-cat-snack-count', 'snack');
@@ -937,23 +1091,22 @@ function renderProductsGridOrTable() {
     if (!tbody) return;
 
     if (!Array.isArray(allProducts) || allProducts.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="8" class="text-center py-5 text-muted">Aucun produit dans le catalogue. Cliquez sur <strong>"+ Ajouter un Produit"</strong>.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="9" class="text-center py-5 text-muted"><i class="fa-solid fa-bread-slice me-2"></i>Aucun produit dans le catalogue. Cliquez sur "+ Ajouter un Produit" pour commencer.</td></tr>`;
+        updateBulkActionsBar();
         return;
     }
 
-    let filtered = allProducts.filter(p => {
-        // Category filter
+    const filtered = allProducts.filter(p => {
         if (currentProductCategoryFilter !== 'all') {
             const cat = (p.categorie || p.category || '').toLowerCase();
             if (currentProductCategoryFilter === 'pains_speciaux') {
-                if (cat !== 'pains_speciaux' && cat !== 'pain_special' && !cat.includes('special') && !cat.includes('speciaux')) return false;
+                if (!cat.includes('special') && !cat.includes('speciaux') && cat !== 'pains_speciaux' && cat !== 'pain_special') return false;
             } else if (currentProductCategoryFilter === 'pain') {
-                if ((cat !== 'pain' && !cat.includes('baguette') && !cat.includes('tradition')) || cat.includes('special') || cat.includes('speciaux')) return false;
-            } else {
-                if (!cat.includes(currentProductCategoryFilter)) return false;
+                if ((!cat.includes('pain') && !cat.includes('baguette') && !cat.includes('tradition')) || cat.includes('special') || cat.includes('speciaux')) return false;
+            } else if (!cat.includes(currentProductCategoryFilter)) {
+                return false;
             }
         }
-        // Search filter
         if (currentProductSearchQuery) {
             const name = (p.nom || p.title || '').toLowerCase();
             const desc = (p.description || '').toLowerCase();
@@ -966,11 +1119,13 @@ function renderProductsGridOrTable() {
     });
 
     if (filtered.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="8" class="text-center py-5 text-muted">Aucun produit ne correspond à vos critères de recherche.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="9" class="text-center py-5 text-muted">Aucun produit ne correspond à vos critères de recherche.</td></tr>`;
+        updateBulkActionsBar();
         return;
     }
 
     tbody.innerHTML = filtered.map(p => {
+        const isChecked = selectedProductIds.has(String(p.id));
         const isActive = p.is_active === 1 || p.is_active === undefined || p.is_active === true || p.is_active === '1';
         const imgSrc = p.image || p.image_url || 'assets/product_baguette.png';
         const stockQty = p.stock != null ? p.stock : 50;
@@ -979,7 +1134,10 @@ function renderProductsGridOrTable() {
         const catName = p.categorie || p.category || 'Pain';
 
         return `
-        <tr style="${!isActive ? 'opacity: 0.65; background: #fafafa;' : ''}">
+        <tr style="${!isActive ? 'opacity: 0.65; background: #fafafa;' : ''} ${isChecked ? 'background: #fffbeb !important;' : ''}">
+            <td style="width: 44px; text-align: center;">
+                <input type="checkbox" class="prod-select-cb" data-id="${p.id}" onchange="handleProductCheckboxChange('${p.id}', this.checked)" ${isChecked ? 'checked' : ''} style="cursor: pointer; width: 16px; height: 16px; accent-color: #c2850c; border-radius: 4px;">
+            </td>
             <td style="width: 56px;">
                 <img src="${imgSrc}" style="width: 44px; height: 44px; border-radius: 10px; object-fit: cover; border: 1px solid #e2e8f0; box-shadow: 0 2px 4px rgba(0,0,0,0.06);" onerror="this.src='assets/product_baguette.png'">
             </td>
@@ -1022,6 +1180,8 @@ function renderProductsGridOrTable() {
         </tr>
         `;
     }).join('');
+
+    updateBulkActionsBar();
 }
 
 async function loadProducts() {
