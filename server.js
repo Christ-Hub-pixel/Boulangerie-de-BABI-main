@@ -135,6 +135,9 @@ app.use((req, res, next) => {
 // 3. Deep Input Sanitization (Anti-XSS, Anti-SQLi, Anti-Prototype Pollution)
 function sanitizeData(input) {
     if (typeof input === 'string') {
+        if (input.startsWith('data:image/') || input.startsWith('blob:') || input.startsWith('assets/') || input.startsWith('http://') || input.startsWith('https://')) {
+            return input;
+        }
         return input
             .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
             .replace(/javascript:/gi, '')
