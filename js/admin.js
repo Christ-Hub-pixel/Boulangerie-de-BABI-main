@@ -166,6 +166,7 @@ function fetchAdminData() {
     // Exécution découplée et non bloquante de chaque chargeur
     loadStats().catch(() => {});
     loadOrders().catch(() => {});
+    fetchCategories().catch(() => {});
     loadProducts().catch(() => {});
     if (typeof loadCashiersData === 'function') loadCashiersData().catch(() => {});
     if (typeof loadUsers === 'function') loadUsers().catch(() => {});
@@ -996,6 +997,301 @@ async function handleBulkToggleStatus(newStatus) {
     } catch (_) {}
 }
 
+// ==========================================
+// 🏷️ DYNAMIC CATEGORIES MANAGEMENT ENGINE
+// ==========================================
+let allCategories = [];
+
+async function fetchCategories() {
+    try {
+        const localCats = (typeof window.babiGetCachedCategories === 'function')
+            ? window.babiGetCachedCategories()
+            : [];
+        if (localCats && localCats.length > 0) {
+            allCategories = localCats;
+            renderCategoryFilterPills();
+            populateProductCategoryDropdowns();
+        }
+
+        const fetcher = (typeof window !== 'undefined' && typeof window.babiFetch === 'function') ? window.babiFetch : fetch;
+        const apiBase = (typeof window !== 'undefined' && window.API_BASE_URL) ? window.API_BASE_URL : (window.location.protocol.startsWith('http') ? '' : 'http://localhost:5000');
+        const res = await fetcher(`${apiBase}/api/categories?_t=${Date.now()}`, { cache: 'no-store' }, 4000);
+        if (res && res.ok) {
+            const data = await res.json();
+            if (data && data.success && Array.isArray(data.data)) {
+                allCategories = data.data;
+                if (typeof window.babiSetCachedCategories === 'function') {
+                    window.babiSetCachedCategories(allCategories);
+                }
+                renderCategoryFilterPills();
+                populateProductCategoryDropdowns();
+                renderCategoriesTable();
+            }
+        }
+    } catch (_) {}
+}
+
+function renderCategoryFilterPills() {
+    const container = document.getElementById('products-category-pills');
+    if (!container) return;
+
+    const totalCount = Array.isArray(allProducts) ? allProducts.length : 0;
+    const isAllActive = currentProductCategoryFilter === 'all';
+
+    let html = `
+        <button type="button" class="saas-filter-pill ${isAllActive ? 'active' : ''}" onclick="filterProductsByCategory('all', this)">
+            Tous (${totalCount})
+        </button>
+    `;
+
+    allCategories.forEach(cat => {
+        const slug = cat.slug;
+        const nom = cat.nom;
+        const icon = cat.icone || '🥖';
+        const count = Array.isArray(allProducts) ? allProducts.filter(p => {
+            const c = (p.categorie || '').toLowerCase();
+            return c === slug.toLowerCase() || c === nom.toLowerCase();
+        }).length : 0;
+
+        const isActive = currentProductCategoryFilter === slug || currentProductCategoryFilter === nom;
+        html += `
+            <button type="button" class="saas-filter-pill ${isActive ? 'active' : ''}" onclick="filterProductsByCategory('${slug}', this)">
+                ${icon} ${escapeHtml(nom)} (${count})
+            </button>
+        `;
+    });
+
+    html += `
+        <button type="button" class="saas-filter-pill" onclick="openCategoriesManagerModal()" style="border-style: dashed !important; background: #fafafa !important; color: #c2850c !important;" title="Gérer ou ajouter des catégories">
+            <i class="fa-solid fa-plus text-xs"></i> Gérer
+        </button>
+    `;
+
+    container.innerHTML = html;
+}
+
+function populateProductCategoryDropdowns() {
+    const newSelect = document.getElementById('new-prod-category');
+    const editSelect = document.getElementById('edit-prod-category');
+    
+    if (!Array.isArray(allCategories) || allCategories.length === 0) return;
+
+    const optionsHtml = allCategories.map(cat => `
+        <option value="${cat.slug}">${cat.icone || '🥖'} ${escapeHtml(cat.nom)}</option>
+    `).join('');
+
+    if (newSelect) newSelect.innerHTML = optionsHtml;
+    if (editSelect) editSelect.innerHTML = optionsHtml;
+}
+
+function renderCategoriesTable() {
+    const tbody = document.getElementById('categories-table-body');
+    const badge = document.getElementById('categories-count-badge');
+    if (badge) badge.textContent = allCategories.length;
+    if (!tbody) return;
+
+    if (!Array.isArray(allCategories) || allCategories.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" class="text-center py-4 text-muted">Aucune catégorie configurée.</td></tr>`;
+        return;
+    }
+
+    tbody.innerHTML = allCategories.map(cat => {
+        const icon = cat.icone || '🥖';
+        const count = cat.product_count != null ? cat.product_count : (Array.isArray(allProducts) ? allProducts.filter(p => (p.categorie || '').toLowerCase() === cat.slug.toLowerCase()).length : 0);
+
+        return `
+            <tr>
+                <td style="text-align: center; font-size: 20px; vertical-align: middle;">${icon}</td>
+                <td style="vertical-align: middle;">
+                    <div style="font-weight: 700; color: #0f172a; font-size: 13.5px;">${escapeHtml(cat.nom)}</div>
+                    ${cat.description ? `<div style="font-size: 11.5px; color: #64748b;">${escapeHtml(cat.description)}</div>` : ''}
+                </td>
+                <td style="vertical-align: middle;">
+                    <span style="font-family: monospace; font-size: 12px; background: #f1f5f9; padding: 3px 8px; border-radius: 6px; color: #475569;">${escapeHtml(cat.slug)}</span>
+                </td>
+                <td style="text-align: center; vertical-align: middle;">
+                    <span style="background: #e0f2fe; color: #0369a1; font-weight: 800; font-size: 11.5px; padding: 3px 10px; border-radius: 9999px;">${count} produit(s)</span>
+                </td>
+                <td style="text-align: right; vertical-align: middle;">
+                    <div style="display: inline-flex; gap: 6px;">
+                        <button type="button" class="btn-xs btn-outline-primary" onclick="openEditCategoryModal(${cat.id})" title="Modifier la catégorie">
+                            <i class="fa-solid fa-pen"></i>
+                        </button>
+                        <button type="button" class="btn-xs btn-outline-danger" onclick="handleDeleteCategory(${cat.id}, '${escapeHtml(cat.nom)}')" title="Supprimer la catégorie">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </div>
+                </td>
+            </tr>
+        `;
+    }).join('');
+}
+
+function openCategoriesManagerModal() {
+    const modal = document.getElementById('categoriesManagerModal');
+    if (modal) {
+        modal.classList.remove('hidden');
+        renderCategoriesTable();
+    }
+}
+
+function closeCategoriesManagerModal() {
+    const modal = document.getElementById('categoriesManagerModal');
+    if (modal) modal.classList.add('hidden');
+}
+
+function setNewCatIcon(icon) {
+    const input = document.getElementById('new-cat-icon');
+    if (input) input.value = icon;
+}
+
+async function handleCreateCategory(e) {
+    if (e) e.preventDefault();
+    const nameInput = document.getElementById('new-cat-name');
+    const iconInput = document.getElementById('new-cat-icon');
+    const submitBtn = document.getElementById('btn-create-cat');
+
+    const nom = nameInput ? nameInput.value.trim() : '';
+    const icone = iconInput ? iconInput.value.trim() : '🥖';
+
+    if (!nom) {
+        showAdminToast("Veuillez entrer un nom de catégorie.", "warning");
+        return;
+    }
+
+    const origHtml = submitBtn ? submitBtn.innerHTML : '';
+    if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin me-1"></i> Création...`;
+    }
+
+    const tempSlug = nom.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '');
+    const newCatItem = {
+        id: Date.now(),
+        slug: tempSlug,
+        nom: nom,
+        icone: icone,
+        ordre: allCategories.length + 1,
+        is_active: 1,
+        product_count: 0
+    };
+
+    allCategories.push(newCatItem);
+    if (typeof window.babiSetCachedCategories === 'function') {
+        window.babiSetCachedCategories(allCategories);
+    }
+    renderCategoryFilterPills();
+    populateProductCategoryDropdowns();
+    renderCategoriesTable();
+    if (nameInput) nameInput.value = '';
+
+    showAdminToast(`🎉 Catégorie "${nom}" créée avec succès !`, "success");
+
+    try {
+        const fetcher = (typeof window !== 'undefined' && typeof window.babiFetch === 'function') ? window.babiFetch : fetch;
+        const apiBase = (typeof window !== 'undefined' && window.API_BASE_URL) ? window.API_BASE_URL : (window.location.protocol.startsWith('http') ? '' : 'http://localhost:5000');
+        const res = await fetcher(`${apiBase}/api/categories`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ nom, icone, slug: tempSlug, ordre: newCatItem.ordre })
+        }, 6000);
+        if (res && res.ok) {
+            const data = await res.json();
+            if (data && data.category) {
+                newCatItem.id = data.category.id;
+            }
+        }
+    } catch (_) {}
+
+    if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = origHtml;
+    }
+}
+
+function openEditCategoryModal(catId) {
+    const cat = allCategories.find(c => String(c.id) === String(catId));
+    if (!cat) return;
+
+    document.getElementById('edit-cat-id').value = cat.id;
+    document.getElementById('edit-cat-name').value = cat.nom;
+    document.getElementById('edit-cat-icon').value = cat.icone || '🥖';
+    document.getElementById('edit-cat-slug').value = cat.slug;
+
+    const modal = document.getElementById('editCategoryModal');
+    if (modal) modal.classList.remove('hidden');
+}
+
+function closeEditCategoryModal() {
+    const modal = document.getElementById('editCategoryModal');
+    if (modal) modal.classList.add('hidden');
+}
+
+async function handleUpdateCategory(e) {
+    if (e) e.preventDefault();
+    const id = document.getElementById('edit-cat-id')?.value;
+    const nom = document.getElementById('edit-cat-name')?.value.trim();
+    const icone = document.getElementById('edit-cat-icon')?.value.trim() || '🥖';
+    const slug = document.getElementById('edit-cat-slug')?.value.trim();
+    const submitBtn = document.getElementById('btn-submit-edit-cat');
+
+    if (!nom) {
+        showAdminToast("Le nom de la catégorie est obligatoire.", "warning");
+        return;
+    }
+
+    const catIdx = allCategories.findIndex(c => String(c.id) === String(id));
+    if (catIdx >= 0) {
+        allCategories[catIdx].nom = nom;
+        allCategories[catIdx].icone = icone;
+        allCategories[catIdx].slug = slug;
+    }
+
+    if (typeof window.babiSetCachedCategories === 'function') {
+        window.babiSetCachedCategories(allCategories);
+    }
+    renderCategoryFilterPills();
+    populateProductCategoryDropdowns();
+    renderCategoriesTable();
+    closeEditCategoryModal();
+
+    showAdminToast(`✨ Catégorie "${nom}" mise à jour !`, "success");
+
+    try {
+        const fetcher = (typeof window !== 'undefined' && typeof window.babiFetch === 'function') ? window.babiFetch : fetch;
+        const apiBase = (typeof window !== 'undefined' && window.API_BASE_URL) ? window.API_BASE_URL : (window.location.protocol.startsWith('http') ? '' : 'http://localhost:5000');
+        await fetcher(`${apiBase}/api/categories/${id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ nom, icone, slug })
+        }, 6000);
+    } catch (_) {}
+}
+
+async function handleDeleteCategory(catId, catName) {
+    if (!confirm(`Êtes-vous sûr de vouloir supprimer la catégorie "${catName}" ?\nLes articles de cette catégorie seront réassignés sans être supprimés.`)) {
+        return;
+    }
+
+    allCategories = allCategories.filter(c => String(c.id) !== String(catId));
+    if (typeof window.babiSetCachedCategories === 'function') {
+        window.babiSetCachedCategories(allCategories);
+    }
+    renderCategoryFilterPills();
+    populateProductCategoryDropdowns();
+    renderCategoriesTable();
+
+    showAdminToast(`🗑️ Catégorie "${catName}" supprimée.`, "info");
+
+    try {
+        const fetcher = (typeof window !== 'undefined' && typeof window.babiFetch === 'function') ? window.babiFetch : fetch;
+        const apiBase = (typeof window !== 'undefined' && window.API_BASE_URL) ? window.API_BASE_URL : (window.location.protocol.startsWith('http') ? '' : 'http://localhost:5000');
+        await fetcher(`${apiBase}/api/categories/${catId}`, {
+            method: 'DELETE'
+        }, 6000);
+    } catch (_) {}
+}
+
 function filterProductsByCategory(cat, btn) {
     currentProductCategoryFilter = cat;
     document.querySelectorAll('#section-products .saas-filter-pill').forEach(b => b.classList.remove('active'));
@@ -1229,6 +1525,7 @@ async function loadProducts() {
             }
             updateProductKpis();
             renderProductsGridOrTable();
+            renderCategoryFilterPills();
         }
     } catch (_) {
         // En cas d'échec ou d'absence réseau, les produits locaux restent affichés

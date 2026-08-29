@@ -138,7 +138,19 @@ CREATE TABLE IF NOT EXISTS products (
 
 CREATE TABLE IF NOT EXISTS deleted_products (
     id TEXT PRIMARY KEY,
+    nom TEXT,
     deleted_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS categories (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    slug TEXT UNIQUE NOT NULL,
+    nom TEXT NOT NULL,
+    icone TEXT DEFAULT '🥖',
+    description TEXT DEFAULT '',
+    ordre INTEGER DEFAULT 0,
+    is_active INTEGER DEFAULT 1,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE IF NOT EXISTS stocks (
@@ -361,8 +373,18 @@ async function initDB() {
 
     // ⚡ Fast Schema Check
     try {
-        await db.run("CREATE TABLE IF NOT EXISTS deleted_products (id TEXT PRIMARY KEY, deleted_at DATETIME DEFAULT CURRENT_TIMESTAMP)");
-        const migrationCheck = await db.get("SELECT version FROM _schema_migrations WHERE version = 3");
+        await db.run("CREATE TABLE IF NOT EXISTS deleted_products (id TEXT PRIMARY KEY, nom TEXT, deleted_at DATETIME DEFAULT CURRENT_TIMESTAMP)");
+        await db.run(`CREATE TABLE IF NOT EXISTS categories (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            slug TEXT UNIQUE NOT NULL,
+            nom TEXT NOT NULL,
+            icone TEXT DEFAULT '🥖',
+            description TEXT DEFAULT '',
+            ordre INTEGER DEFAULT 0,
+            is_active INTEGER DEFAULT 1,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        )`);
+        const migrationCheck = await db.get("SELECT version FROM _schema_migrations WHERE version = 4");
         if (migrationCheck) {
             cachedDbInstance = db;
             isDbSchemaReady = true;
@@ -375,7 +397,7 @@ async function initDB() {
     // 🚀 Création globale rapide de toutes les tables en un seul batch
     try {
         await db.exec(FULL_SCHEMA_SQL);
-        await db.run("INSERT OR REPLACE INTO _schema_migrations (version) VALUES (3)");
+        await db.run("INSERT OR REPLACE INTO _schema_migrations (version) VALUES (4)");
     } catch (batchErr) {
         console.warn("[DB] Batch schema notice:", batchErr.message);
     }
@@ -435,6 +457,32 @@ async function initDB() {
         }
     } catch (seedErr) {
         console.warn("[DB] Product auto-seed notice:", seedErr.message);
+    }
+
+    // Auto-seed Categories if empty
+    try {
+        const catCount = await db.get("SELECT COUNT(*) as count FROM categories");
+        if (!catCount || catCount.count === 0) {
+            const defaultCats = [
+                { slug: 'pain', nom: 'Pains', icone: '🥖', ordre: 1 },
+                { slug: 'pains_speciaux', nom: 'Pains Spéciaux', icone: '🌾', ordre: 2 },
+                { slug: 'viennoiserie', nom: 'Viennoiseries', icone: '🥐', ordre: 3 },
+                { slug: 'patisserie', nom: 'Pâtisseries', icone: '🍰', ordre: 4 },
+                { slug: 'boisson', nom: 'Boissons', icone: '🧃', ordre: 5 },
+                { slug: 'sale', nom: 'Salés & Traiteur', icone: '🥪', ordre: 6 },
+                { slug: 'snack', nom: 'Biscuits & Snacks', icone: '🍪', ordre: 7 },
+                { slug: 'autre', nom: 'Autres Gourmandises', icone: '✨', ordre: 8 }
+            ];
+            for (const c of defaultCats) {
+                await db.run(
+                    "INSERT OR IGNORE INTO categories (slug, nom, icone, ordre, is_active) VALUES (?, ?, ?, ?, 1)",
+                    [c.slug, c.nom, c.icone, c.ordre]
+                );
+            }
+            console.log("[DB] Catégories par défaut initialisées avec succès.");
+        }
+    } catch (cErr) {
+        console.warn("[DB] Categories auto-seed notice:", cErr.message);
     }
 
     cachedDbInstance = db;

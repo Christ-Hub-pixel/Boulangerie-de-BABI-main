@@ -186,4 +186,37 @@
             return [];
         }
     };
+
+    // ==========================================
+    // 🏷️ Dynamic Categories Cache & Helpers
+    // ==========================================
+    const DEFAULT_CATEGORIES = [
+        { id: 1, slug: 'pain', nom: 'Pains', icone: '🥖', ordre: 1, is_active: 1 },
+        { id: 2, slug: 'pains_speciaux', nom: 'Pains Spéciaux', icone: '🌾', ordre: 2, is_active: 1 },
+        { id: 3, slug: 'viennoiserie', nom: 'Viennoiseries', icone: '🥐', ordre: 3, is_active: 1 },
+        { id: 4, slug: 'patisserie', nom: 'Pâtisseries', icone: '🍰', ordre: 4, is_active: 1 },
+        { id: 5, slug: 'boisson', nom: 'Boissons', icone: '🧃', ordre: 5, is_active: 1 },
+        { id: 6, slug: 'sale', nom: 'Salés & Traiteur', icone: '🥪', ordre: 6, is_active: 1 },
+        { id: 7, slug: 'snack', nom: 'Biscuits & Snacks', icone: '🍪', ordre: 7, is_active: 1 },
+        { id: 8, slug: 'autre', nom: 'Autres Gourmandises', icone: '✨', ordre: 8, is_active: 1 }
+    ];
+
+    window.babiGetCachedCategories = function() {
+        try {
+            const raw = localStorage.getItem('babi_cached_categories');
+            if (raw) {
+                const parsed = JSON.parse(raw);
+                if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+            }
+        } catch (_) {}
+        return DEFAULT_CATEGORIES;
+    };
+
+    window.babiSetCachedCategories = function(categories) {
+        try {
+            if (Array.isArray(categories) && categories.length > 0) {
+                localStorage.setItem('babi_cached_categories', JSON.stringify(categories));
+            }
+        } catch (_) {}
+    };
 })();

@@ -1127,6 +1127,169 @@ app.patch('/api/products/bulk-status', async (req, res) => {
 });
 
 // ==========================================
+// 🏷️ 2.1 CATÉGORIES DYNAMIQUES (GESTION ADMIN)
+// ==========================================
+
+function generateSlug(text) {
+    return (text || '')
+        .toString()
+        .toLowerCase()
+        .trim()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/[^a-z0-9]+/g, '_')
+        .replace(/^_+|_+$/g, '') || 'cat_' + Date.now();
+}
+
+// 1. Obtenir toutes les catégories avec le nombre de produits actifs
+app.get('/api/categories', async (req, res) => {
+    try {
+        const database = db || (await ensureDBReady());
+        const categories = await database.all("SELECT * FROM categories ORDER BY ordre ASC, id ASC");
+        
+        // Calculer dynamiquement le nombre de produits par catégorie
+        const prods = await database.all("SELECT categorie, id, is_active FROM products WHERE id NOT IN (SELECT id FROM deleted_products)");
+        
+        const enhanced = categories.map(cat => {
+            const slug = (cat.slug || '').toLowerCase();
+            const nom = (cat.nom || '').toLowerCase();
+            
+            const count = prods.filter(p => {
+                const c = (p.categorie || '').toLowerCase();
+                return c === slug || c === nom || (slug === 'pain' && (c.includes('pain') || c.includes('baguette')) && !c.includes('special')) || (slug === 'pains_speciaux' && (c.includes('special') || c.includes('speciaux')));
+            }).length;
+
+            return {
+                ...cat,
+                product_count: count
+            };
+        });
+
+        res.json({ success: true, data: enhanced });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Compatibilité Flutter / Apps
+app.get('/api/products/categories', async (req, res) => {
+    try {
+        const database = db || (await ensureDBReady());
+        const categories = await database.all("SELECT nom FROM categories WHERE is_active = 1 ORDER BY ordre ASC, id ASC");
+        const list = ['Tous', ...categories.map(c => c.nom)];
+        res.json({ success: true, data: list });
+    } catch (err) {
+        res.json({ success: true, data: ['Tous', 'Pains', 'Pains Spéciaux', 'Viennoiseries', 'Pâtisseries', 'Boissons', 'Salés & Traiteur', 'Biscuits & Snacks'] });
+    }
+});
+
+// 2. Créer une nouvelle catégorie
+app.post('/api/categories', async (req, res) => {
+    try {
+        const { nom, slug, icone, description, ordre } = req.body;
+        if (!nom || !nom.trim()) {
+            return res.status(400).json({ error: "Le nom de la catégorie est obligatoire." });
+        }
+
+        const catName = nom.trim();
+        const catSlug = generateSlug(slug || catName);
+        const catIcon = (icone && icone.trim()) ? icone.trim() : '🥖';
+        const catDesc = description ? description.trim() : '';
+        const catOrder = Number(ordre) || 0;
+
+        const database = db || (await ensureDBReady());
+        
+        // Vérifier unicité du slug
+        const existing = await database.get("SELECT id FROM categories WHERE slug = ? OR LOWER(nom) = ?", [catSlug, catName.toLowerCase()]);
+        if (existing) {
+            return res.status(400).json({ error: "Une catégorie avec ce nom ou ce code existe déjà." });
+        }
+
+        const result = await database.run(
+            "INSERT INTO categories (slug, nom, icone, description, ordre, is_active) VALUES (?, ?, ?, ?, ?, 1)",
+            [catSlug, catName, catIcon, catDesc, catOrder]
+        );
+
+        res.json({
+            success: true,
+            id: result.lastID,
+            category: { id: result.lastID, slug: catSlug, nom: catName, icone: catIcon, description: catDesc, ordre: catOrder, is_active: 1, product_count: 0 },
+            message: `Catégorie "${catName}" créée avec succès.`
+        });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// 3. Modifier une catégorie existante
+app.put('/api/categories/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { nom, icone, slug, description, ordre, is_active } = req.body;
+        if (!nom || !nom.trim()) {
+            return res.status(400).json({ error: "Le nom de la catégorie est obligatoire." });
+        }
+
+        const catName = nom.trim();
+        const database = db || (await ensureDBReady());
+        const oldCat = await database.get("SELECT * FROM categories WHERE id = ?", [id]);
+        if (!oldCat) {
+            return res.status(404).json({ error: "Catégorie introuvable." });
+        }
+
+        const newSlug = slug ? generateSlug(slug) : (oldCat.slug || generateSlug(catName));
+        const newIcon = icone ? icone.trim() : (oldCat.icone || '🥖');
+        const newDesc = description !== undefined ? description.trim() : (oldCat.description || '');
+        const newOrder = ordre !== undefined ? Number(ordre) : oldCat.ordre;
+        const newActive = is_active !== undefined ? (is_active ? 1 : 0) : oldCat.is_active;
+
+        await database.run(
+            "UPDATE categories SET nom = ?, slug = ?, icone = ?, description = ?, ordre = ?, is_active = ? WHERE id = ?",
+            [catName, newSlug, newIcon, newDesc, newOrder, newActive, id]
+        );
+
+        // Si le slug a changé, synchroniser les produits qui utilisaient l'ancien slug
+        if (oldCat.slug !== newSlug) {
+            await database.run("UPDATE products SET categorie = ? WHERE categorie = ?", [newSlug, oldCat.slug]);
+            await database.run("UPDATE stocks SET categorie = ? WHERE categorie = ?", [newSlug, oldCat.slug]);
+        }
+
+        res.json({
+            success: true,
+            category: { id, slug: newSlug, nom: catName, icone: newIcon, description: newDesc, ordre: newOrder, is_active: newActive },
+            message: `Catégorie "${catName}" modifiée avec succès.`
+        });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// 4. Supprimer une catégorie
+app.delete('/api/categories/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const database = db || (await ensureDBReady());
+        const cat = await database.get("SELECT * FROM categories WHERE id = ?", [id]);
+        if (!cat) {
+            return res.status(404).json({ error: "Catégorie introuvable." });
+        }
+
+        // Réassigner les produits rattachés vers 'autre' pour ne pas les orpheliner
+        await database.run("UPDATE products SET categorie = 'autre' WHERE categorie = ? OR categorie = ?", [cat.slug, cat.nom]);
+        await database.run("UPDATE stocks SET categorie = 'autre' WHERE categorie = ? OR categorie = ?", [cat.slug, cat.nom]);
+
+        await database.run("DELETE FROM categories WHERE id = ?", [id]);
+
+        res.json({
+            success: true,
+            message: `Catégorie "${cat.nom}" supprimée avec succès.`
+        });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// ==========================================
 // 📦 3. STOCKS & FOURNIL API (GÉRANTE)
 // ==========================================
 

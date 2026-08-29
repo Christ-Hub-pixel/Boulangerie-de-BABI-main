@@ -879,22 +879,18 @@
                             <button type="button" class="btn-sm btn-primary-gold" onclick="openAddProductModal()">
                                 <i class="fa-solid fa-plus me-1"></i> + Ajouter un Produit
                             </button>
-                            <button type="button" class="btn-sm btn-outline-primary" onclick="loadProducts()">
-                                <i class="fa-solid fa-rotate me-1"></i> Actualiser
+                            <button type="button" class="btn-sm btn-outline-primary" onclick="openCategoriesManagerModal()" title="Gérer, ajouter, modifier ou supprimer des catégories">
+                                <i class="fa-solid fa-tags me-1"></i> Gérer les Catégories
+                            </button>
+                            <button type="button" class="saas-icon-btn" onclick="loadProducts()" title="Actualiser le catalogue">
+                                <i class="fa-solid fa-rotate"></i>
                             </button>
                         </div>
                     </div>
 
-                    <!-- Category Filter Tabs -->
-                    <div class="saas-sub-filters">
+                    <!-- Category Filter Tabs (Générées dynamiquement) -->
+                    <div class="saas-sub-filters" id="products-category-pills">
                         <button type="button" class="saas-filter-pill active" onclick="filterProductsByCategory('all', this)">Tous (<span id="prod-cat-all-count">0</span>)</button>
-                        <button type="button" class="saas-filter-pill" onclick="filterProductsByCategory('pain', this)">🥖 Pains (<span id="prod-cat-pain-count">0</span>)</button>
-                        <button type="button" class="saas-filter-pill" onclick="filterProductsByCategory('pains_speciaux', this)">🌾 Pains Spéciaux (<span id="prod-cat-speciaux-count">0</span>)</button>
-                        <button type="button" class="saas-filter-pill" onclick="filterProductsByCategory('viennoiserie', this)">🥐 Viennoiseries (<span id="prod-cat-viennoiserie-count">0</span>)</button>
-                        <button type="button" class="saas-filter-pill" onclick="filterProductsByCategory('patisserie', this)">🍰 Pâtisseries (<span id="prod-cat-patisserie-count">0</span>)</button>
-                        <button type="button" class="saas-filter-pill" onclick="filterProductsByCategory('boisson', this)">🧃 Boissons (<span id="prod-cat-boisson-count">0</span>)</button>
-                        <button type="button" class="saas-filter-pill" onclick="filterProductsByCategory('sale', this)">🥪 Salés & Traiteur (<span id="prod-cat-sale-count">0</span>)</button>
-                        <button type="button" class="saas-filter-pill" onclick="filterProductsByCategory('snack', this)">🍪 Biscuits & Snacks (<span id="prod-cat-snack-count">0</span>)</button>
                     </div>
 
                     <!-- Bulk Actions Bar (Apparaît quand au moins 1 article est coché) -->
@@ -1810,6 +1806,136 @@
                     Fermer
                 </button>
             </div>
+        </div>
+    </div>
+
+    <!-- Modal 10: Gestionnaire des Catégories du Fournil -->
+    <div id="categoriesManagerModal" class="prestige-modal-backdrop hidden">
+        <div class="prestige-modal-card" style="max-width: 680px; max-height: 90vh; display: flex; flex-direction: column;">
+            <div class="prestige-modal-header" style="border-bottom: 1px solid #e2e8f0; padding-bottom: 14px;">
+                <div class="d-flex align-items-center gap-2">
+                    <span style="font-size: 24px;">🏷️</span>
+                    <div>
+                        <h3 class="prestige-modal-title mb-0" style="font-weight: 800; font-size: 17px; color: #0f172a;">Gestionnaire des Catégories</h3>
+                        <p style="font-size: 12px; color: #64748b; margin: 0;">Ajoutez, modifiez ou supprimez les catégories du catalogue & vitrine</p>
+                    </div>
+                </div>
+                <button type="button" onclick="closeCategoriesManagerModal()" class="prestige-modal-close-btn" style="background: none; border: none; font-size: 20px; cursor: pointer; color: #64748b;">✕</button>
+            </div>
+
+            <div style="overflow-y: auto; padding: 18px 0; display: flex; flex-direction: column; gap: 20px;">
+                <!-- Formulaire d'Ajout Rapide -->
+                <div style="background: #f8fafc; border: 1.5px dashed #cbd5e1; border-radius: 14px; padding: 16px;">
+                    <h4 style="font-size: 13px; font-weight: 800; color: #0f172a; margin-bottom: 10px; display: flex; align-items: center; gap: 6px;">
+                        <i class="fa-solid fa-plus-circle text-amber-500"></i> Nouvelle Catégorie
+                    </h4>
+                    <form onsubmit="handleCreateCategory(event)" style="display: flex; flex-direction: column; gap: 12px;">
+                        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                            <div style="width: 65px;">
+                                <label style="font-size: 11px; font-weight: 700; color: #475569; display: block; margin-bottom: 4px;">Icône</label>
+                                <input type="text" id="new-cat-icon" value="🥖" maxlength="4" style="width: 100%; text-align: center; font-size: 18px; padding: 8px 4px; border-radius: 10px; border: 1px solid #cbd5e1; background: #fff; outline: none;" required/>
+                            </div>
+                            <div style="flex: 1; min-width: 200px;">
+                                <label style="font-size: 11px; font-weight: 700; color: #475569; display: block; margin-bottom: 4px;">Nom de la catégorie *</label>
+                                <input type="text" id="new-cat-name" placeholder="ex: Glaces & Sorbets, Pizzas Artisanales..." style="width: 100%; padding: 9px 12px; border-radius: 10px; border: 1px solid #cbd5e1; font-size: 13px; outline: none; background: #fff;" required/>
+                            </div>
+                            <div style="display: flex; align-items: flex-end;">
+                                <button type="submit" id="btn-create-cat" class="btn-primary-gold" style="height: 40px; white-space: nowrap;">
+                                    <i class="fa-solid fa-plus me-1"></i> Créer la Catégorie
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Sélecteur rapide d'émojis -->
+                        <div>
+                            <span style="font-size: 11px; color: #64748b; font-weight: 600; display: block; margin-bottom: 4px;">Suggestions rapides d'icônes :</span>
+                            <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+                                <button type="button" onclick="setNewCatIcon('🥖')" class="btn-xs" style="background:#fff; border:1px solid #cbd5e1; font-size:14px;">🥖 Pains</button>
+                                <button type="button" onclick="setNewCatIcon('🌾')" class="btn-xs" style="background:#fff; border:1px solid #cbd5e1; font-size:14px;">🌾 Spéciaux</button>
+                                <button type="button" onclick="setNewCatIcon('🥐')" class="btn-xs" style="background:#fff; border:1px solid #cbd5e1; font-size:14px;">🥐 Viennoiseries</button>
+                                <button type="button" onclick="setNewCatIcon('🍰')" class="btn-xs" style="background:#fff; border:1px solid #cbd5e1; font-size:14px;">🍰 Pâtisseries</button>
+                                <button type="button" onclick="setNewCatIcon('🧃')" class="btn-xs" style="background:#fff; border:1px solid #cbd5e1; font-size:14px;">🧃 Boissons</button>
+                                <button type="button" onclick="setNewCatIcon('🥪')" class="btn-xs" style="background:#fff; border:1px solid #cbd5e1; font-size:14px;">🥪 Salés</button>
+                                <button type="button" onclick="setNewCatIcon('🍪')" class="btn-xs" style="background:#fff; border:1px solid #cbd5e1; font-size:14px;">🍪 Biscuits</button>
+                                <button type="button" onclick="setNewCatIcon('🍦')" class="btn-xs" style="background:#fff; border:1px solid #cbd5e1; font-size:14px;">🍦 Glaces</button>
+                                <button type="button" onclick="setNewCatIcon('☕')" class="btn-xs" style="background:#fff; border:1px solid #cbd5e1; font-size:14px;">☕ Cafés</button>
+                                <button type="button" onclick="setNewCatIcon('🍕')" class="btn-xs" style="background:#fff; border:1px solid #cbd5e1; font-size:14px;">🍕 Pizzas</button>
+                                <button type="button" onclick="setNewCatIcon('🥞')" class="btn-xs" style="background:#fff; border:1px solid #cbd5e1; font-size:14px;">🥞 Crêpes</button>
+                                <button type="button" onclick="setNewCatIcon('🧁')" class="btn-xs" style="background:#fff; border:1px solid #cbd5e1; font-size:14px;">🧁 Cupcakes</button>
+                                <button type="button" onclick="setNewCatIcon('🍩')" class="btn-xs" style="background:#fff; border:1px solid #cbd5e1; font-size:14px;">🍩 Donuts</button>
+                                <button type="button" onclick="setNewCatIcon('🍫')" class="btn-xs" style="background:#fff; border:1px solid #cbd5e1; font-size:14px;">🍫 Chocolats</button>
+                                <button type="button" onclick="setNewCatIcon('✨')" class="btn-xs" style="background:#fff; border:1px solid #cbd5e1; font-size:14px;">✨ Autre</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Liste des Catégories Existantes -->
+                <div>
+                    <h4 style="font-size: 13px; font-weight: 800; color: #0f172a; margin-bottom: 10px;">
+                        Catégories Actives au Catalogue (<span id="categories-count-badge">0</span>)
+                    </h4>
+                    <div style="border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden;">
+                        <table class="saas-table" style="margin: 0;">
+                            <thead style="background: #f1f5f9;">
+                                <tr>
+                                    <th style="width: 50px; text-align: center;">Icône</th>
+                                    <th>Nom de la Catégorie</th>
+                                    <th>Identifiant (Slug)</th>
+                                    <th style="text-align: center;">Articles</th>
+                                    <th style="text-align: right;">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="categories-table-body">
+                                <tr><td colspan="5" class="text-center py-4 text-muted">Chargement des catégories...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="prestige-modal-actions" style="border-top: 1px solid #e2e8f0; padding-top: 12px;">
+                <button type="button" onclick="closeCategoriesManagerModal()" class="btn-modal-cancel" style="padding: 9px 20px;">Fermer</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal 11: Modifier une Catégorie Existante -->
+    <div id="editCategoryModal" class="prestige-modal-backdrop hidden">
+        <div class="prestige-modal-card" style="max-width: 480px;">
+            <div class="prestige-modal-header" style="border-bottom: 1px solid #e2e8f0; padding-bottom: 12px;">
+                <div class="d-flex align-items-center gap-2">
+                    <span style="font-size: 22px;">✏️</span>
+                    <h3 class="prestige-modal-title mb-0" style="font-weight: 800; font-size: 16px;">Modifier la Catégorie</h3>
+                </div>
+                <button type="button" onclick="closeEditCategoryModal()" class="prestige-modal-close-btn" style="background: none; border: none; font-size: 20px; cursor: pointer; color: #64748b;">✕</button>
+            </div>
+            <form onsubmit="handleUpdateCategory(event)" style="display: flex; flex-direction: column; gap: 14px; padding: 16px 0;">
+                <input type="hidden" id="edit-cat-id"/>
+
+                <div style="display: flex; gap: 10px;">
+                    <div style="width: 65px;">
+                        <label class="prestige-form-label">Icône :</label>
+                        <input type="text" id="edit-cat-icon" maxlength="4" style="width: 100%; text-align: center; font-size: 20px; padding: 8px; border-radius: 10px; border: 1px solid #cbd5e1;" required/>
+                    </div>
+                    <div style="flex: 1;">
+                        <label class="prestige-form-label">Nom de la Catégorie :</label>
+                        <input type="text" id="edit-cat-name" class="prestige-form-input" required/>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="prestige-form-label">Code Technique (Slug) :</label>
+                    <input type="text" id="edit-cat-slug" class="prestige-form-input" style="font-family: monospace;" required/>
+                </div>
+
+                <div class="prestige-modal-actions" style="display: flex; gap: 10px; margin-top: 10px;">
+                    <button type="button" onclick="closeEditCategoryModal()" class="btn-modal-cancel" style="flex: 1;">Annuler</button>
+                    <button type="submit" id="btn-submit-edit-cat" class="btn-modal-submit-gold" style="flex: 2;">
+                        <i class="fa-solid fa-save me-1"></i> Enregistrer
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 
