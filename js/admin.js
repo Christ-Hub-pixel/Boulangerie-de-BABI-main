@@ -1002,13 +1002,13 @@ function renderProductsGridOrTable() {
                 }
             </td>
             <td style="text-align: right; white-space: nowrap;">
-                <button type="button" class="btn-xs btn-outline-primary me-1" onclick="openEditProductModal(${p.id})" title="Modifier le produit">
+                <button type="button" class="btn-xs btn-outline-primary me-1" onclick="openEditProductModal('${p.id}')" title="Modifier le produit">
                     <i class="fa-solid fa-pen-to-square"></i>
                 </button>
-                <button type="button" class="btn-xs ${isActive ? 'btn-outline-warning' : 'btn-outline-success'} me-1" onclick="handleToggleProductStatus(${p.id})" title="${isActive ? 'Désactiver (Masquer)' : 'Activer (Rendre visible)'}">
+                <button type="button" class="btn-xs ${isActive ? 'btn-outline-warning' : 'btn-outline-success'} me-1" onclick="handleToggleProductStatus('${p.id}')" title="${isActive ? 'Désactiver (Masquer)' : 'Activer (Rendre visible)'}">
                     <i class="fa-solid ${isActive ? 'fa-eye-slash' : 'fa-eye'}"></i>
                 </button>
-                <button type="button" class="btn-xs btn-outline-danger" onclick="handleDeleteProduct(${p.id})" title="Supprimer définitivement">
+                <button type="button" class="btn-xs btn-outline-danger" onclick="handleDeleteProduct('${p.id}')" title="Supprimer définitivement">
                     <i class="fa-solid fa-trash"></i>
                 </button>
             </td>
@@ -1238,8 +1238,8 @@ async function handleCreateProduct(e) {
             };
         }
 
-        // Ajouter sans écraser la liste complète des produits
-        const existingIdx = allProducts.findIndex(p => String(p.id) === String(createdProd.id) || (p.nom && p.nom.toLowerCase() === createdProd.nom.toLowerCase()));
+        // Ajouter sans restriction
+        const existingIdx = allProducts.findIndex(p => String(p.id) === String(createdProd.id));
         if (existingIdx >= 0) {
             allProducts[existingIdx] = createdProd;
         } else {
@@ -1251,6 +1251,17 @@ async function handleCreateProduct(e) {
         }
         if (typeof window.babiSetCachedProducts === 'function') {
             window.babiSetCachedProducts(allProducts);
+        }
+
+        // Basculer l'affichage sur "Tous" pour voir immédiatement le nouveau produit
+        currentProductCategoryFilter = 'all';
+        currentProductSearchQuery = '';
+        const searchInput = document.getElementById('admin-products-search');
+        if (searchInput) searchInput.value = '';
+        const filterPills = document.querySelectorAll('.saas-sub-filters .saas-filter-pill');
+        if (filterPills.length > 0) {
+            filterPills.forEach(p => p.classList.remove('active'));
+            filterPills[0].classList.add('active');
         }
 
         updateProductKpis();
@@ -1265,6 +1276,7 @@ async function handleCreateProduct(e) {
         if (document.getElementById('new-prod-desc')) document.getElementById('new-prod-desc').value = '';
         if (document.getElementById('new-prod-image-data')) document.getElementById('new-prod-image-data').value = 'assets/baguette 200.png';
         if (document.getElementById('new-prod-preview-img')) document.getElementById('new-prod-preview-img').src = 'assets/baguette 200.png';
+        if (document.getElementById('new-prod-file')) document.getElementById('new-prod-file').value = '';
 
         if (typeof window.notifyProductCatalogueChanged === 'function') {
             window.notifyProductCatalogueChanged('PRODUCT_CREATED', createdProd);
