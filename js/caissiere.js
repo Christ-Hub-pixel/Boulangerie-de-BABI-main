@@ -13,26 +13,6 @@ let livePickups = [];
 let currentPinInput = '';
 let isApiReachable = false;
 
-const FALLBACK_POS_PRODUCTS = [
-    { id: 'baguette', name: 'Baguette Tradition', price: 200, category: 'pains', image: 'assets/baguette 200.png', stock: 42 },
-    { id: 'croissant', name: 'Croissant Pur Beurre', price: 350, category: 'viennoiseries', image: 'assets/Croissant.png', stock: 28 },
-    { id: 'pain_choc', name: 'Pain au Chocolat', price: 400, category: 'viennoiseries', image: 'assets/pain au chocolat.png', stock: 24 },
-    { id: 'croissant_amande', name: 'Croissant aux Amandes', price: 500, category: 'viennoiseries', image: 'assets/Croissant.png', stock: 15 },
-    { id: 'pain_raisin', name: 'Pain aux Raisins', price: 450, category: 'viennoiseries', image: 'assets/pain au raisin.png', stock: 18 },
-    { id: 'chausson_pommes', name: 'Chausson aux Pommes', price: 450, category: 'viennoiseries', image: 'assets/chausson aux pommes.png', stock: 14 },
-    { id: 'foret_noire', name: 'Forêt Noire Royale', price: 1500, category: 'patisseries', image: 'assets/product_foret_noire.png', stock: 8 },
-    { id: 'fondant', name: 'Fondant au Chocolat', price: 800, category: 'patisseries', image: 'assets/Fondant au Chocolat.png', stock: 15 },
-    { id: 'eclair_choc', name: 'Éclair au Chocolat', price: 700, category: 'patisseries', image: 'assets/choco suisse.png', stock: 20 },
-    { id: 'tarte_citron', name: 'Tarte au Citron Meringuée', price: 1200, category: 'patisseries', image: 'assets/Gateau1.png', stock: 10 },
-    { id: 'mille_feuille', name: 'Mille-feuille Vanille', price: 1000, category: 'patisseries', image: 'assets/cake.png', stock: 12 },
-    { id: 'bissap', name: 'Jus de Bissap Artisanal', price: 600, category: 'boissons', image: 'assets/jus de bissap.png', stock: 35 },
-    { id: 'gingembre', name: 'Jus de Gingembre Frais', price: 600, category: 'boissons', image: 'assets/jus de gingembre.png', stock: 30 },
-    { id: 'cappuccino', name: 'Cappuccino Moka', price: 1000, category: 'boissons', image: 'assets/product_cappuccino.png', stock: 50 },
-    { id: 'espresso', name: 'Espresso Pur Arabica', price: 800, category: 'boissons', image: 'assets/Chocolat Chaud.png', stock: 60 },
-    { id: 'sandwich', name: 'Sandwich Poulet Braisé', price: 1500, category: 'traiteur', image: 'assets/product_sandwich.png', stock: 12 },
-    { id: 'quiche_lorraine', name: 'Quiche Lorraine Dorée', price: 1200, category: 'traiteur', image: 'assets/Panini.png', stock: 16 }
-];
-
 // Initialize on DOM Ready
 document.addEventListener('DOMContentLoaded', () => {
     // Clear any obsolete service worker cache if quota was exceeded
@@ -428,6 +408,35 @@ function resolveProductImage(name, rawImage, category) {
     return 'assets/baguette 200.png';
 }
 
+const FALLBACK_POS_PRODUCTS = [];
+
+// Initialize on DOM Ready
+document.addEventListener('DOMContentLoaded', () => {
+    // Clear any obsolete service worker cache if quota was exceeded
+    if ('caches' in window) {
+        caches.keys().then(keys => {
+            keys.forEach(key => {
+                if (key !== 'babi-bakery-v7') caches.delete(key);
+            });
+        }).catch(() => {});
+    }
+
+    // Nettoyage initial unique des anciens paniers et tickets de test
+    try {
+        if (localStorage.getItem('babi_pos_fresh_v2') !== 'true') {
+            localStorage.removeItem('babi_pos_cart');
+            localStorage.removeItem('babi_pos_sales_history');
+            localStorage.removeItem('babi_pos_shift_sales');
+            localStorage.removeItem('babi_pos_shift_tickets');
+            localStorage.setItem('babi_pos_fresh_v2', 'true');
+        }
+    } catch (_) {}
+
+    purgeStaleMockOrders();
+
+    loadPosProducts();
+});
+
 async function loadPosProducts() {
     const adjustments = JSON.parse(localStorage.getItem('babi_pos_stock_adjustments') || '{}');
     const apiBase = window.API_BASE_URL || (window.location.protocol.startsWith('http') ? '' : (API_ROOT || 'http://localhost:5000'));
@@ -439,7 +448,7 @@ async function loadPosProducts() {
     
     const sourceList = (cached && cached.length > 0) 
         ? cached 
-        : ((posProducts && posProducts.length > 0) ? posProducts : FALLBACK_POS_PRODUCTS);
+        : ((typeof posProducts !== 'undefined' && posProducts.length > 0) ? posProducts : FALLBACK_POS_PRODUCTS);
     
     posProducts = sourceList
         .filter(p => p.is_active !== 0 && p.is_active !== '0' && p.is_active !== false)
@@ -464,7 +473,7 @@ async function loadPosProducts() {
     // 2. Synchronisation en tâche de fond avec le serveur (timeout 4s)
     try {
         const fetcher = (typeof window !== 'undefined' && typeof window.babiFetch === 'function') ? window.babiFetch : fetch;
-        const res = await fetcher(`${apiBase}/api/products`, {}, 4000);
+        const res = await fetcher(`${apiBase}/api/products?_t=${Date.now()}`, {}, 4000);
         if (res && res.ok) {
             const rawProducts = await res.json();
             const productList = Array.isArray(rawProducts) ? rawProducts : (rawProducts.products || []);
