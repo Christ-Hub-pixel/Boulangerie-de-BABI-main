@@ -207,7 +207,13 @@ document.addEventListener('DOMContentLoaded', () => {
                     return;
                 }
 
-                // Essai de connexion via l'API Backend
+                const submitBtn = loginForm.querySelector('button[type="submit"]');
+                const origBtnHtml = submitBtn ? submitBtn.innerHTML : '';
+                if (submitBtn) {
+                    submitBtn.disabled = true;
+                    submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-1"></i> Connexion en cours...';
+                }
+
                 try {
                     const res = await fetch(`${API_ROOT}/api/auth/login`, {
                         method: 'POST',
@@ -215,51 +221,24 @@ document.addEventListener('DOMContentLoaded', () => {
                         body: JSON.stringify({ email: identifiant, mot_de_passe: password })
                     });
 
-                    if (res.ok) {
-                        const data = await res.json();
+                    const data = await res.json();
+                    if (res.ok && data.user) {
                         localStorage.setItem('babi_user', JSON.stringify(data.user));
-                        alert(data.message || `Connexion réussie ! Bienvenue ${data.user.prenom}.`);
+                        if (data.token) localStorage.setItem('auth_token', data.token);
+                        alert(data.message || `Connexion réussie ! Bienvenue ${data.user.prenom || ''}.`);
                         window.location.href = data.redirectUrl || (data.user.role === 'client' ? 'compte.html' : 'index.html');
                         return;
+                    } else {
+                        alert(data.error || "❌ Identifiants incorrects. Veuillez vérifier votre email et mot de passe.");
                     }
                 } catch (err) {
-                    console.warn("Backend non accessible, bascule en authentification locale:", err);
-                }
-
-                // Fallback simulation locale pour les 4 rôles
-                let role = 'client';
-                let prenom = "Client";
-                let nom = "BABI";
-                let redirect = 'compte.html';
-
-                const idLower = identifiant.toLowerCase();
-                if (idLower.includes('caisse')) {
-                    role = 'caissiere';
-                    prenom = 'Caissière';
-                    nom = '';
-                    redirect = 'caissiere.html';
-                } else if (idLower.includes('gerante') || idLower.includes('direction')) {
-                    role = 'gerante';
-                    prenom = 'Gérante';
-                    nom = 'Fournil';
-                    redirect = 'gerante.html';
-                } else if (idLower.includes('admin')) {
-                    role = 'admin';
-                    prenom = 'Administrateur';
-                    nom = '';
-                    redirect = 'admin.html';
-                } else {
-                    if (idLower.includes('@')) {
-                        prenom = idLower.split('@')[0];
-                        prenom = prenom.charAt(0).toUpperCase() + prenom.slice(1);
+                    alert("❌ Impossible de joindre le serveur d'authentification. Veuillez vérifier votre connexion.");
+                } finally {
+                    if (submitBtn) {
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = origBtnHtml;
                     }
                 }
-
-                const user = { prenom, nom, email: identifiant, role, points: 50 };
-                localStorage.setItem('babi_user', JSON.stringify(user));
-                
-                alert(`Connexion réussie en tant que ${role.toUpperCase()} (${prenom}) !`);
-                window.location.href = redirect;
             });
         }
     }
@@ -284,7 +263,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const email = inputs[2] ? inputs[2].value.trim() : '';
                 const phoneInput = inputs[3];
                 const phone = phoneInput ? phoneInput.value.trim() : '';
-                const password = inputs[4] ? inputs[4].value : 'client123';
+                const password = inputs[4] ? inputs[4].value : '';
                 
                 // 📱 VALIDATION STRICTE DU NUMÉRO DE TÉLÉPHONE
                 const cleanPhone = phone.replace(/\D/g, '');
@@ -298,31 +277,37 @@ document.addEventListener('DOMContentLoaded', () => {
                     return;
                 }
 
+                const submitBtn = registerForm.querySelector('button[type="submit"]');
+                const origBtnHtml = submitBtn ? submitBtn.innerHTML : '';
+                if (submitBtn) {
+                    submitBtn.disabled = true;
+                    submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-1"></i> Création du compte...';
+                }
+
                 try {
                     const res = await fetch(`${API_ROOT}/api/auth/register`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ nom, prenom, email, telephone: phone, mot_de_passe: password })
                     });
-                    if (res.ok) {
-                        const data = await res.json();
+                    const data = await res.json();
+                    if (res.ok && data.user) {
                         localStorage.setItem('babi_user', JSON.stringify(data.user));
+                        if (data.token) localStorage.setItem('auth_token', data.token);
                         alert("🎉 Compte créé avec succès ! Bienvenue chez Boulangerie de BABI.");
                         window.location.href = data.redirectUrl || 'compte.html';
                         return;
                     } else {
-                        const errData = await res.json();
-                        if (errData && errData.error) {
-                            alert("Erreur : " + errData.error);
-                            return;
-                        }
+                        alert(data.error || "❌ Erreur lors de la création du compte.");
                     }
-                } catch(err) {}
-
-                const user = { prenom, nom, email, phone, role: 'client', points: 50 };
-                localStorage.setItem('babi_user', JSON.stringify(user));
-                alert("🎉 Compte créé avec succès ! Bienvenue " + (prenom || 'chez nous') + ".");
-                window.location.href = 'compte.html';
+                } catch(err) {
+                    alert("❌ Erreur de connexion avec le serveur.");
+                } finally {
+                    if (submitBtn) {
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = origBtnHtml;
+                    }
+                }
             });
         }
     }
