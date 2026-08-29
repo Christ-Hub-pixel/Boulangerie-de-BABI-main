@@ -643,22 +643,22 @@
                     </div>
 
                     <!-- Bulk Actions Bar (Apparaît quand au moins 1 article est coché) -->
-                    <div id="products-bulk-actions-bar" class="d-none align-items-center justify-content-between p-3 m-3 rounded-3" style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); color: #ffffff; border: 1px solid #334155; box-shadow: 0 4px 14px rgba(0,0,0,0.18);">
-                        <div class="d-flex align-items-center gap-3">
-                            <span class="badge bg-warning text-dark fw-bold px-3 py-1 rounded-pill" id="bulk-selected-count" style="font-size: 13px;">0 sélectionné(s)</span>
-                            <span class="text-white-50 small d-none d-sm-inline">Actions groupées sur les articles cochés</span>
+                    <div id="products-bulk-actions-bar" class="babi-bulk-bar">
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <span class="babi-bulk-badge" id="bulk-selected-count"><i class="fa-solid fa-check-double"></i> 0 sélectionné(s)</span>
+                            <span class="babi-bulk-desc d-none d-md-inline">Actions rapides sur les articles cochés</span>
                         </div>
-                        <div class="d-flex align-items-center gap-2 flex-wrap">
-                            <button type="button" class="btn btn-sm btn-danger fw-bold rounded-pill px-3 shadow-sm" onclick="handleBulkDeleteProducts()">
-                                <i class="fa-solid fa-trash me-1"></i> Supprimer la sélection
+                        <div class="babi-bulk-actions">
+                            <button type="button" class="babi-btn-bulk-delete" onclick="handleBulkDeleteProducts()" title="Supprimer définitivement la sélection">
+                                <i class="fa-solid fa-trash"></i> Supprimer la sélection
                             </button>
-                            <button type="button" class="btn btn-sm btn-outline-light rounded-pill px-3" onclick="handleBulkToggleStatus(0)">
-                                <i class="fa-solid fa-eye-slash me-1"></i> Masquer
+                            <button type="button" class="babi-btn-bulk-hide" onclick="handleBulkToggleStatus(0)" title="Masquer de la vitrine">
+                                <i class="fa-solid fa-eye-slash"></i> Masquer
                             </button>
-                            <button type="button" class="btn btn-sm btn-outline-light rounded-pill px-3" onclick="handleBulkToggleStatus(1)">
-                                <i class="fa-solid fa-eye me-1"></i> Rendre Visible
+                            <button type="button" class="babi-btn-bulk-show" onclick="handleBulkToggleStatus(1)" title="Rendre visible dans la vitrine">
+                                <i class="fa-solid fa-eye"></i> Rendre Visible
                             </button>
-                            <button type="button" class="btn btn-sm btn-link text-white-50 p-0 ms-2" onclick="clearSelectedProducts()">
+                            <button type="button" class="babi-btn-bulk-cancel" onclick="clearSelectedProducts()" title="Désélectionner tout">
                                 <i class="fa-solid fa-xmark"></i> Annuler
                             </button>
                         </div>
@@ -668,8 +668,8 @@
                         <table class="saas-table">
                             <thead>
                                 <tr>
-                                    <th style="width: 44px; text-align: center;">
-                                        <input type="checkbox" id="select-all-prods" onchange="handleToggleSelectAllProducts(this.checked)" title="Tout cocher / décocher" style="cursor: pointer; width: 16px; height: 16px; accent-color: #c2850c;">
+                                    <th style="width: 44px; text-align: center; vertical-align: middle;">
+                                        <input type="checkbox" id="select-all-prods" onchange="handleToggleSelectAllProducts(this.checked)" title="Tout cocher / décocher">
                                     </th>
                                     <th>Aperçu</th>
                                     <th>Nom du Produit</th>

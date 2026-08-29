@@ -849,12 +849,10 @@ function updateBulkActionsBar() {
     if (!bar) return;
     const count = selectedProductIds.size;
     if (count > 0) {
-        bar.classList.remove('d-none');
-        bar.classList.add('d-flex');
-        if (countEl) countEl.textContent = `${count} sélectionné${count > 1 ? 's' : ''}`;
+        bar.classList.add('active');
+        if (countEl) countEl.innerHTML = `<i class="fa-solid fa-check-double"></i> ${count} sélectionné${count > 1 ? 's' : ''}`;
     } else {
-        bar.classList.add('d-none');
-        bar.classList.remove('d-flex');
+        bar.classList.remove('active');
     }
 
     if (selectAllCb) {
@@ -1136,24 +1134,24 @@ function renderProductsGridOrTable() {
         const catName = p.categorie || p.category || 'Pain';
 
         return `
-        <tr class="${isChecked ? 'row-selected' : ''}" style="${!isActive ? 'opacity: 0.65; background: #fafafa;' : ''} ${isChecked ? 'background: #fffbeb !important;' : ''}">
-            <td style="width: 44px; text-align: center;">
-                <input type="checkbox" class="prod-select-cb" data-id="${p.id}" onchange="handleProductCheckboxChange('${p.id}', this.checked)" ${isChecked ? 'checked' : ''} style="cursor: pointer; width: 16px; height: 16px; accent-color: #c2850c; border-radius: 4px;">
+        <tr class="${isChecked ? 'row-selected' : ''}" style="${!isActive ? 'opacity: 0.65; background: #fafafa;' : ''}">
+            <td style="width: 44px; text-align: center; vertical-align: middle;">
+                <input type="checkbox" class="prod-select-cb" data-id="${p.id}" onchange="handleProductCheckboxChange('${p.id}', this.checked)" ${isChecked ? 'checked' : ''} title="Sélectionner">
             </td>
-            <td style="width: 56px;">
+            <td style="width: 56px; vertical-align: middle;">
                 <img src="${imgSrc}" style="width: 44px; height: 44px; border-radius: 10px; object-fit: cover; border: 1px solid #e2e8f0; box-shadow: 0 2px 4px rgba(0,0,0,0.06);" onerror="this.src='assets/product_baguette.png'">
             </td>
-            <td>
+            <td style="vertical-align: middle;">
                 <div style="font-weight: 700; color: #0f172a; font-size: 13px;">${escapeHtml(p.nom || p.title)}</div>
                 ${p.description ? `<small class="text-muted text-truncate d-block" style="max-width: 260px; font-size: 11px;">${escapeHtml(p.description)}</small>` : ''}
             </td>
-            <td>
+            <td style="vertical-align: middle;">
                 <span class="badge bg-light text-dark border px-2 py-1" style="font-size: 11px; text-transform: capitalize;">${escapeHtml(catName)}</span>
             </td>
-            <td>
-                <strong style="color: #b45309; font-size: 13px; font-family: monospace;">${(Number(p.prix) || 0).toLocaleString('fr-FR')} FCFA</strong>
+            <td style="vertical-align: middle; white-space: nowrap;">
+                <strong class="saas-price-tag">${(Number(p.prix) || 0).toLocaleString('fr-FR')} FCFA</strong>
             </td>
-            <td>
+            <td style="vertical-align: middle;">
                 <div class="d-flex align-items-center gap-1">
                     <span class="fw-bold ${isLowStock ? 'text-danger' : 'text-success'}" style="font-size: 12.5px;">
                         ${stockQty} unités
@@ -1161,14 +1159,14 @@ function renderProductsGridOrTable() {
                     ${isLowStock ? `<span class="badge bg-danger" style="font-size: 9px; padding: 2px 5px;">Bas</span>` : ''}
                 </div>
             </td>
-            <td class="text-muted small">${alertThreshold} un.</td>
-            <td>
+            <td class="text-muted small" style="vertical-align: middle;">${alertThreshold} un.</td>
+            <td style="vertical-align: middle;">
                 ${isActive 
                     ? `<span class="saas-badge-pill active" style="background:#ecfdf5; color:#065f46; border:1px solid #a7f3d0; font-size:11px; padding:3px 8px; border-radius:12px; font-weight:700;"><i class="fa-solid fa-circle-check me-1 text-success"></i> Actif</span>`
                     : `<span class="saas-badge-pill inactive" style="background:#fef2f2; color:#991b1b; border:1px solid #fecaca; font-size:11px; padding:3px 8px; border-radius:12px; font-weight:700;"><i class="fa-solid fa-ban me-1 text-danger"></i> Masqué</span>`
                 }
             </td>
-            <td style="text-align: right; white-space: nowrap;">
+            <td style="text-align: right; white-space: nowrap; vertical-align: middle;">
                 <button type="button" class="btn-xs btn-outline-primary me-1" onclick="openEditProductModal('${p.id}')" title="Modifier le produit">
                     <i class="fa-solid fa-pen-to-square"></i>
                 </button>
