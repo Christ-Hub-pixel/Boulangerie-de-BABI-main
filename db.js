@@ -311,7 +311,12 @@ async function initDB() {
 
     if (tursoUrl && (tursoUrl.startsWith('libsql://') || tursoUrl.startsWith('https://') || tursoUrl.startsWith('http://'))) {
         try {
-            const { createClient } = require('@libsql/client');
+            let createClient;
+            try {
+                createClient = require('@libsql/client/web').createClient;
+            } catch (_) {
+                createClient = require('@libsql/client').createClient;
+            }
             const client = createClient({
                 url: tursoUrl,
                 authToken: tursoAuthToken
