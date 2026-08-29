@@ -1309,6 +1309,7 @@ function selectProductPresetImage(modalType, path) {
     const hiddenDataEl = document.getElementById(`${modalType}-prod-image-data`);
     if (previewEl) previewEl.src = path;
     if (hiddenDataEl) hiddenDataEl.value = path;
+    showAdminToast(`📸 Photo sélectionnée ! Cliquez sur "Enregistrer" pour valider`, 'info');
 }
 
 function updateProductKpis() {
@@ -1436,10 +1437,13 @@ function renderProductsGridOrTable() {
             <td style="width: 44px; text-align: center; vertical-align: middle;">
                 <input type="checkbox" class="prod-select-cb" data-id="${p.id}" onchange="handleProductCheckboxChange('${p.id}', this.checked)" ${isChecked ? 'checked' : ''} title="Sélectionner">
             </td>
-            <td style="width: 56px; vertical-align: middle;">
-                <img src="${imgSrc}" style="width: 44px; height: 44px; border-radius: 10px; object-fit: cover; border: 1px solid #e2e8f0; box-shadow: 0 2px 4px rgba(0,0,0,0.06);" onerror="this.src='assets/product_baguette.png'">
+            <td style="width: 56px; vertical-align: middle; cursor: pointer;" onclick="openEditProductModal('${p.id}')" title="Cliquez pour changer la photo">
+                <div style="position: relative; display: inline-block;">
+                    <img src="${imgSrc}" style="width: 44px; height: 44px; border-radius: 10px; object-fit: cover; border: 1.5px solid #e2e8f0; box-shadow: 0 2px 4px rgba(0,0,0,0.06);" onerror="this.src='assets/product_baguette.png'">
+                    <span style="position: absolute; bottom: -2px; right: -2px; background: #f59e0b; color: #fff; font-size: 8px; border-radius: 50%; width: 15px; height: 15px; display: flex; align-items: center; justify-content: center; box-shadow: 0 1px 3px rgba(0,0,0,0.2);"><i class="fa-solid fa-camera"></i></span>
+                </div>
             </td>
-            <td style="vertical-align: middle;">
+            <td style="vertical-align: middle; cursor: pointer;" onclick="openEditProductModal('${p.id}')" title="Cliquez pour modifier">
                 <div style="font-weight: 700; color: #0f172a; font-size: 13px;">${escapeHtml(p.nom || p.title)}</div>
                 ${p.description ? `<small class="text-muted text-truncate d-block" style="max-width: 260px; font-size: 11px;">${escapeHtml(p.description)}</small>` : ''}
             </td>
@@ -1726,9 +1730,13 @@ async function handleCreateProduct(e) {
             const data = await parseSafeResponse(res);
             if (data && data.product && data.product.id) {
                 newProdItem.id = data.product.id;
+                if (data.product.image) {
+                    newProdItem.image = data.product.image;
+                }
                 if (typeof window.babiSetCachedProducts === 'function') {
                     window.babiSetCachedProducts(allProducts);
                 }
+                renderProductsGridOrTable();
             }
         }
     } catch (err) {
@@ -1869,11 +1877,25 @@ async function handleUpdateProduct(e) {
         const fetcher = (typeof window !== 'undefined' && typeof window.babiFetch === 'function') ? window.babiFetch : fetch;
         const apiBase = (typeof window !== 'undefined' && window.API_BASE_URL) ? window.API_BASE_URL : (window.location.protocol.startsWith('http') ? '' : 'http://localhost:5000');
         
-        await fetcher(`${apiBase}/api/products/${id}`, {
+        const res = await fetcher(`${apiBase}/api/products/${id}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ nom, categorie, prix, stock, seuil_alerte, is_active, description, image })
         }, 8000);
+
+        if (res && res.ok) {
+            const data = await parseSafeResponse(res);
+            if (data && data.product && data.product.image) {
+                const currentIdx = allProducts.findIndex(p => String(p.id) === String(id));
+                if (currentIdx >= 0) {
+                    allProducts[currentIdx].image = data.product.image;
+                    if (typeof window.babiSetCachedProducts === 'function') {
+                        window.babiSetCachedProducts(allProducts);
+                    }
+                    renderProductsGridOrTable();
+                }
+            }
+        }
     } catch (err) {
         console.warn("[Admin] Synchronisation cloud modification :", err);
     } finally {
