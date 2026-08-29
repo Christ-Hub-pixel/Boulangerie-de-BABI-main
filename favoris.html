@@ -212,7 +212,7 @@
             const name = typeof item === 'string' ? item : item.name;
             const imgSrc = (typeof item === 'object' && item.image) ? item.image : 'assets/product_baguette.png';
             
-            const pObj = (typeof FALLBACK_PRODUCTS !== 'undefined' ? FALLBACK_PRODUCTS.find(p => p.nom === name) : null) || { prix: 500 };
+            const pObj = (typeof window.babiGetCachedProducts === 'function' ? window.babiGetCachedProducts().find(p => (p.nom || p.name) === name) : null) || { prix: 500 };
             const price = pObj.prix || 500;
 
             html += `

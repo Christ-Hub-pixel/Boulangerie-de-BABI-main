@@ -80,13 +80,12 @@ async function loadProducts() {
                     is_active: 1
                 }));
             if (valid.length > 0) {
-                // Merge with local products
-                const mergedMap = new Map();
-                valid.forEach(p => mergedMap.set(String(p.id), p));
-                allProducts.forEach(p => {
-                    if (!mergedMap.has(String(p.id))) mergedMap.set(String(p.id), p);
-                });
-                allProducts = Array.from(mergedMap.values());
+                const deletedIds = (typeof window.babiGetDeletedProductIds === 'function')
+                    ? new Set(window.babiGetDeletedProductIds().map(String))
+                    : new Set();
+
+                const cleanList = valid.filter(p => !deletedIds.has(String(p.id)));
+                allProducts = cleanList;
                 if (typeof window.babiSetCachedProducts === 'function') {
                     window.babiSetCachedProducts(allProducts);
                 }
