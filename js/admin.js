@@ -1089,7 +1089,7 @@ async function loadProducts() {
     }
 }
 
-// 🖼️ GESTION DU SÉLECTEUR DE PHOTO PRODUIT (COMPRESSION CANVAS AUTOMATIQUE)
+// 🖼️ GESTION DU SÉLECTEUR DE PHOTO PRODUIT (CONVERSION AUTOMATIQUE EN WEBP 0.80)
 function handleProductImageSelect(event, modalType) {
     const file = event.target.files[0];
     if (!file) return;
@@ -1099,8 +1099,8 @@ function handleProductImageSelect(event, modalType) {
         const rawBase64 = e.target.result;
         const img = new Image();
         img.onload = function() {
-            // Compression ultra-légère max 220x220 (qualité 0.60, ~8KB) pour fluidité et capacité 100% illimitée
-            const maxDim = 220;
+            // 📸 Conversion et compression automatique en WEBP (Ultra-léger ~6 à 10 Ko & Haute Définition)
+            const maxDim = 320;
             let width = img.width;
             let height = img.height;
             if (width > maxDim || height > maxDim) {
@@ -1117,13 +1117,19 @@ function handleProductImageSelect(event, modalType) {
             canvas.height = height;
             const ctx = canvas.getContext('2d');
             ctx.drawImage(img, 0, 0, width, height);
-            const optimizedBase64 = canvas.toDataURL('image/jpeg', 0.60);
+            
+            // Conversion WebP native
+            let webpBase64 = canvas.toDataURL('image/webp', 0.80);
+            if (!webpBase64.startsWith('data:image/webp')) {
+                // Fallback de sécurité si l'environnement ne supporte pas l'export webp
+                webpBase64 = canvas.toDataURL('image/jpeg', 0.70);
+            }
 
             const previewEl = document.getElementById(`${modalType}-prod-preview-img`);
             const hiddenDataEl = document.getElementById(`${modalType}-prod-image-data`);
             
-            if (previewEl) previewEl.src = optimizedBase64;
-            if (hiddenDataEl) hiddenDataEl.value = optimizedBase64;
+            if (previewEl) previewEl.src = webpBase64;
+            if (hiddenDataEl) hiddenDataEl.value = webpBase64;
         };
         img.onerror = function() {
             const previewEl = document.getElementById(`${modalType}-prod-preview-img`);
