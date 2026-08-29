@@ -1166,17 +1166,6 @@
     "seuil_alerte": 20
   },
   {
-    "id": 107,
-    "nom": "Café au Lait Traditionnel",
-    "prix": 1000,
-    "categorie": "cafe",
-    "image": "assets/product_cappuccino.png",
-    "description": "Grand café allongé au lait chaud crémeux pour bien démarrer la journée.",
-    "is_active": 1,
-    "stock": 50,
-    "seuil_alerte": 15
-  },
-  {
     "id": 108,
     "nom": "Mini Pizza Gourmande au Fromage",
     "prix": 1000,
@@ -1315,17 +1304,6 @@
     "categorie": "autre",
     "image": "assets/Panini.png",
     "description": "Feuilleté croustillant pur beurre garni d'une crème fondante au fromage.",
-    "is_active": 1,
-    "stock": 40,
-    "seuil_alerte": 10
-  },
-  {
-    "id": 121,
-    "nom": "Feuilleté Saucisse & Moutarde",
-    "prix": 600,
-    "categorie": "autre",
-    "image": "assets/product_sandwich.png",
-    "description": "Feuilleté roulé saucisse dorée au four et touche de moutarde douce.",
     "is_active": 1,
     "stock": 40,
     "seuil_alerte": 10

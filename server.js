@@ -1009,11 +1009,23 @@ app.delete('/api/products/:id', async (req, res) => {
         const prodId = req.params.id;
         const numId = Number(prodId);
         const database = db || (await ensureDBReady());
+
+        // Récupérer le nom du produit avant suppression pour liste noire exhaustive
+        const existing = await database.get("SELECT * FROM products WHERE id = ? OR id = ?", [prodId, isNaN(numId) ? -1 : numId]);
+        const prodName = existing ? (existing.nom || existing.name) : null;
         
         await database.run("DELETE FROM products WHERE id = ? OR id = ?", [prodId, isNaN(numId) ? -1 : numId]);
+        if (prodName) {
+            await database.run("DELETE FROM products WHERE LOWER(nom) = ?", [prodName.toLowerCase().trim()]);
+            await database.run("DELETE FROM stocks WHERE LOWER(nom_produit) = ?", [prodName.toLowerCase().trim()]);
+        }
         await database.run("DELETE FROM stocks WHERE product_id = ? OR product_id = ?", [prodId, isNaN(numId) ? -1 : numId]);
+
         try {
             await database.run("INSERT OR REPLACE INTO deleted_products (id, deleted_at) VALUES (?, datetime('now'))", [String(prodId)]);
+            if (prodName) {
+                await database.run("INSERT OR REPLACE INTO deleted_products (id, deleted_at) VALUES (?, datetime('now'))", [prodName.toLowerCase().trim()]);
+            }
         } catch (_) {}
 
         // 💾 Synchronisation persistante data/products.json
@@ -1049,10 +1061,20 @@ app.post('/api/products/bulk-delete', async (req, res) => {
         
         for (const id of ids) {
             const numId = Number(id);
+            const existing = await database.get("SELECT * FROM products WHERE id = ? OR id = ?", [id, isNaN(numId) ? -1 : numId]);
+            const prodName = existing ? (existing.nom || existing.name) : null;
+
             await database.run("DELETE FROM products WHERE id = ? OR id = ?", [id, isNaN(numId) ? -1 : numId]);
+            if (prodName) {
+                await database.run("DELETE FROM products WHERE LOWER(nom) = ?", [prodName.toLowerCase().trim()]);
+                await database.run("DELETE FROM stocks WHERE LOWER(nom_produit) = ?", [prodName.toLowerCase().trim()]);
+            }
             await database.run("DELETE FROM stocks WHERE product_id = ? OR product_id = ?", [id, isNaN(numId) ? -1 : numId]);
             try {
                 await database.run("INSERT OR REPLACE INTO deleted_products (id, deleted_at) VALUES (?, datetime('now'))", [String(id)]);
+                if (prodName) {
+                    await database.run("INSERT OR REPLACE INTO deleted_products (id, deleted_at) VALUES (?, datetime('now'))", [prodName.toLowerCase().trim()]);
+                }
             } catch (_) {}
             try {
                 if (typeof aiRealtimeOrchestrator !== 'undefined' && aiRealtimeOrchestrator.broadcastProductDeleted) {

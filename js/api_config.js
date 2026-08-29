@@ -54,7 +54,7 @@
     // ------------------------------------------------------------------------
     window.BABI_EMBEDDED_CATALOG = [];
 
-    // Gestionnaire de liste noire persistante des produits supprimés
+    // Gestionnaire de liste noire persistante des produits supprimés (par ID et par Nom)
     window.babiGetDeletedProductIds = function() {
         try {
             const item = localStorage.getItem('babi_deleted_product_ids');
@@ -64,18 +64,21 @@
         }
     };
 
-    window.babiAddDeletedProductId = function(productId) {
+    window.babiAddDeletedProductId = function(identifier) {
+        if (!identifier) return;
         try {
-            const set = new Set(window.babiGetDeletedProductIds().map(String));
-            set.add(String(productId));
+            const set = new Set(window.babiGetDeletedProductIds().map(s => String(s).toLowerCase().trim()));
+            set.add(String(identifier).toLowerCase().trim());
             localStorage.setItem('babi_deleted_product_ids', JSON.stringify([...set]));
         } catch (_) {}
     };
 
-    window.babiRemoveDeletedProductId = function(productId) {
+    window.babiRemoveDeletedProductId = function(identifier) {
+        if (!identifier) return;
         try {
-            const set = new Set(window.babiGetDeletedProductIds().map(String));
-            set.delete(String(productId));
+            const norm = String(identifier).toLowerCase().trim();
+            const set = new Set(window.babiGetDeletedProductIds().map(s => String(s).toLowerCase().trim()));
+            set.delete(norm);
             localStorage.setItem('babi_deleted_product_ids', JSON.stringify([...set]));
         } catch (_) {}
     };
@@ -83,7 +86,7 @@
     let inMemoryProductsCache = [];
 
     window.babiGetCachedProducts = function() {
-        const deletedIds = new Set(window.babiGetDeletedProductIds().map(String));
+        const deletedSet = new Set(window.babiGetDeletedProductIds().map(s => String(s).toLowerCase().trim()));
         let raw = [];
         if (inMemoryProductsCache && inMemoryProductsCache.length > 0) {
             raw = inMemoryProductsCache;
@@ -98,15 +101,25 @@
                 }
             } catch (_) {}
         }
-        const filtered = raw.filter(p => p && !deletedIds.has(String(p.id)));
+        const filtered = raw.filter(p => {
+            if (!p) return false;
+            const idKey = String(p.id).toLowerCase().trim();
+            const nameKey = String(p.nom || p.name || '').toLowerCase().trim();
+            return !deletedSet.has(idKey) && !deletedSet.has(nameKey);
+        });
         inMemoryProductsCache = filtered;
         return filtered;
     };
 
     window.babiSetCachedProducts = function(products) {
         if (!Array.isArray(products)) return;
-        const deletedIds = new Set(window.babiGetDeletedProductIds().map(String));
-        const filtered = products.filter(p => p && !deletedIds.has(String(p.id)));
+        const deletedSet = new Set(window.babiGetDeletedProductIds().map(s => String(s).toLowerCase().trim()));
+        const filtered = products.filter(p => {
+            if (!p) return false;
+            const idKey = String(p.id).toLowerCase().trim();
+            const nameKey = String(p.nom || p.name || '').toLowerCase().trim();
+            return !deletedSet.has(idKey) && !deletedSet.has(nameKey);
+        });
         inMemoryProductsCache = filtered;
         
         // Version ultra-légère pour localStorage
@@ -140,9 +153,10 @@
 
     window.babiAddCustomProduct = function(product) {
         try {
-            window.babiRemoveDeletedProductId(product.id);
+            if (product.id) window.babiRemoveDeletedProductId(product.id);
+            if (product.nom || product.name) window.babiRemoveDeletedProductId(product.nom || product.name);
             const list = window.babiGetCachedProducts();
-            const existingIdx = list.findIndex(p => String(p.id) === String(product.id));
+            const existingIdx = list.findIndex(p => String(p.id) === String(product.id) || (p.nom && product.nom && p.nom.trim().toLowerCase() === product.nom.trim().toLowerCase()));
             if (existingIdx >= 0) {
                 list[existingIdx] = product;
             } else {
@@ -155,11 +169,16 @@
         }
     };
 
-    window.babiRemoveCustomProduct = function(productId) {
+    window.babiRemoveCustomProduct = function(productId, productName) {
         try {
-            window.babiAddDeletedProductId(productId);
+            if (productId) window.babiAddDeletedProductId(productId);
+            if (productName) window.babiAddDeletedProductId(productName);
             const list = window.babiGetCachedProducts();
-            const filtered = list.filter(p => String(p.id) !== String(productId) && p.id !== productId);
+            const filtered = list.filter(p => {
+                if (String(p.id) === String(productId) || p.id === productId) return false;
+                if (productName && (p.nom || p.name) && String(p.nom || p.name).toLowerCase().trim() === String(productName).toLowerCase().trim()) return false;
+                return true;
+            });
             inMemoryProductsCache = filtered;
             window.babiSetCachedProducts(filtered);
             return filtered;

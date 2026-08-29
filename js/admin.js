@@ -924,8 +924,10 @@ async function handleBulkDeleteProducts() {
             
             // 1. Suppression optimiste immédiate en local
             idsToDelete.forEach(id => {
+                const pObj = allProducts.find(p => String(p.id) === String(id) || p.id === id);
+                const pName = pObj ? (pObj.nom || pObj.name) : null;
                 if (typeof window.babiRemoveCustomProduct === 'function') {
-                    window.babiRemoveCustomProduct(id);
+                    window.babiRemoveCustomProduct(id, pName);
                 }
                 allProducts = allProducts.filter(p => String(p.id) !== String(id) && p.id !== id);
             });
@@ -1626,9 +1628,9 @@ async function handleDeleteProduct(id) {
         onConfirm: async () => {
             // 1. Suppression définitive immédiate du cache local (0ms)
             if (typeof window.babiRemoveCustomProduct === 'function') {
-                window.babiRemoveCustomProduct(id);
+                window.babiRemoveCustomProduct(id, prodName);
             }
-            allProducts = allProducts.filter(p => p.id !== id && String(p.id) !== String(id));
+            allProducts = allProducts.filter(p => p.id !== id && String(p.id) !== String(id) && (prodName ? (p.nom || p.name) !== prodName : true));
             if (typeof window.babiSetCachedProducts === 'function') {
                 window.babiSetCachedProducts(allProducts);
             }
