@@ -1031,40 +1031,53 @@ async function loadProducts() {
     try {
         const apiBase = (typeof window !== 'undefined' && window.API_BASE_URL) ? window.API_BASE_URL : (window.location.protocol.startsWith('http') ? '' : 'http://localhost:5000');
         const fetcher = (typeof window !== 'undefined' && typeof window.babiFetch === 'function') ? window.babiFetch : fetch;
-        const res = await fetcher(`${apiBase}/api/products?_t=${Date.now()}`, { cache: 'no-store' }, 2000);
+        const res = await fetcher(`${apiBase}/api/products?_t=${Date.now()}`, { cache: 'no-store' }, 4000);
         if (res && res.ok) {
             const data = await res.json();
             const serverList = Array.isArray(data) ? data : (data.products || []);
             
-            if (serverList.length > 0) {
-                // Fusionner avec le serveur sans écraser les ajouts locaux
-                const serverMapped = serverList.map((p, idx) => ({
-                    id: p.id || idx + 1,
-                    nom: p.nom || p.name,
-                    prix: Number(p.prix || p.price || 0),
-                    categorie: p.categorie || p.category || 'pain',
-                    image: p.image || p.image_url || 'assets/product_baguette.png',
-                    stock: p.stock != null ? Number(p.stock) : 40,
-                    seuil_alerte: p.seuil_alerte != null ? Number(p.seuil_alerte) : 10,
-                    is_active: (p.is_active === 0 || p.is_active === '0' || p.is_active === false) ? 0 : 1
-                }));
+            const serverMapped = serverList.map((p, idx) => ({
+                id: p.id || idx + 1,
+                nom: p.nom || p.name,
+                prix: Number(p.prix || p.price || 0),
+                categorie: p.categorie || p.category || 'pain',
+                image: p.image || p.image_url || 'assets/product_baguette.png',
+                stock: p.stock != null ? Number(p.stock) : 40,
+                seuil_alerte: p.seuil_alerte != null ? Number(p.seuil_alerte) : 10,
+                is_active: (p.is_active === 0 || p.is_active === '0' || p.is_active === false) ? 0 : 1
+            }));
 
-                // Préserver les produits créés localement
-                const mergedMap = new Map();
-                serverMapped.forEach(p => mergedMap.set(String(p.id), p));
-                allProducts.forEach(p => {
-                    if (!mergedMap.has(String(p.id))) {
-                        mergedMap.set(String(p.id), p);
-                    }
-                });
-
-                allProducts = Array.from(mergedMap.values());
-                if (typeof window.babiSetCachedProducts === 'function') {
-                    window.babiSetCachedProducts(allProducts);
+            const mergedMap = new Map();
+            serverMapped.forEach(p => mergedMap.set(String(p.id), p));
+            
+            // Préserver les produits créés localement et les sauvegarder sur le serveur cloud
+            for (const localP of allProducts) {
+                if (!mergedMap.has(String(localP.id))) {
+                    mergedMap.set(String(localP.id), localP);
+                    try {
+                        fetcher(`${apiBase}/api/products`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                nom: localP.nom,
+                                categorie: localP.categorie,
+                                prix: localP.prix,
+                                stock: localP.stock,
+                                seuil_alerte: localP.seuil_alerte,
+                                description: localP.description || '',
+                                image: localP.image
+                            })
+                        }, 5000).catch(() => {});
+                    } catch (_) {}
                 }
-                updateProductKpis();
-                renderProductsGridOrTable();
             }
+
+            allProducts = Array.from(mergedMap.values());
+            if (typeof window.babiSetCachedProducts === 'function') {
+                window.babiSetCachedProducts(allProducts);
+            }
+            updateProductKpis();
+            renderProductsGridOrTable();
         }
     } catch (_) {
         // En cas d'échec ou d'absence réseau, les produits locaux restent intacts
