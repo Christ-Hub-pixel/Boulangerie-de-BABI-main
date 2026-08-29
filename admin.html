@@ -1451,16 +1451,31 @@
 
             <form onsubmit="handleCreateProduct(event)" style="display: flex; flex-direction: column; gap: 14px;">
                 <!-- 📸 1. PHOTO DU PRODUIT (TOUT EN HAUT) -->
-                <div style="background: linear-gradient(135deg, #f8fafc, #f1f5f9); border: 2px dashed #cbd5e1; border-radius: 16px; padding: 14px; display: flex; align-items: center; gap: 16px;">
-                    <img id="new-prod-preview-img" src="assets/product_baguette.png" alt="Aperçu" style="width: 72px; height: 72px; border-radius: 14px; object-fit: cover; border: 2px solid #f59e0b; box-shadow: 0 4px 12px rgba(0,0,0,0.12); flex-shrink: 0;"/>
-                    <div style="flex: 1;">
-                        <label class="prestige-form-label" style="font-weight: 800; font-size: 12.5px; margin-bottom: 6px; display: block; color: #1e293b;">📸 1. Photo du Produit * :</label>
-                        <input type="file" id="new-prod-file" accept="image/*" onchange="handleProductImageSelect(event, 'new')" style="display: none;"/>
-                        <input type="hidden" id="new-prod-image-data" value="assets/product_baguette.png"/>
-                        <button type="button" onclick="document.getElementById('new-prod-file').click()" class="btn-xs btn-outline-primary" style="padding: 8px 16px; border-radius: 10px; font-weight: 800; font-size: 12px; display: inline-flex; align-items: center; gap: 6px; background: #fff;">
-                            <i class="fa-solid fa-camera me-1"></i> Importer une photo depuis l'appareil...
-                        </button>
-                        <small class="text-muted d-block mt-1" style="font-size: 11px;">Formats acceptés : JPG, PNG, WEBP (compression & affichage automatiques)</small>
+                <div style="background: linear-gradient(135deg, #f8fafc, #f1f5f9); border: 2px dashed #cbd5e1; border-radius: 16px; padding: 14px; display: flex; flex-direction: column; gap: 12px;">
+                    <div style="display: flex; align-items: center; gap: 16px;">
+                        <img id="new-prod-preview-img" src="assets/baguette 200.png" alt="Aperçu" style="width: 76px; height: 76px; border-radius: 14px; object-fit: cover; border: 2px solid #f59e0b; box-shadow: 0 4px 12px rgba(0,0,0,0.12); flex-shrink: 0; background: #fff;"/>
+                        <div style="flex: 1;">
+                            <label class="prestige-form-label" style="font-weight: 800; font-size: 12.5px; margin-bottom: 6px; display: block; color: #1e293b;">📸 1. Photo du Produit * :</label>
+                            <input type="file" id="new-prod-file" accept="image/*" onchange="handleProductImageSelect(event, 'new')" style="display: none;"/>
+                            <input type="hidden" id="new-prod-image-data" value="assets/baguette 200.png"/>
+                            <button type="button" onclick="document.getElementById('new-prod-file').click()" class="btn-xs btn-outline-primary" style="padding: 8px 16px; border-radius: 10px; font-weight: 800; font-size: 12px; display: inline-flex; align-items: center; gap: 6px; background: #fff;">
+                                <i class="fa-solid fa-camera me-1"></i> Importer une photo depuis l'appareil...
+                            </button>
+                            <small class="text-muted d-block mt-1" style="font-size: 11px;">Formats acceptés : JPG, PNG, WEBP (compression & affichage automatiques)</small>
+                        </div>
+                    </div>
+                    <div>
+                        <span style="font-size: 11px; font-weight: 700; color: #64748b; display: block; margin-bottom: 6px;">Ou choisir une photo standard BABI :</span>
+                        <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+                            <button type="button" onclick="selectProductPresetImage('new', 'assets/baguette 200.png')" class="btn-xs" style="background:#fff; border:1px solid #cbd5e1; font-size:11.5px;">🥖 Baguette</button>
+                            <button type="button" onclick="selectProductPresetImage('new', 'assets/croissant.png')" class="btn-xs" style="background:#fff; border:1px solid #cbd5e1; font-size:11.5px;">🥐 Croissant</button>
+                            <button type="button" onclick="selectProductPresetImage('new', 'assets/pain au chocolat.png')" class="btn-xs" style="background:#fff; border:1px solid #cbd5e1; font-size:11.5px;">🍫 Pain Choco</button>
+                            <button type="button" onclick="selectProductPresetImage('new', 'assets/cake.png')" class="btn-xs" style="background:#fff; border:1px solid #cbd5e1; font-size:11.5px;">🍰 Cake</button>
+                            <button type="button" onclick="selectProductPresetImage('new', 'assets/chausson aux pommes.png')" class="btn-xs" style="background:#fff; border:1px solid #cbd5e1; font-size:11.5px;">🍎 Chausson</button>
+                            <button type="button" onclick="selectProductPresetImage('new', 'assets/cookies.png')" class="btn-xs" style="background:#fff; border:1px solid #cbd5e1; font-size:11.5px;">🍪 Cookies</button>
+                            <button type="button" onclick="selectProductPresetImage('new', 'assets/Chocolat Chaud.png')" class="btn-xs" style="background:#fff; border:1px solid #cbd5e1; font-size:11.5px;">☕ Boisson Chaude</button>
+                            <button type="button" onclick="selectProductPresetImage('new', 'assets/bouteille celeste.png')" class="btn-xs" style="background:#fff; border:1px solid #cbd5e1; font-size:11.5px;">🧃 Jus / Boisson</button>
+                        </div>
                     </div>
                 </div>
 
@@ -1539,16 +1554,31 @@
                 <input type="hidden" id="edit-prod-id"/>
 
                 <!-- 📸 1. PHOTO DU PRODUIT (TOUT EN HAUT) -->
-                <div style="background: linear-gradient(135deg, #f8fafc, #f1f5f9); border: 2px dashed #cbd5e1; border-radius: 16px; padding: 14px; display: flex; align-items: center; gap: 16px;">
-                    <img id="edit-prod-preview-img" src="assets/product_baguette.png" alt="Aperçu" style="width: 72px; height: 72px; border-radius: 14px; object-fit: cover; border: 2px solid #f59e0b; box-shadow: 0 4px 12px rgba(0,0,0,0.12); flex-shrink: 0;"/>
-                    <div style="flex: 1;">
-                        <label class="prestige-form-label" style="font-weight: 800; font-size: 12.5px; margin-bottom: 6px; display: block; color: #1e293b;">📸 1. Photo du Produit :</label>
-                        <input type="file" id="edit-prod-file" accept="image/*" onchange="handleProductImageSelect(event, 'edit')" style="display: none;"/>
-                        <input type="hidden" id="edit-prod-image-data"/>
-                        <button type="button" onclick="document.getElementById('edit-prod-file').click()" class="btn-xs btn-outline-primary" style="padding: 8px 16px; border-radius: 10px; font-weight: 800; font-size: 12px; display: inline-flex; align-items: center; gap: 6px; background: #fff;">
-                            <i class="fa-solid fa-camera me-1"></i> Remplacer la photo...
-                        </button>
-                        <small class="text-muted d-block mt-1" style="font-size: 11px;">Format JPG, PNG ou WEBP (redimensionnement automatique)</small>
+                <div style="background: linear-gradient(135deg, #f8fafc, #f1f5f9); border: 2px dashed #cbd5e1; border-radius: 16px; padding: 14px; display: flex; flex-direction: column; gap: 12px;">
+                    <div style="display: flex; align-items: center; gap: 16px;">
+                        <img id="edit-prod-preview-img" src="assets/product_baguette.png" alt="Aperçu" style="width: 76px; height: 76px; border-radius: 14px; object-fit: cover; border: 2px solid #f59e0b; box-shadow: 0 4px 12px rgba(0,0,0,0.12); flex-shrink: 0; background: #fff;"/>
+                        <div style="flex: 1;">
+                            <label class="prestige-form-label" style="font-weight: 800; font-size: 12.5px; margin-bottom: 6px; display: block; color: #1e293b;">📸 1. Photo du Produit :</label>
+                            <input type="file" id="edit-prod-file" accept="image/*" onchange="handleProductImageSelect(event, 'edit')" style="display: none;"/>
+                            <input type="hidden" id="edit-prod-image-data"/>
+                            <button type="button" onclick="document.getElementById('edit-prod-file').click()" class="btn-xs btn-outline-primary" style="padding: 8px 16px; border-radius: 10px; font-weight: 800; font-size: 12px; display: inline-flex; align-items: center; gap: 6px; background: #fff;">
+                                <i class="fa-solid fa-camera me-1"></i> Remplacer la photo...
+                            </button>
+                            <small class="text-muted d-block mt-1" style="font-size: 11px;">Format JPG, PNG ou WEBP (recadrage & optimisation automatiques)</small>
+                        </div>
+                    </div>
+                    <div>
+                        <span style="font-size: 11px; font-weight: 700; color: #64748b; display: block; margin-bottom: 6px;">Ou choisir une photo standard BABI :</span>
+                        <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+                            <button type="button" onclick="selectProductPresetImage('edit', 'assets/baguette 200.png')" class="btn-xs" style="background:#fff; border:1px solid #cbd5e1; font-size:11.5px;">🥖 Baguette</button>
+                            <button type="button" onclick="selectProductPresetImage('edit', 'assets/croissant.png')" class="btn-xs" style="background:#fff; border:1px solid #cbd5e1; font-size:11.5px;">🥐 Croissant</button>
+                            <button type="button" onclick="selectProductPresetImage('edit', 'assets/pain au chocolat.png')" class="btn-xs" style="background:#fff; border:1px solid #cbd5e1; font-size:11.5px;">🍫 Pain Choco</button>
+                            <button type="button" onclick="selectProductPresetImage('edit', 'assets/cake.png')" class="btn-xs" style="background:#fff; border:1px solid #cbd5e1; font-size:11.5px;">🍰 Cake</button>
+                            <button type="button" onclick="selectProductPresetImage('edit', 'assets/chausson aux pommes.png')" class="btn-xs" style="background:#fff; border:1px solid #cbd5e1; font-size:11.5px;">🍎 Chausson</button>
+                            <button type="button" onclick="selectProductPresetImage('edit', 'assets/cookies.png')" class="btn-xs" style="background:#fff; border:1px solid #cbd5e1; font-size:11.5px;">🍪 Cookies</button>
+                            <button type="button" onclick="selectProductPresetImage('edit', 'assets/Chocolat Chaud.png')" class="btn-xs" style="background:#fff; border:1px solid #cbd5e1; font-size:11.5px;">☕ Boisson Chaude</button>
+                            <button type="button" onclick="selectProductPresetImage('edit', 'assets/bouteille celeste.png')" class="btn-xs" style="background:#fff; border:1px solid #cbd5e1; font-size:11.5px;">🧃 Jus / Boisson</button>
+                        </div>
                     </div>
                 </div>
 

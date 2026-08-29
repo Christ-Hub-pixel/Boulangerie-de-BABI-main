@@ -819,6 +819,33 @@ app.get('/api/products/deleted-ids', async (req, res) => {
     }
 });
 
+// 📸 Helper pour sauvegarder et servir les photos produits
+function saveBase64Image(dataUri) {
+    if (!dataUri || typeof dataUri !== 'string') return dataUri;
+    if (!dataUri.startsWith('data:image/') || !dataUri.includes(';base64,')) return dataUri;
+
+    try {
+        const uploadDir = path.resolve(__dirname, 'assets/uploads');
+        if (!fs.existsSync(uploadDir)) {
+            fs.mkdirSync(uploadDir, { recursive: true });
+        }
+        const matches = dataUri.match(/^data:image\/([a-zA-Z0-9+]+);base64,(.+)$/);
+        if (matches) {
+            let ext = matches[1].toLowerCase();
+            if (ext === 'jpeg') ext = 'jpg';
+            if (ext.includes('svg')) ext = 'svg';
+            const buffer = Buffer.from(matches[2], 'base64');
+            const filename = `prod_${Date.now()}_${Math.floor(Math.random() * 10000)}.${ext}`;
+            const filepath = path.join(uploadDir, filename);
+            fs.writeFileSync(filepath, buffer);
+            return `assets/uploads/${filename}`;
+        }
+    } catch (saveErr) {
+        console.warn("[Upload] Fallback data URL:", saveErr.message);
+    }
+    return dataUri;
+}
+
 // Add new product
 app.post('/api/products', async (req, res) => {
     try {
@@ -827,7 +854,8 @@ app.post('/api/products', async (req, res) => {
             return res.status(400).json({ error: "Nom, prix valide et catégorie obligatoires." });
         }
         const database = db || (await ensureDBReady());
-        const img = image || image_url || "assets/product_baguette.png";
+        const rawImg = image || image_url || "assets/product_baguette.png";
+        const img = saveBase64Image(rawImg);
         const stockQty = Number(stock) || 50;
         const alertThreshold = Number(seuil_alerte) || 10;
         const numPrice = Number(prix);
@@ -901,7 +929,8 @@ app.put('/api/products/:id', async (req, res) => {
         const prodId = req.params.id;
         const numId = Number(prodId);
         const database = db || (await ensureDBReady());
-        const img = image || image_url;
+        const rawImg = image || image_url;
+        const img = rawImg ? saveBase64Image(rawImg) : null;
         const numPrice = Number(prix);
         const stockQty = stock != null ? Number(stock) : 50;
         const alertThreshold = seuil_alerte != null ? Number(seuil_alerte) : 10;

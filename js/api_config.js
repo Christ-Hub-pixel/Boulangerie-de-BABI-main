@@ -122,31 +122,35 @@
         });
         inMemoryProductsCache = filtered;
         
-        // Version ultra-légère pour localStorage
+        // Sauvegarde persistante dans localStorage sans écraser les photos personnalisées
         try {
-            const safeList = filtered.map(p => {
-                const img = p.image || p.image_url || '';
-                const safeImage = (img && img.startsWith('data:image/') && img.length > 1500) 
-                    ? 'assets/baguette 200.png' 
-                    : img;
-                return {
-                    id: p.id,
-                    nom: p.nom || p.name,
-                    prix: Number(p.prix || p.price || 0),
-                    categorie: p.categorie || p.category || 'pain',
-                    image: safeImage,
-                    stock: p.stock != null ? Number(p.stock) : 50,
-                    seuil_alerte: p.seuil_alerte != null ? Number(p.seuil_alerte) : 10,
-                    is_active: (p.is_active === 0 || p.is_active === '0' || p.is_active === false) ? 0 : 1,
-                    description: p.description || ''
-                };
-            });
+            const safeList = filtered.map(p => ({
+                id: p.id,
+                nom: p.nom || p.name,
+                prix: Number(p.prix || p.price || 0),
+                categorie: p.categorie || p.category || 'pain',
+                image: p.image || p.image_url || 'assets/product_baguette.png',
+                stock: p.stock != null ? Number(p.stock) : 50,
+                seuil_alerte: p.seuil_alerte != null ? Number(p.seuil_alerte) : 10,
+                is_active: (p.is_active === 0 || p.is_active === '0' || p.is_active === false) ? 0 : 1,
+                description: p.description || ''
+            }));
             localStorage.setItem('babi_cached_products', JSON.stringify(safeList));
         } catch (_) {
             try {
                 localStorage.removeItem('babi_pos_sales_history');
                 localStorage.removeItem('babi_pos_shift_sales');
                 localStorage.removeItem('babi_admin_cached_orders');
+                const minimalList = filtered.map(p => ({
+                    id: p.id,
+                    nom: p.nom || p.name,
+                    prix: Number(p.prix || 0),
+                    categorie: p.categorie || 'pain',
+                    image: p.image || 'assets/product_baguette.png',
+                    stock: p.stock != null ? Number(p.stock) : 50,
+                    is_active: p.is_active != null ? p.is_active : 1
+                }));
+                localStorage.setItem('babi_cached_products', JSON.stringify(minimalList));
             } catch (_) {}
         }
     };
