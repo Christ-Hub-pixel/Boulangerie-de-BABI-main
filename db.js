@@ -390,26 +390,6 @@ async function initDB() {
         console.warn("[DB] Admin seed notice:", e.message);
     }
 
-    // Auto-seed du catalogue initial si la base est neuve
-    try {
-        const defaultProducts = require('./data/products.json');
-        if (Array.isArray(defaultProducts)) {
-            for (const item of defaultProducts) {
-                try {
-                    const exists = await db.get("SELECT id FROM products WHERE nom = ?", [item.nom]);
-                    if (!exists) {
-                        await db.run(
-                            "INSERT INTO products (nom, prix, categorie, image, description, stock, seuil_alerte, is_active) VALUES (?, ?, ?, ?, ?, ?, ?, 1)",
-                            [item.nom, item.prix, item.categorie, item.image, item.description || '', item.stock || 50, item.seuil_alerte || 10]
-                        );
-                    }
-                } catch (_) {}
-            }
-        }
-    } catch (pSeedErr) {
-        console.warn("[DB] Products seed notice:", pSeedErr.message);
-    }
-
     cachedDbInstance = db;
     isDbSchemaReady = true;
     return db;
