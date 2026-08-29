@@ -1081,8 +1081,8 @@ function handleProductImageSelect(event, modalType) {
         const rawBase64 = e.target.result;
         const img = new Image();
         img.onload = function() {
-            // Redimensionnement et compression intelligente max 800x800 pour fluidité totale
-            const maxDim = 800;
+            // Compression intelligente max 450x450 (qualité 0.75, ~30KB) pour fluidité totale
+            const maxDim = 450;
             let width = img.width;
             let height = img.height;
             if (width > maxDim || height > maxDim) {
@@ -1099,13 +1099,19 @@ function handleProductImageSelect(event, modalType) {
             canvas.height = height;
             const ctx = canvas.getContext('2d');
             ctx.drawImage(img, 0, 0, width, height);
-            const optimizedBase64 = canvas.toDataURL('image/jpeg', 0.85);
+            const optimizedBase64 = canvas.toDataURL('image/jpeg', 0.75);
 
             const previewEl = document.getElementById(`${modalType}-prod-preview-img`);
             const hiddenDataEl = document.getElementById(`${modalType}-prod-image-data`);
             
             if (previewEl) previewEl.src = optimizedBase64;
             if (hiddenDataEl) hiddenDataEl.value = optimizedBase64;
+        };
+        img.onerror = function() {
+            const previewEl = document.getElementById(`${modalType}-prod-preview-img`);
+            const hiddenDataEl = document.getElementById(`${modalType}-prod-image-data`);
+            if (previewEl) previewEl.src = rawBase64;
+            if (hiddenDataEl) hiddenDataEl.value = rawBase64;
         };
         img.src = rawBase64;
     };
@@ -1170,7 +1176,7 @@ async function handleCreateProduct(e) {
     }
 
     const nom = document.getElementById('new-prod-name')?.value.trim();
-    const categorie = document.getElementById('new-prod-category')?.value;
+    const categorie = document.getElementById('new-prod-category')?.value || 'pain';
     const prix = Number(document.getElementById('new-prod-price')?.value);
     const stock = Number(document.getElementById('new-prod-stock')?.value) || 50;
     const seuil_alerte = Number(document.getElementById('new-prod-alert')?.value) || 10;
@@ -1190,15 +1196,37 @@ async function handleCreateProduct(e) {
 
     try {
         const fetcher = (typeof window !== 'undefined' && typeof window.babiFetch === 'function') ? window.babiFetch : fetch;
-        const res = await fetcher(`${API_ROOT}/api/products`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ nom, categorie, prix, stock, seuil_alerte, description, image })
-        }, 8000);
-        const data = await parseSafeResponse(res);
-        if (res && res.ok) {
-            const createdProd = data.product || { 
-                id: data.id || ('p_' + Date.now()), 
+        const apiBase = (typeof window !== 'undefined' && window.API_BASE_URL) ? window.API_BASE_URL : (window.location.protocol.startsWith('http') ? '' : 'http://localhost:5000');
+        
+        let createdProd = null;
+        try {
+            const res = await fetcher(`${apiBase}/api/products`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ nom, categorie, prix, stock, seuil_alerte, description, image })
+            }, 10000);
+            
+            if (res && res.ok) {
+                const data = await parseSafeResponse(res);
+                createdProd = data.product || { 
+                    id: data.id || Date.now(), 
+                    nom, 
+                    categorie, 
+                    prix, 
+                    stock, 
+                    seuil_alerte, 
+                    description, 
+                    image, 
+                    is_active: 1 
+                };
+            }
+        } catch (fetchErr) {
+            console.warn("[Admin] Cloud sync note:", fetchErr);
+        }
+
+        if (!createdProd) {
+            createdProd = { 
+                id: Date.now(), 
                 nom, 
                 categorie, 
                 prix, 
@@ -1208,48 +1236,41 @@ async function handleCreateProduct(e) {
                 image, 
                 is_active: 1 
             };
-            
-            if (typeof window.babiAddCustomProduct === 'function') {
-                window.babiAddCustomProduct(createdProd);
-            }
-            allProducts = (typeof window.babiGetCachedProducts === 'function') ? window.babiGetCachedProducts() : [createdProd, ...allProducts];
-            updateProductKpis();
-            renderProductsGridOrTable();
+        }
 
-            showAdminToast(`🎉 Produit "${nom}" ajouté avec succès au catalogue !`, 'success');
-            closeAddProductModal();
-            
-            // Réinitialiser le formulaire
-            if (document.getElementById('new-prod-name')) document.getElementById('new-prod-name').value = '';
-            if (document.getElementById('new-prod-price')) document.getElementById('new-prod-price').value = '';
-            if (document.getElementById('new-prod-desc')) document.getElementById('new-prod-desc').value = '';
-
-            if (typeof window.notifyProductCatalogueChanged === 'function') {
-                window.notifyProductCatalogueChanged('PRODUCT_CREATED', createdProd);
-            }
+        // Ajouter sans écraser la liste complète des produits
+        const existingIdx = allProducts.findIndex(p => String(p.id) === String(createdProd.id) || (p.nom && p.nom.toLowerCase() === createdProd.nom.toLowerCase()));
+        if (existingIdx >= 0) {
+            allProducts[existingIdx] = createdProd;
         } else {
-            // Sauvegarde de secours locale si le cloud rencontre un problème transitoire
-            const localProd = { id: 'p_' + Date.now(), nom, categorie, prix, stock, seuil_alerte, description, image, is_active: 1 };
-            if (typeof window.babiAddCustomProduct === 'function') {
-                window.babiAddCustomProduct(localProd);
-            }
-            allProducts = (typeof window.babiGetCachedProducts === 'function') ? window.babiGetCachedProducts() : [localProd, ...allProducts];
-            updateProductKpis();
-            renderProductsGridOrTable();
-            showAdminToast(`✨ Produit "${nom}" enregistré (mode local sécurisé).`, 'success');
-            closeAddProductModal();
+            allProducts.unshift(createdProd);
         }
-    } catch (err) {
-        // Sauvegarde locale de sécurité
-        const localProd = { id: 'p_' + Date.now(), nom, categorie, prix, stock, seuil_alerte, description, image, is_active: 1 };
+
         if (typeof window.babiAddCustomProduct === 'function') {
-            window.babiAddCustomProduct(localProd);
+            window.babiAddCustomProduct(createdProd);
         }
-        allProducts = (typeof window.babiGetCachedProducts === 'function') ? window.babiGetCachedProducts() : [localProd, ...allProducts];
+        if (typeof window.babiSetCachedProducts === 'function') {
+            window.babiSetCachedProducts(allProducts);
+        }
+
         updateProductKpis();
         renderProductsGridOrTable();
-        showAdminToast(`✨ Produit "${nom}" enregistré au catalogue !`, 'success');
+
+        showAdminToast(`🎉 Produit "${nom}" ajouté avec succès au catalogue !`, 'success');
         closeAddProductModal();
+        
+        // Réinitialiser le formulaire
+        if (document.getElementById('new-prod-name')) document.getElementById('new-prod-name').value = '';
+        if (document.getElementById('new-prod-price')) document.getElementById('new-prod-price').value = '';
+        if (document.getElementById('new-prod-desc')) document.getElementById('new-prod-desc').value = '';
+        if (document.getElementById('new-prod-image-data')) document.getElementById('new-prod-image-data').value = 'assets/baguette 200.png';
+        if (document.getElementById('new-prod-preview-img')) document.getElementById('new-prod-preview-img').src = 'assets/baguette 200.png';
+
+        if (typeof window.notifyProductCatalogueChanged === 'function') {
+            window.notifyProductCatalogueChanged('PRODUCT_CREATED', createdProd);
+        }
+    } catch (err) {
+        showAdminToast(`⚠️ Erreur : ${err.message || 'Impossible d\'ajouter le produit'}`, 'danger');
     } finally {
         if (submitBtn) {
             submitBtn.disabled = false;

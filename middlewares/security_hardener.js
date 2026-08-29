@@ -36,6 +36,9 @@ function securityHardener(req, res, next) {
 
 function deepSanitize(data) {
     if (typeof data === 'string') {
+        if (data.startsWith('data:image/') || data.startsWith('blob:') || data.startsWith('assets/')) {
+            return data;
+        }
         return data
             .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
             .replace(/javascript:/gi, '')
