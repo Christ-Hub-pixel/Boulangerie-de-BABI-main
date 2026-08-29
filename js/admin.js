@@ -1025,16 +1025,20 @@ function renderProductsGridOrTable() {
 }
 
 async function loadProducts() {
-    // 1. Charger depuis le stockage local permanent (Source de vérité maître)
+    const deletedIds = (typeof window.babiGetDeletedProductIds === 'function') 
+        ? new Set(window.babiGetDeletedProductIds().map(String)) 
+        : new Set();
+
+    // 1. Charger depuis le stockage local (filtré contre la liste noire)
     const localProds = (typeof window.babiGetCachedProducts === 'function') 
         ? window.babiGetCachedProducts() 
         : (allProducts || []);
     
-    allProducts = Array.isArray(localProds) ? localProds : [];
+    allProducts = (Array.isArray(localProds) ? localProds : []).filter(p => p && !deletedIds.has(String(p.id)));
     updateProductKpis();
     renderProductsGridOrTable();
 
-    // 2. Synchronisation non-destructrice avec le serveur cloud
+    // 2. Synchronisation directe avec le serveur cloud
     try {
         const apiBase = (typeof window !== 'undefined' && window.API_BASE_URL) ? window.API_BASE_URL : (window.location.protocol.startsWith('http') ? '' : 'http://localhost:5000');
         const fetcher = (typeof window !== 'undefined' && typeof window.babiFetch === 'function') ? window.babiFetch : fetch;
@@ -1043,48 +1047,21 @@ async function loadProducts() {
             const data = await res.json();
             const serverList = Array.isArray(data) ? data : (data.products || []);
             
-            const serverMapped = serverList.map((p, idx) => ({
-                id: p.id || idx + 1,
-                nom: p.nom || p.name,
-                prix: Number(p.prix || p.price || 0),
-                categorie: p.categorie || p.category || 'pain',
-                image: p.image || p.image_url || 'assets/product_baguette.png',
-                stock: p.stock != null ? Number(p.stock) : 50,
-                seuil_alerte: p.seuil_alerte != null ? Number(p.seuil_alerte) : 10,
-                is_active: (p.is_active === 0 || p.is_active === '0' || p.is_active === false) ? 0 : 1,
-                description: p.description || ''
-            }));
+            const serverMapped = serverList
+                .map((p, idx) => ({
+                    id: p.id || idx + 1,
+                    nom: p.nom || p.name,
+                    prix: Number(p.prix || p.price || 0),
+                    categorie: p.categorie || p.category || 'pain',
+                    image: p.image || p.image_url || 'assets/product_baguette.png',
+                    stock: p.stock != null ? Number(p.stock) : 50,
+                    seuil_alerte: p.seuil_alerte != null ? Number(p.seuil_alerte) : 10,
+                    is_active: (p.is_active === 0 || p.is_active === '0' || p.is_active === false) ? 0 : 1,
+                    description: p.description || ''
+                }))
+                .filter(p => p && !deletedIds.has(String(p.id)));
 
-            const nameToProductMap = new Map();
-            serverMapped.forEach(p => {
-                const key = (p.nom || '').trim().toLowerCase();
-                if (key) nameToProductMap.set(key, p);
-            });
-            
-            // Sauvegarder dans le Cloud les produits locaux qui n'y sont pas encore
-            for (const localP of allProducts) {
-                const key = (localP.nom || '').trim().toLowerCase();
-                if (key && !nameToProductMap.has(key)) {
-                    nameToProductMap.set(key, localP);
-                    try {
-                        fetcher(`${apiBase}/api/products`, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({
-                                nom: localP.nom,
-                                categorie: localP.categorie,
-                                prix: localP.prix,
-                                stock: localP.stock,
-                                seuil_alerte: localP.seuil_alerte,
-                                description: localP.description || '',
-                                image: localP.image
-                            })
-                        }, 5000).catch(() => {});
-                    } catch (_) {}
-                }
-            }
-
-            allProducts = Array.from(nameToProductMap.values());
+            allProducts = serverMapped;
             if (typeof window.babiSetCachedProducts === 'function') {
                 window.babiSetCachedProducts(allProducts);
             }
@@ -1092,7 +1069,7 @@ async function loadProducts() {
             renderProductsGridOrTable();
         }
     } catch (_) {
-        // En cas d'échec ou d'absence réseau, les produits locaux restent intacts
+        // En cas d'échec ou d'absence réseau, les produits locaux restent affichés
     }
 }
 

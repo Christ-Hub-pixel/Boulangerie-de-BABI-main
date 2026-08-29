@@ -109,15 +109,19 @@
     // Récupération des produits
     async function getProducts() {
         if (cachedProducts.length > 0) return cachedProducts;
+        const deletedIds = (typeof window.babiGetDeletedProductIds === 'function') 
+            ? new Set(window.babiGetDeletedProductIds().map(String)) 
+            : new Set();
+
         if (window.allProducts && window.allProducts.length > 0) {
-            cachedProducts = window.allProducts;
+            cachedProducts = window.allProducts.filter(p => !deletedIds.has(String(p.id)));
             return cachedProducts;
         }
 
         if (typeof window.babiGetCachedProducts === 'function') {
             const list = window.babiGetCachedProducts();
-            if (list && list.length > 0) {
-                cachedProducts = list;
+            if (Array.isArray(list) && list.length > 0) {
+                cachedProducts = list.filter(p => !deletedIds.has(String(p.id)));
                 return cachedProducts;
             }
         }
@@ -129,14 +133,16 @@
                 const data = await resp.json();
                 const list = Array.isArray(data) ? data : (data.products || []);
                 if (list.length > 0) {
-                    cachedProducts = list.map(p => ({
-                        id: p.id,
-                        nom: p.name || p.nom,
-                        prix: p.price || p.prix,
-                        categorie: (p.category || p.categorie || 'pain').toLowerCase(),
-                        description: p.description || '',
-                        image: p.image || null
-                    }));
+                    cachedProducts = list
+                        .filter(p => !deletedIds.has(String(p.id)))
+                        .map(p => ({
+                            id: p.id,
+                            nom: p.name || p.nom,
+                            prix: p.price || p.prix,
+                            categorie: (p.category || p.categorie || 'pain').toLowerCase(),
+                            description: p.description || '',
+                            image: p.image || null
+                        }));
                     return cachedProducts;
                 }
             }
@@ -146,14 +152,16 @@
             const resp = await fetch('data/products.json');
             if (resp.ok) {
                 const data = await resp.json();
-                cachedProducts = data.map(p => ({
-                    id: p.id,
-                    nom: p.name || p.nom,
-                    prix: p.price || p.prix,
-                    categorie: (p.category || p.categorie || 'pain').toLowerCase(),
-                    description: p.description || '',
-                    image: p.image || null
-                }));
+                cachedProducts = (Array.isArray(data) ? data : [])
+                    .filter(p => !deletedIds.has(String(p.id)))
+                    .map(p => ({
+                        id: p.id,
+                        nom: p.name || p.nom,
+                        prix: p.price || p.prix,
+                        categorie: (p.category || p.categorie || 'pain').toLowerCase(),
+                        description: p.description || '',
+                        image: p.image || null
+                    }));
                 return cachedProducts;
             }
         } catch (e) {
@@ -161,7 +169,7 @@
         }
 
         if (window.FALLBACK_PRODUCTS) {
-            cachedProducts = window.FALLBACK_PRODUCTS;
+            cachedProducts = window.FALLBACK_PRODUCTS.filter(p => !deletedIds.has(String(p.id)));
             return cachedProducts;
         }
 

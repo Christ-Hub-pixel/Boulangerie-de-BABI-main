@@ -50,43 +50,69 @@
     };
 
     // ------------------------------------------------------------------------
-    // 3. CATALOGUE EMBARQUÉ & CACHE SYNCHRONE DIRECT
+    // 3. CATALOGUE EMBARQUÉ & CACHE SYNCHRONE DIRECT (AVEC PROTECTION ANTI-RÉSURRECTION)
     // ------------------------------------------------------------------------
     window.BABI_EMBEDDED_CATALOG = [];
 
-    // Nettoyage automatique des anciens filtres de suppression pour ne pas bloquer les nouveaux produits
-    try {
-        localStorage.removeItem('babi_deleted_product_ids');
-    } catch (_) {}
+    // Gestionnaire de liste noire persistante des produits supprimés
+    window.babiGetDeletedProductIds = function() {
+        try {
+            const item = localStorage.getItem('babi_deleted_product_ids');
+            return item ? JSON.parse(item) : [];
+        } catch (_) {
+            return [];
+        }
+    };
+
+    window.babiAddDeletedProductId = function(productId) {
+        try {
+            const set = new Set(window.babiGetDeletedProductIds().map(String));
+            set.add(String(productId));
+            localStorage.setItem('babi_deleted_product_ids', JSON.stringify([...set]));
+        } catch (_) {}
+    };
+
+    window.babiRemoveDeletedProductId = function(productId) {
+        try {
+            const set = new Set(window.babiGetDeletedProductIds().map(String));
+            set.delete(String(productId));
+            localStorage.setItem('babi_deleted_product_ids', JSON.stringify([...set]));
+        } catch (_) {}
+    };
 
     let inMemoryProductsCache = [];
 
     window.babiGetCachedProducts = function() {
+        const deletedIds = new Set(window.babiGetDeletedProductIds().map(String));
+        let raw = [];
         if (inMemoryProductsCache && inMemoryProductsCache.length > 0) {
-            return inMemoryProductsCache;
-        }
-        try {
-            const cached = localStorage.getItem('babi_cached_products');
-            if (cached !== null) {
-                const parsed = JSON.parse(cached);
-                if (Array.isArray(parsed) && parsed.length > 0) {
-                    inMemoryProductsCache = parsed;
-                    return parsed;
+            raw = inMemoryProductsCache;
+        } else {
+            try {
+                const cached = localStorage.getItem('babi_cached_products');
+                if (cached !== null) {
+                    const parsed = JSON.parse(cached);
+                    if (Array.isArray(parsed) && parsed.length > 0) {
+                        raw = parsed;
+                    }
                 }
-            }
-        } catch (_) {}
-        return inMemoryProductsCache || [];
+            } catch (_) {}
+        }
+        const filtered = raw.filter(p => p && !deletedIds.has(String(p.id)));
+        inMemoryProductsCache = filtered;
+        return filtered;
     };
 
     window.babiSetCachedProducts = function(products) {
         if (!Array.isArray(products)) return;
-        inMemoryProductsCache = products;
+        const deletedIds = new Set(window.babiGetDeletedProductIds().map(String));
+        const filtered = products.filter(p => p && !deletedIds.has(String(p.id)));
+        inMemoryProductsCache = filtered;
         
-        // Version ultra-légère pour localStorage (zéro risque de dépassement de quota 5Mo)
+        // Version ultra-légère pour localStorage
         try {
-            const safeList = products.map(p => {
+            const safeList = filtered.map(p => {
                 const img = p.image || p.image_url || '';
-                // Si l'image est un très long base64 (> 1000 caractères), ne pas saturer le localStorage
                 const safeImage = (img && img.startsWith('data:image/') && img.length > 1500) 
                     ? 'assets/baguette 200.png' 
                     : img;
@@ -104,7 +130,6 @@
             });
             localStorage.setItem('babi_cached_products', JSON.stringify(safeList));
         } catch (_) {
-            // Nettoyer les vieux historiques si quota plein
             try {
                 localStorage.removeItem('babi_pos_sales_history');
                 localStorage.removeItem('babi_pos_shift_sales');
@@ -115,6 +140,7 @@
 
     window.babiAddCustomProduct = function(product) {
         try {
+            window.babiRemoveDeletedProductId(product.id);
             const list = window.babiGetCachedProducts();
             const existingIdx = list.findIndex(p => String(p.id) === String(product.id));
             if (existingIdx >= 0) {
@@ -131,8 +157,10 @@
 
     window.babiRemoveCustomProduct = function(productId) {
         try {
+            window.babiAddDeletedProductId(productId);
             const list = window.babiGetCachedProducts();
             const filtered = list.filter(p => String(p.id) !== String(productId) && p.id !== productId);
+            inMemoryProductsCache = filtered;
             window.babiSetCachedProducts(filtered);
             return filtered;
         } catch (_) {

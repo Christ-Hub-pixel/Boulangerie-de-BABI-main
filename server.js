@@ -787,13 +787,15 @@ app.get('/api/products', async (req, res) => {
         res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, private');
         let products = [];
         try {
-            products = await db.all(`
+            const database = db || (await ensureDBReady());
+            products = await database.all(`
                 SELECT p.*, 
                        COALESCE(s.quantite_disponible, p.stock, 50) as stock, 
                        COALESCE(s.seuil_alerte, p.seuil_alerte, 10) as seuil_alerte, 
                        COALESCE(p.is_active, 1) as is_active
                 FROM products p
                 LEFT JOIN stocks s ON p.id = s.product_id
+                WHERE p.id NOT IN (SELECT id FROM deleted_products)
                 ORDER BY p.id DESC
             `);
         } catch (dbQueryErr) {
@@ -803,6 +805,17 @@ app.get('/api/products', async (req, res) => {
         res.json(products || []);
     } catch (err) {
         res.status(500).json({ error: err.message });
+    }
+});
+
+// Get deleted product IDs (Anti-Resurrection Registry)
+app.get('/api/products/deleted-ids', async (req, res) => {
+    try {
+        const database = db || (await ensureDBReady());
+        const rows = await database.all("SELECT id FROM deleted_products");
+        res.json({ success: true, deleted_ids: (rows || []).map(r => String(r.id)) });
+    } catch (err) {
+        res.json({ success: true, deleted_ids: [] });
     }
 });
 
@@ -828,6 +841,7 @@ app.post('/api/products', async (req, res) => {
             if (result && result.lastID) {
                 newId = result.lastID;
             }
+            await database.run("DELETE FROM deleted_products WHERE id = ?", [String(newId)]);
         } catch (dbErr) {
             console.warn("[Products] Direct DB insert notice:", dbErr.message);
         }
@@ -998,6 +1012,9 @@ app.delete('/api/products/:id', async (req, res) => {
         
         await database.run("DELETE FROM products WHERE id = ? OR id = ?", [prodId, isNaN(numId) ? -1 : numId]);
         await database.run("DELETE FROM stocks WHERE product_id = ? OR product_id = ?", [prodId, isNaN(numId) ? -1 : numId]);
+        try {
+            await database.run("INSERT OR REPLACE INTO deleted_products (id, deleted_at) VALUES (?, datetime('now'))", [String(prodId)]);
+        } catch (_) {}
 
         // 💾 Synchronisation persistante data/products.json
         try {

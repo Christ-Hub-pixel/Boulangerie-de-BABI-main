@@ -136,6 +136,11 @@ CREATE TABLE IF NOT EXISTS products (
     is_active INTEGER DEFAULT 1
 );
 
+CREATE TABLE IF NOT EXISTS deleted_products (
+    id TEXT PRIMARY KEY,
+    deleted_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
 CREATE TABLE IF NOT EXISTS stocks (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     product_id INTEGER,
@@ -354,22 +359,23 @@ async function initDB() {
         throw new Error("Impossible d'initialiser le pilote de base de données.");
     }
 
-    // ⚡ Fast Schema Check (Sub-100ms on warm/re-invocation)
+    // ⚡ Fast Schema Check
     try {
-        const migrationCheck = await db.get("SELECT version FROM _schema_migrations WHERE version = 2");
+        await db.run("CREATE TABLE IF NOT EXISTS deleted_products (id TEXT PRIMARY KEY, deleted_at DATETIME DEFAULT CURRENT_TIMESTAMP)");
+        const migrationCheck = await db.get("SELECT version FROM _schema_migrations WHERE version = 3");
         if (migrationCheck) {
             cachedDbInstance = db;
             isDbSchemaReady = true;
             return db;
         }
     } catch (_) {
-        // Table doesn't exist yet, proceed with creation
+        // Proceed with creation
     }
 
     // 🚀 Création globale rapide de toutes les tables en un seul batch
     try {
         await db.exec(FULL_SCHEMA_SQL);
-        await db.run("INSERT OR REPLACE INTO _schema_migrations (version) VALUES (2)");
+        await db.run("INSERT OR REPLACE INTO _schema_migrations (version) VALUES (3)");
     } catch (batchErr) {
         console.warn("[DB] Batch schema notice:", batchErr.message);
     }
@@ -390,7 +396,7 @@ async function initDB() {
         console.warn("[DB] Admin seed notice:", adminErr.message);
     }
 
-    // Auto-seed des produits si la table est vide
+    // Auto-seed des produits si la table est vide (avec protection anti-résurrection)
     try {
         const prodCount = await db.get("SELECT COUNT(*) as count FROM products");
         if (!prodCount || prodCount.count === 0) {
@@ -398,9 +404,17 @@ async function initDB() {
             if (fs.existsSync(jsonPath)) {
                 const list = JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
                 if (Array.isArray(list) && list.length > 0) {
+                    let deletedRows = [];
+                    try {
+                        deletedRows = await db.all("SELECT id FROM deleted_products");
+                    } catch (_) {}
+                    const deletedSet = new Set((deletedRows || []).map(r => String(r.id)));
+
                     let batchSql = [];
                     list.forEach((p, idx) => {
                         const id = p.id || (idx + 1);
+                        if (deletedSet.has(String(id))) return; // Ne jamais réinsérer un produit supprimé
+
                         const nom = (p.nom || p.name || '').replace(/'/g, "''");
                         const cat = (p.categorie || p.category || 'pain').replace(/'/g, "''");
                         const img = (p.image || 'assets/product_baguette.png').replace(/'/g, "''");
@@ -412,8 +426,10 @@ async function initDB() {
                         batchSql.push(`INSERT INTO products (id, nom, prix, categorie, image, description, stock, seuil_alerte, is_active) VALUES (${id}, '${nom}', ${prix}, '${cat}', '${img}', '${desc}', ${stock}, ${seuil}, 1);`);
                         batchSql.push(`INSERT INTO stocks (id, product_id, nom_produit, categorie, quantite_disponible, seuil_alerte, unite, prix_unitaire) VALUES (${id}, ${id}, '${nom}', '${cat}', ${stock}, ${seuil}, 'pièce', ${prix});`);
                     });
-                    await db.exec(batchSql.join('\n'));
-                    console.log(`[DB] Auto-seed : ${list.length} produits initialisés avec succès.`);
+                    if (batchSql.length > 0) {
+                        await db.exec(batchSql.join('\n'));
+                        console.log(`[DB] Auto-seed : ${batchSql.length / 2} produits initialisés avec succès.`);
+                    }
                 }
             }
         }

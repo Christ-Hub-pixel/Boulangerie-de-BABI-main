@@ -10,16 +10,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Fetch the products database with API & Cache fallbacks
     async function initCatalogData() {
+        const deletedIds = (typeof window.babiGetDeletedProductIds === 'function') 
+            ? new Set(window.babiGetDeletedProductIds().map(String)) 
+            : new Set();
+
         if (typeof window.babiGetCachedProducts === 'function') {
             const cached = window.babiGetCachedProducts();
             if (cached && cached.length > 0) {
-                allProducts = cached.map(p => ({
-                    id: p.id,
-                    name: p.nom || p.name,
-                    price: p.prix || p.price,
-                    category: p.categorie || p.category || 'Tous les produits',
-                    image: p.image || 'assets/product_baguette.png'
-                }));
+                allProducts = cached
+                    .filter(p => !deletedIds.has(String(p.id)))
+                    .map(p => ({
+                        id: p.id,
+                        name: p.nom || p.name,
+                        price: p.prix || p.price,
+                        category: p.categorie || p.category || 'Tous les produits',
+                        image: p.image || 'assets/product_baguette.png'
+                    }));
                 renderProducts(allProducts);
                 setupFilters();
             }
@@ -32,13 +38,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 const data = await res.json();
                 const list = Array.isArray(data) ? data : (data.products || []);
                 if (list.length > 0) {
-                    allProducts = list.map(p => ({
-                        id: p.id,
-                        name: p.nom || p.name,
-                        price: p.prix || p.price,
-                        category: p.categorie || p.category || 'Tous les produits',
-                        image: p.image || 'assets/product_baguette.png'
-                    }));
+                    allProducts = list
+                        .filter(p => !deletedIds.has(String(p.id)))
+                        .map(p => ({
+                            id: p.id,
+                            name: p.nom || p.name,
+                            price: p.prix || p.price,
+                            category: p.categorie || p.category || 'Tous les produits',
+                            image: p.image || 'assets/product_baguette.png'
+                        }));
                     renderProducts(allProducts);
                     setupFilters();
                     return;
@@ -50,7 +58,15 @@ document.addEventListener('DOMContentLoaded', () => {
             .then(response => response.json())
             .then(data => {
                 if (Array.isArray(data) && data.length > 0) {
-                    allProducts = data;
+                    allProducts = data
+                        .filter(p => !deletedIds.has(String(p.id)))
+                        .map(p => ({
+                            id: p.id,
+                            name: p.nom || p.name,
+                            price: p.prix || p.price,
+                            category: p.categorie || p.category || 'Tous les produits',
+                            image: p.image || 'assets/product_baguette.png'
+                        }));
                     renderProducts(allProducts);
                     setupFilters();
                 }
