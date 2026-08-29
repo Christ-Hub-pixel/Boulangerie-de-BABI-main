@@ -105,7 +105,7 @@ function switchAdminSection(sectionId) {
         'wave-payouts': { title: 'Trésorerie & Wave Payouts (API v1)', subtitle: 'Gestion des virements de masse, salaires et remboursements automatiques' },
         'transactions': { title: 'Grand Livre des Transactions', subtitle: 'Journal comptable et scellements cryptographiques certifiés' },
         'cashiers': { title: '👩‍💼 Caissières & Postes POS', subtitle: 'Gestion exclusive des profils, validation des accès et contrôle des sessions à distance' },
-        'products': { title: 'Catalogue & Fournil', subtitle: 'Gestion des 48 produits, stocks et seuils d\'alerte' },
+        'products': { title: 'Catalogue & Fournil', subtitle: `Gestion des ${allProducts.length || '121'} produits, stocks et approvisionnements` },
         'users': { title: 'Personnel & Clients', subtitle: 'Comptes collaborateurs, gérantes et clients du Club Fidélité' },
         'audit': { title: 'Sécurité & Audit Logs', subtitle: 'Détection IDS/IPS, intégrité Merkle et pare-feu anti-fraude' },
         'settings': { title: 'Paramètres & Configuration', subtitle: 'Clés Wave Business, signature HMAC-SHA256 et préférences' }
@@ -887,6 +887,13 @@ function updateProductKpis() {
     if (kpiLowEl) kpiLowEl.textContent = lowStockCount;
     if (kpiValueEl) kpiValueEl.textContent = totalStockValue.toLocaleString('fr-FR') + ' FCFA';
     if (dashKpiEl) dashKpiEl.textContent = totalCount;
+
+    // Dynamically update page subtitle if on products view
+    const titleEl = document.getElementById('current-section-title');
+    const subEl = document.getElementById('current-section-subtitle');
+    if (titleEl && (titleEl.textContent.includes('Catalogue') || titleEl.textContent.includes('Fournil'))) {
+        if (subEl) subEl.textContent = `Gestion des ${totalCount} articles, stocks et approvisionnements`;
+    }
 
     // Category counts for filter tabs
     const setCatCount = (id, catKey) => {

@@ -3100,10 +3100,19 @@ img.profile-avatar, .profile-avatar, img.logo-avatar, .logo-avatar {
     display: flex !important;
     align-items: center !important;
     gap: 8px !important;
-    padding: 14px 20px !important;
+    padding: 12px 20px !important;
     background: #f8fafc !important;
     border-bottom: 1px solid #e2e8f0 !important;
     overflow-x: auto !important;
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
+    flex-wrap: wrap !important;
+}
+
+.saas-sub-filters::-webkit-scrollbar {
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
 }
 
 .saas-filter-pill {
