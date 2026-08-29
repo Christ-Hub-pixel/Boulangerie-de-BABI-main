@@ -20,6 +20,7 @@ const wavePayoutService = require('./services/wave_payout.service.js');
 const orderManager = require('./services/order_manager.service.js');
 const paymentManager = require('./services/payment_manager.service.js');
 const pickupPinService = require('./services/pickup_pin.service.js');
+const secureAuthService = require('./services/secure_auth.service.js');
 
 // 🧠 BABI Brain Engine (BBE v3.0) — Services Cognitifs & Orchestration Temps Réel
 const aiRealtimeOrchestrator = require('./services/ai_realtime_orchestrator.service.js');
@@ -294,8 +295,9 @@ app.get('/api/status', (req, res) => {
 // Login endpoint supporting the 4 roles with PBKDF2 verification & Session Token
 app.post('/api/auth/login', async (req, res) => {
     try {
-        const { email, mot_de_passe } = req.body;
-        if (!email || !mot_de_passe) {
+        const { email, mot_de_passe, password } = req.body;
+        const effectivePass = mot_de_passe || password;
+        if (!email || !effectivePass) {
             return res.status(400).json({ error: "Email et mot de passe requis." });
         }
 
@@ -306,7 +308,7 @@ app.post('/api/auth/login', async (req, res) => {
         }
 
         // Vérification cryptographique PBKDF2 à temps constant
-        const isValidPassword = secureAuthService.verifyPassword(mot_de_passe, user.mot_de_passe);
+        const isValidPassword = secureAuthService.verifyPassword(effectivePass, user.mot_de_passe);
         if (!isValidPassword) {
             await recordSecurityAudit('LOGIN_FAILED_BAD_PASSWORD', 'N/A', 40, 'MODÉRÉ', req, { email: user.email });
             return res.status(401).json({ error: "Identifiants invalides. Veuillez vérifier votre email et mot de passe." });
@@ -335,7 +337,8 @@ app.post('/api/auth/login', async (req, res) => {
             message: `Bienvenue ${user.prenom} (${user.role.toUpperCase()}) !`
         });
     } catch (err) {
-        res.status(500).json({ error: "Une erreur interne est survenue lors de la connexion." });
+        console.error("[Login Error]", err);
+        res.status(500).json({ error: "Une erreur interne est survenue lors de la connexion : " + err.message });
     }
 });
 
@@ -1531,13 +1534,10 @@ app.post('/api/orders', async (req, res) => {
             ? String(rawPin).padStart(4, '0')
             : Math.floor(1000 + Math.random() * 9000).toString();
         
-        const customOrderId = String(order_number || order_id || id || `BABI-${Date.now().toString().slice(-6)}`);
-
         const result = await db.run(
-            `INSERT INTO orders (id, customer_name, phone, address, items, total_price, total_amount, payment_method, status, payment_status, type_retrait, code_pin)
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'PAID', 'paye', ?, ?)`,
+            `INSERT INTO orders (customer_name, phone, address, items, total_price, total_amount, payment_method, status, payment_status, type_retrait, code_pin)
+             VALUES (?, ?, ?, ?, ?, ?, ?, 'PAID', 'paye', ?, ?)`,
             [
-                customOrderId,
                 customer_name || 'Client App BABI',
                 effectivePhone,
                 address || 'Fournil Riviera',
@@ -1550,11 +1550,13 @@ app.post('/api/orders', async (req, res) => {
             ]
         );
 
+        const customOrderId = result && result.lastID ? result.lastID : String(order_number || order_id || id || `BABI-${Date.now().toString().slice(-6)}`);
+
         // Also record in pickup_codes table for zero-failure cashier verification
         try {
             await db.run(
                 `INSERT INTO pickup_codes (order_id, pin_code, is_used) VALUES (?, ?, 0)`,
-                [customOrderId, pin]
+                [String(customOrderId), pin]
             );
         } catch (_) {}
 
@@ -1826,6 +1828,21 @@ app.post('/api/pickup/verify', async (req, res) => {
             return res.status(400).json(result);
         }
 
+        res.json(result);
+    } catch (err) {
+        res.status(500).json({ success: false, error: err.message });
+    }
+});
+
+// 🔢 6.0 Alias POS PIN Verification
+app.post(['/api/pos/verify-pin', '/api/pos/validate-pin'], async (req, res) => {
+    try {
+        const b = req.body || {};
+        const q = req.query || {};
+        const pin = b.code_pin || b.pin || b.pin_code || b.pickup_pin || b.code || q.pin || q.code_pin;
+        if (!pin) return res.status(400).json({ success: false, error: "Code PIN requis." });
+        const database = db || (await ensureDBReady());
+        const result = await pickupPinService.lookupOrderDetailsByPin(database, pin);
         res.json(result);
     } catch (err) {
         res.status(500).json({ success: false, error: err.message });
