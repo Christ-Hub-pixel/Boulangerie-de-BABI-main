@@ -189,21 +189,24 @@ function renderProducts(productsList) {
     }
 
     container.innerHTML = productsList.map(p => {
-        const imgSrc = p.image || 'assets/product_baguette.png';
+        const imgSrc = (p.image && p.image !== 'null' && p.image !== 'undefined' && p.image.trim() !== '') ? p.image : (realProductImages[p.nom] || 'assets/product_baguette.png');
         const isFav = typeof isWishlisted === 'function' && isWishlisted(p.nom);
 
         return `
         <div class="col product-card-wrapper" data-category="${p.categorie}" data-name="${(p.nom || '').toLowerCase()}">
             <div class="card premium-product-card h-100 border-0 shadow-sm position-relative overflow-hidden" 
-                style="border-radius:12px; background: linear-gradient(145deg, #ffffff 0%, #fcf8f2 100%); border: 1px solid #f3ece0 !important;">
+                style="border-radius:12px; background: #ffffff; border: 1px solid #f3ece0 !important;">
+                <div class="position-relative overflow-hidden product-img-container" style="background:#fcf8f2; text-align:center; height:180px; display:flex; align-items:center; justify-content:center;">
+                    <img loading="lazy" src="${imgSrc}" class="card-img-top product-img" alt="${p.nom}" 
+                        style="max-height:160px; max-width:90%; object-fit:contain; transition:transform 0.4s ease;"
+                        onerror="this.src='assets/product_baguette.png'">
+                    <button class="wishlist-btn position-absolute top-0 end-0 m-2 btn btn-sm bg-white rounded-circle shadow-sm border-0 ${isFav ? 'text-danger' : 'text-muted'}"
+                        title="Ajouter aux favoris" style="width:32px;height:32px;padding:0;" onclick="toggleWishlist('${p.nom.replace(/'/g, "\\'")}')">
+                        <i class="${isFav ? 'fa-solid text-danger' : 'fa-regular'} fa-heart"></i>
+                    </button>
+                    <span class="badge position-absolute top-0 start-0 m-2" style="background:rgba(43,22,12,0.85);font-size:0.65rem;">${getCatLabel(p.categorie)}</span>
+                </div>
                 <div class="card-body p-3 d-flex flex-column position-relative" style="z-index: 1;">
-                    <span class="position-absolute" style="right:12px; bottom:60px; font-size:4rem; opacity:0.06; pointer-events:none; user-select:none;">${catIcons[p.categorie] || '🥖'}</span>
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <span class="badge" style="background:#2b160c;color:#ffffff;font-size:0.65rem;">${getCatLabel(p.categorie)}</span>
-                        <button class="wishlist-btn btn btn-sm p-0 border-0 ${isFav ? 'text-danger' : 'text-muted'}" title="Ajouter aux favoris" onclick="toggleWishlist('${p.nom.replace(/'/g, "\\'")}')">
-                            <i class="${isFav ? 'fa-solid' : 'fa-regular'} fa-heart"></i>
-                        </button>
-                    </div>
                     <h6 class="card-title fw-bold mb-1" style="font-size:0.92rem;color:#2b160c;">${p.nom}</h6>
                     <div class="d-flex align-items-center gap-1 mb-2">
                         <span class="text-warning" style="font-size:0.65rem;">★★★★<span class="text-muted">★</span></span>
