@@ -805,28 +805,37 @@ app.put('/api/products/:id', async (req, res) => {
         const alertThreshold = seuil_alerte != null ? Number(seuil_alerte) : 10;
         const activeState = is_active != null ? Number(is_active) : 1;
 
-        if (img) {
-            await db.run(
-                `UPDATE products 
-                 SET nom = ?, prix = ?, categorie = ?, image = ?, description = ?, stock = ?, seuil_alerte = ?, is_active = ? 
-                 WHERE id = ?`,
-                [nom.trim(), numPrice, categorie.trim(), img, description || '', stockQty, alertThreshold, activeState, prodId]
-            );
+        const existingProd = await db.get("SELECT id FROM products WHERE id = ? OR id = ?", [prodId, Number(prodId)]);
+        if (existingProd) {
+            if (img) {
+                await db.run(
+                    `UPDATE products 
+                     SET nom = ?, prix = ?, categorie = ?, image = ?, description = ?, stock = ?, seuil_alerte = ?, is_active = ? 
+                     WHERE id = ? OR id = ?`,
+                    [nom.trim(), numPrice, categorie.trim(), img, description || '', stockQty, alertThreshold, activeState, prodId, Number(prodId)]
+                );
+            } else {
+                await db.run(
+                    `UPDATE products 
+                     SET nom = ?, prix = ?, categorie = ?, description = ?, stock = ?, seuil_alerte = ?, is_active = ? 
+                     WHERE id = ? OR id = ?`,
+                    [nom.trim(), numPrice, categorie.trim(), description || '', stockQty, alertThreshold, activeState, prodId, Number(prodId)]
+                );
+            }
         } else {
             await db.run(
-                `UPDATE products 
-                 SET nom = ?, prix = ?, categorie = ?, description = ?, stock = ?, seuil_alerte = ?, is_active = ? 
-                 WHERE id = ?`,
-                [nom.trim(), numPrice, categorie.trim(), description || '', stockQty, alertThreshold, activeState, prodId]
+                `INSERT INTO products (id, nom, prix, categorie, image, description, stock, seuil_alerte, is_active)
+                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+                [prodId, nom.trim(), numPrice, categorie.trim(), img || 'assets/product_baguette.png', description || '', stockQty, alertThreshold, activeState]
             );
         }
 
         // Sync stock product name / price / quantity
-        const existingStock = await db.get("SELECT id FROM stocks WHERE product_id = ?", [prodId]);
+        const existingStock = await db.get("SELECT id FROM stocks WHERE product_id = ? OR product_id = ?", [prodId, Number(prodId)]);
         if (existingStock) {
             await db.run(
-                "UPDATE stocks SET nom_produit = ?, categorie = ?, prix_unitaire = ?, quantite_disponible = ?, seuil_alerte = ? WHERE product_id = ?", 
-                [nom.trim(), categorie.trim(), numPrice, stockQty, alertThreshold, prodId]
+                "UPDATE stocks SET nom_produit = ?, categorie = ?, prix_unitaire = ?, quantite_disponible = ?, seuil_alerte = ? WHERE product_id = ? OR product_id = ?", 
+                [nom.trim(), categorie.trim(), numPrice, stockQty, alertThreshold, prodId, Number(prodId)]
             );
         } else {
             await db.run(
@@ -835,11 +844,23 @@ app.put('/api/products/:id', async (req, res) => {
             );
         }
 
-        const updatedProduct = await db.get("SELECT p.*, s.quantite_disponible as stock, s.seuil_alerte FROM products p LEFT JOIN stocks s ON p.id = s.product_id WHERE p.id = ?", [prodId]);
+        const updatedProduct = await db.get("SELECT p.*, s.quantite_disponible as stock, s.seuil_alerte FROM products p LEFT JOIN stocks s ON p.id = s.product_id WHERE p.id = ? OR p.id = ?", [prodId, Number(prodId)]) || {
+            id: prodId,
+            nom: nom.trim(),
+            prix: numPrice,
+            categorie: categorie.trim(),
+            image: img,
+            description: description || '',
+            stock: stockQty,
+            seuil_alerte: alertThreshold,
+            is_active: activeState
+        };
 
         // 📡 Diffusion simultanée en temps réel vers tous les clients Web & Mobile
         try {
-            aiRealtimeOrchestrator.broadcastProductUpdated(updatedProduct || { id: Number(prodId), nom: nom.trim(), prix: numPrice, categorie: categorie.trim(), stock: stockQty, is_active: activeState });
+            if (typeof aiRealtimeOrchestrator !== 'undefined' && aiRealtimeOrchestrator.broadcastProductUpdated) {
+                aiRealtimeOrchestrator.broadcastProductUpdated(updatedProduct);
+            }
         } catch (_) {}
 
         res.json({ success: true, product: updatedProduct, message: "Produit mis à jour avec succès." });

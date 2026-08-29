@@ -1337,18 +1337,18 @@ async function handleUpdateProduct(e) {
     const origHtml = submitBtn ? submitBtn.innerHTML : '';
     if (submitBtn) {
         submitBtn.disabled = true;
-        submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-1"></i> Mise à jour...';
+        submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-1"></i> Enregistrement...';
     }
 
     const id = document.getElementById('edit-prod-id')?.value;
     const nom = document.getElementById('edit-prod-name')?.value.trim();
-    const categorie = document.getElementById('edit-prod-category')?.value;
+    const categorie = document.getElementById('edit-prod-category')?.value || 'pain';
     const prix = Number(document.getElementById('edit-prod-price')?.value);
     const stock = Number(document.getElementById('edit-prod-stock')?.value) || 0;
     const seuil_alerte = Number(document.getElementById('edit-prod-alert')?.value) || 10;
     const is_active = Number(document.getElementById('edit-prod-status')?.value);
     const description = document.getElementById('edit-prod-desc')?.value.trim() || '';
-    const image = document.getElementById('edit-prod-image-data')?.value;
+    const image = document.getElementById('edit-prod-image-data')?.value || 'assets/product_baguette.png';
 
     if (!id) {
         showAdminToast("Erreur : Identifiant du produit manquant.", "danger");
@@ -1366,25 +1366,54 @@ async function handleUpdateProduct(e) {
         return;
     }
 
+    const updatedData = {
+        id: isNaN(Number(id)) ? id : Number(id),
+        nom,
+        categorie,
+        prix,
+        stock,
+        seuil_alerte,
+        is_active,
+        description,
+        image
+    };
+
+    // ⚡ 1. Mise à jour instantanée optimiste (0ms) en mémoire et en cache local
+    const prodIdx = allProducts.findIndex(p => String(p.id) === String(id));
+    if (prodIdx >= 0) {
+        allProducts[prodIdx] = { ...allProducts[prodIdx], ...updatedData };
+    } else {
+        allProducts.unshift(updatedData);
+    }
+
+    if (typeof window.babiSetCachedProducts === 'function') {
+        window.babiSetCachedProducts(allProducts);
+    }
+    if (typeof window.babiAddCustomProduct === 'function') {
+        window.babiAddCustomProduct(updatedData);
+    }
+
+    updateProductKpis();
+    renderProductsGridOrTable();
+    showAdminToast(`✨ Produit "${nom}" mis à jour avec succès !`, 'success');
+    closeEditProductModal();
+
+    if (typeof window.notifyProductCatalogueChanged === 'function') {
+        window.notifyProductCatalogueChanged('PRODUCT_UPDATED', updatedData);
+    }
+
+    // ⚡ 2. Synchronisation avec le serveur cloud en arrière-plan
     try {
-        const res = await fetch(`${API_ROOT}/api/products/${id}`, {
+        const fetcher = (typeof window !== 'undefined' && typeof window.babiFetch === 'function') ? window.babiFetch : fetch;
+        const apiBase = (typeof window !== 'undefined' && window.API_BASE_URL) ? window.API_BASE_URL : (window.location.protocol.startsWith('http') ? '' : 'http://localhost:5000');
+        
+        await fetcher(`${apiBase}/api/products/${id}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ nom, categorie, prix, stock, seuil_alerte, is_active, description, image })
-        });
-        const data = await parseSafeResponse(res);
-        if (res.ok) {
-            showAdminToast(`✨ Produit "${nom}" mis à jour avec succès !`, 'success');
-            closeEditProductModal();
-            await loadProducts();
-            if (typeof window.notifyProductCatalogueChanged === 'function') {
-                window.notifyProductCatalogueChanged('PRODUCT_UPDATED', data.product || { id, nom, categorie, prix, stock, is_active });
-            }
-        } else {
-            showAdminToast("Erreur : " + (data.error || "Impossible de modifier le produit."), 'danger');
-        }
+        }, 8000);
     } catch (err) {
-        showAdminToast("Erreur de communication : " + err.message, 'danger');
+        console.warn("[Admin] Synchronisation cloud modification :", err);
     } finally {
         if (submitBtn) {
             submitBtn.disabled = false;
