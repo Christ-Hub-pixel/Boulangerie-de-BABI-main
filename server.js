@@ -1485,12 +1485,45 @@ app.get('/api/orders', async (req, res) => {
     }
 });
 
+// Live Pickup Queue for Cashier Dashboard
+app.get(['/api/orders/pickup-queue', '/api/orders/queue'], async (req, res) => {
+    try {
+        const database = db || (await ensureDBReady());
+        const orders = await database.all(
+            `SELECT o.*, COALESCE(p.pin_code, o.code_pin, '7412') as pin_code, COALESCE(p.is_used, 0) as is_used 
+             FROM orders o
+             LEFT JOIN pickup_codes p ON (o.id = p.order_id OR p.order_id = 'ORD-' || o.id)
+             WHERE o.status NOT IN ('recupere', 'PICKED_UP', 'ANNULE', 'CANCELLED') 
+                AND (p.is_used IS NULL OR p.is_used = 0)
+             ORDER BY o.created_at DESC LIMIT 50`
+        );
+        res.json({ success: true, orders: orders || [] });
+    } catch (err) {
+        res.status(500).json({ success: false, error: err.message });
+    }
+});
+
+// Track order by phone
+app.get('/api/orders/track/:phone', async (req, res) => {
+    try {
+        const database = db || (await ensureDBReady());
+        const orders = await database.all("SELECT * FROM orders WHERE phone = ? ORDER BY created_at DESC", [req.params.phone]);
+        res.json(orders);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
 // Get single order by ID or Code
-app.get('/api/orders/:id', async (req, res) => {
+app.get('/api/orders/:id', async (req, res, next) => {
     try {
         const orderId = req.params.id;
+        if (orderId === 'pickup-queue' || orderId === 'queue' || orderId === 'track' || orderId === 'create') {
+            return next();
+        }
+        const database = db || (await ensureDBReady());
         const cleanId = String(orderId).replace(/^#/, '').replace(/^BABI-/, '');
-        const order = await db.get(
+        const order = await database.get(
             "SELECT * FROM orders WHERE id = ? OR id = ? OR code_pin = ? LIMIT 1",
             [orderId, cleanId, orderId]
         );
