@@ -1,0 +1,76 @@
+/* ================================================================
+   BOULANGERIE DE BABI — STYLES DÉDIÉS DU PANIER D'ACHATS (CART.CSS)
+   ================================================================ */
+
+.cart-item-card {
+    background: #ffffff;
+    border-radius: 16px;
+    border: 1px solid rgba(226, 232, 240, 0.8);
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.cart-item-card:hover {
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+    border-color: #fb923c;
+    transform: translateY(-2px);
+}
+
+.cart-summary-box {
+    background: #ffffff;
+    border-radius: 20px;
+    border: 1px solid rgba(251, 146, 60, 0.25);
+    box-shadow: 0 10px 25px rgba(43, 22, 12, 0.06);
+    position: sticky;
+    top: 90px;
+}
+
+.cart-qty-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #cbd5e1;
+    background: #ffffff;
+    color: #1e293b;
+    font-weight: 700;
+    transition: all 0.15s ease;
+}
+
+.cart-qty-btn:hover {
+    background: #fb923c;
+    color: #ffffff;
+    border-color: #fb923c;
+}
+
+.cart-item-img {
+    width: 80px;
+    height: 80px;
+    border-radius: 12px;
+    object-fit: cover;
+    background: #f8fafc;
+    border: 1px solid #f1f5f9;
+}
+
+.cart-badge-wave {
+    background: linear-gradient(135deg, #00d2ff 0%, #0072ff 100%);
+    color: #ffffff;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 9999px;
+    font-size: 11px;
+}
+
+.empty-cart-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: #64748b;
+}
+
+.empty-cart-icon {
+    font-size: 64px;
+    color: #cbd5e1;
+    margin-bottom: 16px;
+}

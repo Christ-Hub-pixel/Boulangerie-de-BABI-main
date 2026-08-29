@@ -386,8 +386,39 @@ async function initDB() {
                 ['BABI', 'Administrateur', adminEmail, '+225 07 04 38 92 01', hashedPassword]
             );
         }
-    } catch (e) {
-        console.warn("[DB] Admin seed notice:", e.message);
+    } catch (adminErr) {
+        console.warn("[DB] Admin seed notice:", adminErr.message);
+    }
+
+    // Auto-seed des produits si la table est vide
+    try {
+        const prodCount = await db.get("SELECT COUNT(*) as count FROM products");
+        if (!prodCount || prodCount.count === 0) {
+            const jsonPath = path.resolve(__dirname, 'data', 'products.json');
+            if (fs.existsSync(jsonPath)) {
+                const list = JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
+                if (Array.isArray(list) && list.length > 0) {
+                    let batchSql = [];
+                    list.forEach((p, idx) => {
+                        const id = p.id || (idx + 1);
+                        const nom = (p.nom || p.name || '').replace(/'/g, "''");
+                        const cat = (p.categorie || p.category || 'pain').replace(/'/g, "''");
+                        const img = (p.image || 'assets/product_baguette.png').replace(/'/g, "''");
+                        const desc = (p.description || '').replace(/'/g, "''");
+                        const prix = Number(p.prix || p.price || 500);
+                        const stock = Number(p.stock || 50);
+                        const seuil = Number(p.seuil_alerte || 10);
+
+                        batchSql.push(`INSERT INTO products (id, nom, prix, categorie, image, description, stock, seuil_alerte, is_active) VALUES (${id}, '${nom}', ${prix}, '${cat}', '${img}', '${desc}', ${stock}, ${seuil}, 1);`);
+                        batchSql.push(`INSERT INTO stocks (id, product_id, nom_produit, categorie, quantite_disponible, seuil_alerte, unite, prix_unitaire) VALUES (${id}, ${id}, '${nom}', '${cat}', ${stock}, ${seuil}, 'pièce', ${prix});`);
+                    });
+                    await db.exec(batchSql.join('\n'));
+                    console.log(`[DB] Auto-seed : ${list.length} produits initialisés avec succès.`);
+                }
+            }
+        }
+    } catch (seedErr) {
+        console.warn("[DB] Product auto-seed notice:", seedErr.message);
     }
 
     cachedDbInstance = db;

@@ -74,7 +74,7 @@ app.use(async (req, res, next) => {
 
 // ⚡ Normalisation d'URL pour Vercel Serverless (supporte /api/... et /...)
 app.use((req, res, next) => {
-    if (!req.url.startsWith('/api') && req.url !== '/' && !req.url.startsWith('/assets') && !req.url.includes('.')) {
+    if (!req.url.startsWith('/api') && req.url !== '/' && !req.url.startsWith('/assets') && !req.url.startsWith('/app') && !req.url.startsWith('/flutter') && !req.url.includes('.')) {
         req.url = '/api' + req.url;
     }
     next();
@@ -167,7 +167,7 @@ app.use((req, res, next) => {
 
 // Serve Mobile App PWA & Flutter Web
 app.get(['/app', '/app/'], (req, res) => {
-    res.sendFile(path.join(__dirname, 'app.html'));
+    res.sendFile(path.join(__dirname, 'app', 'index.html'));
 });
 
 app.use(express.static(__dirname));
@@ -375,6 +375,73 @@ app.post('/api/auth/register', async (req, res) => {
         });
     } catch (err) {
         res.status(500).json({ error: "Erreur lors de la création du compte." });
+    }
+});
+
+// Change Password API (Admin & Users)
+app.post('/api/auth/change-password', async (req, res) => {
+    try {
+        const { old_password, new_password } = req.body;
+        if (!new_password || !old_password) {
+            return res.status(400).json({ error: "Ancien et nouveau mot de passe requis." });
+        }
+
+        const authHeader = req.headers.authorization;
+        let userEmail = 'admin@boulangeriedebabi.com';
+        if (authHeader && authHeader.startsWith('Bearer ')) {
+            const decoded = secureAuthService.verifySessionToken(authHeader.split(' ')[1]);
+            if (decoded && decoded.email) userEmail = decoded.email;
+        }
+
+        const user = await db.get("SELECT id, email, mot_de_passe FROM users WHERE email = ? OR role = 'admin' LIMIT 1", [userEmail]);
+        if (!user) {
+            return res.status(404).json({ error: "Utilisateur introuvable." });
+        }
+
+        const isValid = secureAuthService.verifyPassword(old_password, user.mot_de_passe);
+        if (!isValid) {
+            return res.status(401).json({ error: "Ancien mot de passe incorrect." });
+        }
+
+        const newHash = secureAuthService.hashPassword(new_password);
+        await db.run("UPDATE users SET mot_de_passe = ? WHERE id = ?", [newHash, user.id]);
+
+        await recordSecurityAudit('PASSWORD_CHANGED', 'N/A', 0, 'FAIBLE', req, { userId: user.id });
+
+        res.json({ success: true, message: "Mot de passe modifié avec succès !" });
+    } catch (err) {
+        res.status(500).json({ error: "Erreur lors du changement de mot de passe : " + err.message });
+    }
+});
+
+// Google OAuth Auth Callback
+app.post('/api/auth/google', async (req, res) => {
+    try {
+        const { user: gUser, token } = req.body;
+        if (!gUser || !gUser.email) {
+            return res.status(400).json({ error: "Données utilisateur Google requises." });
+        }
+
+        const email = gUser.email.trim().toLowerCase();
+        let user = await db.get("SELECT id, nom, prenom, email, telephone, role, avatar FROM users WHERE email = ?", [email]);
+        
+        if (!user) {
+            const nom = gUser.nom || 'Client';
+            const prenom = gUser.prenom || 'Google';
+            const avatar = gUser.photoURL || 'assets/avatar_client.png';
+            const dummyPass = secureAuthService.hashPassword(token || 'GoogleAuthBabi2026!');
+            
+            const insert = await db.run(
+                "INSERT INTO users (nom, prenom, email, telephone, mot_de_passe, role, avatar) VALUES (?, ?, ?, ?, ?, 'client', ?)",
+                [nom, prenom, email, '', dummyPass, avatar]
+            );
+            user = await db.get("SELECT id, nom, prenom, email, telephone, role, avatar FROM users WHERE id = ?", [insert.lastID]);
+        }
+
+        const sessionToken = secureAuthService.generateSessionToken(user);
+        res.json({ success: true, user, token: sessionToken, redirectUrl: 'compte.html' });
+    } catch (err) {
+        res.status(500).json({ error: "Erreur synchronisation Google Auth : " + err.message });
     }
 });
 
@@ -1415,6 +1482,24 @@ app.get('/api/orders', async (req, res) => {
     }
 });
 
+// Get single order by ID or Code
+app.get('/api/orders/:id', async (req, res) => {
+    try {
+        const orderId = req.params.id;
+        const cleanId = String(orderId).replace(/^#/, '').replace(/^BABI-/, '');
+        const order = await db.get(
+            "SELECT * FROM orders WHERE id = ? OR id = ? OR code_pin = ? LIMIT 1",
+            [orderId, cleanId, orderId]
+        );
+        if (!order) {
+            return res.status(404).json({ error: "Commande non trouvée." });
+        }
+        res.json(order);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
 // Create new online order with strict Price & Input Validation
 app.post('/api/orders', async (req, res) => {
     try {
@@ -1912,10 +1997,34 @@ app.post('/api/security/verify-receipt-ai', async (req, res) => {
 });
 
 // Security Audit Logs API (Admin / Gérante)
-app.get('/api/security/audit-logs', async (req, res) => {
+app.get(['/api/security/audit-logs', '/api/admin/security/audit-logs', '/api/admin/security/logs'], async (req, res) => {
     try {
         const logs = await db.all("SELECT * FROM security_audit_logs ORDER BY created_at DESC LIMIT 50");
         res.json({ success: true, count: logs.length, logs });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Comprehensive Dashboard Stats API
+app.get(['/api/reports/dashboard-stats', '/api/v1/reports/dashboard-stats'], async (req, res) => {
+    try {
+        const totalOrdersRow = await db.get("SELECT COUNT(*) as count, COALESCE(SUM(total_price), 0) as totalRevenue FROM orders WHERE status != 'annule'");
+        const todayOrdersRow = await db.get("SELECT COUNT(*) as count, COALESCE(SUM(total_price), 0) as todayRevenue FROM orders WHERE date(created_at) = date('now') AND status != 'annule'");
+        const totalProductsRow = await db.get("SELECT COUNT(*) as count FROM products WHERE is_active = 1");
+        const lowStockRow = await db.get("SELECT COUNT(*) as count FROM stocks WHERE quantite_disponible <= seuil_alerte");
+        const recentOrders = await db.all("SELECT * FROM orders ORDER BY created_at DESC LIMIT 10");
+
+        res.json({
+            success: true,
+            total_orders: totalOrdersRow ? totalOrdersRow.count : 0,
+            total_revenue: totalOrdersRow ? totalOrdersRow.totalRevenue : 0,
+            today_orders: todayOrdersRow ? todayOrdersRow.count : 0,
+            today_revenue: todayOrdersRow ? todayOrdersRow.todayRevenue : 0,
+            total_products: totalProductsRow ? totalProductsRow.count : 0,
+            low_stock_count: lowStockRow ? lowStockRow.count : 0,
+            recent_orders: recentOrders
+        });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
@@ -2480,7 +2589,7 @@ app.post('/api/ai/assistant/chat', async (req, res) => {
 });
 
 // ✨ 8.1 Auto-Suggestion IA de Produit & Remplissage Intelligent
-app.post('/api/ai/suggest-product', async (req, res) => {
+app.post(['/api/ai/suggest-product', '/ai/suggest-product'], async (req, res) => {
     try {
         const query = req.body.query || req.body.name || req.body.nom || '';
         const suggestion = aiAssistantCopilot.suggestProductDetails(query);
@@ -2491,7 +2600,7 @@ app.post('/api/ai/suggest-product', async (req, res) => {
 });
 
 // 📸 8.2 Studio Photo IA (Génération & Suggestions de Visuels HD)
-app.post('/api/ai/generate-photo', async (req, res) => {
+app.post(['/api/ai/generate-photo', '/ai/generate-photo'], async (req, res) => {
     try {
         const prompt = req.body.prompt || req.body.query || '';
         const category = req.body.category || req.body.categorie || 'pain';
@@ -2503,7 +2612,7 @@ app.post('/api/ai/generate-photo', async (req, res) => {
 });
 
 // ⚡ 8.3 Exécuteur de Commandes Naturelles & Enregistrement Direct Admin IA
-app.post('/api/ai/admin-command', async (req, res) => {
+app.post(['/api/ai/admin-command', '/ai/admin-command'], async (req, res) => {
     try {
         const { command, image, photo } = req.body;
         if (!command && !image && !photo) return res.status(400).json({ error: "Commande ou photo requise." });
@@ -2515,7 +2624,7 @@ app.post('/api/ai/admin-command', async (req, res) => {
 });
 
 // 🥐 8.4 Conseiller Gourmand Public (Chat Client IA Boutique)
-app.post('/api/ai/client-advisor', async (req, res) => {
+app.post(['/api/ai/client-advisor', '/ai/client-advisor'], async (req, res) => {
     try {
         const { prompt, cart } = req.body;
         const result = await aiAssistantCopilot.handleClientAdvisorChat(prompt, cart || [], db);
@@ -2526,7 +2635,7 @@ app.post('/api/ai/client-advisor', async (req, res) => {
 });
 
 // 🎂 8.5 Assistant Pâtissier Créatif (Simulateur de Gâteau)
-app.post('/api/ai/cake-advisor', async (req, res) => {
+app.post(['/api/ai/cake-advisor', '/ai/cake-advisor'], async (req, res) => {
     try {
         const { occasion, flavor, nbPersons } = req.body;
         const result = aiAssistantCopilot.handleCakeAdvisor(occasion, flavor, nbPersons);

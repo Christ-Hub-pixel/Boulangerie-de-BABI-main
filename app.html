@@ -1,17 +1,4 @@
 <!DOCTYPE html><html><head>
-  <!--
-    If you are serving your web app in a path other than the root, change the
-    href value below to reflect the base path you are serving from.
-
-    The path provided below has to start and end with a slash "/" in order for
-    it to work correctly.
-
-    For more details:
-    * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base
-
-    This is a placeholder for base href that will be replaced by the value of
-    the `--base-href` argument provided to `flutter build`.
-  -->
   <base href="/app/">
 
   <meta charset="UTF-8">
@@ -22,12 +9,12 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
   <meta name="apple-mobile-web-app-title" content="Boulangerie de Babi">
-  <link rel="apple-touch-icon" href="/assets/logoApp.png?v=logoapp_final">
+  <link rel="apple-touch-icon" href="favicon.png?v=logoapp_final">
 
   <!-- Favicon -->
-  <link rel="icon" type="image/png" href="/assets/logoApp.png?v=logoapp_final">
-  <link rel="shortcut icon" type="image/png" href="/assets/logoApp.png?v=logoapp_final">
-  <link rel="icon" type="image/x-icon" href="/assets/logoApp.png?v=logoapp_final">
+  <link rel="icon" type="image/png" href="favicon.png?v=logoapp_final">
+  <link rel="shortcut icon" type="image/png" href="favicon.png?v=logoapp_final">
+  <link rel="icon" type="image/x-icon" href="favicon.ico?v=logoapp_final">
 
   <script>
     (function() {
@@ -37,30 +24,13 @@
         var newLink = document.createElement('link');
         newLink.type = 'image/png';
         newLink.rel = 'icon';
-        newLink.href = '/assets/logoApp.png?v=babi_logoapp_' + Math.floor(Date.now() / 60000);
+        newLink.href = 'favicon.png?v=babi_logoapp_' + Math.floor(Date.now() / 60000);
         document.head.appendChild(newLink);
       }
       forceFavicon();
       window.addEventListener('DOMContentLoaded', forceFavicon);
       window.addEventListener('load', forceFavicon);
       setInterval(forceFavicon, 2000);
-    })();
-
-    // 🌐 BABI Mobile App Real-time Global Sync Bridge
-    (function() {
-      try {
-        const globalSyncChan = new BroadcastChannel('babi_global_sync');
-        globalSyncChan.onmessage = function(e) {
-          if (!e.data) return;
-          window.dispatchEvent(new CustomEvent('babi_mobile_sync', { detail: e.data }));
-        };
-        window.babiPostMobileSync = function(eventType, payload) {
-          globalSyncChan.postMessage({ type: eventType, payload: payload, timestamp: Date.now() });
-          try {
-            localStorage.setItem('babi_last_sync_event', JSON.stringify({ type: eventType, payload: payload, timestamp: Date.now() }));
-          } catch(e) {}
-        };
-      } catch (err) {}
     })();
   </script>
 
@@ -74,8 +44,8 @@
     body {
       margin: 0;
       min-height: 100%;
-      background-color: #FACC15;
-          background-size: 100% 100%;
+      background-color: #1F1008;
+      background-size: 100% 100%;
     }
 
     .center {
@@ -135,19 +105,9 @@
 </head>
 <body>
   <picture id="splash">
-      <source srcset="splash/img/light-1x.png 1x, splash/img/light-2x.png 2x, splash/img/light-3x.png 3x, splash/img/light-4x.png 4x" media="(prefers-color-scheme: light)">
-      <source srcset="splash/img/dark-1x.png 1x, splash/img/dark-2x.png 2x, splash/img/dark-3x.png 3x, splash/img/dark-4x.png 4x" media="(prefers-color-scheme: dark)">
-      <img class="center" aria-hidden="true" src="splash/img/light-1x.png" alt="">
+      <source srcset="app/splash/img/light-1x.png 1x, app/splash/img/light-2x.png 2x, app/splash/img/light-3x.png 3x, app/splash/img/light-4x.png 4x" media="(prefers-color-scheme: light)">
+      <source srcset="app/splash/img/dark-1x.png 1x, app/splash/img/dark-2x.png 2x, app/splash/img/dark-3x.png 3x, app/splash/img/dark-4x.png 4x" media="(prefers-color-scheme: dark)">
+      <img class="center" aria-hidden="true" src="app/splash/img/light-1x.png" alt="">
   </picture>
-  <!--
-    You can customize the "flutter_bootstrap.js" script.
-    This is useful to provide a custom configuration to the Flutter loader
-    or to give the user feedback during the initialization process.
-
-    For more details:
-    * https://docs.flutter.dev/platform-integration/web/initialization
-  -->
-  <script src="flutter_bootstrap.js" async=""></script>
-
-
+  <script src="app/flutter_bootstrap.js" async=""></script>
 </body></html>

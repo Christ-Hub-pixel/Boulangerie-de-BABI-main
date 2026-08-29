@@ -8,15 +8,57 @@ document.addEventListener('DOMContentLoaded', () => {
     // Checkboxes in the sidebar
     const categoryCheckboxes = document.querySelectorAll('input[type="checkbox"][id^="c"]');
 
-    // Fetch the JSON database
-    fetch('data/products.json')
-        .then(response => response.json())
-        .then(data => {
-            allProducts = data;
-            renderProducts(allProducts);
-            setupFilters();
-        })
-        .catch(error => console.error("Error loading products:", error));
+    // Fetch the products database with API & Cache fallbacks
+    async function initCatalogData() {
+        if (typeof window.babiGetCachedProducts === 'function') {
+            const cached = window.babiGetCachedProducts();
+            if (cached && cached.length > 0) {
+                allProducts = cached.map(p => ({
+                    id: p.id,
+                    name: p.nom || p.name,
+                    price: p.prix || p.price,
+                    category: p.categorie || p.category || 'Tous les produits',
+                    image: p.image || 'assets/product_baguette.png'
+                }));
+                renderProducts(allProducts);
+                setupFilters();
+            }
+        }
+
+        try {
+            const apiBase = window.API_BASE_URL || (window.location.protocol.startsWith('http') ? '' : 'http://localhost:5000');
+            const res = await fetch(`${apiBase}/api/products`);
+            if (res.ok) {
+                const data = await res.json();
+                const list = Array.isArray(data) ? data : (data.products || []);
+                if (list.length > 0) {
+                    allProducts = list.map(p => ({
+                        id: p.id,
+                        name: p.nom || p.name,
+                        price: p.prix || p.price,
+                        category: p.categorie || p.category || 'Tous les produits',
+                        image: p.image || 'assets/product_baguette.png'
+                    }));
+                    renderProducts(allProducts);
+                    setupFilters();
+                    return;
+                }
+            }
+        } catch (_) {}
+
+        fetch('data/products.json')
+            .then(response => response.json())
+            .then(data => {
+                if (Array.isArray(data) && data.length > 0) {
+                    allProducts = data;
+                    renderProducts(allProducts);
+                    setupFilters();
+                }
+            })
+            .catch(error => console.error("Error loading products:", error));
+    }
+
+    initCatalogData();
 
     function generateStarsHTML(rating) {
         let starsHTML = '';

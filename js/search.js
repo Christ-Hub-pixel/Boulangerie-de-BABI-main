@@ -114,6 +114,34 @@
             return cachedProducts;
         }
 
+        if (typeof window.babiGetCachedProducts === 'function') {
+            const list = window.babiGetCachedProducts();
+            if (list && list.length > 0) {
+                cachedProducts = list;
+                return cachedProducts;
+            }
+        }
+
+        try {
+            const apiBase = window.API_BASE_URL || (window.location.protocol.startsWith('http') ? '' : 'http://localhost:5000');
+            const resp = await fetch(`${apiBase}/api/products`);
+            if (resp.ok) {
+                const data = await resp.json();
+                const list = Array.isArray(data) ? data : (data.products || []);
+                if (list.length > 0) {
+                    cachedProducts = list.map(p => ({
+                        id: p.id,
+                        nom: p.name || p.nom,
+                        prix: p.price || p.prix,
+                        categorie: (p.category || p.categorie || 'pain').toLowerCase(),
+                        description: p.description || '',
+                        image: p.image || null
+                    }));
+                    return cachedProducts;
+                }
+            }
+        } catch (_) {}
+
         try {
             const resp = await fetch('data/products.json');
             if (resp.ok) {
