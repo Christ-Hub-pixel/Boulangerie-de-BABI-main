@@ -3,6 +3,7 @@ const express = require('express');
 const cors = require('cors');
 const compression = require('compression');
 const path = require('path');
+const fs = require('fs');
 const crypto = require('crypto');
 const { initDB } = require('./db.js');
 
@@ -812,6 +813,7 @@ app.post('/api/products', async (req, res) => {
         if (!nom || prix === undefined || prix === null || isNaN(Number(prix)) || !categorie) {
             return res.status(400).json({ error: "Nom, prix valide et catégorie obligatoires." });
         }
+        const database = db || (await ensureDBReady());
         const img = image || image_url || "assets/product_baguette.png";
         const stockQty = Number(stock) || 50;
         const alertThreshold = Number(seuil_alerte) || 10;
@@ -819,7 +821,7 @@ app.post('/api/products', async (req, res) => {
 
         let newId = Date.now();
         try {
-            const result = await db.run(
+            const result = await database.run(
                 "INSERT INTO products (nom, prix, categorie, image, description, stock, seuil_alerte, is_active) VALUES (?, ?, ?, ?, ?, ?, ?, 1)",
                 [nom.trim(), numPrice, categorie.trim(), img, description || '', stockQty, alertThreshold]
             );
@@ -832,7 +834,7 @@ app.post('/api/products', async (req, res) => {
 
         // Also add or sync stock entry
         try {
-            await db.run(
+            await database.run(
                 "INSERT INTO stocks (product_id, nom_produit, categorie, quantite_disponible, seuil_alerte, unite, prix_unitaire) VALUES (?, ?, ?, ?, ?, 'pièce', ?)",
                 [newId, nom.trim(), categorie.trim(), stockQty, alertThreshold, numPrice]
             );
@@ -840,7 +842,7 @@ app.post('/api/products', async (req, res) => {
 
         let createdProduct = null;
         try {
-            createdProduct = await db.get("SELECT p.*, s.quantite_disponible as stock, s.seuil_alerte FROM products p LEFT JOIN stocks s ON p.id = s.product_id WHERE p.id = ?", [newId]);
+            createdProduct = await database.get("SELECT p.*, s.quantite_disponible as stock, s.seuil_alerte FROM products p LEFT JOIN stocks s ON p.id = s.product_id WHERE p.id = ?", [newId]);
         } catch (_) {}
 
         if (!createdProduct) {
@@ -856,6 +858,13 @@ app.post('/api/products', async (req, res) => {
                 is_active: 1
             };
         }
+
+        // 💾 Synchronisation persistante data/products.json
+        try {
+            const allRemaining = await database.all("SELECT * FROM products ORDER BY id ASC");
+            const jsonPath = path.resolve(__dirname, 'data/products.json');
+            fs.writeFileSync(jsonPath, JSON.stringify(allRemaining, null, 2), 'utf8');
+        } catch (_) {}
 
         // 📡 Diffusion temps réel
         try {
@@ -876,31 +885,33 @@ app.put('/api/products/:id', async (req, res) => {
     try {
         const { nom, prix, categorie, image, image_url, description, stock, seuil_alerte, is_active } = req.body;
         const prodId = req.params.id;
+        const numId = Number(prodId);
+        const database = db || (await ensureDBReady());
         const img = image || image_url;
         const numPrice = Number(prix);
         const stockQty = stock != null ? Number(stock) : 50;
         const alertThreshold = seuil_alerte != null ? Number(seuil_alerte) : 10;
         const activeState = is_active != null ? Number(is_active) : 1;
 
-        const existingProd = await db.get("SELECT id FROM products WHERE id = ? OR id = ?", [prodId, Number(prodId)]);
+        const existingProd = await database.get("SELECT id FROM products WHERE id = ? OR id = ?", [prodId, isNaN(numId) ? -1 : numId]);
         if (existingProd) {
             if (img) {
-                await db.run(
+                await database.run(
                     `UPDATE products 
                      SET nom = ?, prix = ?, categorie = ?, image = ?, description = ?, stock = ?, seuil_alerte = ?, is_active = ? 
                      WHERE id = ? OR id = ?`,
-                    [nom.trim(), numPrice, categorie.trim(), img, description || '', stockQty, alertThreshold, activeState, prodId, Number(prodId)]
+                    [nom.trim(), numPrice, categorie.trim(), img, description || '', stockQty, alertThreshold, activeState, prodId, isNaN(numId) ? -1 : numId]
                 );
             } else {
-                await db.run(
+                await database.run(
                     `UPDATE products 
                      SET nom = ?, prix = ?, categorie = ?, description = ?, stock = ?, seuil_alerte = ?, is_active = ? 
                      WHERE id = ? OR id = ?`,
-                    [nom.trim(), numPrice, categorie.trim(), description || '', stockQty, alertThreshold, activeState, prodId, Number(prodId)]
+                    [nom.trim(), numPrice, categorie.trim(), description || '', stockQty, alertThreshold, activeState, prodId, isNaN(numId) ? -1 : numId]
                 );
             }
         } else {
-            await db.run(
+            await database.run(
                 `INSERT INTO products (id, nom, prix, categorie, image, description, stock, seuil_alerte, is_active)
                  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
                 [prodId, nom.trim(), numPrice, categorie.trim(), img || 'assets/product_baguette.png', description || '', stockQty, alertThreshold, activeState]
@@ -908,20 +919,20 @@ app.put('/api/products/:id', async (req, res) => {
         }
 
         // Sync stock product name / price / quantity
-        const existingStock = await db.get("SELECT id FROM stocks WHERE product_id = ? OR product_id = ?", [prodId, Number(prodId)]);
+        const existingStock = await database.get("SELECT id FROM stocks WHERE product_id = ? OR product_id = ?", [prodId, isNaN(numId) ? -1 : numId]);
         if (existingStock) {
-            await db.run(
+            await database.run(
                 "UPDATE stocks SET nom_produit = ?, categorie = ?, prix_unitaire = ?, quantite_disponible = ?, seuil_alerte = ? WHERE product_id = ? OR product_id = ?", 
-                [nom.trim(), categorie.trim(), numPrice, stockQty, alertThreshold, prodId, Number(prodId)]
+                [nom.trim(), categorie.trim(), numPrice, stockQty, alertThreshold, prodId, isNaN(numId) ? -1 : numId]
             );
         } else {
-            await db.run(
+            await database.run(
                 "INSERT INTO stocks (product_id, nom_produit, categorie, quantite_disponible, seuil_alerte, unite, prix_unitaire) VALUES (?, ?, ?, ?, ?, 'pièce', ?)",
                 [prodId, nom.trim(), categorie.trim(), stockQty, alertThreshold, numPrice]
             );
         }
 
-        const updatedProduct = await db.get("SELECT p.*, s.quantite_disponible as stock, s.seuil_alerte FROM products p LEFT JOIN stocks s ON p.id = s.product_id WHERE p.id = ? OR p.id = ?", [prodId, Number(prodId)]) || {
+        const updatedProduct = await database.get("SELECT p.*, s.quantite_disponible as stock, s.seuil_alerte FROM products p LEFT JOIN stocks s ON p.id = s.product_id WHERE p.id = ? OR p.id = ?", [prodId, isNaN(numId) ? -1 : numId]) || {
             id: prodId,
             nom: nom.trim(),
             prix: numPrice,
@@ -932,6 +943,13 @@ app.put('/api/products/:id', async (req, res) => {
             seuil_alerte: alertThreshold,
             is_active: activeState
         };
+
+        // 💾 Synchronisation persistante data/products.json
+        try {
+            const allRemaining = await database.all("SELECT * FROM products ORDER BY id ASC");
+            const jsonPath = path.resolve(__dirname, 'data/products.json');
+            fs.writeFileSync(jsonPath, JSON.stringify(allRemaining, null, 2), 'utf8');
+        } catch (_) {}
 
         // 📡 Diffusion simultanée en temps réel vers tous les clients Web & Mobile
         try {
@@ -949,23 +967,23 @@ app.put('/api/products/:id', async (req, res) => {
 // Toggle product status (Activer / Désactiver)
 app.patch('/api/products/:id/toggle-status', async (req, res) => {
     try {
-        const product = await db.get("SELECT id, is_active FROM products WHERE id = ?", [req.params.id]);
-        if (!product) {
-            return res.status(404).json({ error: "Produit introuvable." });
-        }
-        const newStatus = (product.is_active === 0) ? 1 : 0;
-        await db.run("UPDATE products SET is_active = ? WHERE id = ?", [newStatus, req.params.id]);
-
-        // 📡 Diffusion simultanée en temps réel vers tous les clients Web & Mobile
+        const { id } = req.params;
+        const numId = Number(id);
+        const database = db || (await ensureDBReady());
+        const prod = await database.get("SELECT is_active FROM products WHERE id = ? OR id = ?", [id, isNaN(numId) ? -1 : numId]);
+        if (!prod) return res.status(404).json({ error: "Produit introuvable." });
+        
+        const newStatus = (prod.is_active === 1 || prod.is_active === '1' || prod.is_active === true) ? 0 : 1;
+        await database.run("UPDATE products SET is_active = ? WHERE id = ? OR id = ?", [newStatus, id, isNaN(numId) ? -1 : numId]);
+        
+        // 💾 Synchronisation persistante data/products.json
         try {
-            aiRealtimeOrchestrator.broadcastProductStatusChanged(req.params.id, newStatus);
+            const allRemaining = await database.all("SELECT * FROM products ORDER BY id ASC");
+            const jsonPath = path.resolve(__dirname, 'data/products.json');
+            fs.writeFileSync(jsonPath, JSON.stringify(allRemaining, null, 2), 'utf8');
         } catch (_) {}
 
-        res.json({ 
-            success: true, 
-            is_active: newStatus, 
-            message: newStatus === 1 ? "Produit activé avec succès." : "Produit désactivé avec succès." 
-        });
+        res.json({ success: true, is_active: newStatus, message: `Statut produit mis à jour : ${newStatus ? 'Actif' : 'Masqué'}` });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
@@ -974,12 +992,27 @@ app.patch('/api/products/:id/toggle-status', async (req, res) => {
 // Delete product
 app.delete('/api/products/:id', async (req, res) => {
     try {
-        await db.run("DELETE FROM products WHERE id = ?", [req.params.id]);
-        await db.run("DELETE FROM stocks WHERE product_id = ?", [req.params.id]);
+        const prodId = req.params.id;
+        const numId = Number(prodId);
+        const database = db || (await ensureDBReady());
+        
+        await database.run("DELETE FROM products WHERE id = ? OR id = ?", [prodId, isNaN(numId) ? -1 : numId]);
+        await database.run("DELETE FROM stocks WHERE product_id = ? OR product_id = ?", [prodId, isNaN(numId) ? -1 : numId]);
+
+        // 💾 Synchronisation persistante data/products.json
+        try {
+            const allRemaining = await database.all("SELECT * FROM products ORDER BY id ASC");
+            const jsonPath = path.resolve(__dirname, 'data/products.json');
+            fs.writeFileSync(jsonPath, JSON.stringify(allRemaining, null, 2), 'utf8');
+        } catch (fErr) {
+            console.warn("[Products] JSON sync notice:", fErr.message);
+        }
 
         // 📡 Diffusion simultanée en temps réel vers tous les clients Web & Mobile
         try {
-            aiRealtimeOrchestrator.broadcastProductDeleted(req.params.id);
+            if (typeof aiRealtimeOrchestrator !== 'undefined' && aiRealtimeOrchestrator.broadcastProductDeleted) {
+                aiRealtimeOrchestrator.broadcastProductDeleted(prodId);
+            }
         } catch (_) {}
 
         res.json({ success: true, message: "Produit supprimé du catalogue avec succès." });

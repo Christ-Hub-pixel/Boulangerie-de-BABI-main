@@ -1492,12 +1492,24 @@ async function handleDeleteProduct(id) {
             renderProductsGridOrTable();
             showAdminToast(`🗑️ "${prodName}" a été retiré du catalogue.`, 'info');
 
-            // 2. Synchronisation serveur en arrière-plan
+            // 2. Synchronisation serveur
             try {
                 const fetcher = (typeof window !== 'undefined' && typeof window.babiFetch === 'function') ? window.babiFetch : fetch;
-                await fetcher(`${API_ROOT}/api/products/${id}`, { method: 'DELETE' }, 3000);
+                await fetcher(`${API_ROOT}/api/products/${id}`, { method: 'DELETE' }, 5000);
                 if (typeof window.notifyProductCatalogueChanged === 'function') {
                     window.notifyProductCatalogueChanged('PRODUCT_DELETED', { id });
+                }
+                const freshRes = await fetcher(`${API_ROOT}/api/products`, { cache: 'no-store' }, 5000);
+                if (freshRes && freshRes.ok) {
+                    const freshData = await freshRes.json();
+                    if (Array.isArray(freshData)) {
+                        allProducts = freshData;
+                        if (typeof window.babiSetCachedProducts === 'function') {
+                            window.babiSetCachedProducts(allProducts);
+                        }
+                        renderProductsGridOrTable();
+                        updateProductKpis();
+                    }
                 }
             } catch (err) {
                 console.warn("[Admin] Suppression locale synchronisée:", err);
