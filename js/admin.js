@@ -1094,8 +1094,8 @@ function handleProductImageSelect(event, modalType) {
         const rawBase64 = e.target.result;
         const img = new Image();
         img.onload = function() {
-            // Compression intelligente max 450x450 (qualité 0.75, ~30KB) pour fluidité totale
-            const maxDim = 450;
+            // Compression ultra-légère max 220x220 (qualité 0.60, ~8KB) pour fluidité et capacité 100% illimitée
+            const maxDim = 220;
             let width = img.width;
             let height = img.height;
             if (width > maxDim || height > maxDim) {
@@ -1112,7 +1112,7 @@ function handleProductImageSelect(event, modalType) {
             canvas.height = height;
             const ctx = canvas.getContext('2d');
             ctx.drawImage(img, 0, 0, width, height);
-            const optimizedBase64 = canvas.toDataURL('image/jpeg', 0.75);
+            const optimizedBase64 = canvas.toDataURL('image/jpeg', 0.60);
 
             const previewEl = document.getElementById(`${modalType}-prod-preview-img`);
             const hiddenDataEl = document.getElementById(`${modalType}-prod-image-data`);

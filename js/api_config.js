@@ -59,25 +59,50 @@
         localStorage.removeItem('babi_deleted_product_ids');
     } catch (_) {}
 
+    let inMemoryProductsCache = [];
+
     window.babiGetCachedProducts = function() {
+        if (inMemoryProductsCache && inMemoryProductsCache.length > 0) {
+            return inMemoryProductsCache;
+        }
         try {
             const cached = localStorage.getItem('babi_cached_products');
             if (cached !== null) {
                 const parsed = JSON.parse(cached);
-                if (Array.isArray(parsed)) {
+                if (Array.isArray(parsed) && parsed.length > 0) {
+                    inMemoryProductsCache = parsed;
                     return parsed;
                 }
             }
         } catch (_) {}
-        return [];
+        return inMemoryProductsCache || [];
     };
 
     window.babiSetCachedProducts = function(products) {
+        if (!Array.isArray(products)) return;
+        inMemoryProductsCache = products;
         try {
-            if (Array.isArray(products)) {
+            localStorage.setItem('babi_cached_products', JSON.stringify(products));
+        } catch (storageErr) {
+            // En cas de QuotaExceededError (quota 5MB plein), nettoyer les caches obsolètes
+            try {
+                localStorage.removeItem('babi_pos_sales_history');
+                localStorage.removeItem('babi_pos_shift_sales');
+                localStorage.removeItem('babi_pos_shift_tickets');
+                localStorage.removeItem('babi_admin_cached_orders');
+                localStorage.removeItem('babi_admin_mock_stats');
                 localStorage.setItem('babi_cached_products', JSON.stringify(products));
+            } catch (_) {
+                // Si toujours trop lourd en local, stocker une version allégée en local
+                try {
+                    const lightweight = products.map(p => ({
+                        ...p,
+                        image: (p.image && p.image.length > 2000) ? 'assets/baguette 200.png' : p.image
+                    }));
+                    localStorage.setItem('babi_cached_products', JSON.stringify(lightweight));
+                } catch (_) {}
             }
-        } catch (_) {}
+        }
     };
 
     window.babiAddCustomProduct = function(product) {
