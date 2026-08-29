@@ -360,7 +360,7 @@
             `;
 
             displayed.forEach((p, idx) => {
-                const imgSrc = searchImageMap[p.nom] || (p.image && p.image !== 'null' ? p.image : 'assets/logo.png');
+                const imgSrc = (p.image && p.image !== 'null' && p.image !== 'undefined' && p.image.trim() !== '') ? p.image : (searchImageMap[p.nom] || 'assets/logo.png');
                 const catInfo = categoryBadges[p.categorie] || { label: p.categorie, icon: '🥖', color: '#2b160c', bg: '#f1f5f9' };
                 const formattedPrice = (p.prix || 0).toLocaleString();
 

@@ -116,7 +116,7 @@ function loadHomepageProducts() {
     const featured = allProducts.filter(p => p.is_active !== 0 && p.is_active !== '0');
 
     const buildCardHtml = (p) => {
-        const imgSrc = realProductImages[p.nom] || p.image;
+        const imgSrc = (p.image && p.image !== 'null' && p.image !== 'undefined' && p.image.trim() !== '') ? p.image : (realProductImages[p.nom] || 'assets/product_baguette.png');
         const isFav = typeof isWishlisted === 'function' && isWishlisted(p.nom);
         return `
         <div class="col">

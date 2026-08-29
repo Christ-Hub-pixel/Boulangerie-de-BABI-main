@@ -376,18 +376,55 @@ const realPosProductImages = {
 };
 
 function resolveProductImage(name, rawImage, category) {
-    if (realPosProductImages[name]) return realPosProductImages[name];
-    for (const [k, v] of Object.entries(realPosProductImages)) {
-        if (name && name.toLowerCase().includes(k.toLowerCase())) return v;
+    // 1. PRIORITÉ ABSOLUE : Si une photo personnalisée est fournie (Base64, URL Web, Blob ou chemin asset)
+    if (rawImage && typeof rawImage === 'string') {
+        const trimmed = rawImage.trim();
+        if (
+            trimmed !== '' &&
+            trimmed !== 'null' &&
+            trimmed !== 'undefined' &&
+            (
+                trimmed.startsWith('data:image/') ||
+                trimmed.startsWith('blob:') ||
+                trimmed.startsWith('http://') ||
+                trimmed.startsWith('https://') ||
+                trimmed.startsWith('assets/') ||
+                trimmed.startsWith('/') ||
+                trimmed.startsWith('./') ||
+                /\.(png|jpg|jpeg|webp|svg|gif|avif)(\?.*)?$/i.test(trimmed)
+            )
+        ) {
+            return trimmed;
+        }
     }
-    if (rawImage && (rawImage.endsWith('.png') || rawImage.endsWith('.jpg') || rawImage.endsWith('.jpeg'))) {
-        return rawImage;
+
+    // 2. Si aucune photo personnalisée, vérifier la correspondance exacte par nom dans le dictionnaire
+    if (name && realPosProductImages[name]) {
+        return realPosProductImages[name];
     }
+
+    // 3. Correspondance partielle par nom (uniquement si aucune image explicite n'était fournie)
+    if (name && (!rawImage || rawImage === 'assets/baguette 200.png' || rawImage === 'assets/product_baguette.png')) {
+        for (const [k, v] of Object.entries(realPosProductImages)) {
+            if (name.toLowerCase().includes(k.toLowerCase())) return v;
+        }
+    }
+
+    // 4. Si rawImage est une chaîne non vide (ex: autre format), la renvoyer directement
+    if (rawImage && typeof rawImage === 'string') {
+        const trimmed = rawImage.trim();
+        if (trimmed !== '' && trimmed !== 'null' && trimmed !== 'undefined') {
+            return trimmed;
+        }
+    }
+
+    // 5. Image de secours par catégorie
     const cat = (category || '').toLowerCase();
     if (cat.includes('boisson') || cat.includes('jus')) return 'assets/jus de baobab.png';
     if (cat.includes('viennois')) return 'assets/Croissant.png';
     if (cat.includes('patiss') || cat.includes('pâtiss')) return 'assets/Gateau1.png';
-    if (cat.includes('traiteur') || cat.includes('snack')) return 'assets/Pizza.png';
+    if (cat.includes('traiteur') || cat.includes('snack') || cat.includes('sale')) return 'assets/Pizza.png';
+    if (cat.includes('speciaux') || cat.includes('special')) return 'assets/cabre.png';
     return 'assets/baguette 200.png';
 }
 
@@ -396,39 +433,45 @@ async function loadPosProducts() {
     const apiBase = window.API_BASE_URL || (window.location.protocol.startsWith('http') ? '' : (API_ROOT || 'http://localhost:5000'));
 
     // 1. Rendu instantané 0ms depuis le catalogue en cache/mémoire locale
-    if (!posProducts || posProducts.length === 0) {
-        const cached = (typeof window.babiGetCachedProducts === 'function') 
-            ? window.babiGetCachedProducts() 
-            : FALLBACK_POS_PRODUCTS;
-        
-        posProducts = cached
-            .filter(p => p.is_active !== 0 && p.is_active !== '0' && p.is_active !== false)
-            .map(p => {
-                const pName = p.nom || p.name;
-                const pCat = (p.categorie || p.category || 'pains').toLowerCase();
-                const baseStock = (p.stock !== undefined && p.stock !== null) ? Number(p.stock) : 30;
-                const adj = adjustments[pName] !== undefined ? adjustments[pName] : 0;
-                return {
-                    id: p.id || pName,
-                    name: pName,
-                    price: Number(p.prix || p.price || 0),
-                    category: pCat,
-                    image: resolveProductImage(pName, p.image || p.image_url, pCat),
-                    stock: Math.max(0, baseStock + adj),
-                    seuil_alerte: Number(p.seuil_alerte || 10)
-                };
-            });
-    }
+    const cached = (typeof window.babiGetCachedProducts === 'function') 
+        ? window.babiGetCachedProducts() 
+        : [];
+    
+    const sourceList = (cached && cached.length > 0) 
+        ? cached 
+        : ((posProducts && posProducts.length > 0) ? posProducts : FALLBACK_POS_PRODUCTS);
+    
+    posProducts = sourceList
+        .filter(p => p.is_active !== 0 && p.is_active !== '0' && p.is_active !== false)
+        .map(p => {
+            const pName = p.nom || p.name;
+            const pCat = (p.categorie || p.category || 'pains').toLowerCase();
+            const baseStock = (p.stock !== undefined && p.stock !== null) ? Number(p.stock) : ((p.quantite_disponible !== undefined && p.quantite_disponible !== null) ? Number(p.quantite_disponible) : 30);
+            const adj = adjustments[pName] !== undefined ? adjustments[pName] : 0;
+            return {
+                id: p.id || p._id || pName,
+                name: pName,
+                price: Number(p.prix || p.price || 0),
+                category: pCat,
+                image: resolveProductImage(pName, p.image || p.image_url, pCat),
+                stock: Math.max(0, baseStock + adj),
+                seuil_alerte: Number(p.seuil_alerte || 10)
+            };
+        });
+
     renderPosProductsGrid();
 
-    // 2. Synchronisation en tâche de fond avec le serveur (timeout 2s)
+    // 2. Synchronisation en tâche de fond avec le serveur (timeout 4s)
     try {
         const fetcher = (typeof window !== 'undefined' && typeof window.babiFetch === 'function') ? window.babiFetch : fetch;
-        const res = await fetcher(`${apiBase}/api/products`, {}, 2000);
+        const res = await fetcher(`${apiBase}/api/products`, {}, 4000);
         if (res && res.ok) {
             const rawProducts = await res.json();
             const productList = Array.isArray(rawProducts) ? rawProducts : (rawProducts.products || []);
             if (productList.length > 0) {
+                if (typeof window.babiSetCachedProducts === 'function') {
+                    window.babiSetCachedProducts(productList);
+                }
                 posProducts = productList
                     .filter(p => p.is_active !== 0 && p.is_active !== '0' && p.is_active !== false)
                     .map(p => {
@@ -447,7 +490,6 @@ async function loadPosProducts() {
                         };
                     });
                 renderPosProductsGrid();
-                return;
             }
         }
     } catch (_) {
