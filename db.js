@@ -306,10 +306,13 @@ async function initDB() {
     }
 
     let db;
-    const tursoUrl = process.env.TURSO_DATABASE_URL || process.env.DATABASE_URL || DEFAULT_TURSO_URL;
-    const tursoAuthToken = process.env.TURSO_AUTH_TOKEN || DEFAULT_TURSO_TOKEN;
+    let tursoUrl = process.env.TURSO_DATABASE_URL;
+    if (!tursoUrl || (!tursoUrl.startsWith('libsql://') && !tursoUrl.startsWith('https://') && !tursoUrl.startsWith('http://'))) {
+        tursoUrl = DEFAULT_TURSO_URL;
+    }
+    let tursoAuthToken = process.env.TURSO_AUTH_TOKEN || DEFAULT_TURSO_TOKEN;
 
-    if (tursoUrl && (tursoUrl.startsWith('libsql://') || tursoUrl.startsWith('https://') || tursoUrl.startsWith('http://'))) {
+    if (tursoUrl) {
         try {
             let createClient;
             try {

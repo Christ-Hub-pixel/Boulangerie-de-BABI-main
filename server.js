@@ -725,21 +725,17 @@ app.get('/api/products', async (req, res) => {
         // Si la base est temporairement vide, charger immédiatement le catalogue de référence
         if (!Array.isArray(products) || products.length === 0) {
             try {
-                const fs = require('fs');
-                const pJsonPath = path.resolve(__dirname, 'data', 'products.json');
-                if (fs.existsSync(pJsonPath)) {
-                    const fallbackData = JSON.parse(fs.readFileSync(pJsonPath, 'utf8'));
-                    if (Array.isArray(fallbackData) && fallbackData.length > 0) {
-                        products = fallbackData;
-                        // Synchroniser en arrière-plan avec la BD
-                        for (const item of fallbackData) {
-                            try {
-                                await db.run(
-                                    "INSERT OR IGNORE INTO products (id, nom, prix, categorie, image, description, stock, seuil_alerte, is_active) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1)",
-                                    [item.id, item.nom, item.prix, item.categorie, item.image, item.description || '', item.stock || 50, item.seuil_alerte || 10]
-                                );
-                            } catch (_) {}
-                        }
+                const fallbackData = require('./data/products.json');
+                if (Array.isArray(fallbackData) && fallbackData.length > 0) {
+                    products = fallbackData;
+                    // Synchroniser en arrière-plan avec la BD
+                    for (const item of fallbackData) {
+                        try {
+                            await db.run(
+                                "INSERT OR IGNORE INTO products (id, nom, prix, categorie, image, description, stock, seuil_alerte, is_active) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1)",
+                                [item.id, item.nom, item.prix, item.categorie, item.image, item.description || '', item.stock || 50, item.seuil_alerte || 10]
+                            );
+                        } catch (_) {}
                     }
                 }
             } catch (seedErr) {
