@@ -707,16 +707,47 @@ app.delete('/api/users/:id', async (req, res) => {
 app.get('/api/products', async (req, res) => {
     try {
         res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, private');
-        const products = await db.all(`
-            SELECT p.*, 
-                   COALESCE(s.quantite_disponible, p.stock, 50) as stock, 
-                   COALESCE(s.seuil_alerte, p.seuil_alerte, 10) as seuil_alerte, 
-                   COALESCE(p.is_active, 1) as is_active
-            FROM products p
-            LEFT JOIN stocks s ON p.id = s.product_id
-            ORDER BY p.id DESC
-        `);
-        res.json(products);
+        let products = [];
+        try {
+            products = await db.all(`
+                SELECT p.*, 
+                       COALESCE(s.quantite_disponible, p.stock, 50) as stock, 
+                       COALESCE(s.seuil_alerte, p.seuil_alerte, 10) as seuil_alerte, 
+                       COALESCE(p.is_active, 1) as is_active
+                FROM products p
+                LEFT JOIN stocks s ON p.id = s.product_id
+                ORDER BY p.id DESC
+            `);
+        } catch (dbQueryErr) {
+            console.warn("[Products] DB query warning:", dbQueryErr.message);
+        }
+
+        // Si la base est temporairement vide, charger immédiatement le catalogue de référence
+        if (!Array.isArray(products) || products.length === 0) {
+            try {
+                const fs = require('fs');
+                const pJsonPath = path.resolve(__dirname, 'data', 'products.json');
+                if (fs.existsSync(pJsonPath)) {
+                    const fallbackData = JSON.parse(fs.readFileSync(pJsonPath, 'utf8'));
+                    if (Array.isArray(fallbackData) && fallbackData.length > 0) {
+                        products = fallbackData;
+                        // Synchroniser en arrière-plan avec la BD
+                        for (const item of fallbackData) {
+                            try {
+                                await db.run(
+                                    "INSERT OR IGNORE INTO products (id, nom, prix, categorie, image, description, stock, seuil_alerte, is_active) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1)",
+                                    [item.id, item.nom, item.prix, item.categorie, item.image, item.description || '', item.stock || 50, item.seuil_alerte || 10]
+                                );
+                            } catch (_) {}
+                        }
+                    }
+                }
+            } catch (seedErr) {
+                console.warn("[Products] Fallback load warning:", seedErr.message);
+            }
+        }
+
+        res.json(products || []);
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
@@ -726,20 +757,26 @@ app.get('/api/products', async (req, res) => {
 app.post('/api/products', async (req, res) => {
     try {
         const { nom, prix, categorie, image, image_url, description, stock, seuil_alerte } = req.body;
-        if (!nom || !prix || !categorie) {
-            return res.status(400).json({ error: "Nom, prix et catégorie obligatoires." });
+        if (!nom || prix === undefined || prix === null || isNaN(Number(prix)) || !categorie) {
+            return res.status(400).json({ error: "Nom, prix valide et catégorie obligatoires." });
         }
         const img = image || image_url || "assets/product_baguette.png";
         const stockQty = Number(stock) || 50;
         const alertThreshold = Number(seuil_alerte) || 10;
         const numPrice = Number(prix);
 
-        const result = await db.run(
-            "INSERT INTO products (nom, prix, categorie, image, description, stock, seuil_alerte, is_active) VALUES (?, ?, ?, ?, ?, ?, ?, 1)",
-            [nom.trim(), numPrice, categorie.trim(), img, description || '', stockQty, alertThreshold]
-        );
-        
-        const newId = result.lastID || Date.now();
+        let newId = Date.now();
+        try {
+            const result = await db.run(
+                "INSERT INTO products (nom, prix, categorie, image, description, stock, seuil_alerte, is_active) VALUES (?, ?, ?, ?, ?, ?, ?, 1)",
+                [nom.trim(), numPrice, categorie.trim(), img, description || '', stockQty, alertThreshold]
+            );
+            if (result && result.lastID) {
+                newId = result.lastID;
+            }
+        } catch (dbErr) {
+            console.warn("[Products] Direct DB insert notice:", dbErr.message);
+        }
 
         // Also add or sync stock entry
         try {
@@ -768,7 +805,7 @@ app.post('/api/products', async (req, res) => {
             };
         }
 
-        // 📡 Diffusion simultanée en temps réel vers tous les clients Web & Mobile
+        // 📡 Diffusion temps réel
         try {
             if (typeof aiRealtimeOrchestrator !== 'undefined' && aiRealtimeOrchestrator.broadcastProductCreated) {
                 aiRealtimeOrchestrator.broadcastProductCreated(createdProduct);
