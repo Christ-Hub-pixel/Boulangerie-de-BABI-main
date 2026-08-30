@@ -795,7 +795,8 @@ app.get('/api/products', async (req, res) => {
                        COALESCE(p.is_active, 1) as is_active
                 FROM products p
                 LEFT JOIN stocks s ON p.id = s.product_id
-                WHERE p.id NOT IN (SELECT id FROM deleted_products)
+                WHERE CAST(p.id AS TEXT) NOT IN (SELECT CAST(id AS TEXT) FROM deleted_products)
+                  AND LOWER(TRIM(COALESCE(p.nom, ''))) NOT IN (SELECT LOWER(TRIM(id)) FROM deleted_products)
                 ORDER BY p.id DESC
             `);
         } catch (dbQueryErr) {
