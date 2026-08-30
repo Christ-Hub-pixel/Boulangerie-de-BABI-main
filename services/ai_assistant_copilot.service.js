@@ -598,7 +598,17 @@ class AiAssistantCopilotService {
             };
         }
 
-        // 5. Réponse par défaut enrichie
+        // 🧐 5. DÉTECTION D'INCOMPRÉHENSION OU DONNÉES INSUFFISANTES — VÉRITÉ & TRANSPARENCE TOTALE
+        const isBakingDomain = query.includes('pain') || query.includes('baguette') || query.includes('croissant') || query.includes('gateau') || query.includes('gâteau') || query.includes('jus') || query.includes('boisson') || query.includes('stock') || query.includes('prix') || query.includes('caisse') || query.includes('vente') || query.includes('chiffre') || query.includes('commande') || query.includes('four') || query.includes('client');
+        
+        if (!isBakingDomain && query.length > 8) {
+            return {
+                reply: `🧐 **En toute franchise et transparence :**\n\nJe ne dispose pas de données suffisantes sur cette question dans le système de la **Boulangerie de BABI**, ou ce sujet sort de mon domaine d'expertise opérationnelle.\n\nJe préfère vous dire la vérité plutôt que d'inventer une réponse inexacte.\n\n💡 **Pour que je puisse vous aider avec précision, vous pouvez :**\n1. 🏷️ Me demander une action précise : *« Change le prix de [produit] à [X] FCFA »*\n2. 📦 Vérifier un stock : *« Combien reste-t-il de Baguettes ou de Jus de Passion ? »*\n3. 📊 Analyser les chiffres : *« Quel est le total des ventes du jour ? »*\n4. 🥖 Poser une question technique : *« Quel est le secret d'une bonne pâte feuilletée ? »*`,
+                category: 'honesty_fallback'
+            };
+        }
+
+        // 6. Réponse par défaut enrichie
         return {
             reply: `🤖 **Copilote BABI à votre écoute :**\n\nJe suis votre expert métier en boulangerie, pâtisserie et gestion financière. Vous pouvez me demander :\n\n• 🥖 **Technique & Cuisson :** *« Comment améliorer le croustillant de la baguette ? »*\n• 🥐 **Viennoiserie :** *« Quel est le secret d'un bon feuilletage croissant ? »*\n• 🍹 **Jus & Boissons :** *« Quels sont nos produits les plus rentables ? »*\n• ⚡ **Ordre Direct :** *« Change le prix du Croissant à 600 »* ou *« Ajoute 50 Baguettes »*\n\nQue souhaitez-vous analyser ou exécuter ?`,
             category: 'general',
