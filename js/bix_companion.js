@@ -183,6 +183,10 @@
 
             <!-- Messages Body -->
             <div class="bix-popup-body" id="bixPopupBody">
+                <a href="bix.html" style="display: flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 14px; background: linear-gradient(135deg, #f59e0b, #d97706); color: #090d16; font-weight: 800; font-size: 12px; border-radius: 10px; text-decoration: none; box-shadow: 0 4px 14px rgba(245,158,11,0.35); transition: transform 0.15s;">
+                    <span>🥐 Ouvrir BIX HQ (Cockpit Central)</span>
+                    <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                </a>
                 <div style="background: rgba(30, 41, 59, 0.6); border: 1px solid rgba(255,255,255,0.06); border-radius: 12px; padding: 12px; font-size: 12.5px; color: #e2e8f0; line-height: 1.5;">
                     <p style="margin-bottom: 8px;">👋 <strong>Coucou ! Je suis BIX.</strong> Que souhaitez-vous vérifier sur cette interface ?</p>
                     <div style="display: flex; flex-direction: column; gap: 6px;" id="bixQuickSuggestions">
