@@ -38,6 +38,16 @@
             z-index: 999999;
             transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             user-select: none;
+            touch-action: manipulation;
+        }
+        @media (max-width: 1023px) {
+            .bix-companion-fab {
+                bottom: 82px !important;
+                right: 16px !important;
+                width: 50px !important;
+                height: 50px !important;
+                font-size: 23px !important;
+            }
         }
         .bix-companion-fab:hover {
             transform: scale(1.1) translateY(-3px);

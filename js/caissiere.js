@@ -619,7 +619,7 @@ function renderPosProductsGrid(searchTerm = '') {
         const imgClass = isDrink ? 'pos-img-drink' : 'pos-img-food';
 
         return `
-            <button type="button" onclick="addToPosCartByIndex(${idx})" class="pos-product-item flex flex-col rounded-2xl overflow-hidden group relative text-left select-none active:scale-[0.98] transition-transform cursor-pointer">
+            <div role="button" tabindex="0" onclick="addToPosCartByIndex(${idx})" class="pos-product-item flex flex-col rounded-2xl overflow-hidden group relative text-left active:scale-[0.98] transition-transform cursor-pointer">
                 <div class="pos-product-img-box ${boxClass} w-full pointer-events-none">
                     <img class="${imgClass}" src="${p.image}" alt="${p.name}" loading="lazy" onerror="this.onerror=null; this.src='assets/Croissant.png';"/>
                     <div class="pos-price-badge-vip absolute top-2 right-2 px-2.5 py-0.5 rounded-lg font-mono text-[11px] sm:text-xs font-black z-10">${p.price.toLocaleString()} F</div>
@@ -636,7 +636,7 @@ function renderPosProductsGrid(searchTerm = '') {
                         </div>
                     </div>
                 </div>
-            </button>
+            </div>
         `;
     }).join('');
 }

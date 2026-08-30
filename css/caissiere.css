@@ -873,6 +873,14 @@ main {
         max-height: none !important;
         min-height: auto !important;
         flex: none !important;
+        touch-action: pan-y !important;
+    }
+
+    .pos-product-item {
+        touch-action: pan-y !important;
+        -webkit-user-select: auto !important;
+        user-select: auto !important;
+        cursor: pointer !important;
     }
 
     #pos-view-pickups, #pos-view-history, #pos-view-closure {
@@ -893,6 +901,8 @@ main {
     .pos-products-auto-grid {
         grid-template-columns: repeat(auto-fill, minmax(145px, 1fr)) !important;
         gap: 10px !important;
+        touch-action: pan-y !important;
+        padding-bottom: 6rem !important;
     }
 
     .magazine-search-pill {
