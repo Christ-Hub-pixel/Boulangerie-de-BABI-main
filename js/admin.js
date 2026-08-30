@@ -3933,6 +3933,41 @@ window.sendAiAssistantMessage = sendAiAssistantMessage;
 // ================================================================
 // 12. BABI COPILOT STUDIO (INTELLIGENCE DÉCISIONNELLE)
 // ================================================================
+function formatAiStudioMarkdown(raw) {
+    if (!raw) return '';
+    
+    // Remplacement des sauts de ligne multiples
+    let html = raw.trim();
+
+    // ⚡ Détection des cartes d'actions exécutées (Prix, Stocks, etc.)
+    if (html.includes('Action Automatisée Exécutée') || html.includes('Stock Mis à Jour')) {
+        html = html.replace(/⚡ \*\*Action Automatisée Exécutée avec Succès !\*\*/g, '<div style="background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.4); border-radius: 12px; padding: 12px 16px; margin-bottom: 14px; color: #6ee7b7; font-weight: 700;"><i class="fa-solid fa-circle-check me-2"></i> Action Automatisée Exécutée avec Succès !</div>');
+        html = html.replace(/📦 \*\*Stock Mis à Jour Automatiquement !\*\*/g, '<div style="background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.4); border-radius: 12px; padding: 12px 16px; margin-bottom: 14px; color: #6ee7b7; font-weight: 700;"><i class="fa-solid fa-box me-2"></i> Stock Mis à Jour Automatiquement !</div>');
+    }
+
+    // Markdown Headers
+    html = html.replace(/^### (.*$)/gim, '<h4 style="color: #fbbf24; font-size: 15px; font-weight: 800; margin: 14px 0 6px 0;">$1</h4>');
+    html = html.replace(/^## (.*$)/gim, '<h3 style="color: #f8fafc; font-size: 16px; font-weight: 800; margin: 16px 0 8px 0;">$1</h3>');
+
+    // Bold & Italic
+    html = html.replace(/\*\*\*(.*?)\*\*\*/g, '<strong><em>$1</em></strong>');
+    html = html.replace(/\*\*(.*?)\*\*/g, '<strong style="color: #f8fafc; font-weight: 700;">$1</strong>');
+    html = html.replace(/\*(.*?)\*/g, '<em style="color: #cbd5e1;">$1</em>');
+
+    // Puces avec icônes dorées
+    html = html.replace(/^• (.*$)/gim, '<div style="display: flex; align-items: baseline; gap: 8px; margin: 5px 0;"><span style="color: #f59e0b; font-size: 10px;">◆</span> <span>$1</span></div>');
+    html = html.replace(/^- (.*$)/gim, '<div style="display: flex; align-items: baseline; gap: 8px; margin: 5px 0;"><span style="color: #f59e0b; font-size: 10px;">◆</span> <span>$1</span></div>');
+
+    // Blocs d'astuces / Conseils du Chef
+    html = html.replace(/💡 \*(.*?)\*/g, '<div style="background: rgba(245, 158, 11, 0.08); border-left: 3px solid #f59e0b; border-radius: 6px; padding: 10px 14px; margin-top: 14px; font-size: 12.5px; color: #fde68a;"><i class="fa-solid fa-lightbulb text-warning me-2"></i> <em>$1</em></div>');
+
+    // Sauts de ligne simples
+    html = html.replace(/\n\n/g, '<div style="height: 10px;"></div>');
+    html = html.replace(/\n/g, '<br/>');
+
+    return html;
+}
+
 async function handleStudioSendMessage(e) {
     if (e && e.preventDefault) e.preventDefault();
     const input = document.getElementById('studio-chat-input');
@@ -3948,11 +3983,11 @@ async function handleStudioSendMessage(e) {
     const scrollArea = document.getElementById('studio-chat-container');
 
     if (container) {
-        // Message Utilisateur
+        // Message Utilisateur Haute Définition
         container.innerHTML += `
-            <div class="studio-user-msg">
-                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px; opacity: 0.7; font-size: 11px;">
-                    <i class="fa-solid fa-user"></i> <span>Vous (Administrateur)</span>
+            <div class="studio-user-msg" style="align-self: flex-end; background: #1e293b; color: #f8fafc; padding: 12px 18px; border-radius: 20px 20px 4px 20px; font-size: 14px; max-width: 85%; border: 1px solid rgba(255, 255, 255, 0.08); line-height: 1.5; box-shadow: 0 4px 15px rgba(0,0,0,0.25);">
+                <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 4px; opacity: 0.6; font-size: 11px; font-weight: 700;">
+                    <i class="fa-solid fa-user-tie"></i> <span>Vous (Administrateur)</span>
                 </div>
                 <div>${escapeHtml(msg)}</div>
             </div>
@@ -3960,12 +3995,12 @@ async function handleStudioSendMessage(e) {
 
         // Bulle de réflexion animée
         container.innerHTML += `
-            <div id="studio-ai-loading" class="studio-ai-msg" style="border-left: 3px solid #6366f1;">
-                <div style="display: flex; align-items: center; gap: 10px; color: #a5b4fc; font-size: 13px; font-weight: 600;">
-                    <div style="width: 22px; height: 22px; border-radius: 50%; background: linear-gradient(135deg, #f59e0b, #6366f1); display: flex; align-items: center; justify-content: center; font-size: 11px; color: #fff;">
-                        <i class="fa-solid fa-wand-magic-sparkles"></i>
+            <div id="studio-ai-loading" class="studio-ai-msg" style="align-self: flex-start; background: rgba(30, 41, 59, 0.85); border: 1px solid rgba(255, 255, 255, 0.1); border-left: 3px solid #f59e0b; border-radius: 20px 20px 20px 4px; padding: 16px 20px; max-width: 90%; box-shadow: 0 8px 25px rgba(0,0,0,0.3);">
+                <div style="display: flex; align-items: center; gap: 12px; color: #cbd5e1; font-size: 13.5px; font-weight: 600;">
+                    <div style="width: 26px; height: 26px; border-radius: 50%; background: linear-gradient(135deg, #f59e0b, #ec4899); display: flex; align-items: center; justify-content: center; font-size: 12px; color: #fff; box-shadow: 0 0 12px rgba(245,158,11,0.5);">
+                        <i class="fa-solid fa-wand-magic-sparkles fa-spin"></i>
                     </div>
-                    <span><i class="fa-solid fa-spinner fa-spin me-2"></i> BABI Brain analyse les données en temps réel...</span>
+                    <span>BABI Brain analyse les données opérationnelles en direct...</span>
                 </div>
             </div>
         `;
@@ -3987,29 +4022,29 @@ async function handleStudioSendMessage(e) {
         if (res && res.ok) {
             const data = await parseSafeResponse(res);
             const rawReply = data.reply || data.response || data.message || "Analyse terminée.";
-            
-            // Formatage markdown vers HTML soigné
-            let formatted = rawReply
-                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-                .replace(/\*(.*?)\*/g, '<em>$1</em>')
-                .replace(/\n/g, '<br/>');
+            const formatted = formatAiStudioMarkdown(rawReply);
 
             if (container) {
                 container.innerHTML += `
-                    <div class="studio-ai-msg">
-                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 8px;">
-                            <div style="display: flex; align-items: center; gap: 8px;">
-                                <div style="width: 24px; height: 24px; border-radius: 6px; background: linear-gradient(135deg, #f59e0b, #ec4899); display: flex; align-items: center; justify-content: center; font-size: 11px; color: #fff;">
+                    <div class="studio-ai-msg" style="align-self: flex-start; background: rgba(24, 32, 47, 0.95); border: 1px solid rgba(255, 255, 255, 0.08); border-left: 3px solid #f59e0b; border-radius: 20px 20px 20px 4px; padding: 20px 24px; max-width: 90%; box-shadow: 0 10px 30px rgba(0,0,0,0.35); margin-bottom: 8px;">
+                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 10px; flex-wrap: wrap; gap: 8px;">
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <div style="width: 28px; height: 28px; border-radius: 8px; background: linear-gradient(135deg, #f59e0b, #ec4899, #6366f1); display: flex; align-items: center; justify-content: center; font-size: 13px; color: #fff; box-shadow: 0 2px 10px rgba(245,158,11,0.4);">
                                     <i class="fa-solid fa-wand-magic-sparkles"></i>
                                 </div>
-                                <span style="font-weight: 800; font-size: 13px; color: #f8fafc;">BABI Brain Copilot</span>
-                                <span style="font-size: 10px; background: rgba(245,158,11,0.2); color: #fbbf24; padding: 1px 5px; border-radius: 4px; font-weight: 700;">Maître Artisan</span>
+                                <span style="font-weight: 800; font-size: 14px; color: #f8fafc; letter-spacing: -0.2px;">BABI Copilot</span>
+                                <span style="font-size: 10px; background: rgba(245,158,11,0.2); color: #fbbf24; border: 1px solid rgba(245,158,11,0.4); padding: 2px 7px; border-radius: 6px; font-weight: 700;">Maître Artisan</span>
                             </div>
-                            <button type="button" onclick="copyStudioAiText(this)" style="background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); color: #94a3b8; font-size: 11px; padding: 3px 8px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; gap: 4px;" title="Copier la réponse">
-                                <i class="fa-solid fa-copy"></i> <span>Copier</span>
-                            </button>
+                            <div style="display: flex; align-items: center; gap: 6px;">
+                                <button type="button" onclick="copyStudioAiText(this)" style="background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); color: #cbd5e1; font-size: 11px; padding: 4px 10px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 5px; transition: all 0.15s;" title="Copier la réponse">
+                                    <i class="fa-solid fa-copy"></i> <span>Copier</span>
+                                </button>
+                                <button type="button" onclick="speakStudioAiText(this)" style="background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); color: #cbd5e1; font-size: 11px; padding: 4px 10px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 5px; transition: all 0.15s;" title="Lire à voix haute">
+                                    <i class="fa-solid fa-volume-high"></i> <span>Écouter</span>
+                                </button>
+                            </div>
                         </div>
-                        <div class="studio-msg-content" style="color: #e2e8f0; font-size: 13.5px; line-height: 1.65;">
+                        <div class="studio-msg-content" style="color: #e2e8f0; font-size: 14px; line-height: 1.7;">
                             ${formatted}
                         </div>
                     </div>
@@ -4019,8 +4054,8 @@ async function handleStudioSendMessage(e) {
         } else {
             if (container) {
                 container.innerHTML += `
-                    <div class="studio-ai-msg" style="border-left: 3px solid #ef4444;">
-                        <div style="color: #fca5a5; font-size: 13px;">Désolé, une anomalie temporaire est survenue. Veuillez réessayer.</div>
+                    <div class="studio-ai-msg" style="border-left: 3px solid #ef4444; background: rgba(239, 68, 68, 0.1); padding: 14px 18px; border-radius: 12px;">
+                        <div style="color: #fca5a5; font-size: 13px;"><i class="fa-solid fa-triangle-exclamation me-2"></i> Désolé, une anomalie temporaire est survenue. Veuillez réessayer.</div>
                     </div>
                 `;
                 if (scrollArea) scrollArea.scrollTop = scrollArea.scrollHeight;
@@ -4031,8 +4066,8 @@ async function handleStudioSendMessage(e) {
         if (loader) loader.remove();
         if (container) {
             container.innerHTML += `
-                <div class="studio-ai-msg" style="border-left: 3px solid #ef4444;">
-                    <div style="color: #fca5a5; font-size: 13px;">Erreur de communication avec le serveur.</div>
+                <div class="studio-ai-msg" style="border-left: 3px solid #ef4444; background: rgba(239, 68, 68, 0.1); padding: 14px 18px; border-radius: 12px;">
+                    <div style="color: #fca5a5; font-size: 13px;"><i class="fa-solid fa-triangle-exclamation me-2"></i> Erreur de communication avec le serveur.</div>
                 </div>
             `;
             if (scrollArea) scrollArea.scrollTop = scrollArea.scrollHeight;
@@ -4071,6 +4106,31 @@ function copyStudioAiText(btn) {
     }
 }
 window.copyStudioAiText = copyStudioAiText;
+
+function speakStudioAiText(btn) {
+    const parent = btn.closest('.studio-ai-msg');
+    if (!parent) return;
+    const content = parent.querySelector('.studio-msg-content');
+    if (content && typeof window !== 'undefined' && 'speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        const text = content.innerText.replace(/[*#•◆]/g, '');
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'fr-FR';
+        utterance.rate = 1.05;
+        
+        btn.innerHTML = '<i class="fa-solid fa-stop text-warning"></i> <span>Arrêter</span>';
+        utterance.onend = () => { btn.innerHTML = '<i class="fa-solid fa-volume-high"></i> <span>Écouter</span>'; };
+        utterance.onerror = () => { btn.innerHTML = '<i class="fa-solid fa-volume-high"></i> <span>Écouter</span>'; };
+        
+        window.speechSynthesis.speak(utterance);
+    }
+}
+window.speakStudioAiText = speakStudioAiText;
+
+function toggleAiCopilotDrawer() {
+    switchAdminSection('ai');
+}
+window.toggleAiCopilotDrawer = toggleAiCopilotDrawer;
 
 
 
