@@ -46,63 +46,69 @@
 
         /* Luxury Dark Sidebar */
         .saas-sidebar {
-            width: 260px;
-            min-width: 260px;
-            background: linear-gradient(180deg, #090d16 0%, #0f172a 100%);
-            color: #94a3b8;
+            width: 270px;
+            min-width: 270px;
+            background: #090d16 !important;
+            color: #ffffff !important;
             display: flex;
             flex-direction: column;
             position: fixed;
             top: 0;
             bottom: 0;
             left: 0;
-            z-index: 9999;
-            border-right: 1px solid rgba(255, 255, 255, 0.07);
+            z-index: 1000001 !important;
+            border-right: 1px solid rgba(255, 255, 255, 0.12) !important;
             overflow-y: auto;
             scrollbar-width: thin;
-            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+            box-shadow: 5px 0 25px rgba(0, 0, 0, 0.5) !important;
         }
 
         .saas-sidebar-brand {
-            padding: 22px 20px 18px 20px;
+            padding: 20px 18px;
             display: flex;
             align-items: center;
-            gap: 12px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            justify-content: space-between;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+            background: rgba(0, 0, 0, 0.3);
         }
 
         .saas-brand-logo {
-            width: 40px;
-            height: 40px;
+            width: 42px;
+            height: 42px;
             border-radius: 12px;
             object-fit: cover;
-            border: 1.5px solid rgba(245, 158, 11, 0.4);
-            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.2);
+            border: 1.5px solid #f59e0b;
+            box-shadow: 0 4px 14px rgba(245, 158, 11, 0.3);
+        }
+
+        .saas-sidebar-close-btn {
+            display: none !important;
         }
 
         .saas-brand-title {
             font-size: 15px;
             font-weight: 900;
-            color: #ffffff;
+            color: #ffffff !important;
             letter-spacing: -0.3px;
             line-height: 1.1;
         }
 
         .saas-brand-sub {
             font-size: 11px;
-            color: #f59e0b;
-            font-weight: 700;
+            color: #f59e0b !important;
+            font-weight: 800;
             letter-spacing: 0.5px;
             text-transform: uppercase;
         }
 
         .saas-nav-section-title {
-            font-size: 10px;
+            font-size: 11px;
             font-weight: 800;
-            color: #64748b;
+            color: #94a3b8 !important;
             text-transform: uppercase;
             letter-spacing: 1px;
-            padding: 18px 20px 6px 20px;
+            padding: 16px 18px 6px 18px;
         }
 
         .saas-nav-list {
@@ -118,11 +124,11 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 10px 14px;
+            padding: 11px 14px;
             border-radius: 10px;
-            color: #94a3b8;
-            font-weight: 600;
-            font-size: 13px;
+            color: #e2e8f0 !important;
+            font-weight: 700;
+            font-size: 13.5px;
             cursor: pointer;
             transition: all 0.18s ease;
             text-decoration: none;
@@ -130,32 +136,32 @@
         }
 
         .saas-nav-item:hover {
-            color: #ffffff;
-            background: rgba(255, 255, 255, 0.05);
-            transform: translateX(2px);
+            color: #ffffff !important;
+            background: rgba(255, 255, 255, 0.1) !important;
+            transform: translateX(3px);
         }
 
         .saas-nav-item.active {
-            color: #ffffff;
-            background: linear-gradient(135deg, rgba(245, 158, 11, 0.2) 0%, rgba(217, 119, 6, 0.12) 100%);
-            border-color: rgba(245, 158, 11, 0.35);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
-            font-weight: 800;
+            color: #ffffff !important;
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.3) 0%, rgba(217, 119, 6, 0.2) 100%) !important;
+            border-color: rgba(245, 158, 11, 0.6) !important;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.35) !important;
+            font-weight: 900;
         }
 
         .saas-nav-item.active .saas-nav-icon {
-            color: #f59e0b;
+            color: #f59e0b !important;
         }
 
         .saas-nav-left-group {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
         }
 
         .saas-nav-icon {
-            font-size: 18px;
-            color: #64748b;
+            font-size: 20px;
+            color: #cbd5e1 !important;
             transition: color 0.18s ease;
         }
 
@@ -771,33 +777,40 @@
            ============================================================= */
         @media (max-width: 1024px) {
             .saas-sidebar {
-                transform: translateX(-100%);
-                z-index: 100000;
-                box-shadow: none;
+                transform: translateX(-100%) !important;
+                z-index: 1000001 !important;
+                box-shadow: none !important;
+                width: 280px !important;
+                max-width: 85vw !important;
+                background: #090d16 !important;
             }
             .saas-sidebar.mobile-open {
-                transform: translateX(0);
-                box-shadow: 0 0 50px rgba(0, 0, 0, 0.8);
+                transform: translateX(0) !important;
+                box-shadow: 15px 0 50px rgba(0, 0, 0, 0.9) !important;
             }
             .saas-sidebar-backdrop {
                 display: none;
-                position: fixed;
-                inset: 0;
-                background: rgba(15, 23, 42, 0.65);
-                backdrop-filter: blur(4px);
-                z-index: 99999;
+                position: fixed !important;
+                inset: 0 !important;
+                background: rgba(0, 0, 0, 0.6) !important;
+                backdrop-filter: blur(4px) !important;
+                -webkit-backdrop-filter: blur(4px) !important;
+                z-index: 1000000 !important;
                 opacity: 0;
                 transition: opacity 0.25s ease;
             }
             .saas-sidebar-backdrop.active {
-                display: block;
-                opacity: 1;
+                display: block !important;
+                opacity: 1 !important;
             }
             .saas-main-area {
                 margin-left: 0 !important;
                 width: 100% !important;
             }
             .saas-hamburger-btn {
+                display: flex !important;
+            }
+            .saas-sidebar-close-btn {
                 display: flex !important;
             }
         }
@@ -877,11 +890,16 @@
              ============================================================= -->
         <aside class="saas-sidebar" id="saasSidebar">
             <div class="saas-sidebar-brand">
-                <img src="assets/logo.png" alt="BABI" class="saas-brand-logo"/>
-                <div>
-                    <div class="saas-brand-title">Boulangerie de BABI</div>
-                    <div class="saas-brand-sub">Cockpit Direction</div>
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <img src="assets/logo.png" alt="BABI" class="saas-brand-logo"/>
+                    <div>
+                        <div class="saas-brand-title">Boulangerie de BABI</div>
+                        <div class="saas-brand-sub">Cockpit Direction</div>
+                    </div>
                 </div>
+                <button type="button" class="saas-sidebar-close-btn" onclick="toggleMobileSidebar()" style="background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.2); color: #ffffff; width: 34px; height: 34px; border-radius: 8px; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center;" title="Fermer le menu">
+                    ✕
+                </button>
             </div>
 
             <div class="saas-nav-section-title">PILOTAGE & ACTIVITÉ</div>
@@ -2288,9 +2306,9 @@
     </div>
 
     <!-- Scripts with Cache Busting -->
-    <script src="js/api_config.js?v=20260830_v10"></script>
-    <script src="js/admin.js?v=20260830_v10"></script>
-    <script src="js/realtime_sync.js?v=20260830_v10"></script>
-    <script src="js/anti_hacker_client.js?v=20260830_v10"></script>
+    <script src="js/api_config.js?v=20260830_v11"></script>
+    <script src="js/admin.js?v=20260830_v11"></script>
+    <script src="js/realtime_sync.js?v=20260830_v11"></script>
+    <script src="js/anti_hacker_client.js?v=20260830_v11"></script>
 </body>
 </html>
