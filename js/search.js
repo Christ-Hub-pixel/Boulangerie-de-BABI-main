@@ -14,7 +14,7 @@
     // Image mapping pour les photos réelles
     const searchImageMap = {
         "Chill": "assets/chill.png",
-        "Youyou": "assets/youzou.png",
+        "Youzou": "assets/youzou.png",
         "Word Cola": "assets/world cola.png",
         "Youki Orange": "assets/youki moka cafe.png",
         "Youki Pomme": "assets/youki pomme.png",

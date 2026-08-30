@@ -276,7 +276,7 @@ function showPosView(viewName) {
 
 const realPosProductImages = {
     "Chill": "assets/chill.png",
-    "Youyou": "assets/youzou.png",
+    "Youzou": "assets/youzou.png",
     "Word Cola": "assets/world cola.png",
     "Youki Orange": "assets/youki moka cafe.png",
     "Youki Pomme": "assets/youki pomme.png",
@@ -573,7 +573,7 @@ function matchPosProductCategory(currentCat, pCat, pName) {
     }
     if (currentCat === 'boissons') {
         return cat.includes('boisson') || cat.includes('jus') || cat.includes('cafe') || cat.includes('café') || cat.includes('eau') || cat.includes('soda') || cat.includes('nectar') || 
-               name.includes('jus') || name.includes('cafe') || name.includes('café') || name.includes('boisson') || name.includes('chill') || name.includes('youyou') || name.includes('youki') || name.includes('cola') || name.includes('sprite') || name.includes('eau') || name.includes('céleste');
+               name.includes('jus') || name.includes('cafe') || name.includes('café') || name.includes('boisson') || name.includes('chill') || name.includes('youzou') || name.includes('youki') || name.includes('cola') || name.includes('sprite') || name.includes('eau') || name.includes('céleste');
     }
     if (currentCat === 'traiteur') {
         return cat.includes('traiteur') || cat.includes('snack') || cat.includes('sale') || cat.includes('salé') || cat.includes('sandwich') || cat.includes('quiche') || cat.includes('pizza') || cat.includes('burger') ||
@@ -610,7 +610,7 @@ function renderPosProductsGrid(searchTerm = '') {
         const cat = (p.category || '').toLowerCase();
         const name = (p.name || '').toLowerCase();
         const isDrink = cat.includes('boisson') || cat.includes('jus') || cat.includes('café') || cat.includes('cafe') || 
-                        name.includes('chill') || name.includes('youyou') || name.includes('youki') || name.includes('cola') || 
+                        name.includes('chill') || name.includes('youzou') || name.includes('youki') || name.includes('cola') || 
                         name.includes('sprite') || name.includes('orangina') || name.includes('eau') || name.includes('malt') || 
                         name.includes('céleste') || name.includes('awé') || name.includes('boisson') || name.includes('jus') ||
                         name.includes('bissap') || name.includes('gingembre') || name.includes('baobab') || name.includes('tamarind');

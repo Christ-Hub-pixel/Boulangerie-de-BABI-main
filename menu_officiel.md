@@ -6,7 +6,7 @@ Ce document récapitule la liste officielle des produits et tarifs de la Boulang
 
 ## 🥤 BOISSONS
 - **Chill** : 700 FCFA
-- **Youyou** : 500 FCFA
+- **Youzou** : 500 FCFA
 - **Word Cola** : 500 FCFA
 - **Youki Orange** : 500 FCFA
 - **Youki Pomme** : 500 FCFA

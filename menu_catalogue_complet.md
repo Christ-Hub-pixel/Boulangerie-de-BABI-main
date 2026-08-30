@@ -12,7 +12,7 @@ Ce document récapitule l'intégralité des **86 produits** du menu officiel sou
 - **Note** : ⭐ 4.6/5 (45 avis)
 - **Image** : `assets/product_jus_orange.png`
 
-### 💳 Card : Youyou
+### 💳 Card : Youzou
 - **Prix** : `500 FCFA`
 - **Description** : Jus fruité local et désaltérant.
 - **Note** : ⭐ 4.5/5 (60 avis)

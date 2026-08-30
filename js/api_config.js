@@ -1045,7 +1045,7 @@
   },
   {
     "id": 91,
-    "nom": "Youyou Fruité",
+    "nom": "Youzou Fruité",
     "prix": 500,
     "categorie": "boisson",
     "stock": 60,
