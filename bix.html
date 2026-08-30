@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>BIX — Espace Personnel & Cockpit Central IA | Boulangerie de BABI</title>
+    
+    <!-- Google Fonts & FontAwesome -->
+    <link href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:wght@400;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+
+    <style>
+        :root {
+            --bix-bg: #090d16;
+            --bix-card-bg: rgba(24, 32, 47, 0.85);
+            --bix-border: rgba(255, 255, 255, 0.08);
+            --bix-gold: #f59e0b;
+            --bix-gold-dark: #d97706;
+            --bix-emerald: #10b981;
+            --bix-sky: #38bdf8;
+            --bix-rose: #f43f5e;
+            --bix-text: #f8fafc;
+            --bix-text-muted: #94a3b8;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Manrope', -apple-system, BlinkMacSystemFont, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bix-bg);
+            color: var(--bix-text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(245, 158, 11, 0.08) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(99, 102, 241, 0.08) 0px, transparent 50%);
+        }
+
+        /* 🥐 BIX INTERACTIVE MASCOT ANIMATIONS */
+        .bix-mascot-wrapper {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            user-select: none;
+        }
+        .bix-mascot-avatar {
+            animation: bixFloat 3.5s ease-in-out infinite;
+            filter: drop-shadow(0 6px 16px rgba(245, 158, 11, 0.45));
+            transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: inline-block;
+        }
+        .bix-mascot-avatar:hover {
+            transform: scale(1.15) rotate(5deg);
+        }
+
+        @keyframes bixFloat {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-7px); }
+        }
+
+        /* Header Navbar */
+        .bix-navbar {
+            padding: 16px 24px;
+            background: rgba(15, 23, 42, 0.9);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--bix-border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .bix-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .bix-nav-links {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .bix-nav-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--bix-text-muted);
+            padding: 8px 14px;
+            border-radius: 10px;
+            font-size: 12.5px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+        .bix-nav-btn:hover {
+            background: rgba(245, 158, 11, 0.15);
+            border-color: rgba(245, 158, 11, 0.4);
+            color: #fbbf24;
+            transform: translateY(-1px);
+        }
+        .bix-nav-btn.active {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.25), rgba(217, 119, 6, 0.2));
+            border-color: var(--bix-gold);
+            color: #fbbf24;
+        }
+
+        /* Layout Grid */
+        .bix-container {
+            max-width: 1400px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 24px 20px 60px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            flex: 1;
+        }
+
+        /* 360° Radar Cards Grid */
+        .bix-radar-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 16px;
+        }
+
+        .bix-radar-card {
+            background: var(--bix-card-bg);
+            border: 1px solid var(--bix-border);
+            border-radius: 16px;
+            padding: 18px 20px;
+            backdrop-filter: blur(12px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            transition: all 0.25s ease;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .bix-radar-card:hover {
+            border-color: rgba(245, 158, 11, 0.4);
+            transform: translateY(-3px);
+            box-shadow: 0 14px 35px rgba(0, 0, 0, 0.45);
+        }
+
+        .bix-radar-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+
+        .bix-badge {
+            font-size: 10.5px;
+            font-weight: 800;
+            padding: 3px 8px;
+            border-radius: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .bix-badge.gold { background: rgba(245,158,11,0.2); color: #fbbf24; border: 1px solid rgba(245,158,11,0.4); }
+        .bix-badge.green { background: rgba(16,185,129,0.2); color: #6ee7b7; border: 1px solid rgba(16,185,129,0.4); }
+        .bix-badge.sky { background: rgba(56,189,248,0.2); color: #7dd3fc; border: 1px solid rgba(56,189,248,0.4); }
+        .bix-badge.rose { background: rgba(244,63,94,0.2); color: #fda4af; border: 1px solid rgba(244,63,94,0.4); }
+
+        /* Main Workspace Split */
+        .bix-main-split {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+        }
+        @media (max-width: 1024px) {
+            .bix-main-split {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Studio Conversation Canvas */
+        .bix-studio-box {
+            background: #0b0f17;
+            border: 1px solid var(--bix-border);
+            border-radius: 20px;
+            display: flex;
+            flex-direction: column;
+            min-height: 580px;
+            overflow: hidden;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+            position: relative;
+        }
+
+        .bix-studio-header {
+            padding: 16px 20px;
+            background: rgba(15, 23, 42, 0.95);
+            border-bottom: 1px solid var(--bix-border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .bix-messages-area {
+            flex: 1;
+            padding: 24px 20px 100px 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .bix-input-floating {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 16px 20px;
+            background: linear-gradient(180deg, rgba(11,15,23,0) 0%, rgba(11,15,23,0.95) 40%, rgba(11,15,23,1) 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            z-index: 10;
+        }
+
+        .bix-input-capsule {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            background: #1e293b;
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 28px;
+            padding: 6px 10px 6px 18px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+            transition: border-color 0.2s;
+        }
+        .bix-input-capsule:focus-within {
+            border-color: var(--bix-gold);
+            box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.2);
+        }
+        .bix-input-capsule input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            outline: none;
+            color: #f8fafc;
+            font-size: 14px;
+            padding: 8px 0;
+        }
+
+        .bix-send-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #c2850c 0%, #f59e0b 100%);
+            color: #090d16;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            cursor: pointer;
+            transition: transform 0.15s;
+            flex-shrink: 0;
+        }
+        .bix-send-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .bix-voice-btn {
+            background: transparent;
+            border: none;
+            color: var(--bix-text-muted);
+            font-size: 16px;
+            padding: 8px 12px;
+            cursor: pointer;
+            transition: color 0.15s;
+        }
+        .bix-voice-btn:hover, .bix-voice-btn.recording {
+            color: #ef4444;
+        }
+
+        /* Message Bubbles */
+        .bix-user-bubble {
+            align-self: flex-end;
+            background: #1e293b;
+            color: #f8fafc;
+            padding: 12px 18px;
+            border-radius: 20px 20px 4px 20px;
+            font-size: 14px;
+            max-width: 85%;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            line-height: 1.5;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.25);
+        }
+        .bix-ai-bubble {
+            align-self: flex-start;
+            background: rgba(24, 32, 47, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-left: 3px solid #f59e0b;
+            border-radius: 20px 20px 20px 4px;
+            padding: 20px 24px;
+            max-width: 90%;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+            color: #e2e8f0;
+            font-size: 14px;
+            line-height: 1.7;
+        }
+
+        /* Side Panel: Anomalies & Quick Actions */
+        .bix-side-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .bix-panel-card {
+            background: var(--bix-card-bg);
+            border: 1px solid var(--bix-border);
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+        .bix-panel-title {
+            font-size: 15px;
+            font-weight: 800;
+            color: #f8fafc;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 14px;
+            border-bottom: 1px solid var(--bix-border);
+            padding-bottom: 10px;
+        }
+
+        .bix-action-chip {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            padding: 10px 14px;
+            color: #cbd5e1;
+            font-size: 12.5px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-bottom: 8px;
+        }
+        .bix-action-chip:hover {
+            background: rgba(245, 158, 11, 0.15);
+            border-color: rgba(245, 158, 11, 0.4);
+            color: #fbbf24;
+            transform: translateX(4px);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 🌟 NAVIGATION BAR BIX -->
+    <header class="bix-navbar">
+        <a href="bix.html" class="bix-brand">
+            <div class="bix-mascot-wrapper" style="width: 42px; height: 42px; border-radius: 12px; background: rgba(245,158,11,0.2); border: 1px solid rgba(245,158,11,0.5); display: flex; align-items: center; justify-content: center;">
+                <span class="bix-mascot-avatar" style="font-size: 26px;">🥐</span>
+            </div>
+            <div>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <span style="font-weight: 800; font-size: 16px; color: #ffffff; letter-spacing: -0.3px;">BIX HQ</span>
+                    <span class="bix-badge gold">Copilote Central</span>
+                </div>
+                <div style="font-size: 11px; color: var(--bix-text-muted);">Boulangerie de BABI • Supervision 360° Multi-Espaces</div>
+            </div>
+        </a>
+
+        <!-- Space Switcher Links -->
+        <nav class="bix-nav-links">
+            <a href="bix.html" class="bix-nav-btn active" title="Cockpit BIX">
+                <span>🥐 BIX HQ</span>
+            </a>
+            <a href="admin.html" class="bix-nav-btn" title="Espace Administrateur">
+                <i class="fa-solid fa-gauge"></i> <span>Admin Cockpit</span>
+            </a>
+            <a href="gerante.html" class="bix-nav-btn" title="Espace Gérante & Fournil">
+                <i class="fa-solid fa-bread-slice"></i> <span>Gérante (Fournil)</span>
+            </a>
+            <a href="caissiere.html" class="bix-nav-btn" title="Espace Caissière & Caisse Tactile">
+                <i class="fa-solid fa-cash-register"></i> <span>Caisse Tactile</span>
+            </a>
+            <a href="index.html" class="bix-nav-btn" title="Boutique Client">
+                <i class="fa-solid fa-store"></i> <span>Boutique</span>
+            </a>
+        </nav>
+    </header>
+
+    <!-- 🌐 MAIN COCKPIT CONTAINER -->
+    <main class="bix-container">
+
+        <!-- 📡 SUPERVISION 360° DES 4 INTERFACES -->
+        <section>
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <span style="font-size: 18px;">📡</span>
+                    <h2 style="font-size: 15px; font-weight: 800; color: #f8fafc; text-transform: uppercase; letter-spacing: 0.5px;">Supervision Multi-Espaces en Direct</h2>
+                </div>
+                <div style="font-size: 11.5px; color: #10b981; font-weight: 700; display: flex; align-items: center; gap: 6px;">
+                    <span style="width: 8px; height: 8px; border-radius: 50%; background: #10b981; display: inline-block; box-shadow: 0 0 8px #10b981;"></span>
+                    <span>4 Espaces Connectés & Synchronisés</span>
+                </div>
+            </div>
+
+            <div class="bix-radar-grid">
+                <!-- 1. Espace Fournil (Gérante) -->
+                <div class="bix-radar-card">
+                    <div>
+                        <div class="bix-radar-header">
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <span style="font-size: 20px;">🥖</span>
+                                <strong style="font-size: 14px; color: #f8fafc;">Espace Fournil</strong>
+                            </div>
+                            <span class="bix-badge gold">GÉRANTE</span>
+                        </div>
+                        <div style="font-size: 12.5px; color: var(--bix-text-muted); margin-bottom: 12px; line-height: 1.5;">
+                            • Plan de cuisson : <strong style="color: #fbbf24;">160 Baguettes (06h00)</strong><br/>
+                            • État stocks : <strong style="color: #6ee7b7;">119 références au vert</strong><br/>
+                            • Diagnostic : Cadence optimale
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 8px; margin-top: 10px;">
+                        <a href="gerante.html" class="bix-nav-btn" style="flex: 1; justify-content: center; font-size: 11.5px;">
+                            Ouvrir Fournil
+                        </a>
+                        <button type="button" class="bix-nav-btn" onclick="sendQuickBixPrompt('Fais-moi un diagnostic complet du fournil et des pâtons de la gérante')" style="background: rgba(245,158,11,0.2); border-color: rgba(245,158,11,0.4); color: #fbbf24;">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 2. Espace Caisse (Caissière) -->
+                <div class="bix-radar-card">
+                    <div>
+                        <div class="bix-radar-header">
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <span style="font-size: 20px;">💳</span>
+                                <strong style="font-size: 14px; color: #f8fafc;">Espace Comptoir</strong>
+                            </div>
+                            <span class="bix-badge green">CAISSIÈRE</span>
+                        </div>
+                        <div style="font-size: 12.5px; color: var(--bix-text-muted); margin-bottom: 12px; line-height: 1.5;">
+                            • Commandes enregistrées : <strong style="color: #f8fafc;" id="bix-stat-orders">25 commandes</strong><br/>
+                            • Retraits PIN : <strong style="color: #6ee7b7;">Vérification instantanée</strong><br/>
+                            • File d'attente : Fluide (&lt; 1 min)
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 8px; margin-top: 10px;">
+                        <a href="caissiere.html" class="bix-nav-btn" style="flex: 1; justify-content: center; font-size: 11.5px;">
+                            Ouvrir Caisse
+                        </a>
+                        <button type="button" class="bix-nav-btn" onclick="sendQuickBixPrompt('Donne-moi le bilan des retraits et de l activité des caissières')" style="background: rgba(16,185,129,0.2); border-color: rgba(16,185,129,0.4); color: #6ee7b7;">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 3. Espace Boutique (Clients) -->
+                <div class="bix-radar-card">
+                    <div>
+                        <div class="bix-radar-header">
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <span style="font-size: 20px;">🛍️</span>
+                                <strong style="font-size: 14px; color: #f8fafc;">Espace Boutique</strong>
+                            </div>
+                            <span class="bix-badge sky">CLIENTS</span>
+                        </div>
+                        <div style="font-size: 12.5px; color: var(--bix-text-muted); margin-bottom: 12px; line-height: 1.5;">
+                            • Catalogue en ligne : <strong style="color: #7dd3fc;">119 articles disponibles</strong><br/>
+                            • Panier moyen : <strong style="color: #f8fafc;">1 744 FCFA</strong><br/>
+                            • Paiements Wave : <strong style="color: #6ee7b7;">100% Opérationnel</strong>
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 8px; margin-top: 10px;">
+                        <a href="index.html" class="bix-nav-btn" style="flex: 1; justify-content: center; font-size: 11.5px;">
+                            Ouvrir Boutique
+                        </a>
+                        <button type="button" class="bix-nav-btn" onclick="sendQuickBixPrompt('Quels sont les articles phares et les opportunités d upselling pour les clients ?')" style="background: rgba(56,189,248,0.2); border-color: rgba(56,189,248,0.4); color: #7dd3fc;">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 4. Espace Direction (Admin) -->
+                <div class="bix-radar-card">
+                    <div>
+                        <div class="bix-radar-header">
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <span style="font-size: 20px;">👑</span>
+                                <strong style="font-size: 14px; color: #f8fafc;">Espace Direction</strong>
+                            </div>
+                            <span class="bix-badge rose">ADMIN</span>
+                        </div>
+                        <div style="font-size: 12.5px; color: var(--bix-text-muted); margin-bottom: 12px; line-height: 1.5;">
+                            • CA Global du Jour : <strong style="color: #fbbf24;" id="bix-stat-revenue">43 600 FCFA</strong><br/>
+                            • Sécurité & Audit : <strong style="color: #6ee7b7;">100% Vert (SOC actif)</strong><br/>
+                            • Trésorerie : Wave Payout prêt
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 8px; margin-top: 10px;">
+                        <a href="admin.html" class="bix-nav-btn" style="flex: 1; justify-content: center; font-size: 11.5px;">
+                            Ouvrir Admin
+                        </a>
+                        <button type="button" class="bix-nav-btn" onclick="sendQuickBixPrompt('Génère le rapport journalier officiel consolidé pour l administrateur')" style="background: rgba(244,63,94,0.2); border-color: rgba(244,63,94,0.4); color: #fda4af;">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 💬 MAIN WORKSPACE: STUDIO CONVERSATIONNEL BIX + PANNEAU LATÉRAL -->
+        <div class="bix-main-split">
+            
+            <!-- STUDIO CHAT CENTRAL -->
+            <div class="bix-studio-box">
+                <div class="bix-studio-header">
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <div class="bix-mascot-wrapper" style="width: 36px; height: 36px; border-radius: 10px; background: rgba(245,158,11,0.2); border: 1px solid rgba(245,158,11,0.4); display: flex; align-items: center; justify-content: center;">
+                            <span class="bix-mascot-avatar" style="font-size: 22px;">🥐</span>
+                        </div>
+                        <div>
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <span style="font-weight: 800; font-size: 15px; color: #ffffff;">Studio Conversationnel BIX</span>
+                                <span style="font-size: 10px; background: linear-gradient(135deg, #f59e0b, #ec4899); color: #000; padding: 1px 6px; border-radius: 4px; font-weight: 800;">LIVE</span>
+                            </div>
+                            <div style="font-size: 11px; color: var(--bix-text-muted);">Posez vos questions ou donnez vos ordres de gestion</div>
+                        </div>
+                    </div>
+                    <button type="button" class="bix-nav-btn" onclick="clearBixChat()" title="Effacer l'historique">
+                        <i class="fa-solid fa-rotate-left"></i> <span>Nouveau</span>
+                    </button>
+                </div>
+
+                <!-- Messages Stream -->
+                <div class="bix-messages-area" id="bix-chat-messages">
+                    <!-- Hero Welcome -->
+                    <div id="bix-hero-welcome" style="padding: 20px 10px; text-align: left;">
+                        <div style="display: flex; align-items: flex-start; gap: 18px; flex-wrap: wrap; margin-bottom: 20px;">
+                            <div class="bix-mascot-wrapper" style="width: 72px; height: 72px; border-radius: 20px; background: radial-gradient(circle, rgba(245,158,11,0.25) 0%, rgba(15,23,42,0.8) 100%); border: 2px solid rgba(245,158,11,0.5); display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 25px rgba(245,158,11,0.3);">
+                                <span class="bix-mascot-avatar" style="font-size: 42px;">🥐</span>
+                            </div>
+                            <div style="flex: 1; min-width: 260px;">
+                                <div style="display: inline-flex; align-items: center; gap: 6px; background: rgba(245,158,11,0.15); border: 1px solid rgba(245,158,11,0.35); color: #fbbf24; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; margin-bottom: 8px;">
+                                    ✨ BIX — Quartier Général & Intelligence Décisionnelle
+                                </div>
+                                <h3 style="font-size: 24px; font-weight: 800; color: #ffffff; margin-bottom: 4px;">
+                                    Bonjour, Administrateur !
+                                </h3>
+                                <p style="font-size: 13.5px; color: var(--bix-text-muted); margin: 0; line-height: 1.5;">
+                                    Je suis <strong>BIX</strong>. Je supervise en permanence la Caisse, le Fournil, la Boutique et la Trésorerie. En quoi puis-je vous aider ?
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- 4 Quick Suggestion Cards -->
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px;">
+                            <div class="bix-action-chip" onclick="sendQuickBixPrompt('Comment vont les ventes et le chiffre d affaires aujourd hui ?')">
+                                <div>
+                                    <div style="font-weight: 700; color: #f8fafc; font-size: 12.5px;">📊 Ventes du Jour</div>
+                                    <div style="font-size: 11px; color: var(--bix-text-muted);">Consulter le CA et le panier moyen</div>
+                                </div>
+                                <i class="fa-solid fa-arrow-right text-xs opacity-50"></i>
+                            </div>
+                            <div class="bix-action-chip" onclick="sendQuickBixPrompt('Quels sont les risques de rupture et l état des stocks ?')">
+                                <div>
+                                    <div style="font-weight: 700; color: #f8fafc; font-size: 12.5px;">📦 Diagnostic Stocks</div>
+                                    <div style="font-size: 11px; color: var(--bix-text-muted);">Scanner les 119 références</div>
+                                </div>
+                                <i class="fa-solid fa-arrow-right text-xs opacity-50"></i>
+                            </div>
+                            <div class="bix-action-chip" onclick="sendQuickBixPrompt('Quels produits dois-je produire davantage demain matin ?')">
+                                <div>
+                                    <div style="font-weight: 700; color: #f8fafc; font-size: 12.5px;">🥖 Plan de Cuisson</div>
+                                    <div style="font-size: 11px; color: var(--bix-text-muted);">Fournées Zéro-Gaspillage</div>
+                                </div>
+                                <i class="fa-solid fa-arrow-right text-xs opacity-50"></i>
+                            </div>
+                            <div class="bix-action-chip" onclick="sendQuickBixPrompt('Fais-moi le rapport complet de la journée')">
+                                <div>
+                                    <div style="font-weight: 700; color: #f8fafc; font-size: 12.5px;">📋 Rapport Journalier</div>
+                                    <div style="font-size: 11px; color: var(--bix-text-muted);">Synthèse officielle 360°</div>
+                                </div>
+                                <i class="fa-solid fa-arrow-right text-xs opacity-50"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Floating Input -->
+                <div class="bix-input-floating">
+                    <form onsubmit="handleBixSendMessage(event)" style="width: 100%; position: relative;">
+                        <div class="bix-input-capsule">
+                            <input type="text" id="bix-chat-input" placeholder="Posez une question à BIX ou donnez un ordre..." autocomplete="off"/>
+                            <button type="button" class="bix-voice-btn" id="bix-voice-btn" onclick="toggleBixVoiceInput()" title="Parler à l'oral">
+                                <i class="fa-solid fa-microphone"></i>
+                            </button>
+                            <button type="submit" class="bix-send-btn" title="Envoyer">
+                                <i class="fa-solid fa-arrow-up"></i>
+                            </button>
+                        </div>
+                    </form>
+                    <div style="font-size: 11px; color: #64748b; margin-top: 8px; text-align: center;">
+                        BIX v3.0 • Données certifiées de la Boulangerie de BABI • Zéro Hallucination
+                    </div>
+                </div>
+            </div>
+
+            <!-- PANNEAU LATÉRAL : RADAR & ACTIONS RAPIDES -->
+            <aside class="bix-side-panel">
+                <!-- Actions Rapides -->
+                <div class="bix-panel-card">
+                    <div class="bix-panel-title">
+                        <span style="font-size: 16px;">⚡</span>
+                        <span>Actions Directes BIX</span>
+                    </div>
+                    <div class="bix-action-chip" onclick="sendQuickBixPrompt('Détecte les anomalies et alertes du jour')">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <i class="fa-solid fa-triangle-exclamation text-warning"></i>
+                            <span>Détecter les Anomalies</span>
+                        </div>
+                        <span class="bix-badge gold">Scan</span>
+                    </div>
+                    <div class="bix-action-chip" onclick="sendQuickBixPrompt('Quelles sont les opportunités d augmentation de marge ?')">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <i class="fa-solid fa-chart-line text-success"></i>
+                            <span>Optimisation des Marges</span>
+                        </div>
+                        <span class="bix-badge green">+18%</span>
+                    </div>
+                    <div class="bix-action-chip" onclick="sendQuickBixPrompt('Fais-moi le secret d un bon pain croustillant')">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <i class="fa-solid fa-mortar-pestle text-info"></i>
+                            <span>Savoir-Faire Artisan</span>
+                        </div>
+                        <span class="bix-badge sky">T55</span>
+                    </div>
+                </div>
+
+                <!-- Surveillance Sécurité & Audit -->
+                <div class="bix-panel-card">
+                    <div class="bix-panel-title">
+                        <span style="font-size: 16px;">🛡️</span>
+                        <span>Sécurité & Audit Trail</span>
+                    </div>
+                    <div style="font-size: 12px; color: var(--bix-text-muted); line-height: 1.6; margin-bottom: 12px;">
+                        • Taux de succès IA : <strong style="color: #6ee7b7;" id="bix-audit-rate">100%</strong><br/>
+                        • Actions tracées : <strong style="color: #f8fafc;" id="bix-audit-count">Enregistrées</strong><br/>
+                        • Bouclier Anti-Injection : <strong style="color: #6ee7b7;">Actif</strong>
+                    </div>
+                    <button type="button" class="bix-nav-btn" onclick="sendQuickBixPrompt('Affiche les derniers logs d audit de sécurité')" style="width: 100%; justify-content: center;">
+                        <i class="fa-solid fa-shield-halved"></i> <span>Consulter l'Audit</span>
+                    </button>
+                </div>
+            </aside>
+
+        </div>
+
+    </main>
+
+    <!-- Scripts -->
+    <script src="js/api_config.js?v=20260830_v23"></script>
+    <script src="js/admin.js?v=20260830_v23"></script>
+    <script src="js/realtime_sync.js?v=20260830_v23"></script>
+    <script>
+        // Synchronisation et raccourcis spécifiques à bix.html
+        function sendQuickBixPrompt(promptText) {
+            const input = document.getElementById('bix-chat-input');
+            if (input) {
+                input.value = promptText;
+                handleBixSendMessage();
+            }
+        }
+
+        function clearBixChat() {
+            const container = document.getElementById('bix-chat-messages');
+            const hero = document.getElementById('bix-hero-welcome');
+            if (container) container.innerHTML = '';
+            if (hero) hero.style.display = 'block';
+        }
+
+        async function handleBixSendMessage(e) {
+            if (e) e.preventDefault();
+            const input = document.getElementById('bix-chat-input');
+            if (!input) return;
+            const msg = input.value.trim();
+            if (!msg) return;
+            input.value = '';
+
+            const hero = document.getElementById('bix-hero-welcome');
+            if (hero) hero.style.display = 'none';
+
+            const container = document.getElementById('bix-chat-messages');
+            if (container) {
+                container.innerHTML += `
+                    <div class="bix-user-bubble">
+                        <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 4px; opacity: 0.6; font-size: 11px; font-weight: 700;">
+                            <i class="fa-solid fa-user-tie"></i> <span>Vous (Administrateur)</span>
+                        </div>
+                        <div>${escapeHtml(msg)}</div>
+                    </div>
+                    <div id="bix-loading" class="bix-ai-bubble" style="background: rgba(30, 41, 59, 0.85);">
+                        <div style="display: flex; align-items: center; gap: 12px; font-size: 13.5px; font-weight: 600;">
+                            <div class="bix-mascot-wrapper" style="width: 30px; height: 30px; border-radius: 50%; background: rgba(245,158,11,0.2); display: flex; align-items: center; justify-content: center;">
+                                <span class="bix-mascot-avatar" style="font-size: 18px;">🥐</span>
+                            </div>
+                            <span>BIX consulte les 4 espaces et analyse les données...</span>
+                        </div>
+                    </div>
+                `;
+                container.scrollTop = container.scrollHeight;
+            }
+
+            try {
+                const fetcher = (typeof window !== 'undefined' && typeof window.babiFetch === 'function') ? window.babiFetch : fetch;
+                const apiBase = (typeof window !== 'undefined' && window.API_BASE_URL) ? window.API_BASE_URL : '';
+                const res = await fetcher(`${apiBase}/api/ai/assistant/chat`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ prompt: msg, message: msg, role: 'admin' })
+                }, 15000);
+
+                const loader = document.getElementById('bix-loading');
+                if (loader) loader.remove();
+
+                if (res && res.ok) {
+                    const data = await parseSafeResponse(res);
+                    const rawReply = data.reply || data.response || data.message || "Analyse terminée.";
+                    const formatted = typeof formatAiStudioMarkdown === 'function' ? formatAiStudioMarkdown(rawReply) : rawReply;
+
+                    let actionHtml = '';
+                    if (data.requiresConfirmation && data.actionPayload) {
+                        const encodedPayload = encodeURIComponent(JSON.stringify(data.actionPayload));
+                        actionHtml = `
+                            <div class="ai-action-confirm-box" style="margin-top: 14px; padding: 14px 16px; background: rgba(245, 158, 11, 0.12); border: 1px solid rgba(245, 158, 11, 0.35); border-radius: 12px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
+                                <div style="font-size: 12.5px; color: #fbbf24; font-weight: 700;">
+                                    <i class="fa-solid fa-shield-halved me-2"></i> Action soumise à validation
+                                </div>
+                                <div style="display: flex; gap: 8px;">
+                                    <button type="button" onclick="cancelAiStudioAction(this)" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: #e2e8f0; font-size: 12px; padding: 6px 14px; border-radius: 8px; cursor: pointer;">
+                                        Annuler
+                                    </button>
+                                    <button type="button" onclick="confirmAiStudioAction(this, '${encodedPayload}')" style="background: linear-gradient(135deg, #10b981, #059669); border: none; color: #ffffff; font-size: 12px; font-weight: 700; padding: 6px 16px; border-radius: 8px; cursor: pointer; box-shadow: 0 4px 12px rgba(16,185,129,0.3);">
+                                        <i class="fa-solid fa-check me-1"></i> Confirmer & Appliquer
+                                    </button>
+                                </div>
+                            </div>
+                        `;
+                    }
+
+                    if (container) {
+                        container.innerHTML += `
+                            <div class="bix-ai-bubble">
+                                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 10px; flex-wrap: wrap; gap: 8px;">
+                                    <div style="display: flex; align-items: center; gap: 10px;">
+                                        <div class="bix-mascot-wrapper" style="width: 32px; height: 32px; border-radius: 10px; background: linear-gradient(135deg, rgba(245,158,11,0.25), rgba(217,119,6,0.1)); border: 1px solid rgba(245,158,11,0.4); display: flex; align-items: center; justify-content: center;">
+                                            <span class="bix-mascot-avatar" style="font-size: 18px;">🥐</span>
+                                        </div>
+                                        <span style="font-weight: 800; font-size: 15px; color: #f8fafc;">BIX</span>
+                                        <span class="bix-badge gold">Copilote Mascotte</span>
+                                    </div>
+                                    <div style="display: flex; align-items: center; gap: 6px;">
+                                        <button type="button" onclick="copyStudioAiText(this)" style="background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); color: #cbd5e1; font-size: 11px; padding: 4px 10px; border-radius: 8px; cursor: pointer;" title="Copier">
+                                            <i class="fa-solid fa-copy"></i> <span>Copier</span>
+                                        </button>
+                                        <button type="button" onclick="speakStudioAiText(this)" style="background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); color: #cbd5e1; font-size: 11px; padding: 4px 10px; border-radius: 8px; cursor: pointer;" title="Écouter">
+                                            <i class="fa-solid fa-volume-high"></i> <span>Écouter</span>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="studio-msg-content">${formatted}</div>
+                                ${actionHtml}
+                            </div>
+                        `;
+                        container.scrollTop = container.scrollHeight;
+                    }
+                }
+            } catch (err) {
+                console.error('[BIX] Erreur envoi :', err);
+            }
+        }
+
+        // Reconnaissance vocale (Speech-to-Text)
+        let recognition = null;
+        function toggleBixVoiceInput() {
+            const btn = document.getElementById('bix-voice-btn');
+            const input = document.getElementById('bix-chat-input');
+            if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+                alert("La reconnaissance vocale n'est pas supportée par ce navigateur.");
+                return;
+            }
+            if (!recognition) {
+                const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+                recognition = new SpeechRec();
+                recognition.lang = 'fr-FR';
+                recognition.continuous = false;
+                recognition.onstart = () => {
+                    if (btn) btn.classList.add('recording');
+                };
+                recognition.onresult = (event) => {
+                    const transcript = event.results[0][0].transcript;
+                    if (input) input.value = transcript;
+                    if (btn) btn.classList.remove('recording');
+                    handleBixSendMessage();
+                };
+                recognition.onerror = () => {
+                    if (btn) btn.classList.remove('recording');
+                };
+                recognition.onend = () => {
+                    if (btn) btn.classList.remove('recording');
+                };
+            }
+            recognition.start();
+        }
+
+        // Chargement des données au démarrage de bix.html
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                const fetcher = (typeof window !== 'undefined' && typeof window.babiFetch === 'function') ? window.babiFetch : fetch;
+                const apiBase = (typeof window !== 'undefined' && window.API_BASE_URL) ? window.API_BASE_URL : '';
+                const res = await fetcher(`${apiBase}/api/ai/insights`);
+                if (res && res.ok) {
+                    const data = await parseSafeResponse(res);
+                    if (data && data.salesSummary) {
+                        const rev = document.getElementById('bix-stat-revenue');
+                        const ord = document.getElementById('bix-stat-orders');
+                        if (rev && data.salesSummary.totalRevenueFCFA) rev.innerText = data.salesSummary.totalRevenueFCFA.toLocaleString() + ' FCFA';
+                        if (ord && data.salesSummary.totalOrdersRecorded) ord.innerText = data.salesSummary.totalOrdersRecorded + ' commandes';
+                    }
+                }
+            } catch (_) {}
+        });
+    </script>
+</body>
+</html>

@@ -2839,6 +2839,11 @@ app.get('/api/stats', async (req, res) => {
     }
 });
 
+// 🥐 BIX — Quartier Général & Espace Personnel Dédié
+app.get(['/bix', '/bix-hq', '/bix-studio'], (req, res) => {
+    res.sendFile(path.join(__dirname, 'bix.html'));
+});
+
 // ================================================================
 // 🧠 9. BABI BRAIN ENGINE (BBE v3.0) — COGNITIVE AI & REALTIME APIS
 // ================================================================

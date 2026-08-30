@@ -1,5 +1,52 @@
 [
   {
+    "id": "ai_audit_1788063764827_5m5o0",
+    "userId": "admin_user",
+    "role": "admin",
+    "aiSessionId": "session_default",
+    "userQuery": "Fais-moi un rapport consolidé de la journée",
+    "intent": "REPORT_GENERATION",
+    "tool": "REPORT_GENERATION",
+    "parameters": {},
+    "resultPreview": "Result OK",
+    "status": "SUCCESS",
+    "executionTimeMs": 1317,
+    "errorMessage": null,
+    "timestamp": "2026-08-30T04:22:44.827Z"
+  },
+  {
+    "id": "ai_audit_1788063763509_shbxm",
+    "userId": "admin_user",
+    "role": "gerante",
+    "aiSessionId": "session_default",
+    "userQuery": "Quelles sont les prévisions de cuisson pour demain matin ?",
+    "intent": "FORECAST",
+    "tool": "FORECAST",
+    "parameters": {
+      "horizon": "tomorrow"
+    },
+    "resultPreview": "Result OK",
+    "status": "SUCCESS",
+    "executionTimeMs": 1,
+    "errorMessage": null,
+    "timestamp": "2026-08-30T04:22:43.509Z"
+  },
+  {
+    "id": "ai_audit_1788063763506_gpomn",
+    "userId": "admin_user",
+    "role": "caissiere",
+    "aiSessionId": "session_default",
+    "userQuery": "Combien de commandes sont à retirer avec code PIN ?",
+    "intent": "ORDER_ANALYSIS",
+    "tool": "ORDER_ANALYSIS",
+    "parameters": {},
+    "resultPreview": "Result OK",
+    "status": "SUCCESS",
+    "executionTimeMs": 2421,
+    "errorMessage": null,
+    "timestamp": "2026-08-30T04:22:43.506Z"
+  },
+  {
     "id": "ai_audit_1788063047413_uxl0i",
     "userId": "admin_test",
     "role": "admin",
