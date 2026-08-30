@@ -24,14 +24,12 @@ document.addEventListener('DOMContentLoaded', () => {
         }).catch(() => {});
     }
 
-    // Nettoyage initial unique des anciens paniers et tickets de test
+    // Nettoyage initial unique des anciens paniers et rafraîchissement des produits
     try {
-        if (localStorage.getItem('babi_pos_fresh_v2') !== 'true') {
+        if (localStorage.getItem('babi_pos_fresh_v4') !== 'true') {
             localStorage.removeItem('babi_pos_cart');
-            localStorage.removeItem('babi_pos_sales_history');
-            localStorage.removeItem('babi_pos_shift_sales');
-            localStorage.removeItem('babi_pos_shift_tickets');
-            localStorage.setItem('babi_pos_fresh_v2', 'true');
+            localStorage.removeItem('babi_cached_products');
+            localStorage.setItem('babi_pos_fresh_v4', 'true');
         }
     } catch (_) {}
 
