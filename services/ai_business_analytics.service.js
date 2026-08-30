@@ -12,7 +12,14 @@ class AiBusinessAnalyticsService {
      * Analyse historique et modélisation prédictive
      */
     async generateBusinessForecast(db) {
-        if (!db) {
+        let database = db;
+        if (!database || typeof database.all !== 'function') {
+            try {
+                const dbModule = require('../db.js');
+                database = await dbModule.initDB();
+            } catch (_) {}
+        }
+        if (!database || typeof database.all !== 'function') {
             return {
                 status: 'UNAVAILABLE',
                 message: 'Base de données non initialisée.'
@@ -21,7 +28,7 @@ class AiBusinessAnalyticsService {
 
         try {
             // 1. Récupérer les métriques réelles des commandes
-            const orders = await db.all(`
+            const orders = await database.all(`
                 SELECT id, total_price, payment_method, payment_status, status, type_retrait, created_at, items
                 FROM orders
                 ORDER BY created_at DESC

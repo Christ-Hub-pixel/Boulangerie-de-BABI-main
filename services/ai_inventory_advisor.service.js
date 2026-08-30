@@ -12,7 +12,14 @@ class AiInventoryAdvisorService {
      * Analyse en profondeur les niveaux de stocks et calcule les risques
      */
     async analyzeStockHealth(db) {
-        if (!db) {
+        let database = db;
+        if (!database || typeof database.all !== 'function') {
+            try {
+                const dbModule = require('../db.js');
+                database = await dbModule.initDB();
+            } catch (_) {}
+        }
+        if (!database || typeof database.all !== 'function') {
             return {
                 status: 'UNAVAILABLE',
                 message: 'Base de données non initialisée.'
@@ -20,7 +27,7 @@ class AiInventoryAdvisorService {
         }
 
         try {
-            const stocks = await db.all(`
+            const stocks = await database.all(`
                 SELECT s.*, 
                     COALESCE((SELECT SUM(quantity) FROM order_items oi WHERE oi.product_id = s.product_id), 0) as total_sold
                 FROM stocks s
