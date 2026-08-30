@@ -1,8 +1,8 @@
 [
   {
     "id": 1,
-    "nom": "Baguette Traditionnelle Croustillante BABI",
-    "prix": 350,
+    "nom": "Baguette Super Croustillante Test",
+    "prix": 400,
     "categorie": "pain",
     "image": "assets/product_baguette.png",
     "description": "Baguette cuite au feu de bois.",
