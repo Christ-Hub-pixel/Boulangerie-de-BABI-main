@@ -98,7 +98,7 @@ function switchAdminSection(sectionId) {
         'users': { title: 'Personnel & Clients', subtitle: 'Comptes collaborateurs, gérantes et clients du Club Fidélité' },
         'audit': { title: 'Sécurité & Audit Logs', subtitle: 'Détection IDS/IPS, intégrité Merkle et pare-feu anti-fraude' },
         'settings': { title: 'Paramètres & Configuration', subtitle: 'Clés Wave Business, signature HMAC-SHA256 et préférences' },
-        'ai': { title: '✨ BIX — Copilote Administratif Intelligent', subtitle: 'Assistant conversationnel, modélisation des ventes, yield management et pilotage en direct' }
+        'ai': { title: '✨ BIX — Intelligence Administrative', subtitle: 'Assistant conversationnel, modélisation des ventes, yield management et pilotage en direct' }
     };
 
     const info = titles[sectionId] || titles['dashboard'];
@@ -4053,7 +4053,7 @@ async function handleStudioSendMessage(e) {
                                     <span class="bix-mascot-avatar" style="font-size: 18px;">🥐</span>
                                 </div>
                                 <span style="font-weight: 800; font-size: 15px; color: #f8fafc; letter-spacing: -0.2px;">BIX</span>
-                                <span style="font-size: 10px; background: rgba(245,158,11,0.2); color: #fbbf24; border: 1px solid rgba(245,158,11,0.4); padding: 2px 7px; border-radius: 6px; font-weight: 700;">Copilote Mascotte</span>
+                                <span style="font-size: 10px; background: rgba(245,158,11,0.2); color: #fbbf24; border: 1px solid rgba(245,158,11,0.4); padding: 2px 7px; border-radius: 6px; font-weight: 700;">Mascotte IA</span>
                             </div>
                             <div style="display: flex; align-items: center; gap: 6px;">
                                 <button type="button" onclick="copyStudioAiText(this)" style="background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); color: #cbd5e1; font-size: 11px; padding: 4px 10px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 5px; transition: all 0.15s;" title="Copier la réponse">

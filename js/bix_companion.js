@@ -167,7 +167,7 @@
                     </div>
                     <div>
                         <div style="font-weight: 800; font-size: 14px; color: #f8fafc; display: flex; align-items: center; gap: 6px;">
-                            <span>BIX Copilot</span>
+                            <span>BIX</span>
                             <span style="font-size: 9px; background: #f59e0b; color: #000; padding: 1px 5px; border-radius: 4px; font-weight: 800;">${currentRole.toUpperCase()}</span>
                         </div>
                         <div style="font-size: 10.5px; color: #94a3b8;">Supervision & Assistance en Direct</div>

@@ -10,7 +10,7 @@ const aiAuditTrail = require('./ai_audit_trail.service.js');
 
 class AiGatewayService {
     constructor() {
-        this.systemIdentity = "BIX — Copilote Administratif Intelligent";
+        this.systemIdentity = "BIX — Intelligence Administrative";
     }
 
     /**
@@ -78,7 +78,7 @@ class AiGatewayService {
         switch (intent) {
             case 'GREETING':
             case 'IDENTITY': {
-                response.reply = `👋 **Bonjour ! Je suis BIX**, votre mascotte et copilote administratif intelligent.\n\nJe suis connecté en direct aux données du fournil, des ventes et des stocks.\n\n💡 **Voici ce que vous pouvez me demander :**\n• 📊 *« Comment vont les ventes aujourd'hui ? »*\n• 🥖 *« Quels produits dois-je produire demain ? »*\n• 📦 *« Quels sont les produits en rupture ou alerte de stock ? »*\n• 🚨 *« Détecte les anomalies du jour »*\n• 📋 *« Fais-moi le rapport de la journée »*\n• 🏷️ *« Change le prix du Croissant à 600 FCFA »*`;
+                response.reply = `👋 **Bonjour ! Je suis BIX**, votre mascotte et intelligence administrative.\n\nJe suis connecté en direct aux données du fournil, des ventes et des stocks.\n\n💡 **Voici ce que vous pouvez me demander :**\n• 📊 *« Comment vont les ventes aujourd'hui ? »*\n• 🥖 *« Quels produits dois-je produire demain ? »*\n• 📦 *« Quels sont les produits en rupture ou alerte de stock ? »*\n• 🚨 *« Détecte les anomalies du jour »*\n• 📋 *« Fais-moi le rapport de la journée »*\n• 🏷️ *« Change le prix du Croissant à 600 FCFA »*`;
                 break;
             }
 
