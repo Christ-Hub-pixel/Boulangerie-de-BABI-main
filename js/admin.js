@@ -3313,15 +3313,15 @@ window.toggleAiCopilotDrawer = function() {
     const drawer = document.getElementById('babi-ai-drawer');
     if (!drawer) return;
 
-    const isHidden = drawer.classList.contains('hidden');
-    if (isHidden) {
-        drawer.classList.remove('hidden');
-        drawer.style.display = 'flex';
+    const isOpen = drawer.style.right === '0px' || drawer.classList.contains('open');
+    if (!isOpen) {
+        drawer.classList.add('open');
+        drawer.style.right = '0px';
         const chatInput = document.getElementById('ai-chat-input');
-        if (chatInput) chatInput.focus();
+        if (chatInput) setTimeout(() => chatInput.focus(), 300);
     } else {
-        drawer.classList.add('hidden');
-        drawer.style.display = 'none';
+        drawer.classList.remove('open');
+        drawer.style.right = '-420px';
     }
 };
 
@@ -3888,29 +3888,42 @@ async function sendAiAssistantMessage(e) {
     const container = document.getElementById('ai-chat-messages');
     if (container) {
         container.innerHTML += `<div style="align-self: flex-end; background: #f59e0b; color: #000; padding: 8px 12px; border-radius: 12px 12px 2px 12px; font-size: 13px; font-weight: 600; max-width: 80%; margin-bottom: 8px;">${msg}</div>`;
+        container.innerHTML += `<div id="ai-loading-bubble" style="align-self: flex-start; background: #1e293b; color: #f8fafc; padding: 10px 14px; border-radius: 12px 12px 12px 2px; font-size: 13px; max-width: 85%; margin-bottom: 8px; border-left: 3px solid #f59e0b;"><i class="fa-solid fa-spinner fa-spin me-2"></i> Analyse en cours...</div>`;
         container.scrollTop = container.scrollHeight;
     }
 
     try {
         const fetcher = (typeof window !== 'undefined' && typeof window.babiFetch === 'function') ? window.babiFetch : fetch;
         const apiBase = (typeof window !== 'undefined' && window.API_BASE_URL) ? window.API_BASE_URL : '';
-        const res = await fetcher(`${apiBase}/api/ai/copilot`, {
+        const res = await fetcher(`${apiBase}/api/ai/assistant/chat`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ message: msg })
+            body: JSON.stringify({ prompt: msg, message: msg, role: 'admin' })
         }, 15000);
+
+        const loader = document.getElementById('ai-loading-bubble');
+        if (loader) loader.remove();
 
         if (res && res.ok) {
             const data = await parseSafeResponse(res);
-            const reply = data.reply || data.response || "Compris, je m'en occupe !";
+            const reply = data.reply || data.response || data.message || "Analyse terminée avec succès.";
+            const formattedReply = reply.replace(/\n/g, '<br/>');
             if (container) {
-                container.innerHTML += `<div style="align-self: flex-start; background: #1e293b; color: #f8fafc; padding: 10px 14px; border-radius: 12px 12px 12px 2px; font-size: 13px; max-width: 85%; margin-bottom: 8px; border-left: 3px solid #f59e0b;">${reply}</div>`;
+                container.innerHTML += `<div style="align-self: flex-start; background: #1e293b; color: #f8fafc; padding: 10px 14px; border-radius: 12px 12px 12px 2px; font-size: 13px; max-width: 85%; margin-bottom: 8px; border-left: 3px solid #f59e0b; line-height: 1.5;">${formattedReply}</div>`;
+                container.scrollTop = container.scrollHeight;
+            }
+        } else {
+            if (container) {
+                container.innerHTML += `<div style="align-self: flex-start; background: #1e293b; color: #fca5a5; padding: 10px 14px; border-radius: 12px; font-size: 12.5px; margin-bottom: 8px;">Désolé, je n'ai pas pu traiter cette demande. Veuillez réessayer.</div>`;
                 container.scrollTop = container.scrollHeight;
             }
         }
     } catch (err) {
+        const loader = document.getElementById('ai-loading-bubble');
+        if (loader) loader.remove();
         if (container) {
             container.innerHTML += `<div style="align-self: flex-start; background: #1e293b; color: #94a3b8; padding: 8px 12px; border-radius: 8px; font-size: 12px; margin-bottom: 8px;">Désolé, une erreur est survenue lors de la communication avec l'assistant.</div>`;
+            container.scrollTop = container.scrollHeight;
         }
     }
 }
