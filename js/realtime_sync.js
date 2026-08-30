@@ -29,25 +29,7 @@
         const evt = new CustomEvent('babi:products:updated', { detail: detail || {} });
         window.dispatchEvent(evt);
 
-        // Auto-refresh products table on Admin / Gérante page if function exists
-        if (typeof window.loadProducts === 'function') {
-            try {
-                window.loadProducts();
-            } catch (err) {
-                console.warn("[RealTimeSync] Error calling loadProducts:", err);
-            }
-        }
-
-        // Auto-refresh POS cashier grid if function exists
-        if (typeof window.loadPosProducts === 'function') {
-            try {
-                window.loadPosProducts();
-            } catch (err) {
-                console.warn("[RealTimeSync] Error calling loadPosProducts:", err);
-            }
-        }
-
-        // Broadcast to other tabs
+        // Broadcast to other tabs sans rechargement destructif
         if (broadcast && broadcastChannel) {
             try {
                 broadcastChannel.postMessage({ type: 'PRODUCTS_UPDATED', detail });

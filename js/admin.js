@@ -63,19 +63,8 @@ document.addEventListener('DOMContentLoaded', () => {
         };
     } catch (_) {}
 
-    window.addEventListener('storage', (e) => {
-        if (!e.key || e.key.includes('orders') || e.key.includes('sales') || e.key.includes('babi') || e.key.includes('sync')) {
-            fetchAdminData();
-        }
-    });
-
-    // 6. Polling de rafraîchissement intelligent (Événementiel + fallback 30s)
-    setInterval(fetchAdminData, 30000);
-
-    // 6. BABI Brain Engine (BBE v3.0) — Flux IA et Prévisions Business
-    initAdminBrainFeed();
-    fetchAdminAiBusinessForecast();
-    setInterval(fetchAdminAiBusinessForecast, 180000);
+    // Données initiales chargées une seule fois au démarrage
+    // Aucune boucle de rechargement automatique intrusive pour garantir la persistance absolue des modifications
 });
 
 // ================================================================
@@ -1858,61 +1847,73 @@ async function handleUpdateProduct(e) {
         prix,
         stock,
         seuil_alerte,
-        is_active,
-        description,
-        image
-    };
-
-    // ⚡ 1. Mise à jour instantanée optimiste (0ms) en mémoire et en cache local
-    const prodIdx = allProducts.findIndex(p => String(p.id) === String(id));
-    if (prodIdx >= 0) {
-        allProducts[prodIdx] = { ...allProducts[prodIdx], ...updatedData };
-    } else {
-        allProducts.unshift(updatedData);
-    }
-
-    if (typeof window.babiSetCachedProducts === 'function') {
-        window.babiSetCachedProducts(allProducts);
-    }
-    if (typeof window.babiAddCustomProduct === 'function') {
-        window.babiAddCustomProduct(updatedData);
-    }
-
-    updateProductKpis();
-    renderProductsGridOrTable();
-    showAdminToast(`✨ Produit "${nom}" mis à jour avec succès !`, 'success');
-    closeEditProductModal();
-
-    if (typeof window.notifyProductCatalogueChanged === 'function') {
-        window.notifyProductCatalogueChanged('PRODUCT_UPDATED', updatedData);
-    }
-
-    // ⚡ 2. Synchronisation avec le serveur cloud en arrière-plan
     try {
         const fetcher = (typeof window !== 'undefined' && typeof window.babiFetch === 'function') ? window.babiFetch : fetch;
-        const apiBase = (typeof window !== 'undefined' && window.API_BASE_URL) ? window.API_BASE_URL : (window.location.protocol.startsWith('http') ? '' : 'http://localhost:5000');
+        const apiBase = (typeof window !== 'undefined' && window.API_BASE_URL) ? window.API_BASE_URL : '';
         
         const res = await fetcher(`${apiBase}/api/products/${id}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ nom, categorie, prix, stock, seuil_alerte, is_active, description, image })
-        }, 8000);
+        }, 10000);
+
+        let finalProduct = {
+            id: isNaN(Number(id)) ? id : Number(id),
+            nom,
+            categorie,
+            prix,
+            stock,
+            seuil_alerte,
+            is_active,
+            description,
+            image
+        };
 
         if (res && res.ok) {
             const data = await parseSafeResponse(res);
-            if (data && data.product && data.product.image) {
-                const currentIdx = allProducts.findIndex(p => String(p.id) === String(id));
-                if (currentIdx >= 0) {
-                    allProducts[currentIdx].image = data.product.image;
-                    if (typeof window.babiSetCachedProducts === 'function') {
-                        window.babiSetCachedProducts(allProducts);
-                    }
-                    renderProductsGridOrTable();
-                }
+            if (data && data.product) {
+                finalProduct = { ...finalProduct, ...data.product };
             }
         }
+
+        // Mise à jour définitive en mémoire et dans le stockage local
+        const prodIdx = allProducts.findIndex(p => String(p.id) === String(id));
+        if (prodIdx >= 0) {
+            allProducts[prodIdx] = finalProduct;
+        } else {
+            allProducts.unshift(finalProduct);
+        }
+
+        if (typeof window.babiSetCachedProducts === 'function') {
+            window.babiSetCachedProducts(allProducts);
+        }
+
+        updateProductKpis();
+        renderProductsGridOrTable();
+        closeEditProductModal();
+        showAdminToast(`✨ Produit "${nom}" mis à jour et sauvegardé avec succès !`, 'success');
     } catch (err) {
-        console.warn("[Admin] Synchronisation cloud modification :", err);
+        console.warn("[Admin] Erreur mise à jour produit :", err);
+        // Fallback local en cas de problème de réseau
+        const fallbackProd = {
+            id: isNaN(Number(id)) ? id : Number(id),
+            nom,
+            categorie,
+            prix,
+            stock,
+            seuil_alerte,
+            is_active,
+            description,
+            image
+        };
+        const prodIdx = allProducts.findIndex(p => String(p.id) === String(id));
+        if (prodIdx >= 0) allProducts[prodIdx] = fallbackProd;
+        else allProducts.unshift(fallbackProd);
+        if (typeof window.babiSetCachedProducts === 'function') window.babiSetCachedProducts(allProducts);
+        updateProductKpis();
+        renderProductsGridOrTable();
+        closeEditProductModal();
+        showAdminToast(`✨ Produit "${nom}" sauvegardé localement !`, 'success');
     } finally {
         if (submitBtn) {
             submitBtn.disabled = false;
@@ -2983,31 +2984,15 @@ function initAdminBrainFeed() {
                 } catch (_) {}
             };
             evtSource.onerror = () => {
-                evtSource.close();
-                startAdminBrainPolling();
+                try { evtSource.close(); } catch (_) {}
             };
             return;
         } catch (_) {}
     }
-    startAdminBrainPolling();
 }
 
 function startAdminBrainPolling() {
-    setInterval(async () => {
-        try {
-            const res = await fetch(`${API_ROOT}/api/ai/live-feed?channel=admin&since=${lastAdminAiEventTimestamp}`);
-            if (res.ok) {
-                const data = await res.json();
-                if (data.events && data.events.length > 0) {
-                    data.events.forEach(evt => {
-                        handleAdminIncomingAiEvent(evt);
-                        const evtTime = new Date(evt.timestamp).getTime();
-                        if (evtTime > lastAdminAiEventTimestamp) lastAdminAiEventTimestamp = evtTime;
-                    });
-                }
-            }
-        } catch (_) {}
-    }, 25000);
+    // Désactivé pour éliminer toute boucle intempestive en arrière-plan
 }
 
 function handleAdminIncomingAiEvent(evt) {
