@@ -504,6 +504,46 @@ class AiAssistantCopilotService {
 
         const summary = await this.getConsolidatedSummary(database);
 
+        // 🥖 1. EXPERTISE MÉTIER : Panification, Farines & Qualité du Pain
+        if (query.includes('farine') || query.includes('levain') || query.includes('croustillant') || query.includes('pâte') || query.includes('pate') || query.includes('hydratation') || query.includes('alvéolage') || query.includes('grigne') || query.includes('buée') || query.includes('pétrissage')) {
+            return {
+                reply: `🥖 **Diagnostic de Maître Boulanger — Panification & Fournil :**\n\n• **🌾 Choix des Farines :** Utilisez de la farine **T55/T65 de tradition** (W 220-240, P/L 0.55) pour la Baguette Tradition, et un assemblage **T110 + Seigle** pour les Pains Spéciaux.\n• **💧 Hydratation Idéale :** Visez **68% d'hydratation** (680g d'eau pour 1kg de farine) avec un bassinage de 2% en fin de pétrissage pour une mie très aérée et alvéolée.\n• **❄️ Pointage Retardé :** Bloquez les pâtons à **+4°C pendant 14h à 18h**. Ce repos lent développe les arômes de noisette et améliore naturellement la conservation du pain sans additif.\n• **🔥 Cuisson à Sole :** Enfournez à **245°C avec 5 secondes d'injection de buée** vive. La buée permet un développement maximal des grignes et garantit une croûte fine, dorée et ultra-croustillante.\n\n💡 *Conseil du Chef :* Avec le climat chaud et humide d'Abidjan, veillez à utiliser une eau de coulage bien fraîche (entre 4°C et 8°C) pour maintenir la pâte sous 24°C en sortie de pétrin.`,
+                category: 'master_baker'
+            };
+        }
+
+        // 🥐 2. EXPERTISE MÉTIER : Tourage & Viennoiserie Française Pure Beurre
+        if (query.includes('croissant') || query.includes('feuilletage') || query.includes('beurre') || query.includes('tourage') || query.includes('pousse') || query.includes('dorure') || query.includes('laminage')) {
+            return {
+                reply: `🥐 **Diagnostic de Maître Artisan — Viennoiserie & Tourage Pur Beurre :**\n\n• **🧈 Beurre de Tourage :** Exigez un beurre sec à **84% de matière grasse minimum** (point de fusion à 34°C). À Abidjan, travaillez toujours en laboratoire climatisé sous 20°C.\n• **🔄 Tourage Régulier :** Appliquez **1 tour double (portefeuille) + 1 tour simple**, ce qui confère exactement 36 couches de feuilletage sans écraser la structure alvéolée.\n• **⏱️ Température de Pousse :** Chambre de fermentation à **26°C maximum** (hygrométrie 75%). Ne dépassez jamais 27°C sous peine de voir le beurre s'échapper du pâton avant la cuisson.\n• **✨ Finition & Brillance :** Double dorure (jaune d'œuf + pointe de crème fraîche liquide) appliquée 10 minutes avant enfournement à 190°C pendant 17 minutes.\n\n💡 *Résultat Garanti :* Un croissant léger, alvéolé en nid d'abeille à l'intérieur et croustillant comme à Paris !`,
+                category: 'master_baker'
+            };
+        }
+
+        // 🍹 3. EXPERTISE MÉTIER : Extraction & Pasteurisation des Jus Naturels
+        if (query.includes('bissap') || query.includes('gingembre') || query.includes('gnamankoudji') || query.includes('baobab') || query.includes('jus') || query.includes('tamarin') || query.includes('boisson')) {
+            return {
+                reply: `🍹 **Ingénierie & Savoir-Faire — Jus Naturels Artisanaux d'Abidjan :**\n\n• **🌺 Bissap Supérieur :** Infusion à froid des calices d'hibiscus rouge avec des feuilles de menthe fraîche et une gousse de vanille de Madagascar. Double filtration fine pour éliminer 100% des particules et garantir un rouge rubis étincelant.\n• **⚡ Gnamankoudji (Gingembre Pur) :** Pressage à froid des rhizomes frais lavés et brossés. Addition de 10% de jus d'ananas frais et 5% de citron vert pour adoucir l'acidité et décupler l'effet énergisant.\n• **🥛 Jus de Baobab Onctueux :** Émulsion délicate de la pulpe blanche avec eau minérale et pointe de lait entier velouté pour une texture onctueuse et sans grumeaux.\n• **🛡️ Chaîne du Froid & Marge :** Conservation stricte à **+3°C**. Ces boissons offrent un coût de revient matière inférieur à **180 FCFA** pour un prix de vente à **700 FCFA** (soit **74% de marge brute**) !`,
+                category: 'master_baker'
+            };
+        }
+
+        // 💼 4. EXPERTISE STRATÉGIQUE & FINANCIÈRE : Yield Management & Marge
+        if (query.includes('rentab') || query.includes('marge') || query.includes('panier moyen') || query.includes('bénéfice') || query.includes('benefice') || query.includes('rentable') || query.includes('stratégie') || query.includes('strategie') || query.includes('booster')) {
+            return {
+                reply: `💼 **Rapport d'Expertise Stratégique & Yield Management (Boulangerie BABI) :**\n\n1. 📊 **La Pyramide des Marges de la Boulangerie :**\n   • ☕ **Cafés & Boissons Chaudes :** **85% de Marge Brute** *(Top rentabilité)*\n   • 🍹 **Jus Naturels Locaux :** **74% de Marge Brute** *(Volume & profit)*\n   • 🍰 **Pâtisseries & Gâteaux Moka :** **68% de Marge Brute**\n   • 🥐 **Viennoiseries Pur Beurre :** **62% de Marge Brute**\n   • 🥖 **Pains Traditionnels :** **48% de Marge Brute** *(Produit d'appel indispensable)*\n\n2. 🚀 **3 Leviers d'Accélération Immédiats :**\n   • **Le Cross-Selling au Comptoir :** Former les caissières à proposer systématiquement : *« Une boisson fraîche ou un mini-cookie avec votre baguette ? »* (Fait passer le panier moyen de 200F à 700F).\n   • **Formule Petit-Déjeuner Express (1000 FCFA) :** 1 Café Arabica + 1 Croissant + 1 Jus 30cl. Coût de revient 280F, Gain net 720F par client !\n   • **Happy Hour Anti-Freinte (18h30) :** Réduction de -20% sur les viennoiseries restantes pour clôturer la journée avec **0 invendu** et 100% de chiffre encaissé.`,
+                category: 'financial_expert'
+            };
+        }
+
+        // 👩‍💼 5. EXPERTISE OPÉRATIONNELLE : Gestion des Caisses & Écarts
+        if (query.includes('caissière') || query.includes('caissiere') || query.includes('caisse') || query.includes('écart') || query.includes('ecart') || query.includes('tiroir') || query.includes('clôture') || query.includes('cloture')) {
+            return {
+                reply: `👩‍💼 **Audit Opérationnel & Contrôle Interne des Caisses :**\n\n• 🔒 **Procédure de Sécurisation :** Fond de caisse standard fixé à **20 000 FCFA** par poste en début de service.\n• 🧾 **Contrôle à l'Aveugle :** À chaque fin de shift, la caissière compte ses espèces réelles sans voir le total attendu par le système. Le système compare et calcule l'écart certifié.\n• 🌊 **Encaissements Wave :** 100% des paiements digitaux Wave sont réconciliés automatiquement sur la base de données sans manipulation humaine.\n• 🛡️ **Anti-Fraude Actif :** Toute annulation de ligne de caisse ou modification de ticket est enregistrée dans les logs d'audit avec horodatage et identifiant du poste.`,
+                category: 'operational_expert'
+            };
+        }
+
         // 🧠 1. RAISONNEMENT PROFOND : Questions sur les stocks & ruptures
         if (query.includes('stock') || query.includes('rupture') || query.includes('manque') || query.includes('réappro') || query.includes('alerte')) {
             const crit = summary.stocks.criticalAlerts || [];
@@ -539,7 +579,7 @@ class AiAssistantCopilotService {
         }
 
         // 🧠 3. RAISONNEMENT PROFOND : Business Intelligence & Ventes
-        if (query.includes('vente') || query.includes('chiffre') || query.includes('argent') || query.includes('revenu') || query.includes('ca') || query.includes('recette') || query.includes('bilan') || query.includes('rentab')) {
+        if (query.includes('vente') || query.includes('chiffre') || query.includes('argent') || query.includes('revenu') || query.includes('ca') || query.includes('recette') || query.includes('bilan')) {
             const kpis = summary.business.kpis || {};
             const forecast = summary.business.forecast || {};
 
@@ -551,7 +591,7 @@ class AiAssistantCopilotService {
         }
 
         // 🧠 4. Stratégie Marketing & Anti-Gaspillage
-        if (query.includes('gaspillage') || query.includes('invendu') || query.includes('happy hour') || query.includes('promo') || query.includes('conseil') || query.includes('strategie')) {
+        if (query.includes('gaspillage') || query.includes('invendu') || query.includes('happy hour') || query.includes('promo')) {
             return {
                 reply: `🌱 **Stratégie Commerciale Réfléchie & Anti-Gaspillage BABI :**\n\n1. 🥐 **Happy Hour Viennoiseries (18h30 - 20h00)** : Déclencher une remise de -20% sur les viennoiseries restantes pour écouler 100% de la production du jour.\n2. ☕ **Formule Combo Petit-Déjeuner** : Associer systématiquement 1 Boisson Chaude + 1 Croissant + 1 Jus 30cl pour faire grimper le panier moyen de **+35%**.\n3. 📱 **Boutique Click & Collect** : Mettre en avant les jus locaux (Bissap, Passion) très prisés en fin de journée.`,
                 category: 'anti_waste'
@@ -560,7 +600,7 @@ class AiAssistantCopilotService {
 
         // 5. Réponse par défaut enrichie
         return {
-            reply: `🤖 **Copilote BABI à votre écoute :**\n\nJe peux exécuter des actions automatisées et vous apporter des analyses réfléchies :\n\n• 🏷️ *« Change le prix du Pain au Chocolat à 600 »*\n• 📦 *« Ajoute 50 Baguettes au stock »*\n• 📊 *« Quel est le bilan des ventes et le panier moyen ? »*\n• 🥖 *« Quelles sont les prévisions de cuisson pour demain ? »*\n\nQue souhaitez-vous que je fasse ou analyse pour vous ?`,
+            reply: `🤖 **Copilote BABI à votre écoute :**\n\nJe suis votre expert métier en boulangerie, pâtisserie et gestion financière. Vous pouvez me demander :\n\n• 🥖 **Technique & Cuisson :** *« Comment améliorer le croustillant de la baguette ? »*\n• 🥐 **Viennoiserie :** *« Quel est le secret d'un bon feuilletage croissant ? »*\n• 🍹 **Jus & Boissons :** *« Quels sont nos produits les plus rentables ? »*\n• ⚡ **Ordre Direct :** *« Change le prix du Croissant à 600 »* ou *« Ajoute 50 Baguettes »*\n\nQue souhaitez-vous analyser ou exécuter ?`,
             category: 'general',
             data: summary
         };
