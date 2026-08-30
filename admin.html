@@ -207,16 +207,14 @@
             position: sticky;
             top: 0;
             z-index: 100;
-            background: rgba(255, 255, 255, 0.92);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
+            background: #ffffff !important;
             border-bottom: 1px solid var(--babi-card-border);
             padding: 12px 28px;
             display: flex;
             align-items: center;
             justify-content: space-between;
             gap: 16px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
         }
 
         .saas-topbar-left {
@@ -777,27 +775,34 @@
            ============================================================= */
         @media (max-width: 1024px) {
             .saas-sidebar {
-                transform: translateX(-100%) !important;
+                transform: translate3d(-100%, 0, 0) !important;
+                -webkit-transform: translate3d(-100%, 0, 0) !important;
                 z-index: 1000001 !important;
                 box-shadow: none !important;
-                width: 280px !important;
-                max-width: 85vw !important;
+                width: 300px !important;
+                max-width: 86vw !important;
                 background: #090d16 !important;
+                will-change: transform;
+                backface-visibility: hidden;
+                -webkit-backface-visibility: hidden;
+                transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+                -webkit-transition: -webkit-transform 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
             }
             .saas-sidebar.mobile-open {
-                transform: translateX(0) !important;
-                box-shadow: 15px 0 50px rgba(0, 0, 0, 0.9) !important;
+                transform: translate3d(0, 0, 0) !important;
+                -webkit-transform: translate3d(0, 0, 0) !important;
+                box-shadow: 12px 0 40px rgba(0, 0, 0, 0.8) !important;
             }
             .saas-sidebar-backdrop {
                 display: none;
                 position: fixed !important;
                 inset: 0 !important;
-                background: rgba(0, 0, 0, 0.6) !important;
-                backdrop-filter: blur(4px) !important;
-                -webkit-backdrop-filter: blur(4px) !important;
+                background: rgba(15, 23, 42, 0.7) !important;
                 z-index: 1000000 !important;
                 opacity: 0;
-                transition: opacity 0.25s ease;
+                transition: opacity 0.2s ease;
+                backdrop-filter: none !important;
+                -webkit-backdrop-filter: none !important;
             }
             .saas-sidebar-backdrop.active {
                 display: block !important;
@@ -2306,9 +2311,9 @@
     </div>
 
     <!-- Scripts with Cache Busting -->
-    <script src="js/api_config.js?v=20260830_v11"></script>
-    <script src="js/admin.js?v=20260830_v11"></script>
-    <script src="js/realtime_sync.js?v=20260830_v11"></script>
-    <script src="js/anti_hacker_client.js?v=20260830_v11"></script>
+    <script src="js/api_config.js?v=20260830_v12"></script>
+    <script src="js/admin.js?v=20260830_v12"></script>
+    <script src="js/realtime_sync.js?v=20260830_v12"></script>
+    <script src="js/anti_hacker_client.js?v=20260830_v12"></script>
 </body>
 </html>
