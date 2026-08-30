@@ -97,7 +97,8 @@ function switchAdminSection(sectionId) {
         'products': { title: 'Catalogue & Fournil', subtitle: `Gestion des ${allProducts.length || '121'} produits, stocks et approvisionnements` },
         'users': { title: 'Personnel & Clients', subtitle: 'Comptes collaborateurs, gérantes et clients du Club Fidélité' },
         'audit': { title: 'Sécurité & Audit Logs', subtitle: 'Détection IDS/IPS, intégrité Merkle et pare-feu anti-fraude' },
-        'settings': { title: 'Paramètres & Configuration', subtitle: 'Clés Wave Business, signature HMAC-SHA256 et préférences' }
+        'settings': { title: 'Paramètres & Configuration', subtitle: 'Clés Wave Business, signature HMAC-SHA256 et préférences' },
+        'ai': { title: '✨ BABI Copilot Studio — Intelligence Décisionnelle', subtitle: 'Assistant conversationnel, modélisation des ventes, yield management et commandes directes' }
     };
 
     const info = titles[sectionId] || titles['dashboard'];
@@ -3928,6 +3929,148 @@ async function sendAiAssistantMessage(e) {
     }
 }
 window.sendAiAssistantMessage = sendAiAssistantMessage;
+
+// ================================================================
+// 12. BABI COPILOT STUDIO (STYLE GOOGLE GEMINI & CHATGPT)
+// ================================================================
+async function handleStudioSendMessage(e) {
+    if (e && e.preventDefault) e.preventDefault();
+    const input = document.getElementById('studio-chat-input');
+    if (!input || !input.value.trim()) return;
+    const msg = input.value.trim();
+    input.value = '';
+    
+    // Masquer le hero greeting dès le premier message
+    const hero = document.getElementById('studio-hero-greeting');
+    if (hero) hero.style.display = 'none';
+
+    const container = document.getElementById('studio-chat-messages');
+    const scrollArea = document.getElementById('studio-chat-container');
+
+    if (container) {
+        // Message Utilisateur
+        container.innerHTML += `
+            <div class="studio-user-msg">
+                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px; opacity: 0.7; font-size: 11px;">
+                    <i class="fa-solid fa-user"></i> <span>Vous (Administrateur)</span>
+                </div>
+                <div>${escapeHtml(msg)}</div>
+            </div>
+        `;
+
+        // Bulle de réflexion animée style Gemini
+        container.innerHTML += `
+            <div id="studio-ai-loading" class="studio-ai-msg" style="border-left: 3px solid #6366f1;">
+                <div style="display: flex; align-items: center; gap: 10px; color: #a5b4fc; font-size: 13px; font-weight: 600;">
+                    <div style="width: 22px; height: 22px; border-radius: 50%; background: linear-gradient(135deg, #f59e0b, #6366f1); display: flex; align-items: center; justify-content: center; font-size: 11px; color: #fff;">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i>
+                    </div>
+                    <span><i class="fa-solid fa-spinner fa-spin me-2"></i> BABI Brain analyse les données en temps réel...</span>
+                </div>
+            </div>
+        `;
+        if (scrollArea) scrollArea.scrollTop = scrollArea.scrollHeight;
+    }
+
+    try {
+        const fetcher = (typeof window !== 'undefined' && typeof window.babiFetch === 'function') ? window.babiFetch : fetch;
+        const apiBase = (typeof window !== 'undefined' && window.API_BASE_URL) ? window.API_BASE_URL : '';
+        const res = await fetcher(`${apiBase}/api/ai/assistant/chat`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ prompt: msg, message: msg, role: 'admin' })
+        }, 15000);
+
+        const loader = document.getElementById('studio-ai-loading');
+        if (loader) loader.remove();
+
+        if (res && res.ok) {
+            const data = await parseSafeResponse(res);
+            const rawReply = data.reply || data.response || data.message || "Analyse terminée.";
+            
+            // Formatage markdown vers HTML soigné
+            let formatted = rawReply
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                .replace(/\n/g, '<br/>');
+
+            if (container) {
+                container.innerHTML += `
+                    <div class="studio-ai-msg">
+                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 8px;">
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <div style="width: 24px; height: 24px; border-radius: 6px; background: linear-gradient(135deg, #f59e0b, #ec4899); display: flex; align-items: center; justify-content: center; font-size: 11px; color: #fff;">
+                                    <i class="fa-solid fa-wand-magic-sparkles"></i>
+                                </div>
+                                <span style="font-weight: 800; font-size: 13px; color: #f8fafc;">BABI Brain Copilot</span>
+                                <span style="font-size: 10px; background: rgba(245,158,11,0.2); color: #fbbf24; padding: 1px 5px; border-radius: 4px; font-weight: 700;">Maître Artisan</span>
+                            </div>
+                            <button type="button" onclick="copyStudioAiText(this)" style="background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); color: #94a3b8; font-size: 11px; padding: 3px 8px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; gap: 4px;" title="Copier la réponse">
+                                <i class="fa-solid fa-copy"></i> <span>Copier</span>
+                            </button>
+                        </div>
+                        <div class="studio-msg-content" style="color: #e2e8f0; font-size: 13.5px; line-height: 1.65;">
+                            ${formatted}
+                        </div>
+                    </div>
+                `;
+                if (scrollArea) scrollArea.scrollTop = scrollArea.scrollHeight;
+            }
+        } else {
+            if (container) {
+                container.innerHTML += `
+                    <div class="studio-ai-msg" style="border-left: 3px solid #ef4444;">
+                        <div style="color: #fca5a5; font-size: 13px;">Désolé, une anomalie temporaire est survenue. Veuillez réessayer.</div>
+                    </div>
+                `;
+                if (scrollArea) scrollArea.scrollTop = scrollArea.scrollHeight;
+            }
+        }
+    } catch (err) {
+        const loader = document.getElementById('studio-ai-loading');
+        if (loader) loader.remove();
+        if (container) {
+            container.innerHTML += `
+                <div class="studio-ai-msg" style="border-left: 3px solid #ef4444;">
+                    <div style="color: #fca5a5; font-size: 13px;">Erreur de communication avec le serveur.</div>
+                </div>
+            `;
+            if (scrollArea) scrollArea.scrollTop = scrollArea.scrollHeight;
+        }
+    }
+}
+window.handleStudioSendMessage = handleStudioSendMessage;
+
+function sendQuickStudioPrompt(promptText) {
+    const input = document.getElementById('studio-chat-input');
+    if (input) {
+        input.value = promptText;
+        handleStudioSendMessage();
+    }
+}
+window.sendQuickStudioPrompt = sendQuickStudioPrompt;
+
+function clearStudioChat() {
+    const container = document.getElementById('studio-chat-messages');
+    const hero = document.getElementById('studio-hero-greeting');
+    if (container) container.innerHTML = '';
+    if (hero) hero.style.display = 'block';
+}
+window.clearStudioChat = clearStudioChat;
+
+function copyStudioAiText(btn) {
+    const parent = btn.closest('.studio-ai-msg');
+    if (!parent) return;
+    const content = parent.querySelector('.studio-msg-content');
+    if (content) {
+        navigator.clipboard.writeText(content.innerText).then(() => {
+            const orig = btn.innerHTML;
+            btn.innerHTML = '<i class="fa-solid fa-check text-success"></i> <span>Copié !</span>';
+            setTimeout(() => { btn.innerHTML = orig; }, 2000);
+        });
+    }
+}
+window.copyStudioAiText = copyStudioAiText;
 
 
 
