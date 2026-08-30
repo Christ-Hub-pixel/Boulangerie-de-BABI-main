@@ -440,6 +440,9 @@ document.addEventListener('DOMContentLoaded', () => {
 async function loadPosProducts() {
     const adjustments = JSON.parse(localStorage.getItem('babi_pos_stock_adjustments') || '{}');
     const apiBase = window.API_BASE_URL || (window.location.protocol.startsWith('http') ? '' : (API_ROOT || 'http://localhost:5000'));
+    const deletedIds = (typeof window.babiGetDeletedProductIds === 'function') 
+        ? new Set(window.babiGetDeletedProductIds().map(s => String(s).toLowerCase().trim())) 
+        : new Set();
 
     // 1. Rendu instantané 0ms depuis le catalogue en cache/mémoire locale
     const cached = (typeof window.babiGetCachedProducts === 'function') 
@@ -450,12 +453,19 @@ async function loadPosProducts() {
         ? cached 
         : ((typeof posProducts !== 'undefined' && posProducts.length > 0) ? posProducts : FALLBACK_POS_PRODUCTS);
     
-    posProducts = sourceList
-        .filter(p => p.is_active !== 0 && p.is_active !== '0' && p.is_active !== false)
+    posProducts = (Array.isArray(sourceList) ? sourceList : [])
+        .filter(p => {
+            if (!p) return false;
+            const idKey = String(p.id != null ? p.id : '').toLowerCase().trim();
+            const nameKey = String(p.nom || p.name || '').toLowerCase().trim();
+            if (idKey && deletedIds.has(idKey)) return false;
+            if (nameKey && deletedIds.has(nameKey)) return false;
+            return p.is_active !== 0 && p.is_active !== '0' && p.is_active !== false;
+        })
         .map(p => {
             const pName = p.nom || p.name;
-            const pCat = (p.categorie || p.category || 'pains').toLowerCase();
-            const baseStock = (p.stock !== undefined && p.stock !== null) ? Number(p.stock) : ((p.quantite_disponible !== undefined && p.quantite_disponible !== null) ? Number(p.quantite_disponible) : 30);
+            const pCat = (p.categorie || p.category || 'pain').toLowerCase();
+            const baseStock = (p.stock !== undefined && p.stock !== null) ? Number(p.stock) : ((p.quantite_disponible !== undefined && p.quantite_disponible !== null) ? Number(p.quantite_disponible) : 50);
             const adj = adjustments[pName] !== undefined ? adjustments[pName] : 0;
             return {
                 id: p.id || p._id || pName,
@@ -473,7 +483,7 @@ async function loadPosProducts() {
     // 2. Synchronisation en tâche de fond avec le serveur (timeout 4s)
     try {
         const fetcher = (typeof window !== 'undefined' && typeof window.babiFetch === 'function') ? window.babiFetch : fetch;
-        const res = await fetcher(`${apiBase}/api/products?_t=${Date.now()}`, {}, 4000);
+        const res = await fetcher(`${apiBase}/api/products?_t=${Date.now()}`, { cache: 'no-store' }, 4000);
         if (res && res.ok) {
             const rawProducts = await res.json();
             const productList = Array.isArray(rawProducts) ? rawProducts : (rawProducts.products || []);
@@ -482,11 +492,18 @@ async function loadPosProducts() {
                     window.babiSetCachedProducts(productList);
                 }
                 posProducts = productList
-                    .filter(p => p.is_active !== 0 && p.is_active !== '0' && p.is_active !== false)
+                    .filter(p => {
+                        if (!p) return false;
+                        const idKey = String(p.id != null ? p.id : '').toLowerCase().trim();
+                        const nameKey = String(p.nom || p.name || '').toLowerCase().trim();
+                        if (idKey && deletedIds.has(idKey)) return false;
+                        if (nameKey && deletedIds.has(nameKey)) return false;
+                        return p.is_active !== 0 && p.is_active !== '0' && p.is_active !== false;
+                    })
                     .map(p => {
                         const pName = p.nom || p.name;
-                        const pCat = (p.categorie || p.category || 'pains').toLowerCase();
-                        const baseStock = (p.stock !== undefined && p.stock !== null) ? Number(p.stock) : ((p.quantite_disponible !== undefined && p.quantite_disponible !== null) ? Number(p.quantite_disponible) : 30);
+                        const pCat = (p.categorie || p.category || 'pain').toLowerCase();
+                        const baseStock = (p.stock !== undefined && p.stock !== null) ? Number(p.stock) : ((p.quantite_disponible !== undefined && p.quantite_disponible !== null) ? Number(p.quantite_disponible) : 50);
                         const adj = adjustments[pName] !== undefined ? adjustments[pName] : 0;
                         return {
                             id: p.id || p._id || pName,
@@ -534,6 +551,39 @@ function filterPosProducts(term) {
 
 let currentFilteredProducts = [];
 
+function matchPosProductCategory(currentCat, pCat, pName) {
+    if (currentCat === 'all') return true;
+    const cat = (pCat || '').toLowerCase();
+    const name = (pName || '').toLowerCase();
+
+    if (currentCat === 'pains') {
+        return (cat === 'pain' || cat === 'pains' || cat.includes('baguette') || cat.includes('tradition')) && 
+               !cat.includes('special') && !cat.includes('speciaux') && !name.includes('complet') && !name.includes('seigle') && !name.includes('céréale') && !name.includes('marbré') && !name.includes('son');
+    }
+    if (currentCat === 'pains_speciaux') {
+        return cat.includes('special') || cat.includes('speciaux') || cat === 'pains_speciaux' || 
+               name.includes('complet') || name.includes('seigle') || name.includes('céréale') || name.includes('marbré') || name.includes('son') || name.includes('mie') || name.includes('lait');
+    }
+    if (currentCat === 'viennoiseries') {
+        return cat.includes('viennois') || cat.includes('croissant') || cat.includes('chocolat') || cat.includes('chausson') || cat.includes('brioche') || 
+               name.includes('croissant') || name.includes('pain au chocolat') || name.includes('brioche') || name.includes('pain aux raisins') || name.includes('chausson');
+    }
+    if (currentCat === 'patisseries') {
+        return cat.includes('patiss') || cat.includes('pâtiss') || cat.includes('gateau') || cat.includes('gâteau') || cat.includes('glace') || cat.includes('tarte') || 
+               cat.includes('eclair') || cat.includes('éclair') || cat.includes('millefeuille') || cat.includes('fondant') || cat.includes('dessert') || 
+               name.includes('gâteau') || name.includes('gateau') || name.includes('tarte') || name.includes('glace') || name.includes('fondant') || name.includes('millefeuille');
+    }
+    if (currentCat === 'boissons') {
+        return cat.includes('boisson') || cat.includes('jus') || cat.includes('cafe') || cat.includes('café') || cat.includes('eau') || cat.includes('soda') || cat.includes('nectar') || 
+               name.includes('jus') || name.includes('cafe') || name.includes('café') || name.includes('boisson') || name.includes('chill') || name.includes('youyou') || name.includes('youki') || name.includes('cola') || name.includes('sprite') || name.includes('eau') || name.includes('céleste');
+    }
+    if (currentCat === 'traiteur') {
+        return cat.includes('traiteur') || cat.includes('snack') || cat.includes('sale') || cat.includes('salé') || cat.includes('sandwich') || cat.includes('quiche') || cat.includes('pizza') || cat.includes('burger') ||
+               name.includes('sandwich') || name.includes('pizza') || name.includes('quiche') || name.includes('burger') || name.includes('salé') || name.includes('sale') || name.includes('feuilleté');
+    }
+    return cat === currentCat;
+}
+
 function renderPosProductsGrid(searchTerm = '') {
     const grid = document.getElementById('pos-products-grid');
     if (!grid) return;
@@ -541,18 +591,7 @@ function renderPosProductsGrid(searchTerm = '') {
     const term = (searchTerm || document.getElementById('pos-product-search')?.value || '').toLowerCase().trim();
 
     const filtered = posProducts.filter(p => {
-        const cat = (p.category || '').toLowerCase();
-        let matchesCat = (currentCategory === 'all');
-        if (!matchesCat) {
-            if (currentCategory === 'pains') matchesCat = (cat === 'pain' || cat.includes('baguette') || cat.includes('tradition')) && !cat.includes('special') && !cat.includes('speciaux');
-            else if (currentCategory === 'pains_speciaux') matchesCat = cat.includes('special') || cat.includes('speciaux') || cat === 'pains_speciaux';
-            else if (currentCategory === 'viennoiseries') matchesCat = cat.includes('viennois') || cat.includes('croissant') || cat.includes('chocolat') || cat.includes('chausson');
-            else if (currentCategory === 'patisseries') matchesCat = cat.includes('patiss') || cat.includes('pâtiss') || cat.includes('gateau') || cat.includes('gâteau') || cat.includes('fondant') || cat.includes('eclair') || cat.includes('tarte') || cat.includes('mille');
-            else if (currentCategory === 'boissons') matchesCat = cat.includes('boisson') || cat.includes('jus') || cat.includes('cafe') || cat.includes('café') || cat.includes('cappuccino');
-            else if (currentCategory === 'traiteur') matchesCat = cat.includes('traiteur') || cat.includes('snack') || cat.includes('sandwich') || cat.includes('quiche') || cat.includes('pizza');
-            else matchesCat = (cat === currentCategory);
-        }
-
+        const matchesCat = matchPosProductCategory(currentCategory, p.category, p.name);
         const matchesName = (p.name || '').toLowerCase().includes(term);
         return matchesCat && matchesName;
     });
@@ -592,7 +631,7 @@ function renderPosProductsGrid(searchTerm = '') {
                     <div class="flex items-center justify-between text-[10.5px] sm:text-[11px] text-[#786558] font-semibold pt-1 border-t border-[rgba(212,175,55,0.15)]">
                         <span class="flex items-center gap-1">
                             <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                            Stock : <strong class="text-[#765b00] font-mono">${p.stock || 30}</strong>
+                            Stock : <strong class="text-[#765b00] font-mono">${p.stock || 50}</strong>
                         </span>
                         <div class="w-6 h-6 rounded-full bg-[#fbf8f1] border border-[#f5b800]/50 text-[#765b00] flex items-center justify-center group-hover:bg-[#f5b800] group-hover:text-black transition-all shadow-sm">
                             <span class="material-symbols-outlined text-sm font-bold">add</span>
@@ -921,7 +960,7 @@ function handleCaissiereGlobalSync(eventData) {
 
     if (type === 'FOURNIL_RAYON_ADDED') {
         playPosAudio('chime');
-        showPosToast(`🥖 Fournil : +${payload.quantity} ${payload.productName} mis en rayon !`, 'success');
+        showPosToast(`🥖 Fournil : +${payload?.quantity || ''} ${payload?.productName || ''} mis en rayon !`, 'success');
         loadPosProducts();
     } else if (type === 'EVENT_ORDER_UPDATED' || type === 'ORDER_PAID' || type === 'NEW_ONLINE_ORDER') {
         playPosAudio('chime');
@@ -929,8 +968,19 @@ function handleCaissiereGlobalSync(eventData) {
         updateSessionStats();
         renderHistoryTable();
         showPosToast(`🔔 Nouvelle commande client reçue !`, 'info');
-    } else if (type === 'STOCK_UPDATED') {
+    } else if (type === 'STOCK_UPDATED' || type === 'PRODUCTS_UPDATED' || type === 'PRODUCT_CREATED' || type === 'PRODUCT_UPDATED' || type === 'PRODUCT_DELETED') {
         loadPosProducts();
+    } else if (type === 'CASHIER_FORCE_LOGOUT') {
+        const current = typeof getActiveCashier === 'function' ? getActiveCashier() : { id: '' };
+        if (!eventData.cashier_id || String(eventData.cashier_id) === String(current.id)) {
+            if (typeof handleAdminRemoteDisconnect === 'function') {
+                handleAdminRemoteDisconnect("🔴 Votre session a été déconnectée à distance par l'administrateur.");
+            }
+        }
+    } else if (type === 'CASHIER_CREATED' || type === 'CASHIER_UPDATED') {
+        if (typeof loadValidCashiersIntoSelect === 'function') {
+            loadValidCashiersIntoSelect();
+        }
     }
 }
 
@@ -2251,19 +2301,7 @@ async function verifyCashierSessionGuard() {
     } catch (_) {}
 }
 
-// 3. Gestionnaire des événements temps réel (BroadcastChannel)
-function handleCaissiereGlobalSync(data) {
-    if (!data) return;
 
-    if (data.type === 'CASHIER_FORCE_LOGOUT') {
-        const current = getActiveCashier();
-        if (!data.cashier_id || String(data.cashier_id) === String(current.id)) {
-            handleAdminRemoteDisconnect("🔴 Votre session a été déconnectée à distance par l'administrateur.");
-        }
-    } else if (data.type === 'CASHIER_CREATED' || data.type === 'CASHIER_UPDATED') {
-        loadValidCashiersIntoSelect();
-    }
-}
 
 // 4. Déconnexion à distance ordonnée par l'Administrateur
 function handleAdminRemoteDisconnect(reason) {
