@@ -98,7 +98,7 @@ function switchAdminSection(sectionId) {
         'users': { title: 'Personnel & Clients', subtitle: 'Comptes collaborateurs, gérantes et clients du Club Fidélité' },
         'audit': { title: 'Sécurité & Audit Logs', subtitle: 'Détection IDS/IPS, intégrité Merkle et pare-feu anti-fraude' },
         'settings': { title: 'Paramètres & Configuration', subtitle: 'Clés Wave Business, signature HMAC-SHA256 et préférences' },
-        'ai': { title: '✨ BABI Copilot Studio — Intelligence Décisionnelle', subtitle: 'Assistant conversationnel, modélisation des ventes, yield management et commandes directes' }
+        'ai': { title: '✨ BIX — Copilote Administratif Intelligent', subtitle: 'Assistant conversationnel, modélisation des ventes, yield management et pilotage en direct' }
     };
 
     const info = titles[sectionId] || titles['dashboard'];

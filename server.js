@@ -2840,7 +2840,7 @@ app.get('/api/stats', async (req, res) => {
 });
 
 // 🥐 BIX — Quartier Général & Espace Personnel Dédié
-app.get(['/bix', '/bix-hq', '/bix-studio'], (req, res) => {
+app.get(['/bix', '/bix-hq'], (req, res) => {
     res.sendFile(path.join(__dirname, 'bix.html'));
 });
 
