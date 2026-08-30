@@ -3931,7 +3931,7 @@ async function sendAiAssistantMessage(e) {
 window.sendAiAssistantMessage = sendAiAssistantMessage;
 
 // ================================================================
-// 12. BABI COPILOT STUDIO (STYLE GOOGLE GEMINI & CHATGPT)
+// 12. BABI COPILOT STUDIO (INTELLIGENCE DÉCISIONNELLE)
 // ================================================================
 async function handleStudioSendMessage(e) {
     if (e && e.preventDefault) e.preventDefault();
@@ -3958,7 +3958,7 @@ async function handleStudioSendMessage(e) {
             </div>
         `;
 
-        // Bulle de réflexion animée style Gemini
+        // Bulle de réflexion animée
         container.innerHTML += `
             <div id="studio-ai-loading" class="studio-ai-msg" style="border-left: 3px solid #6366f1;">
                 <div style="display: flex; align-items: center; gap: 10px; color: #a5b4fc; font-size: 13px; font-weight: 600;">
