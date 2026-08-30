@@ -133,6 +133,7 @@ function toggleMobileSidebar() {
         backdrop.classList.toggle('active');
     }
 }
+window.toggleMobileSidebar = toggleMobileSidebar;
 
 function closeMobileSidebar() {
     const sidebar = document.getElementById('saasSidebar');
@@ -140,6 +141,7 @@ function closeMobileSidebar() {
     if (sidebar) sidebar.classList.remove('mobile-open');
     if (backdrop) backdrop.classList.remove('active');
 }
+window.closeMobileSidebar = closeMobileSidebar;
 
 function initAdminNavigation() {
     const hash = window.location.hash.replace('#', '');
@@ -1840,13 +1842,6 @@ async function handleUpdateProduct(e) {
         return;
     }
 
-    const updatedData = {
-        id: isNaN(Number(id)) ? id : Number(id),
-        nom,
-        categorie,
-        prix,
-        stock,
-        seuil_alerte,
     try {
         const fetcher = (typeof window !== 'undefined' && typeof window.babiFetch === 'function') ? window.babiFetch : fetch;
         const apiBase = (typeof window !== 'undefined' && window.API_BASE_URL) ? window.API_BASE_URL : '';
