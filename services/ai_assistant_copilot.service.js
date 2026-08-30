@@ -370,11 +370,49 @@ class AiAssistantCopilotService {
      * Traite une question en langage naturel posée par la gérante ou l'administrateur
      */
     async handleAssistantChat(userPrompt = '', role = 'gerante', db = null) {
-        const query = userPrompt.toLowerCase().trim();
+        const query = (userPrompt || '').toLowerCase().trim();
+        const currentHour = new Date().getHours();
+        const greetingWord = query.includes('bonsoir') ? 'Bonsoir' : (currentHour >= 17 ? 'Bonsoir' : 'Bonjour');
+        const roleTitle = role === 'admin' ? 'Administrateur' : (role === 'gerante' ? 'Gérante' : 'Chef');
+
+        // 🌟 0. Salutations chaleureuses & conviviales
+        const isGreeting = /^(bonjour|salut|bonsoir|coucou|hello|hi|hey|yo|kpa|cc|wesh)\b/i.test(query) || ['bonjour', 'salut', 'bonsoir', 'coucou', 'hello', 'yo', 'cc'].includes(query);
+        const isHowAreYou = query.includes('ça va') || query.includes('ca va') || query.includes('comment vas-tu') || query.includes('comment tu vas') || query.includes('comment allez-vous') || query.includes('tu vas bien') || query.includes('la forme');
+        const isThanks = query.includes('merci') || query.includes('super') || query.includes('parfait') || query.includes('bravo') || query.includes('top') || query.includes('impeccable') || query.includes('génial');
+        const isIdentity = query.includes('qui es-tu') || query.includes('qui es tu') || query.includes('tu sers à quoi') || query.includes('tu sers a quoi') || query.includes('c\'est quoi ton role') || query.includes('ton rôle') || query.includes('qui êtes-vous');
+
+        if (isHowAreYou) {
+            return {
+                reply: `👋 **${greetingWord} ${roleTitle} !**\n\nJe vais à merveille, merci ! 🥐✨\nLe système de la **Boulangerie de BABI** tourne à plein régime, les connexions caisses et boutique sont synchronisées.\n\n💡 *Comment puis-je vous assister aujourd'hui ?* (Chiffre d'affaires, état des stocks, prévisions de cuisson ou création de produit)`,
+                category: 'greeting'
+            };
+        }
+
+        if (isGreeting) {
+            return {
+                reply: `👋 **${greetingWord} ${roleTitle} ! Ravi de vous retrouver.** 🥖👑\n\nJe suis votre **Copilote Décisionnel IA**, prêt à vous assister sur toutes les opérations du fournil et des ventes.\n\nVoici ce que vous pouvez me demander à tout moment :\n• 📊 *« Quel est le chiffre d'affaires du jour ? »*\n• 📦 *« Quels sont les stocks en alerte ? »*\n• 🥐 *« Quelles sont les prévisions de fournées pour demain ? »*\n• ✨ *« Suggère un nouveau gâteau ou une brioche »*\n\nQue souhaitez-vous vérifier en priorité ?`,
+                category: 'greeting'
+            };
+        }
+
+        if (isThanks) {
+            return {
+                reply: `✨ **Avec grand plaisir ${roleTitle} !**\nToujours à vos côtés pour optimiser la performance et le succès de la **Boulangerie de BABI**.\n\nN'hésitez pas si vous avez d'autres questions ou analyses à effectuer ! 🚀🥖`,
+                category: 'polite'
+            };
+        }
+
+        if (isIdentity) {
+            return {
+                reply: `🤖 **Je suis BABI Brain Copilot v3.0**, l'intelligence décisionnelle intégrée de la Boulangerie de BABI.\n\n**Mes super-pouvoirs pour vous :**\n1. 📈 **Finance & CA** : Analyse en temps réel des encaissements caisse et paiements Wave.\n2. 📦 **Gestion des Stocks** : Détection des ruptures et conseils de réassort.\n3. 🥖 **Production Zéro-Gaspillage** : Calcul des fournées optimales de pain et viennoiseries.\n4. 🎨 **Catalogue & Studio Photo** : Remplissage automatique de fiches produits avec photos HD.\n\nPosez-moi vos questions en langage naturel !`,
+                category: 'identity'
+            };
+        }
+
         const summary = await this.getConsolidatedSummary(db);
 
         // 1. Questions sur les stocks & ruptures
-        if (query.includes('stock') || query.includes('rupture') || query.includes('manque') || query.includes('réappro')) {
+        if (query.includes('stock') || query.includes('rupture') || query.includes('manque') || query.includes('réappro') || query.includes('alerte')) {
             const crit = summary.stocks.criticalAlerts || [];
             const low = summary.stocks.lowStockWarnings || [];
             if (crit.length === 0 && low.length === 0) {
@@ -395,7 +433,7 @@ class AiAssistantCopilotService {
         }
 
         // 2. Questions sur les fournées & pain chaud
-        if (query.includes('fournée') || query.includes('pain chaud') || query.includes('cuisson') || query.includes('four') || query.includes('baguette')) {
+        if (query.includes('fournée') || query.includes('pain chaud') || query.includes('cuisson') || query.includes('four') || query.includes('baguette') || query.includes('pain')) {
             const status = summary.production.liveStatus;
             const preds = summary.production.predictions || [];
             const topBatch = preds.slice(0, 3).map(p => `• **${p.productName}** : ${p.recommendedBatchSize} pièces recommandées (${p.suggestedOvenTime})`).join('\n');
@@ -408,7 +446,7 @@ class AiAssistantCopilotService {
         }
 
         // 3. Questions sur les ventes & chiffre d'affaires
-        if (query.includes('vente') || query.includes('chiffre') || query.includes('argent') || query.includes('revenu') || query.includes('ca')) {
+        if (query.includes('vente') || query.includes('chiffre') || query.includes('argent') || query.includes('revenu') || query.includes('ca') || query.includes('recette') || query.includes('bilan')) {
             const kpis = summary.business.kpis || {};
             const forecast = summary.business.forecast || {};
 
