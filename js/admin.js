@@ -1738,6 +1738,42 @@ async function handleCreateProduct(e) {
     }
 }
 
+// 🔄 SYNCHRONISATION TOTALE CATALOGUE AVEC L'APP & SERVEUR
+async function syncAllProductsWithServer() {
+    const btn = document.getElementById('btn-sync-all-prods');
+    const origHtml = btn ? btn.innerHTML : '';
+    if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-1"></i> Synchronisation...';
+    }
+
+    try {
+        const fetcher = (typeof window !== 'undefined' && typeof window.babiFetch === 'function') ? window.babiFetch : fetch;
+        const apiBase = (typeof window !== 'undefined' && window.API_BASE_URL) ? window.API_BASE_URL : '';
+
+        const res = await fetcher(`${apiBase}/api/products/sync-all`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ products: allProducts })
+        }, 15000);
+
+        if (res && res.ok) {
+            const data = await parseSafeResponse(res);
+            showAdminToast(`🎉 ${allProducts.length} produits synchronisés avec succès sur l'application mobile et la boutique !`, 'success');
+        } else {
+            showAdminToast("Erreur lors de la synchronisation avec le serveur.", "danger");
+        }
+    } catch (err) {
+        showAdminToast("Erreur réseau lors de la synchronisation : " + err.message, "danger");
+    } finally {
+        if (btn) {
+            btn.disabled = false;
+            btn.innerHTML = origHtml;
+        }
+    }
+}
+window.syncAllProductsWithServer = syncAllProductsWithServer;
+
 // ✏️ MODAL MODIFICATION PRODUIT
 function openEditProductModal(productId) {
     const product = allProducts.find(p => p.id === productId || String(p.id) === String(productId));

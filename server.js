@@ -1080,6 +1080,62 @@ app.delete('/api/products/:id', async (req, res) => {
     }
 });
 
+// Sync all products from admin to database & JSON
+app.post('/api/products/sync-all', async (req, res) => {
+    try {
+        const { products } = req.body;
+        if (!Array.isArray(products) || products.length === 0) {
+            return res.status(400).json({ error: "Liste de produits vide ou invalide." });
+        }
+        const database = db || (await ensureDBReady());
+
+        // 1. Clear products and stocks tables
+        await database.run("DELETE FROM products");
+        await database.run("DELETE FROM stocks");
+        await database.run("DELETE FROM deleted_products");
+
+        // 2. Insert all provided products
+        for (let i = 0; i < products.length; i++) {
+            const p = products[i];
+            const id = isNaN(Number(p.id)) ? (i + 1) : Number(p.id);
+            const nom = (p.nom || p.name || 'Produit').trim();
+            const cat = (p.categorie || p.category || 'pain').trim();
+            const prix = Number(p.prix || p.price || 500);
+            const stock = Number(p.stock != null ? p.stock : 50);
+            const seuil = Number(p.seuil_alerte != null ? p.seuil_alerte : 10);
+            const desc = (p.description || '').trim();
+            const img = (p.image || p.image_url || 'assets/product_baguette.png').trim();
+            const isActive = (p.is_active === 0 || p.is_active === '0' || p.is_active === false) ? 0 : 1;
+
+            await database.run(
+                "INSERT INTO products (id, nom, prix, categorie, image, description, stock, seuil_alerte, is_active) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                [id, nom, prix, cat, img, desc, stock, seuil, isActive]
+            );
+            await database.run(
+                "INSERT INTO stocks (id, product_id, nom_produit, categorie, quantite_disponible, seuil_alerte, unite, prix_unitaire) VALUES (?, ?, ?, ?, ?, ?, 'pièce', ?)",
+                [id, id, nom, cat, stock, seuil, prix]
+            );
+        }
+
+        // 3. Write to data/products.json
+        try {
+            const allSaved = await database.all("SELECT * FROM products ORDER BY id ASC");
+            const jsonPath = path.resolve(__dirname, 'data/products.json');
+            fs.writeFileSync(jsonPath, JSON.stringify(allSaved, null, 2), 'utf8');
+        } catch (fErr) {
+            console.warn("[Products] JSON sync notice:", fErr.message);
+        }
+
+        res.json({
+            success: true,
+            count: products.length,
+            message: `${products.length} produits synchronisés avec succès sur toute la plateforme.`
+        });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
 // Bulk delete products
 app.post('/api/products/bulk-delete', async (req, res) => {
     try {
