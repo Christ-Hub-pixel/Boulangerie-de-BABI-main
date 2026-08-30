@@ -51,8 +51,6 @@ body {
     font-family: 'Manrope', sans-serif;
     font-size: 15px;
     line-height: 1.5;
-    overscroll-behavior-x: none;
-    touch-action: pan-y;
 }
 
 h1, h2, h3, .font-headline-lg, .font-display-lg, .font-headline-md, .font-headline-sm {
@@ -505,12 +503,15 @@ h1, h2, h3, .font-headline-lg, .font-display-lg, .font-headline-md, .font-headli
 
 /* Base Layout Containment */
 html, body {
-    max-width: 100vw;
+    max-width: 100%;
+}
+
+body {
     overflow-x: hidden;
 }
 
 main, .pos-main-view {
-    max-width: 100vw;
+    max-width: 100%;
     box-sizing: border-box;
 }
 
@@ -792,13 +793,17 @@ main {
    LEVEL 1: TABLETS, COMPACT LAPTOPS & POS TERMINALS (<= 1023px)
    ------------------------------------------------------------- */
 @media (max-width: 1023px) {
-    html, body {
-        overflow-x: hidden !important;
-        overflow-y: auto !important;
+    html {
         height: auto !important;
         min-height: 100% !important;
+    }
+
+    body {
+        height: auto !important;
+        min-height: 100% !important;
+        overflow-x: hidden !important;
+        overflow-y: auto !important;
         -webkit-overflow-scrolling: touch !important;
-        touch-action: pan-y !important;
     }
 
     .pl-72 {
