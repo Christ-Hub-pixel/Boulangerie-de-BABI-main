@@ -9,16 +9,13 @@ const ASSETS_TO_CACHE = [
   '/fidelite.html',
   '/contact.html',
   '/apropos.html',
-  '/caissiere.html',
   '/css/global.css',
   '/css/index.css',
   '/css/produits.css',
-  '/css/caissiere.css',
   '/js/cart.js',
   '/js/cart_actions.js',
   '/js/products.js',
   '/js/auth.js',
-  '/js/caissiere.js',
   '/assets/logo.png',
   '/assets/scooter_livraison.png'
 ];
