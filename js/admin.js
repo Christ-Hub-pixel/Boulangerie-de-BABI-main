@@ -4025,6 +4025,26 @@ async function handleStudioSendMessage(e) {
             const formatted = formatAiStudioMarkdown(rawReply);
 
             if (container) {
+                let actionHtml = '';
+                if (data.requiresConfirmation && data.actionPayload) {
+                    const encodedPayload = encodeURIComponent(JSON.stringify(data.actionPayload));
+                    actionHtml = `
+                        <div class="ai-action-confirm-box" style="margin-top: 14px; padding: 14px 16px; background: rgba(245, 158, 11, 0.12); border: 1px solid rgba(245, 158, 11, 0.35); border-radius: 12px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
+                            <div style="font-size: 12.5px; color: #fbbf24; font-weight: 700;">
+                                <i class="fa-solid fa-shield-halved me-2"></i> Action soumise à validation
+                            </div>
+                            <div style="display: flex; gap: 8px;">
+                                <button type="button" onclick="cancelAiStudioAction(this)" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: #e2e8f0; font-size: 12px; padding: 6px 14px; border-radius: 8px; cursor: pointer;">
+                                    Annuler
+                                </button>
+                                <button type="button" onclick="confirmAiStudioAction(this, '${encodedPayload}')" style="background: linear-gradient(135deg, #10b981, #059669); border: none; color: #ffffff; font-size: 12px; font-weight: 700; padding: 6px 16px; border-radius: 8px; cursor: pointer; box-shadow: 0 4px 12px rgba(16,185,129,0.3);">
+                                    <i class="fa-solid fa-check me-1"></i> Confirmer & Appliquer
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                }
+
                 container.innerHTML += `
                     <div class="studio-ai-msg" style="align-self: flex-start; background: rgba(24, 32, 47, 0.95); border: 1px solid rgba(255, 255, 255, 0.08); border-left: 3px solid #f59e0b; border-radius: 20px 20px 20px 4px; padding: 20px 24px; max-width: 90%; box-shadow: 0 10px 30px rgba(0,0,0,0.35); margin-bottom: 8px;">
                         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 10px; flex-wrap: wrap; gap: 8px;">
@@ -4032,8 +4052,8 @@ async function handleStudioSendMessage(e) {
                                 <div style="width: 28px; height: 28px; border-radius: 8px; background: linear-gradient(135deg, #f59e0b, #ec4899, #6366f1); display: flex; align-items: center; justify-content: center; font-size: 13px; color: #fff; box-shadow: 0 2px 10px rgba(245,158,11,0.4);">
                                     <i class="fa-solid fa-wand-magic-sparkles"></i>
                                 </div>
-                                <span style="font-weight: 800; font-size: 14px; color: #f8fafc; letter-spacing: -0.2px;">BABI Copilot</span>
-                                <span style="font-size: 10px; background: rgba(245,158,11,0.2); color: #fbbf24; border: 1px solid rgba(245,158,11,0.4); padding: 2px 7px; border-radius: 6px; font-weight: 700;">Maître Artisan</span>
+                                <span style="font-weight: 800; font-size: 14px; color: #f8fafc; letter-spacing: -0.2px;">Boulangerie AI</span>
+                                <span style="font-size: 10px; background: rgba(245,158,11,0.2); color: #fbbf24; border: 1px solid rgba(245,158,11,0.4); padding: 2px 7px; border-radius: 6px; font-weight: 700;">Copilote Administratif</span>
                             </div>
                             <div style="display: flex; align-items: center; gap: 6px;">
                                 <button type="button" onclick="copyStudioAiText(this)" style="background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); color: #cbd5e1; font-size: 11px; padding: 4px 10px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 5px; transition: all 0.15s;" title="Copier la réponse">
@@ -4047,6 +4067,7 @@ async function handleStudioSendMessage(e) {
                         <div class="studio-msg-content" style="color: #e2e8f0; font-size: 14px; line-height: 1.7;">
                             ${formatted}
                         </div>
+                        ${actionHtml}
                     </div>
                 `;
                 if (scrollArea) scrollArea.scrollTop = scrollArea.scrollHeight;
@@ -4126,6 +4147,56 @@ function speakStudioAiText(btn) {
     }
 }
 window.speakStudioAiText = speakStudioAiText;
+
+async function confirmAiStudioAction(btn, encodedPayload) {
+    const box = btn.closest('.ai-action-confirm-box');
+    if (box) {
+        box.innerHTML = '<div style="color: #fbbf24; font-size: 12.5px; font-weight: 700;"><i class="fa-solid fa-spinner fa-spin me-2"></i> Application de l\'action en cours...</div>';
+    }
+
+    try {
+        const payload = JSON.parse(decodeURIComponent(encodedPayload));
+        const fetcher = (typeof window !== 'undefined' && typeof window.babiFetch === 'function') ? window.babiFetch : fetch;
+        const apiBase = (typeof window !== 'undefined' && window.API_BASE_URL) ? window.API_BASE_URL : '';
+        
+        const res = await fetcher(`${apiBase}/api/ai/actions/confirm`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ actionPayload: payload, role: 'admin', userId: 'admin' })
+        }, 15000);
+
+        if (res && res.ok) {
+            const data = await parseSafeResponse(res);
+            if (box) {
+                box.style.background = 'rgba(16, 185, 129, 0.15)';
+                box.style.borderColor = 'rgba(16, 185, 129, 0.4)';
+                box.innerHTML = `<div style="color: #6ee7b7; font-size: 13px; font-weight: 700;"><i class="fa-solid fa-circle-check me-2"></i> ${escapeHtml(data.reply ? data.reply.replace(/[*#]/g, '') : 'Action exécutée avec succès !')}</div>`;
+            }
+            if (typeof loadProducts === 'function') loadProducts().catch(() => {});
+        } else {
+            if (box) {
+                box.style.background = 'rgba(239, 68, 68, 0.15)';
+                box.style.borderColor = 'rgba(239, 68, 68, 0.4)';
+                box.innerHTML = '<div style="color: #fca5a5; font-size: 12.5px;"><i class="fa-solid fa-triangle-exclamation me-2"></i> Échec de l\'exécution. Veuillez réessayer.</div>';
+            }
+        }
+    } catch (err) {
+        if (box) {
+            box.style.background = 'rgba(239, 68, 68, 0.15)';
+            box.style.borderColor = 'rgba(239, 68, 68, 0.4)';
+            box.innerHTML = '<div style="color: #fca5a5; font-size: 12.5px;"><i class="fa-solid fa-triangle-exclamation me-2"></i> Erreur réseau.</div>';
+        }
+    }
+}
+window.confirmAiStudioAction = confirmAiStudioAction;
+
+function cancelAiStudioAction(btn) {
+    const box = btn.closest('.ai-action-confirm-box');
+    if (box) {
+        box.innerHTML = '<div style="color: #94a3b8; font-size: 12px; font-style: italic;"><i class="fa-solid fa-ban me-1"></i> Action annulée par l\'administrateur.</div>';
+    }
+}
+window.cancelAiStudioAction = cancelAiStudioAction;
 
 function toggleAiCopilotDrawer() {
     switchAdminSection('ai');
