@@ -1,16 +1,18 @@
 /**
- * 🏛️ BOULANGERIE DE BABI — ADMIN JAVASCRIPT CONTROLLER
+ * 🥐 BOULANGERIE DE BABI — ADMIN CONTROLLER ULTRA FACILE
  */
 
 let allProducts = [];
 let allOrders = [];
 let currentCategoryFilter = 'all';
+let quickSaleItems = [];
+let quickSalePaymentMethod = 'especes';
 
 document.addEventListener('DOMContentLoaded', async () => {
-    initClock();
     await loadProducts();
     await loadOrders();
     await loadInsights();
+    populateQuickSaleSelect();
 
     // BroadcastChannel pour synchronisation temps réel
     if (typeof BroadcastChannel !== 'undefined') {
@@ -28,54 +30,32 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 });
 
-function initClock() {
-    const el = document.getElementById('admin-live-clock');
-    if (!el) return;
-    const update = () => {
-        const now = new Date();
-        el.innerText = now.toLocaleTimeString('fr-FR');
-    };
-    update();
-    setInterval(update, 1000);
-}
-
-function toggleAdminSidebar(open) {
-    const sidebar = document.getElementById('admin-sidebar');
-    const overlay = document.getElementById('admin-sidebar-overlay');
-    if (!sidebar) return;
-    if (open) {
-        sidebar.classList.add('open');
-        overlay?.classList.remove('hidden');
-    } else {
-        sidebar.classList.remove('open');
-        overlay?.classList.add('hidden');
-    }
-}
-
+// Navigation Facile entre Sections
 function showAdminSection(sectionName) {
     const sections = ['dashboard', 'products', 'orders', 'finances'];
     sections.forEach(s => {
         const el = document.getElementById(`section-${s}`);
-        const nav = document.getElementById(`nav-${s}`);
+        const navDesktop = document.getElementById(`nav-${s}`);
+        const navMobile = document.getElementById(`mob-${s}`);
         if (el) el.classList.toggle('hidden', s !== sectionName);
-        if (nav) nav.classList.toggle('active', s !== sectionName);
+        if (navDesktop) navDesktop.classList.toggle('active', s !== sectionName);
+        if (navMobile) navMobile.classList.toggle('active', s !== sectionName);
     });
 
     const titles = {
         'dashboard': 'Tableau de Bord Direction',
-        'products': 'Catalogue Produits Officiel',
-        'orders': 'Suivi des Commandes',
-        'finances': 'Finances & Recettes'
+        'products': 'Catalogue Produits (79 articles)',
+        'orders': 'Commandes & Ventes',
+        'finances': 'Recettes & Caisse'
     };
 
     const titleEl = document.getElementById('admin-topbar-title');
     if (titleEl) titleEl.innerText = titles[sectionName] || 'Administration';
-
-    toggleAdminSidebar(false);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
+// Chargement des Produits
 async function loadProducts() {
-    // 1. Initialisation synchrone depuis le cache local (79 produits)
     if (typeof window.babiGetCachedProducts === 'function') {
         allProducts = window.babiGetCachedProducts();
     } else if (window.BABI_EMBEDDED_CATALOG) {
@@ -84,8 +64,8 @@ async function loadProducts() {
 
     renderProductsGrid();
     updateDashboardStats();
+    populateQuickSaleSelect();
 
-    // 2. Fetcher depuis l'API backend
     try {
         const apiBase = window.API_BASE_URL || '';
         const fetcher = (typeof window.babiFetch === 'function') ? window.babiFetch : fetch;
@@ -100,11 +80,13 @@ async function loadProducts() {
                 }
                 renderProductsGrid();
                 updateDashboardStats();
+                populateQuickSaleSelect();
             }
         }
     } catch (_) {}
 }
 
+// Rendu des Produits avec Boutons Rapides de Stock (+10, +5, -1)
 function renderProductsGrid() {
     const grid = document.getElementById('admin-products-grid');
     if (!grid) return;
@@ -120,39 +102,39 @@ function renderProductsGrid() {
         return matchCat && matchSearch;
     });
 
-    const countEl = document.getElementById('sidebar-product-count');
-    if (countEl) countEl.innerText = allProducts.length;
-
     if (filtered.length === 0) {
-        grid.innerHTML = `<div class="col-span-full py-12 text-center text-stone-500 font-bold">Aucun produit ne correspond à la recherche.</div>`;
+        grid.innerHTML = `<div class="col-span-full py-12 text-center text-stone-500 font-bold">Aucun produit trouvé.</div>`;
         return;
     }
 
     grid.innerHTML = filtered.map(p => {
-        const stockClass = (p.stock <= p.seuil_alerte) ? 'text-rose-600 bg-rose-50 border-rose-200' : 'text-emerald-700 bg-emerald-50 border-emerald-200';
+        const isLow = p.stock <= p.seuil_alerte;
+        const stockBadge = isLow 
+            ? `<span class="px-2 py-0.5 rounded-md bg-rose-100 text-rose-800 font-black text-[11px] border border-rose-200">Stock Bas : ${p.stock}</span>`
+            : `<span class="px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-800 font-bold text-[11px] border border-emerald-200">Stock : ${p.stock}</span>`;
+
         return `
-            <div class="product-card-admin">
-                <div class="product-img-box-admin">
+            <div class="product-card-easy">
+                <div class="product-thumb-container">
                     <img src="${p.image || 'assets/Croissant.png'}" alt="${p.nom}" onerror="this.onerror=null; this.src='assets/Croissant.png';"/>
-                    <span class="badge-gold absolute top-2 right-2">${Number(p.prix).toLocaleString()} FCFA</span>
+                    <span class="absolute top-2 right-2 bg-amber-400 text-black font-black text-xs px-2 py-0.5 rounded-lg shadow-xs">${Number(p.prix).toLocaleString()} F</span>
                 </div>
-                <div class="p-3.5 flex-1 flex flex-col justify-between gap-2">
+                <div class="p-3 flex-1 flex flex-col justify-between gap-2">
                     <div>
-                        <span class="text-[10px] font-extrabold uppercase tracking-wider text-amber-700 block">${p.categorie || 'Boulangerie'}</span>
-                        <h4 class="font-serif font-black text-sm text-[#1a0c06] line-clamp-1 mt-0.5">${p.nom}</h4>
-                        <p class="text-xs text-stone-500 line-clamp-2 mt-1">${p.description || ''}</p>
+                        <h4 class="font-serif font-black text-sm text-[#1a0c06] line-clamp-1">${p.nom}</h4>
+                        <div class="flex items-center justify-between mt-1">
+                            ${stockBadge}
+                            <button onclick="editProduct(${p.id})" class="text-xs font-bold text-amber-700 hover:underline">Modifier</button>
+                        </div>
                     </div>
-                    <div class="pt-2 border-t border-stone-100 flex items-center justify-between">
-                        <span class="px-2 py-0.5 rounded-md border text-[11px] font-mono font-bold ${stockClass}">
-                            Stock : ${p.stock}
-                        </span>
+
+                    <!-- Ajustement Rapide de Stock en 1 Clic -->
+                    <div class="pt-2 border-t border-stone-100 flex items-center justify-between gap-1">
+                        <span class="text-[10px] font-extrabold text-stone-500 uppercase">Ajuster :</span>
                         <div class="flex items-center gap-1">
-                            <button onclick="editProduct(${p.id})" class="p-1.5 rounded-lg bg-stone-100 hover:bg-amber-100 text-stone-700 hover:text-amber-800 transition-colors" title="Modifier">
-                                <span class="material-symbols-outlined text-sm">edit</span>
-                            </button>
-                            <button onclick="deleteProduct(${p.id})" class="p-1.5 rounded-lg bg-stone-100 hover:bg-rose-100 text-stone-700 hover:text-rose-800 transition-colors" title="Supprimer">
-                                <span class="material-symbols-outlined text-sm">delete</span>
-                            </button>
+                            <button onclick="quickAdjustStock(${p.id}, -1)" class="btn-stock-quick" title="Retirer 1">-1</button>
+                            <button onclick="quickAdjustStock(${p.id}, 5)" class="btn-stock-quick" title="Ajouter 5">+5</button>
+                            <button onclick="quickAdjustStock(${p.id}, 10)" class="btn-stock-quick" title="Ajouter 10">+10</button>
                         </div>
                     </div>
                 </div>
@@ -161,13 +143,38 @@ function renderProductsGrid() {
     }).join('');
 }
 
+// Ajustement Rapide de Stock
+async function quickAdjustStock(productId, delta) {
+    const p = allProducts.find(x => x.id === productId);
+    if (!p) return;
+
+    p.stock = Math.max(0, (p.stock || 0) + delta);
+
+    if (typeof window.babiSetCachedProducts === 'function') {
+        window.babiSetCachedProducts(allProducts);
+    }
+    renderProductsGrid();
+    updateDashboardStats();
+    showToast(`📦 Stock de "${p.nom}" ajusté : ${p.stock} unités`);
+
+    // Synchronisation API
+    try {
+        const apiBase = window.API_BASE_URL || '';
+        await fetch(`${apiBase}/api/products/${productId}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ stock: p.stock })
+        });
+    } catch (_) {}
+}
+
 function setAdminCategoryFilter(cat, btn) {
     currentCategoryFilter = cat;
     document.querySelectorAll('#admin-category-tabs button').forEach(b => {
-        b.className = 'px-4 py-1.5 rounded-full bg-white border border-stone-200 text-stone-700 font-bold text-xs hover:bg-stone-50';
+        b.className = 'px-4 py-2 rounded-full bg-white border border-stone-200 text-stone-700 font-bold text-xs shrink-0 hover:bg-stone-50';
     });
     if (btn) {
-        btn.className = 'px-4 py-1.5 rounded-full bg-amber-400 text-black font-extrabold text-xs shadow-xs';
+        btn.className = 'px-4 py-2 rounded-full bg-amber-400 text-black font-extrabold text-xs shrink-0 shadow-xs';
     }
     renderProductsGrid();
 }
@@ -186,7 +193,148 @@ function updateDashboardStats() {
 }
 
 // ============================================================================
-// COMMANDES & FINANCES
+// MODAL D'ENCAISSEMENT RAPIDE AU COMPTOIR
+// ============================================================================
+function openQuickSaleModal() {
+    quickSaleItems = [];
+    quickSalePaymentMethod = 'especes';
+    renderQuickSaleItems();
+    document.getElementById('quickSaleModal').classList.remove('hidden');
+}
+
+function closeQuickSaleModal() {
+    document.getElementById('quickSaleModal').classList.add('hidden');
+}
+
+function populateQuickSaleSelect() {
+    const select = document.getElementById('quick-sale-product-select');
+    if (!select) return;
+    select.innerHTML = `<option value="">-- Toucher pour ajouter un produit (79 articles) --</option>` + 
+        allProducts.map(p => `<option value="${p.id}">${p.nom} — ${Number(p.prix).toLocaleString()} FCFA</option>`).join('');
+}
+
+function addQuickSaleItem() {
+    const select = document.getElementById('quick-sale-product-select');
+    const id = Number(select.value);
+    if (!id) return;
+
+    const product = allProducts.find(p => p.id === id);
+    if (!product) return;
+
+    const existing = quickSaleItems.find(i => i.id === id);
+    if (existing) {
+        existing.quantity += 1;
+    } else {
+        quickSaleItems.push({
+            id: product.id,
+            nom: product.nom,
+            prix: product.prix,
+            quantity: 1
+        });
+    }
+
+    select.value = '';
+    renderQuickSaleItems();
+}
+
+function renderQuickSaleItems() {
+    const container = document.getElementById('quick-sale-items-list');
+    const totalEl = document.getElementById('quick-sale-total');
+    if (!container) return;
+
+    if (quickSaleItems.length === 0) {
+        container.innerHTML = `<div class="text-stone-400 italic py-4 text-center">Aucun article ajouté pour l'instant</div>`;
+        if (totalEl) totalEl.innerText = '0 F';
+        return;
+    }
+
+    let total = 0;
+    container.innerHTML = quickSaleItems.map((item, index) => {
+        const lineTotal = item.prix * item.quantity;
+        total += lineTotal;
+        return `
+            <div class="flex items-center justify-between bg-white p-2 rounded-xl border border-stone-200">
+                <span class="font-bold text-stone-800">${item.nom}</span>
+                <div class="flex items-center gap-2">
+                    <div class="flex items-center border border-stone-300 rounded-lg overflow-hidden">
+                        <button onclick="changeQuickSaleQty(${index}, -1)" class="px-2 py-1 bg-stone-100 hover:bg-stone-200 font-bold">-</button>
+                        <span class="px-2 font-mono font-bold">${item.quantity}</span>
+                        <button onclick="changeQuickSaleQty(${index}, 1)" class="px-2 py-1 bg-stone-100 hover:bg-stone-200 font-bold">+</button>
+                    </div>
+                    <span class="font-mono font-black text-amber-900 w-16 text-right">${lineTotal.toLocaleString()} F</span>
+                </div>
+            </div>
+        `;
+    }).join('');
+
+    if (totalEl) totalEl.innerText = total.toLocaleString() + ' F';
+}
+
+function changeQuickSaleQty(index, delta) {
+    if (!quickSaleItems[index]) return;
+    quickSaleItems[index].quantity += delta;
+    if (quickSaleItems[index].quantity <= 0) {
+        quickSaleItems.splice(index, 1);
+    }
+    renderQuickSaleItems();
+}
+
+function setQuickSalePayment(method, btn) {
+    quickSalePaymentMethod = method;
+    document.querySelectorAll('.quick-pay-btn').forEach(b => {
+        b.className = 'quick-pay-btn p-2.5 rounded-xl border-2 border-stone-200 bg-white font-bold text-xs text-center';
+    });
+    if (btn) {
+        btn.className = 'quick-pay-btn p-2.5 rounded-xl border-2 border-amber-400 bg-amber-50 font-bold text-xs text-center';
+    }
+}
+
+async function confirmQuickSale() {
+    if (quickSaleItems.length === 0) {
+        alert('Veuillez ajouter au moins un produit.');
+        return;
+    }
+
+    const total = quickSaleItems.reduce((sum, i) => sum + (i.prix * i.quantity), 0);
+    const orderData = {
+        id: Date.now(),
+        customer_name: 'Client Comptoir',
+        items: quickSaleItems,
+        total_price: total,
+        payment_method: quickSalePaymentMethod,
+        status: 'completed',
+        pickup_code: 'VENTE-' + Math.floor(1000 + Math.random() * 9000),
+        created_at: new Date().toISOString()
+    };
+
+    allOrders.unshift(orderData);
+    renderOrdersTable();
+    renderDashboardRecentOrders();
+    calculateFinances();
+    closeQuickSaleModal();
+    showToast(`🎉 Vente de ${total.toLocaleString()} FCFA enregistrée avec succès !`);
+
+    // Décrémenter stocks locaux
+    quickSaleItems.forEach(item => {
+        const prod = allProducts.find(p => p.id === item.id);
+        if (prod) prod.stock = Math.max(0, prod.stock - item.quantity);
+    });
+    renderProductsGrid();
+    updateDashboardStats();
+
+    // Envoi backend
+    try {
+        const apiBase = window.API_BASE_URL || '';
+        await fetch(`${apiBase}/api/orders`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(orderData)
+        });
+    } catch (_) {}
+}
+
+// ============================================================================
+// COMMANDES, FINANCES & NOTIFICATIONS
 // ============================================================================
 async function loadOrders() {
     try {
@@ -208,7 +356,7 @@ function renderOrdersTable() {
     if (!tbody) return;
 
     if (allOrders.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="9" class="text-center py-8 text-stone-400">Aucune commande pour le moment.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="7" class="text-center py-8 text-stone-400">Aucune commande pour le moment.</td></tr>`;
         return;
     }
 
@@ -220,27 +368,19 @@ function renderOrdersTable() {
         return code.includes(searchTerm) || client.includes(searchTerm);
     });
 
-    tbody.innerHTML = filtered.map(o => {
-        const statusBadge = (o.status === 'completed' || o.status === 'delivered' || o.statut === 'pret')
-            ? '<span class="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[11px] font-bold">Livré</span>'
-            : '<span class="px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 text-[11px] font-bold animate-pulse">En attente</span>';
-
-        return `
-            <tr>
-                <td class="font-mono font-bold">#${o.id}</td>
-                <td class="text-xs text-stone-500">${o.created_at ? new Date(o.created_at).toLocaleDateString('fr-FR') : 'Aujourd\'hui'}</td>
-                <td><strong class="font-mono text-amber-700 bg-amber-50 px-2 py-1 rounded-md border border-amber-200">${o.pickup_code || '---'}</strong></td>
-                <td class="font-bold text-[#1a0c06]">${o.customer_name || o.client_name || 'Client Comptoir'}</td>
-                <td class="text-xs text-stone-600 max-w-xs truncate">${formatOrderItems(o.items)}</td>
-                <td class="font-mono font-black text-[#1a0c06]">${Number(o.total_price || o.total || 0).toLocaleString()} F</td>
-                <td class="text-xs font-bold text-stone-600 uppercase">${o.payment_method || 'Espèces'}</td>
-                <td>${statusBadge}</td>
-                <td>
-                    <button onclick="updateOrderStatus(${o.id}, 'completed')" class="px-2.5 py-1 rounded-lg bg-emerald-600 text-white text-xs font-bold hover:bg-emerald-700">Valider</button>
-                </td>
-            </tr>
-        `;
-    }).join('');
+    tbody.innerHTML = filtered.map(o => `
+        <tr class="hover:bg-amber-50/50 transition-colors">
+            <td class="py-2.5 px-3 font-mono font-bold text-amber-900">#${o.id}</td>
+            <td class="py-2.5 px-3 font-bold text-stone-800">${o.customer_name || 'Client'}</td>
+            <td class="py-2.5 px-3 text-stone-600 max-w-xs truncate">${formatOrderItems(o.items)}</td>
+            <td class="py-2.5 px-3 font-mono font-black text-[#1a0c06]">${Number(o.total_price || o.total || 0).toLocaleString()} F</td>
+            <td class="py-2.5 px-3 uppercase font-bold text-[11px] text-stone-600">${o.payment_method || 'Espèces'}</td>
+            <td class="py-2.5 px-3"><span class="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-bold text-[10.5px]">Validé</span></td>
+            <td class="py-2.5 px-3">
+                <button onclick="showToast('Détails commande #${o.id}')" class="text-xs font-bold text-amber-700 hover:underline">Voir</button>
+            </td>
+        </tr>
+    `).join('');
 }
 
 function renderDashboardRecentOrders() {
@@ -249,17 +389,17 @@ function renderDashboardRecentOrders() {
 
     const recent = allOrders.slice(0, 5);
     if (recent.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="5" class="text-center py-6 text-stone-400">Aucune commande récente.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="5" class="text-center py-6 text-stone-400">Aucune vente enregistrée aujourd'hui.</td></tr>`;
         return;
     }
 
     tbody.innerHTML = recent.map(o => `
-        <tr>
-            <td class="font-mono font-bold text-amber-700">#${o.id} (${o.pickup_code || 'N/A'})</td>
-            <td class="font-bold text-[#1a0c06]">${o.customer_name || 'Client'}</td>
-            <td class="text-xs text-stone-600 max-w-[180px] truncate">${formatOrderItems(o.items)}</td>
-            <td class="font-mono font-black">${Number(o.total_price || o.total || 0).toLocaleString()} F</td>
-            <td><span class="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[11px] font-bold">Payé</span></td>
+        <tr class="border-b border-stone-100">
+            <td class="py-2 font-mono font-bold text-amber-800">#${o.id}</td>
+            <td class="py-2 font-bold text-stone-800">${o.customer_name || 'Client'}</td>
+            <td class="py-2 text-stone-600 truncate max-w-[160px]">${formatOrderItems(o.items)}</td>
+            <td class="py-2 font-mono font-black">${Number(o.total_price || o.total || 0).toLocaleString()} F</td>
+            <td class="py-2 uppercase text-[10px] font-bold text-stone-500">${o.payment_method || 'Espèces'}</td>
         </tr>
     `).join('');
 }
@@ -286,7 +426,7 @@ function calculateFinances() {
         totalRev += amt;
         const method = (o.payment_method || '').toLowerCase();
         if (method.includes('wave')) wave += amt;
-        else if (method.includes('orange') || method.includes('mtn') || method.includes('moov')) mobile += amt;
+        else if (method.includes('orange') || method.includes('mtn')) mobile += amt;
         else esp += amt;
     });
 
@@ -318,15 +458,13 @@ async function loadInsights() {
             const data = await res.json();
             const box = document.getElementById('dashboard-bix-insight');
             if (box && data && data.salesSummary) {
-                box.innerText = `💡 Analyse BIX : ${data.salesSummary.totalOrdersRecorded} commandes traitées. Recettes totales de ${data.salesSummary.totalRevenueFCFA.toLocaleString()} FCFA. Les meilleures ventes se concentrent sur les viennoiseries et les baguettes traditions.`;
+                box.innerText = `💡 Analyse BIX : ${data.salesSummary.totalOrdersRecorded} commandes traitées pour ${data.salesSummary.totalRevenueFCFA.toLocaleString()} FCFA de recettes.`;
             }
         }
     } catch (_) {}
 }
 
-// ============================================================================
-// MODAL GESTION PRODUITS
-// ============================================================================
+// Modal Produit
 function openProductModal() {
     document.getElementById('modal-product-title').innerText = 'Ajouter un Produit';
     document.getElementById('productForm').reset();
@@ -341,22 +479,21 @@ function closeProductModal() {
 function editProduct(id) {
     const p = allProducts.find(x => x.id === id);
     if (!p) return;
-    document.getElementById('modal-product-title').innerText = 'Modifier le Produit #' + id;
+    document.getElementById('modal-product-title').innerText = 'Modifier ' + p.nom;
     document.getElementById('prod-id').value = p.id;
-    document.getElementById('prod-name').value = p.nom || p.name;
-    document.getElementById('prod-price').value = p.prix || p.price;
-    document.getElementById('prod-cat').value = p.categorie || p.category || 'pain';
+    document.getElementById('prod-name').value = p.nom;
+    document.getElementById('prod-price').value = p.prix;
+    document.getElementById('prod-cat').value = p.categorie || 'pain';
     document.getElementById('prod-stock').value = p.stock || 50;
     document.getElementById('prod-alert').value = p.seuil_alerte || 10;
     document.getElementById('prod-image').value = p.image || '';
-    document.getElementById('prod-desc').value = p.description || '';
     document.getElementById('productModal').classList.remove('hidden');
 }
 
 async function saveProduct(e) {
     e.preventDefault();
     const id = document.getElementById('prod-id').value;
-    const productData = {
+    const pData = {
         id: id ? Number(id) : Date.now(),
         nom: document.getElementById('prod-name').value.trim(),
         prix: Number(document.getElementById('prod-price').value),
@@ -364,15 +501,14 @@ async function saveProduct(e) {
         stock: Number(document.getElementById('prod-stock').value),
         seuil_alerte: Number(document.getElementById('prod-alert').value),
         image: document.getElementById('prod-image').value.trim() || 'assets/Croissant.png',
-        description: document.getElementById('prod-desc').value.trim(),
         is_active: 1
     };
 
     if (id) {
         const idx = allProducts.findIndex(x => x.id === Number(id));
-        if (idx !== -1) allProducts[idx] = productData;
+        if (idx !== -1) allProducts[idx] = pData;
     } else {
-        allProducts.push(productData);
+        allProducts.push(pData);
     }
 
     if (typeof window.babiSetCachedProducts === 'function') {
@@ -381,51 +517,33 @@ async function saveProduct(e) {
 
     renderProductsGrid();
     updateDashboardStats();
+    populateQuickSaleSelect();
     closeProductModal();
+    showToast(`✅ Produit "${pData.nom}" enregistré avec succès !`);
 
-    // Synchro API
     try {
         const apiBase = window.API_BASE_URL || '';
         await fetch(`${apiBase}/api/products`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(productData)
+            body: JSON.stringify(pData)
         });
     } catch (_) {}
 }
 
-async function deleteProduct(id) {
-    if (!confirm('Confirmez-vous la suppression de ce produit ?')) return;
-    allProducts = allProducts.filter(p => p.id !== id);
-    if (typeof window.babiAddDeletedProductId === 'function') {
-        window.babiAddDeletedProductId(id);
-    }
-    if (typeof window.babiSetCachedProducts === 'function') {
-        window.babiSetCachedProducts(allProducts);
-    }
-    renderProductsGrid();
-    updateDashboardStats();
+function showToast(msg) {
+    const existing = document.querySelector('.toast-babi');
+    if (existing) existing.remove();
 
-    try {
-        const apiBase = window.API_BASE_URL || '';
-        await fetch(`${apiBase}/api/products/${id}`, { method: 'DELETE' });
-    } catch (_) {}
-}
+    const toast = document.createElement('div');
+    toast.className = 'toast-babi';
+    toast.innerHTML = `<span>${msg}</span>`;
+    document.body.appendChild(toast);
 
-async function updateOrderStatus(orderId, newStatus) {
-    try {
-        const apiBase = window.API_BASE_URL || '';
-        await fetch(`${apiBase}/api/orders/${orderId}/status`, {
-            method: 'PATCH',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ status: newStatus })
-        });
-        await loadOrders();
-    } catch (_) {}
-}
-
-function logoutAdmin() {
-    if (confirm('Voulez-vous vous déconnecter du panel Admin ?')) {
-        window.location.href = 'index.html';
-    }
+    setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateY(10px)';
+        toast.style.transition = 'all 0.3s ease';
+        setTimeout(() => toast.remove(), 300);
+    }, 3000);
 }

@@ -1,75 +1,65 @@
 /* ==========================================================================
-   🏛️ BOULANGERIE DE BABI — ADMIN PRESTIGE DESIGN SYSTEM (CHOCOLAT & OR)
+   🥐 BOULANGERIE DE BABI — ADMIN ULTRA FACILE & INTUITIF (DESIGN CHOCOLAT & OR)
    ========================================================================== */
 
-@import url('https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&family=Manrope:wght@300;400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&family=Manrope:wght@400;500;600;700;800;900&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200');
 
 :root {
     --brand-chocolate-dark: #120804;
     --brand-chocolate: #23120a;
-    --brand-chocolate-light: #381e11;
     --brand-gold: #f5b800;
     --brand-gold-hover: #e0a700;
-    --brand-gold-glow: rgba(245, 184, 0, 0.4);
     --brand-cream: #fbf8f1;
-    --brand-cream-dark: #f0e9dc;
     --brand-surface: #ffffff;
     --brand-border: rgba(212, 175, 55, 0.3);
-    --brand-text-dark: #1c1008;
-    --brand-text-muted: #7c685b;
-    --brand-success: #16a34a;
-    --brand-warning: #ea580c;
+    --brand-text-dark: #1a0c06;
+    --brand-text-muted: #6b584c;
+    --brand-success: #15803d;
     --brand-danger: #dc2626;
-    
-    --shadow-luxury: 0 10px 30px -5px rgba(26, 12, 6, 0.08), 0 4px 12px -2px rgba(245, 184, 0, 0.05);
-    --shadow-gold: 0 8px 24px -4px rgba(245, 184, 0, 0.35);
+    --brand-warning: #ea580c;
 }
 
 * {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
-}
-
-html {
-    height: 100%;
+    -webkit-tap-highlight-color: transparent;
 }
 
 body {
-    min-height: 100%;
+    min-height: 100vh;
     background-color: var(--brand-cream);
-    background-image: radial-gradient(circle at 10% 10%, rgba(245, 184, 0, 0.03) 0%, transparent 60%),
-                      radial-gradient(circle at 90% 90%, rgba(35, 18, 10, 0.03) 0%, transparent 60%);
     color: var(--brand-text-dark);
-    font-family: 'Manrope', sans-serif;
+    font-family: 'Manrope', -apple-system, sans-serif;
     font-size: 14px;
-    line-height: 1.5;
+    line-height: 1.4;
     overflow-x: hidden;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
+    padding-bottom: 80px; /* Espace pour la barre mobile */
 }
 
-h1, h2, h3, .font-serif {
-    font-family: 'Libre Caslon Text', serif;
+@media (min-width: 1024px) {
+    body {
+        padding-bottom: 0;
+    }
 }
 
-/* ==========================================================================
-   SIDEBAR & BRANDING
-   ========================================================================== */
+/* Sidebar Desktop */
 .admin-sidebar {
     position: fixed;
     top: 0;
     left: 0;
     bottom: 0;
-    width: 280px;
-    background: linear-gradient(180deg, var(--brand-chocolate-dark) 0%, var(--brand-chocolate) 100%);
-    border-right: 1px solid rgba(245, 184, 0, 0.25);
-    box-shadow: 8px 0 32px rgba(0, 0, 0, 0.35);
+    width: 260px;
+    background: linear-gradient(180deg, #150904 0%, #25130a 100%);
+    border-right: 1px solid rgba(245, 184, 0, 0.3);
+    box-shadow: 4px 0 24px rgba(0, 0, 0, 0.25);
     z-index: 50;
     display: flex;
     flex-direction: column;
-    padding: 1.5rem 1.25rem;
+    padding: 1.25rem 1rem;
     transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -77,33 +67,26 @@ h1, h2, h3, .font-serif {
     display: flex;
     align-items: center;
     gap: 12px;
-    padding: 12px;
-    background: rgba(255, 255, 255, 0.04);
-    border: 1px solid rgba(245, 184, 0, 0.35);
+    padding: 10px 12px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(245, 184, 0, 0.4);
     border-radius: 16px;
     text-decoration: none;
-    margin-bottom: 1.5rem;
-    transition: all 0.25s ease;
-}
-.admin-logo-card:hover {
-    background: rgba(255, 255, 255, 0.08);
-    border-color: var(--brand-gold);
-    box-shadow: var(--shadow-gold);
-    transform: translateY(-2px);
+    margin-bottom: 1.25rem;
+    transition: all 0.2s ease;
 }
 
 .admin-logo-badge {
-    width: 52px;
-    height: 52px;
-    min-width: 52px;
+    width: 48px;
+    height: 48px;
     background: linear-gradient(135deg, #ffd700 0%, #f5b800 100%);
-    border-radius: 14px;
+    border-radius: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 4px;
-    box-shadow: 0 4px 14px rgba(245, 184, 0, 0.4);
-    border: 1.5px solid rgba(255, 255, 255, 0.8);
+    padding: 3px;
+    box-shadow: 0 4px 12px rgba(245, 184, 0, 0.4);
+    border: 1.5px solid #fff;
     overflow: hidden;
 }
 .admin-logo-badge img {
@@ -116,13 +99,13 @@ h1, h2, h3, .font-serif {
     display: flex;
     align-items: center;
     gap: 12px;
-    padding: 11px 14px;
-    border-radius: 12px;
+    padding: 12px 14px;
+    border-radius: 14px;
     color: #e5dac6;
     font-weight: 700;
-    font-size: 13.5px;
+    font-size: 14px;
     text-decoration: none;
-    transition: all 0.2s ease;
+    transition: all 0.15s ease;
     cursor: pointer;
     margin-bottom: 4px;
     border: 1px solid transparent;
@@ -130,41 +113,35 @@ h1, h2, h3, .font-serif {
 .admin-nav-item:hover {
     background: rgba(245, 184, 0, 0.12);
     color: #ffffff;
-    border-color: rgba(245, 184, 0, 0.25);
-    transform: translateX(4px);
 }
 .admin-nav-item.active {
-    background: linear-gradient(135deg, #FFD700 0%, #E5A900 50%, #C98A00 100%);
-    color: #1a0c06 !important;
+    background: linear-gradient(135deg, #ffd700 0%, #f5b800 100%);
+    color: #120804 !important;
     font-weight: 900;
-    border: 1px solid rgba(255, 255, 255, 0.6);
-    box-shadow: 0 6px 20px rgba(201, 138, 0, 0.4);
+    box-shadow: 0 4px 16px rgba(245, 184, 0, 0.35);
 }
 .admin-nav-item.active .material-symbols-outlined {
-    color: #1a0c06 !important;
+    color: #120804 !important;
 }
 
-/* ==========================================================================
-   TOPBAR & CONTENT WRAPPER
-   ========================================================================== */
+/* Wrapper */
 .admin-wrapper {
-    margin-left: 280px;
+    margin-left: 260px;
     min-height: 100vh;
     display: flex;
     flex-direction: column;
-    transition: margin 0.3s ease;
 }
 
 .admin-topbar {
     position: sticky;
     top: 0;
     z-index: 40;
-    height: 70px;
-    background: rgba(251, 248, 241, 0.92);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border-bottom: 1px solid var(--brand-border);
-    padding: 0 1.75rem;
+    height: 68px;
+    background: rgba(251, 248, 241, 0.96);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1.5px solid var(--brand-border);
+    padding: 0 1.5rem;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -173,207 +150,220 @@ h1, h2, h3, .font-serif {
 
 .admin-main {
     flex: 1;
-    padding: 1.75rem;
+    padding: 1.25rem 1.5rem;
     max-width: 1440px;
     width: 100%;
     margin: 0 auto;
 }
 
-/* ==========================================================================
-   STAT CARDS & KPI
-   ========================================================================== */
-.stat-card {
-    background: var(--brand-surface);
-    border: 1px solid var(--brand-border);
-    border-radius: 18px;
-    padding: 1.25rem 1.5rem;
-    box-shadow: var(--shadow-luxury);
-    position: relative;
-    overflow: hidden;
-    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+/* Boutons d'Action Rapide */
+.btn-action-hero {
+    background: linear-gradient(135deg, #ffd700 0%, #f5b800 100%);
+    color: #120804;
+    font-weight: 900;
+    font-size: 14px;
+    padding: 10px 20px;
+    border-radius: 14px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.7);
+    box-shadow: 0 4px 16px rgba(245, 184, 0, 0.35);
+    cursor: pointer;
+    transition: all 0.15s ease;
+    text-decoration: none;
 }
-.stat-card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 14px 36px -4px rgba(35, 18, 10, 0.12), 0 0 0 1px var(--brand-gold);
+.btn-action-hero:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(245, 184, 0, 0.5);
 }
-.stat-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 3px;
-    background: linear-gradient(90deg, var(--brand-gold), transparent);
+.btn-action-hero:active {
+    transform: scale(0.97);
 }
 
-/* ==========================================================================
-   PRODUCT CARDS & TABLES
-   ========================================================================== */
-.table-luxury {
-    width: 100%;
-    border-collapse: separate;
-    border-spacing: 0;
-}
-.table-luxury th {
-    background: #f5efe3;
-    color: var(--brand-chocolate);
-    font-size: 11.5px;
+.btn-secondary {
+    background: #ffffff;
+    color: #1a0c06;
     font-weight: 800;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    padding: 12px 16px;
-    border-bottom: 1.5px solid var(--brand-border);
-}
-.table-luxury th:first-child { border-top-left-radius: 14px; }
-.table-luxury th:last-child { border-top-right-radius: 14px; }
-
-.table-luxury td {
-    padding: 14px 16px;
-    background: #ffffff;
-    border-bottom: 1px solid rgba(212, 175, 55, 0.15);
     font-size: 13.5px;
-    vertical-align: middle;
-    transition: background 0.15s ease;
+    padding: 10px 16px;
+    border-radius: 14px;
+    border: 1.5px solid var(--brand-border);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    text-decoration: none;
 }
-.table-luxury tr:hover td {
-    background: #fdfbf7;
+.btn-secondary:hover {
+    background: #fbf8f1;
+    border-color: var(--brand-gold);
 }
 
-/* Product Grid for Catalog */
-.product-card-admin {
+/* Stat Cards */
+.stat-card-easy {
     background: #ffffff;
-    border: 1px solid var(--brand-border);
+    border: 1.5px solid var(--brand-border);
+    border-radius: 20px;
+    padding: 1.25rem 1.4rem;
+    box-shadow: 0 4px 16px rgba(35, 18, 10, 0.04);
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    transition: transform 0.2s ease;
+}
+.stat-card-easy:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(35, 18, 10, 0.08);
+}
+.stat-icon-badge {
+    width: 52px;
+    height: 52px;
     border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 26px;
+    flex-shrink: 0;
+}
+
+/* Product Card Easy */
+.product-card-easy {
+    background: #ffffff;
+    border: 1.5px solid var(--brand-border);
+    border-radius: 18px;
     overflow: hidden;
-    transition: all 0.25s ease;
     display: flex;
     flex-direction: column;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
-}
-.product-card-admin:hover {
-    transform: translateY(-3px);
-    border-color: var(--brand-gold);
-    box-shadow: 0 12px 28px -4px rgba(35, 18, 10, 0.12);
-}
-
-.product-img-box-admin {
-    height: 140px;
-    background: #fbf8f1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 10px;
-    position: relative;
-    border-bottom: 1px solid rgba(212, 175, 55, 0.2);
-}
-.product-img-box-admin img {
-    max-height: 120px;
-    max-width: 90%;
-    object-fit: contain;
-    transition: transform 0.3s ease;
-}
-.product-card-admin:hover .product-img-box-admin img {
-    transform: scale(1.08);
-}
-
-/* Gold Badges */
-.badge-gold {
-    background: linear-gradient(135deg, #ffd700 0%, #f5b800 100%);
-    color: #1a0c06;
-    font-weight: 900;
-    font-size: 11.5px;
-    padding: 3px 8px;
-    border-radius: 8px;
-    box-shadow: 0 2px 6px rgba(245, 184, 0, 0.35);
-}
-
-/* Buttons */
-.btn-gold {
-    background: linear-gradient(135deg, #ffd700 0%, #f5b800 100%);
-    color: #1a0c06;
-    font-weight: 900;
-    border: 1px solid rgba(255, 255, 255, 0.6);
-    border-radius: 12px;
-    padding: 9px 18px;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    cursor: pointer;
-    box-shadow: var(--shadow-gold);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
     transition: all 0.2s ease;
-    text-decoration: none;
-    font-size: 13.5px;
 }
-.btn-gold:hover {
-    background: linear-gradient(135deg, #ffe033 0%, #e0a700 100%);
+.product-card-easy:hover {
+    border-color: var(--brand-gold);
+    box-shadow: 0 8px 24px rgba(35, 18, 10, 0.08);
     transform: translateY(-2px);
-    box-shadow: 0 10px 28px rgba(245, 184, 0, 0.45);
 }
 
-.btn-secondary-luxury {
-    background: #ffffff;
-    color: var(--brand-chocolate);
-    font-weight: 700;
-    border: 1px solid var(--brand-border);
-    border-radius: 12px;
-    padding: 9px 18px;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    text-decoration: none;
-    font-size: 13.5px;
-}
-.btn-secondary-luxury:hover {
-    background: #fbf8f1;
-    border-color: var(--brand-gold);
-    transform: translateY(-1px);
-}
-
-/* Modals */
-.admin-modal-backdrop {
-    position: fixed;
-    inset: 0;
-    background: rgba(18, 8, 4, 0.82);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    z-index: 1000;
+.product-thumb-container {
+    height: 130px;
+    background: #fdfbf7;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 1rem;
-    animation: fadeIn 0.2s ease;
+    padding: 8px;
+    position: relative;
+    border-bottom: 1px solid rgba(212, 175, 55, 0.15);
 }
-.admin-modal-card {
-    background: #ffffff;
-    border: 1px solid var(--brand-gold);
-    border-radius: 24px;
-    width: 100%;
-    max-width: 600px;
-    max-height: 90vh;
-    overflow-y: auto;
-    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.4);
-    animation: slideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+.product-thumb-container img {
+    max-height: 110px;
+    max-width: 85%;
+    object-fit: contain;
+    transition: transform 0.2s ease;
+}
+.product-card-easy:hover .product-thumb-container img {
+    transform: scale(1.06);
 }
 
-@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-@keyframes slideUp { from { opacity: 0; transform: translateY(20px) scale(0.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
+/* Boutons rapides de stock (+10, +5, -1) */
+.btn-stock-quick {
+    background: #f4eee3;
+    color: #1a0c06;
+    font-weight: 800;
+    font-size: 11.5px;
+    padding: 4px 8px;
+    border-radius: 8px;
+    border: 1px solid rgba(212, 175, 55, 0.3);
+    cursor: pointer;
+    transition: all 0.1s ease;
+}
+.btn-stock-quick:hover {
+    background: var(--brand-gold);
+    border-color: var(--brand-gold);
+    color: #000;
+}
+.btn-stock-quick:active {
+    transform: scale(0.92);
+}
 
-/* Responsive Mobile Layout */
+/* Barre de Navigation Mobile en Bas */
+.mobile-bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 64px;
+    background: #1a0c06;
+    border-top: 1.5px solid var(--brand-gold);
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    z-index: 100;
+    padding: 0 4px;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3);
+}
+.mobile-nav-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #d1c2b4;
+    text-decoration: none;
+    font-size: 10.5px;
+    font-weight: 700;
+    padding: 6px 12px;
+    border-radius: 12px;
+    gap: 2px;
+    flex: 1;
+    cursor: pointer;
+}
+.mobile-nav-btn.active {
+    color: var(--brand-gold) !important;
+    font-weight: 900;
+}
+.mobile-nav-btn.active .material-symbols-outlined {
+    transform: scale(1.15);
+}
+
+/* Toast Notifications */
+.toast-babi {
+    position: fixed;
+    bottom: 80px;
+    right: 20px;
+    background: #1a0c06;
+    color: #fff;
+    border: 1.5px solid var(--brand-gold);
+    border-radius: 16px;
+    padding: 12px 18px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 700;
+    font-size: 13.5px;
+    z-index: 2000;
+    animation: slideInRight 0.25s ease;
+}
+@media (min-width: 1024px) {
+    .toast-babi {
+        bottom: 24px;
+    }
+}
+@keyframes slideInRight {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
 @media (max-width: 1023px) {
     .admin-sidebar {
-        transform: translateX(-100%);
-    }
-    .admin-sidebar.open {
-        transform: translateX(0);
+        display: none;
     }
     .admin-wrapper {
-        margin-left: 0 !important;
+        margin-left: 0;
     }
     .admin-topbar {
         padding: 0 1rem;
-        height: 64px;
+        height: 60px;
     }
     .admin-main {
         padding: 1rem;
