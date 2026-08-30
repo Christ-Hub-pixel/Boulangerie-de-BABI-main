@@ -126,6 +126,6 @@ sequenceDiagram
 | Rôle | Interface | Responsabilités | Mode de Paiement |
 | :--- | :--- | :--- | :--- |
 | **Client** | `index.html`, `produits.html`, `cart.html`, `checkout.html`, `suivi.html`, App Mobile Flutter | Consultation, réservations, pain chaud en direct, suivi PIN. | **Wave Mobile Money Exclusif** |
-| **Caissière** | `caissiere.html` & `js/caissiere.js` | Réception en direct des commandes, validation PIN, encaissement sur place. | Validation PIN + Ventes Espèces/Wave |
-| **Gérante** | `gerante.html` & `js/gerante.js` | Pilotage des fournées, alertes de stocks, mode anti-gaspillage. | Consultation |
-| **Administrateur** | `admin.html` & `js/admin.js` | Cockpit financier, gestion des accès caissières, audit de sécurité. | Trésorerie & Payouts |
+| **Caissière** | `bix.html` & `js/caissiere.js` | Réception en direct des commandes, validation PIN, encaissement sur place. | Validation PIN + Ventes Espèces/Wave |
+| **Gérante** | `bix.html` & `js/gerante.js` | Pilotage des fournées, alertes de stocks, mode anti-gaspillage. | Consultation |
+| **Administrateur** | `bix.html` & `js/admin.js` | Cockpit financier, gestion des accès caissières, audit de sécurité. | Trésorerie & Payouts |

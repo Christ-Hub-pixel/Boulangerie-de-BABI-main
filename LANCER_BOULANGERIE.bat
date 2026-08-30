@@ -13,15 +13,13 @@ echo.
 cd /d "%~dp0"
 
 :: Ouvrir automatiquement les interfaces après 1 seconde pour garantir la connexion immédiate
-start /b "" powershell -Command "Start-Sleep -Seconds 1; Start-Process 'http://localhost:5000'; Start-Process 'http://localhost:5000/caissiere.html'; Start-Process 'http://localhost:5000/admin.html'"
+start /b "" powershell -Command "Start-Sleep -Seconds 1; Start-Process 'http://localhost:5000'; Start-Process 'http://localhost:5000/bix.html'"
 
 echo [2/2] Liens disponibles pour votre presentation :
 echo ----------------------------------------------------------------
 echo   * Boutique Client     : http://localhost:5000
 echo   * Catalogue Produits  : http://localhost:5000/produits.html
-echo   * Caisse Tactile POS  : http://localhost:5000/caissiere.html
-echo   * Portail Gerante     : http://localhost:5000/gerante.html
-echo   * Cockpit Direction   : http://localhost:5000/admin.html
+echo   * Intelligence BIX HQ : http://localhost:5000/bix.html
 echo.
 echo   * Sur Mobile/Tablette : http://192.168.1.12:5000/app
 echo ----------------------------------------------------------------

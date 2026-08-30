@@ -9,9 +9,7 @@
     <script>
       (function() {
         const host = window.location.hostname.toLowerCase();
-        if (host.startsWith('caisse.')) window.location.replace('/caissiere.html');
-        else if (host.startsWith('fournil.')) window.location.replace('/gerante.html');
-        else if (host.startsWith('admin.')) window.location.replace('/admin.html');
+        if (host.startsWith('admin.') || host.startsWith('caisse.') || host.startsWith('bix.')) window.location.replace('/bix.html');
       })();
     </script>
     <!-- Fonts -->
@@ -1198,9 +1196,7 @@
                         <li><a href="checkout.html">Commander</a></li>
                         <li><a href="fidelite.html">Fidélité</a></li>
                         <li class="mt-2 text-warning fw-bold small text-uppercase"><i class="fa-solid fa-users-gear me-1"></i> Postes Métiers :</li>
-                        <li><a href="caissiere.html" class="text-warning"><i class="fa-solid fa-cash-register me-1"></i> Caisse Tactile (POS)</a></li>
-                        <li><a href="gerante.html" class="text-success"><i class="fa-solid fa-user-tie me-1"></i> Direction & Gérance</a></li>
-                        <li><a href="admin.html" class="text-info"><i class="fa-solid fa-shield-halved me-1"></i> Panel Admin</a></li>
+                        <li><a href="bix.html" class="text-warning"><i class="fa-solid fa-sparkles me-1"></i> BIX HQ (Centre Intelligent)</a></li>
                     </ul>
                 </div>
                 <div class="col footer-col">
