@@ -1,7 +1,6 @@
 {
   "version": 2,
   "cleanUrls": true,
-  "trailingSlash": false,
   "functions": {
     "api/*.js": {
       "maxDuration": 15,
@@ -18,27 +17,12 @@
       "destination": "/api"
     },
     {
-      "source": "/",
-      "has": [{ "type": "host", "value": "caisse.boulangeriedebabi.com" }],
-      "destination": "/caissiere.html"
-    },
-    {
-      "source": "/",
-      "has": [{ "type": "host", "value": "fournil.boulangeriedebabi.com" }],
-      "destination": "/gerante.html"
-    },
-    {
-      "source": "/",
-      "has": [{ "type": "host", "value": "admin.boulangeriedebabi.com" }],
-      "destination": "/admin.html"
-    },
-    {
       "source": "/app",
-      "destination": "/app.html"
+      "destination": "/app/index.html"
     },
     {
       "source": "/app/",
-      "destination": "/app.html"
+      "destination": "/app/index.html"
     }
   ]
 }
