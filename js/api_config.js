@@ -660,94 +660,6 @@
   },
   {
     "id": 56,
-    "nom": "Mini Pizza Garnie",
-    "prix": 1000,
-    "categorie": "traiteur",
-    "stock": 45,
-    "seuil_alerte": 10,
-    "description": "Mini pizza individuelle sauce tomate mijotée, fromage fondant et herbes.",
-    "image": "assets/Pizza.png",
-    "is_active": 1
-  },
-  {
-    "id": 57,
-    "nom": "Petite Pizza Gourmande",
-    "prix": 5000,
-    "categorie": "traiteur",
-    "stock": 25,
-    "seuil_alerte": 5,
-    "description": "Pizza moyenne généreusement garnie (viande hachée, fromage, olives).",
-    "image": "assets/Pizza.png",
-    "is_active": 1
-  },
-  {
-    "id": 58,
-    "nom": "Grande Pizza Familiale",
-    "prix": 10000,
-    "categorie": "traiteur",
-    "stock": 15,
-    "seuil_alerte": 3,
-    "description": "Grande pizza XXL à partager, pâte fine croustillante et garniture royale.",
-    "image": "assets/Pizza.png",
-    "is_active": 1
-  },
-  {
-    "id": 59,
-    "nom": "Sandwich Américain",
-    "prix": 700,
-    "categorie": "traiteur",
-    "stock": 40,
-    "seuil_alerte": 10,
-    "description": "Sandwich baguette croustillante garni à l'américaine avec sauce maison.",
-    "image": "assets/product_sandwich.png",
-    "is_active": 1
-  },
-  {
-    "id": 60,
-    "nom": "Croque-Monsieur Chaud Gratiné",
-    "prix": 700,
-    "categorie": "traiteur",
-    "stock": 45,
-    "seuil_alerte": 10,
-    "description": "Pain de mie doré au four, jambon savoureux et béchamel gratinée.",
-    "image": "assets/product_sandwich.png",
-    "is_active": 1
-  },
-  {
-    "id": 61,
-    "nom": "Quiche Salée au Fromage",
-    "prix": 500,
-    "categorie": "traiteur",
-    "stock": 50,
-    "seuil_alerte": 10,
-    "description": "Tartelette salée garnie d'un appareil crémeux et emmental fondu.",
-    "image": "assets/product_sandwich.png",
-    "is_active": 1
-  },
-  {
-    "id": 62,
-    "nom": "Brioche Salée à la Viande Hachée",
-    "prix": 1000,
-    "categorie": "traiteur",
-    "stock": 35,
-    "seuil_alerte": 8,
-    "description": "Brioche dorée moelleuse farcie d'une garniture de viande assaisonnée.",
-    "image": "assets/product_sandwich.png",
-    "is_active": 1
-  },
-  {
-    "id": 63,
-    "nom": "Feuilleté Salé Fromage Fondant",
-    "prix": 500,
-    "categorie": "traiteur",
-    "stock": 45,
-    "seuil_alerte": 10,
-    "description": "Chausson feuilleté pur beurre croustillant au cœur fromage fondant.",
-    "image": "assets/product_sandwich.png",
-    "is_active": 1
-  },
-  {
-    "id": 64,
     "nom": "Chill 700F",
     "prix": 700,
     "categorie": "boisson",
@@ -758,7 +670,7 @@
     "is_active": 1
   },
   {
-    "id": 65,
+    "id": 57,
     "nom": "Youzou Fruité",
     "prix": 500,
     "categorie": "boisson",
@@ -769,7 +681,7 @@
     "is_active": 1
   },
   {
-    "id": 66,
+    "id": 58,
     "nom": "World Cola Frais",
     "prix": 500,
     "categorie": "boisson",
@@ -780,7 +692,7 @@
     "is_active": 1
   },
   {
-    "id": 67,
+    "id": 59,
     "nom": "Youki Orange",
     "prix": 500,
     "categorie": "boisson",
@@ -791,7 +703,7 @@
     "is_active": 1
   },
   {
-    "id": 68,
+    "id": 60,
     "nom": "Youki Pomme",
     "prix": 500,
     "categorie": "boisson",
@@ -802,7 +714,7 @@
     "is_active": 1
   },
   {
-    "id": 69,
+    "id": 61,
     "nom": "Jus Naturel (Petit Format)",
     "prix": 300,
     "categorie": "boisson",
@@ -813,7 +725,7 @@
     "is_active": 1
   },
   {
-    "id": 70,
+    "id": 62,
     "nom": "Jus Naturel (Format Moyen)",
     "prix": 500,
     "categorie": "boisson",
@@ -824,7 +736,7 @@
     "is_active": 1
   },
   {
-    "id": 71,
+    "id": 63,
     "nom": "Jus Naturel (Grand Format)",
     "prix": 2000,
     "categorie": "boisson",
@@ -835,7 +747,7 @@
     "is_active": 1
   },
   {
-    "id": 72,
+    "id": 64,
     "nom": "Orangina 500F",
     "prix": 500,
     "categorie": "boisson",
@@ -846,7 +758,7 @@
     "is_active": 1
   },
   {
-    "id": 73,
+    "id": 65,
     "nom": "Sprite Citron-Lime",
     "prix": 500,
     "categorie": "boisson",
@@ -857,7 +769,7 @@
     "is_active": 1
   },
   {
-    "id": 74,
+    "id": 66,
     "nom": "Énergie Malt",
     "prix": 700,
     "categorie": "boisson",
@@ -868,7 +780,7 @@
     "is_active": 1
   },
   {
-    "id": 75,
+    "id": 67,
     "nom": "Eau Minérale (Petite Bouteille)",
     "prix": 200,
     "categorie": "boisson",
@@ -879,7 +791,7 @@
     "is_active": 1
   },
   {
-    "id": 76,
+    "id": 68,
     "nom": "Eau Minérale (Grande Bouteille 1.5L)",
     "prix": 1000,
     "categorie": "boisson",
@@ -890,7 +802,7 @@
     "is_active": 1
   },
   {
-    "id": 77,
+    "id": 69,
     "nom": "Déguê Artisanal",
     "prix": 500,
     "categorie": "boisson",
@@ -901,7 +813,7 @@
     "is_active": 1
   },
   {
-    "id": 78,
+    "id": 70,
     "nom": "Lait Frais",
     "prix": 500,
     "categorie": "boisson",
@@ -912,7 +824,7 @@
     "is_active": 1
   },
   {
-    "id": 79,
+    "id": 71,
     "nom": "Jus de Passion (Bouteille 1.5L)",
     "prix": 3000,
     "categorie": "boisson",
@@ -923,7 +835,7 @@
     "is_active": 1
   },
   {
-    "id": 80,
+    "id": 72,
     "nom": "Jus de Passion (Petite Bouteille)",
     "prix": 700,
     "categorie": "boisson",
@@ -934,7 +846,7 @@
     "is_active": 1
   },
   {
-    "id": 81,
+    "id": 73,
     "nom": "Jus de Baobab (Petite Bouteille)",
     "prix": 500,
     "categorie": "boisson",
@@ -945,7 +857,7 @@
     "is_active": 1
   },
   {
-    "id": 82,
+    "id": 74,
     "nom": "Jus de Bissap (Bouteille)",
     "prix": 2000,
     "categorie": "boisson",
@@ -956,7 +868,7 @@
     "is_active": 1
   },
   {
-    "id": 83,
+    "id": 75,
     "nom": "Jus de Gingembre (Bouteille 1.5L)",
     "prix": 3000,
     "categorie": "boisson",
@@ -967,7 +879,7 @@
     "is_active": 1
   },
   {
-    "id": 84,
+    "id": 76,
     "nom": "Jus de Tamarin (Bouteille)",
     "prix": 2000,
     "categorie": "boisson",
@@ -978,7 +890,7 @@
     "is_active": 1
   },
   {
-    "id": 85,
+    "id": 77,
     "nom": "Cocktail Pur Jus (Bouteille 1.5L)",
     "prix": 3000,
     "categorie": "boisson",
@@ -989,7 +901,7 @@
     "is_active": 1
   },
   {
-    "id": 86,
+    "id": 78,
     "nom": "Jus de Citron Pur (Bouteille)",
     "prix": 2000,
     "categorie": "boisson",
@@ -1000,7 +912,7 @@
     "is_active": 1
   },
   {
-    "id": 87,
+    "id": 79,
     "nom": "Chocolat Chaud Gourmand (Grande Bouteille)",
     "prix": 3000,
     "categorie": "boisson",

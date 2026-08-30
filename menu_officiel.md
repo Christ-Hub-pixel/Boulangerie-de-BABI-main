@@ -41,13 +41,6 @@ Ce document récapitule la liste officielle des produits et tarifs de la Boulang
 
 ---
 
-## 🍕 PIZZA
-- **Mini Pizza** : 1000 FCFA
-- **Petit Pizza** : 5000 FCFA
-- **Grande Pizza** : 10000 FCFA
-
----
-
 ## 🥐 VIENNOISERIES
 - **Américain** : 700 FCFA
 - **Biscotte** : 1000 FCFA
