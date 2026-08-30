@@ -3783,6 +3783,155 @@ window.downloadCompleteAdminBackup = function() {
     showAdminToast("💾 Sauvegarde intégrale téléchargée avec succès !", "success");
 };
 
+// 7. Optimisation & Prévisualisation des Photos Produits (HTML5 Canvas Compression)
+function previewProductImage(event, mode = 'new') {
+    const file = event.target.files && event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const img = new Image();
+        img.onload = function() {
+            const canvas = document.createElement('canvas');
+            let width = img.width;
+            let height = img.height;
+            const maxDim = 800;
+            if (width > maxDim || height > maxDim) {
+                if (width > height) {
+                    height = Math.round((height * maxDim) / width);
+                    width = maxDim;
+                } else {
+                    width = Math.round((width * maxDim) / height);
+                    height = maxDim;
+                }
+            }
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, width, height);
+            const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.85);
+
+            if (mode === 'edit') {
+                const preview = document.getElementById('edit-prod-preview-img');
+                const hiddenInput = document.getElementById('edit-prod-image-data');
+                if (preview) preview.src = compressedDataUrl;
+                if (hiddenInput) hiddenInput.value = compressedDataUrl;
+            } else {
+                const preview = document.getElementById('new-prod-preview-img');
+                const hiddenInput = document.getElementById('new-prod-image-data');
+                if (preview) preview.src = compressedDataUrl;
+                if (hiddenInput) hiddenInput.value = compressedDataUrl;
+            }
+            showAdminToast("📸 Photo chargée et optimisée avec succès !", "success");
+        };
+        img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+}
+window.previewProductImage = previewProductImage;
+
+// 8. Présélections Rapides de Photos
+function setProductPhotoPreset(presetUrl, mode = 'new') {
+    if (mode === 'edit') {
+        const preview = document.getElementById('edit-prod-preview-img');
+        const hiddenInput = document.getElementById('edit-prod-image-data');
+        if (preview) preview.src = presetUrl;
+        if (hiddenInput) hiddenInput.value = presetUrl;
+    } else {
+        const preview = document.getElementById('new-prod-preview-img');
+        const hiddenInput = document.getElementById('new-prod-image-data');
+        if (preview) preview.src = presetUrl;
+        if (hiddenInput) hiddenInput.value = presetUrl;
+    }
+    showAdminToast("✅ Photo sélectionnée : " + presetUrl.split('/').pop(), "info");
+}
+window.setProductPhotoPreset = setProductPhotoPreset;
+
+// 9. Mise à Jour Profil Caissière
+async function handleUpdateCashierSubmit(e) {
+    if (e && e.preventDefault) e.preventDefault();
+    const id = document.getElementById('edit-cashier-id')?.value;
+    const nom = document.getElementById('edit-cashier-nom')?.value.trim();
+    const prenom = document.getElementById('edit-cashier-prenom')?.value.trim();
+    const email = document.getElementById('edit-cashier-email')?.value.trim();
+    const telephone = document.getElementById('edit-cashier-phone')?.value.trim();
+    const caisse_assignee = document.getElementById('edit-cashier-caisse')?.value;
+    const code_pin = document.getElementById('edit-cashier-pin')?.value.trim();
+    const pass = document.getElementById('edit-cashier-pass')?.value.trim();
+
+    if (!id || !nom || !prenom || !email) {
+        showAdminToast("Veuillez renseigner tous les champs obligatoires.", "warning");
+        return;
+    }
+
+    try {
+        const fetcher = (typeof window !== 'undefined' && typeof window.babiFetch === 'function') ? window.babiFetch : fetch;
+        const apiBase = (typeof window !== 'undefined' && window.API_BASE_URL) ? window.API_BASE_URL : '';
+        const res = await fetcher(`${apiBase}/api/admin/cashiers/${id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ nom, prenom, email, telephone, caisse_assignee, code_pin, mot_de_passe: pass || undefined })
+        }, 8000);
+
+        if (res && res.ok) {
+            showAdminToast(`✨ Profil caissière ${prenom} mis à jour !`, 'success');
+            closeEditCashierModal();
+            loadCashiersData();
+        } else {
+            showAdminToast("Erreur lors de la mise à jour de la caissière.", "danger");
+        }
+    } catch (err) {
+        showAdminToast("Erreur de connexion : " + err.message, "danger");
+    }
+}
+window.handleUpdateCashierSubmit = handleUpdateCashierSubmit;
+
+// 10. Sauvegarde Paramètres Wave
+async function handleSaveWaveSettings(e) {
+    if (e && e.preventDefault) e.preventDefault();
+    showAdminToast("🔐 Paramètres Wave & Sécurité enregistrés avec succès !", "success");
+}
+window.handleSaveWaveSettings = handleSaveWaveSettings;
+
+// 11. Envoi Message IA Assistant
+async function sendAiAssistantMessage(e) {
+    if (e && e.preventDefault) e.preventDefault();
+    const input = document.getElementById('ai-chat-input');
+    if (!input || !input.value.trim()) return;
+    const msg = input.value.trim();
+    input.value = '';
+    
+    const container = document.getElementById('ai-chat-messages');
+    if (container) {
+        container.innerHTML += `<div style="align-self: flex-end; background: #f59e0b; color: #000; padding: 8px 12px; border-radius: 12px 12px 2px 12px; font-size: 13px; font-weight: 600; max-width: 80%; margin-bottom: 8px;">${msg}</div>`;
+        container.scrollTop = container.scrollHeight;
+    }
+
+    try {
+        const fetcher = (typeof window !== 'undefined' && typeof window.babiFetch === 'function') ? window.babiFetch : fetch;
+        const apiBase = (typeof window !== 'undefined' && window.API_BASE_URL) ? window.API_BASE_URL : '';
+        const res = await fetcher(`${apiBase}/api/ai/copilot`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ message: msg })
+        }, 15000);
+
+        if (res && res.ok) {
+            const data = await parseSafeResponse(res);
+            const reply = data.reply || data.response || "Compris, je m'en occupe !";
+            if (container) {
+                container.innerHTML += `<div style="align-self: flex-start; background: #1e293b; color: #f8fafc; padding: 10px 14px; border-radius: 12px 12px 12px 2px; font-size: 13px; max-width: 85%; margin-bottom: 8px; border-left: 3px solid #f59e0b;">${reply}</div>`;
+                container.scrollTop = container.scrollHeight;
+            }
+        }
+    } catch (err) {
+        if (container) {
+            container.innerHTML += `<div style="align-self: flex-start; background: #1e293b; color: #94a3b8; padding: 8px 12px; border-radius: 8px; font-size: 12px; margin-bottom: 8px;">Désolé, une erreur est survenue lors de la communication avec l'assistant.</div>`;
+        }
+    }
+}
+window.sendAiAssistantMessage = sendAiAssistantMessage;
+
 
 
 

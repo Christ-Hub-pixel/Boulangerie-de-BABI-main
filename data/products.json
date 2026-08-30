@@ -1,14 +1,14 @@
 [
   {
     "id": 1,
-    "nom": "Baguette Standard 150F",
-    "prix": 150,
+    "nom": "Baguette Traditionnelle Croustillante BABI",
+    "prix": 350,
     "categorie": "pain",
-    "image": "assets/baguette 150.png",
-    "description": "La baguette classique dorée et croustillante, cuite plusieurs fois par jour.",
+    "image": "assets/product_baguette.png",
+    "description": "Baguette cuite au feu de bois.",
     "is_active": 1,
-    "stock": 120,
-    "seuil_alerte": 20
+    "stock": 45,
+    "seuil_alerte": 10
   },
   {
     "id": 2,
