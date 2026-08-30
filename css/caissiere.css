@@ -847,6 +847,34 @@ main {
         flex-direction: column !important;
     }
 
+    .pos-desktop-layout {
+        display: flex !important;
+        flex-direction: column !important;
+        height: auto !important;
+        max-height: none !important;
+        min-height: auto !important;
+        overflow: visible !important;
+        flex: none !important;
+    }
+
+    .pos-catalog-panel {
+        display: flex !important;
+        flex-direction: column !important;
+        height: auto !important;
+        max-height: none !important;
+        min-height: auto !important;
+        overflow: visible !important;
+        flex: none !important;
+    }
+
+    .pos-products-scroll-area {
+        overflow: visible !important;
+        height: auto !important;
+        max-height: none !important;
+        min-height: auto !important;
+        flex: none !important;
+    }
+
     #pos-view-pickups, #pos-view-history, #pos-view-closure {
         height: auto !important;
         max-height: none !important;

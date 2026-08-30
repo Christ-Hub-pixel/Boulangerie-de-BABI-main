@@ -97,8 +97,8 @@
     <!-- FontAwesome for additional icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
     <!-- CSS Custom Stylesheets -->
-    <link rel="stylesheet" href="css/admin.css"/>
-    <link rel="stylesheet" href="css/caissiere.css"/>
+    <link rel="stylesheet" href="css/admin.css?v=20260830_v25"/>
+    <link rel="stylesheet" href="css/caissiere.css?v=20260830_v25"/>
 
     <!-- Tailwind Configuration & CDN -->
     <script>
@@ -401,10 +401,10 @@
                     </span>
                 </div>
 
-                <div class="pos-desktop-layout flex flex-col lg:flex-row gap-3 sm:gap-3.5 w-full h-full min-h-0 overflow-hidden items-stretch">
+                <div class="pos-desktop-layout flex flex-col lg:flex-row gap-3 sm:gap-3.5 w-full lg:h-full min-h-0 lg:overflow-hidden items-stretch">
 
                     <!-- LEFT COLUMN: PRODUCTS CATALOG & CATEGORIES -->
-                    <div class="pos-catalog-panel flex-1 min-w-0 flex flex-col bg-surface-container rounded-2xl shadow-sm p-3 border border-outline-variant/30 w-full h-full overflow-hidden">
+                    <div class="pos-catalog-panel flex-1 min-w-0 flex flex-col bg-surface-container rounded-2xl shadow-sm p-3 border border-outline-variant/30 w-full lg:h-full lg:overflow-hidden">
                         <!-- Category Tabs -->
                         <div class="flex items-center gap-1.5 overflow-x-auto pb-2 shrink-0 select-none" id="category-pills">
                             <button onclick="filterPosCategory('all', this)" class="category-filter-btn px-4 py-1.5 rounded-full bg-primary text-on-primary font-label-md text-xs font-bold whitespace-nowrap shadow-sm hover:brightness-95 transition-all">Tous</button>
@@ -417,8 +417,8 @@
                         </div>
 
                         <!-- Product Grid (Responsive Scroll Area) -->
-                        <div class="pos-products-scroll-area flex-1 overflow-y-auto pr-1 min-h-0">
-                            <div class="pos-products-auto-grid" id="pos-products-grid">
+                        <div class="pos-products-scroll-area flex-1 lg:overflow-y-auto pr-1 min-h-0">
+                            <div class="pos-products-auto-grid pb-28 lg:pb-0" id="pos-products-grid">
                                 <!-- Products loaded via loadPosProducts() in js/caissiere.js -->
                             </div>
                         </div>
