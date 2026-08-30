@@ -3993,14 +3993,14 @@ async function handleStudioSendMessage(e) {
             </div>
         `;
 
-        // Bulle de réflexion animée
+        // Bulle de réflexion animée BIX
         container.innerHTML += `
             <div id="studio-ai-loading" class="studio-ai-msg" style="align-self: flex-start; background: rgba(30, 41, 59, 0.85); border: 1px solid rgba(255, 255, 255, 0.1); border-left: 3px solid #f59e0b; border-radius: 20px 20px 20px 4px; padding: 16px 20px; max-width: 90%; box-shadow: 0 8px 25px rgba(0,0,0,0.3);">
                 <div style="display: flex; align-items: center; gap: 12px; color: #cbd5e1; font-size: 13.5px; font-weight: 600;">
-                    <div style="width: 26px; height: 26px; border-radius: 50%; background: linear-gradient(135deg, #f59e0b, #ec4899); display: flex; align-items: center; justify-content: center; font-size: 12px; color: #fff; box-shadow: 0 0 12px rgba(245,158,11,0.5);">
-                        <i class="fa-solid fa-wand-magic-sparkles fa-spin"></i>
+                    <div class="bix-mascot-wrapper" style="width: 32px; height: 32px; border-radius: 50%; background: rgba(245,158,11,0.2); border: 1px solid rgba(245,158,11,0.5); display: flex; align-items: center; justify-content: center; box-shadow: 0 0 12px rgba(245,158,11,0.5);">
+                        <span class="bix-mascot-avatar" style="font-size: 18px;">🥐</span>
                     </div>
-                    <span>BABI Brain analyse les données opérationnelles en direct...</span>
+                    <span>BIX analyse les données en direct pour vous répondre...</span>
                 </div>
             </div>
         `;
@@ -4049,11 +4049,11 @@ async function handleStudioSendMessage(e) {
                     <div class="studio-ai-msg" style="align-self: flex-start; background: rgba(24, 32, 47, 0.95); border: 1px solid rgba(255, 255, 255, 0.08); border-left: 3px solid #f59e0b; border-radius: 20px 20px 20px 4px; padding: 20px 24px; max-width: 90%; box-shadow: 0 10px 30px rgba(0,0,0,0.35); margin-bottom: 8px;">
                         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 10px; flex-wrap: wrap; gap: 8px;">
                             <div style="display: flex; align-items: center; gap: 10px;">
-                                <div style="width: 28px; height: 28px; border-radius: 8px; background: linear-gradient(135deg, #f59e0b, #ec4899, #6366f1); display: flex; align-items: center; justify-content: center; font-size: 13px; color: #fff; box-shadow: 0 2px 10px rgba(245,158,11,0.4);">
-                                    <i class="fa-solid fa-wand-magic-sparkles"></i>
+                                <div class="bix-mascot-wrapper" style="width: 32px; height: 32px; border-radius: 10px; background: linear-gradient(135deg, rgba(245,158,11,0.25), rgba(217,119,6,0.1)); border: 1px solid rgba(245,158,11,0.4); display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 10px rgba(245,158,11,0.3);">
+                                    <span class="bix-mascot-avatar" style="font-size: 18px;">🥐</span>
                                 </div>
-                                <span style="font-weight: 800; font-size: 14px; color: #f8fafc; letter-spacing: -0.2px;">Boulangerie AI</span>
-                                <span style="font-size: 10px; background: rgba(245,158,11,0.2); color: #fbbf24; border: 1px solid rgba(245,158,11,0.4); padding: 2px 7px; border-radius: 6px; font-weight: 700;">Copilote Administratif</span>
+                                <span style="font-weight: 800; font-size: 15px; color: #f8fafc; letter-spacing: -0.2px;">BIX</span>
+                                <span style="font-size: 10px; background: rgba(245,158,11,0.2); color: #fbbf24; border: 1px solid rgba(245,158,11,0.4); padding: 2px 7px; border-radius: 6px; font-weight: 700;">Copilote Mascotte</span>
                             </div>
                             <div style="display: flex; align-items: center; gap: 6px;">
                                 <button type="button" onclick="copyStudioAiText(this)" style="background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); color: #cbd5e1; font-size: 11px; padding: 4px 10px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 5px; transition: all 0.15s;" title="Copier la réponse">
