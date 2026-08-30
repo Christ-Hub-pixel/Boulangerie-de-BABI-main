@@ -614,11 +614,14 @@
                             <h3 class="saas-card-title">Gestion Complète des Commandes & Retraits</h3>
                             <p class="saas-card-subtitle">Visualisez, filtrez, validez et remboursez les commandes des clients</p>
                         </div>
-                        <div class="d-flex align-items-center gap-2">
+                        <div class="d-flex align-items-center gap-2 flex-wrap">
                             <div class="saas-search-box">
                                 <span class="material-symbols-outlined text-muted text-sm">search</span>
                                 <input type="text" id="orders-search-input" placeholder="Rechercher par N°, nom, tél..." onkeyup="filterOrdersTable()"/>
                             </div>
+                            <button type="button" class="btn-xs btn-outline-success" onclick="exportOrdersToCSV()" title="Exporter toutes les commandes au format Excel / CSV">
+                                <i class="fa-solid fa-file-excel me-1"></i> Exporter CSV
+                            </button>
                             <button type="button" class="btn-sm btn-primary-gold" onclick="fetchAdminData()">
                                 <i class="fa-solid fa-arrows-rotate me-1"></i> Actualiser
                             </button>
@@ -787,9 +790,14 @@
                             <h3 class="saas-card-title">Grand Livre des Règlements & Encaissements</h3>
                             <p class="saas-card-subtitle">Journal certifié de toutes les transactions et paiements validés</p>
                         </div>
-                        <button type="button" class="btn-sm btn-primary-gold" onclick="fetchAdminData()">
-                            <i class="fa-solid fa-sync me-1"></i> Actualiser
-                        </button>
+                        <div class="d-flex align-items-center gap-2">
+                            <button type="button" class="btn-xs btn-outline-success" onclick="exportTransactionsToCSV()" title="Exporter toutes les transactions financières (Excel / CSV)">
+                                <i class="fa-solid fa-file-excel me-1"></i> Exporter Grand Livre
+                            </button>
+                            <button type="button" class="btn-sm btn-primary-gold" onclick="fetchAdminData()">
+                                <i class="fa-solid fa-sync me-1"></i> Actualiser
+                            </button>
+                        </div>
                     </div>
 
                     <div class="saas-table-wrapper" style="max-height: 600px; overflow-y: auto;">
@@ -881,6 +889,9 @@
                             </button>
                             <button type="button" class="btn-sm btn-outline-primary" onclick="openCategoriesManagerModal()" title="Gérer, ajouter, modifier ou supprimer des catégories">
                                 <i class="fa-solid fa-tags me-1"></i> Gérer les Catégories
+                            </button>
+                            <button type="button" class="btn-xs btn-outline-success" onclick="exportProductsToCSV()" title="Exporter le catalogue complet et l'état des stocks (Excel / CSV)">
+                                <i class="fa-solid fa-file-excel me-1"></i> Exporter CSV
                             </button>
                             <button type="button" class="saas-icon-btn" onclick="loadProducts()" title="Actualiser le catalogue">
                                 <i class="fa-solid fa-rotate"></i>
@@ -1166,6 +1177,22 @@
                             <button type="button" class="btn-sm btn-outline-primary" onclick="openChangePasswordModal()">Modifier mon mot de passe</button>
                         </div>
                     </form>
+                </div>
+
+                <!-- CARTE SAUVEGARDE & RESTAURATION SYSTÈME -->
+                <div class="saas-card">
+                    <div class="saas-card-header">
+                        <div>
+                            <h3 class="saas-card-title">Sauvegarde & Restauration Système</h3>
+                            <p class="saas-card-subtitle">Exportez l'intégralité des données (produits, stocks, commandes, transactions)</p>
+                        </div>
+                    </div>
+                    <div style="padding: 6px 0;">
+                        <p class="small text-muted mb-3">Téléchargez une archive JSON complète contenant toutes les tables, configurations et états en direct pour vos sauvegardes comptables et de sécurité.</p>
+                        <button type="button" class="btn-sm btn-primary-gold" onclick="downloadCompleteAdminBackup()" style="display: inline-flex; align-items: center; gap: 8px;">
+                            <i class="fa-solid fa-cloud-arrow-down"></i> Télécharger la Sauvegarde Intégrale (.JSON)
+                        </button>
+                    </div>
                 </div>
             </div>
 
@@ -2002,9 +2029,9 @@
         </div>
     </div>
     <!-- Scripts with Cache Busting -->
-    <script src="js/api_config.js?v=20260829_v7"></script>
-    <script src="js/admin.js?v=20260829_v7"></script>
-    <script src="js/realtime_sync.js?v=20260829_v7"></script>
-    <script src="js/anti_hacker_client.js?v=20260829_v7"></script>
+    <script src="js/api_config.js?v=20260830_v8"></script>
+    <script src="js/admin.js?v=20260830_v8"></script>
+    <script src="js/realtime_sync.js?v=20260830_v8"></script>
+    <script src="js/anti_hacker_client.js?v=20260830_v8"></script>
 </body>
 </html>

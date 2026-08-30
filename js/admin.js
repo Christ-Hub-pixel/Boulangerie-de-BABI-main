@@ -802,14 +802,29 @@ function openOrderDetailModal(orderId) {
 
     actionsEl.innerHTML = `
         <button type="button" class="btn-modal-cancel" onclick="closeOrderDetailModal()">Fermer</button>
+        <button type="button" class="btn-xs btn-outline-primary py-2 px-3 fw-bold" onclick="printOrderTicket('${order.id}')" title="Imprimer le bon de commande">
+            <i class="fa-solid fa-print me-1"></i> Imprimer Bon
+        </button>
+        ${order.status !== 'en_preparation' && order.status !== 'pret' && order.status !== 'livre' && !isRefunded ? `
+            <button type="button" class="btn-xs btn-outline-warning py-2 px-3 fw-bold" onclick="updateOrderStatusFromModal('${order.id}', 'en_preparation')">
+                <i class="fa-solid fa-fire me-1"></i> En Préparation
+            </button>
+        ` : ''}
+        ${order.status !== 'pret' && order.status !== 'livre' && !isRefunded ? `
+            <button type="button" class="btn-modal-submit-gold" onclick="updateOrderStatusFromModal('${order.id}', 'pret')">
+                <i class="fa-solid fa-check me-1"></i> Marquer Prête
+            </button>
+        ` : ''}
+        ${order.status !== 'livre' && !isRefunded ? `
+            <button type="button" class="btn-xs btn-outline-success py-2 px-3 fw-bold" onclick="updateOrderStatusFromModal('${order.id}', 'livre')">
+                <i class="fa-solid fa-truck-ramp-box me-1"></i> Marquer Livrée
+            </button>
+        ` : ''}
         ${!isRefunded ? `
             <button type="button" class="btn-xs btn-outline-danger py-2 px-3 fw-bold" onclick="closeOrderDetailModal(); handleDirectRefundOrder('${order.id}');">
                 <i class="fa-solid fa-rotate-left me-1"></i> Rembourser Wave
             </button>
         ` : ''}
-        <button type="button" class="btn-modal-submit-gold" onclick="updateOrderStatusFromModal('${order.id}', 'pret')">
-            <i class="fa-solid fa-check me-1"></i> Marquer Prête
-        </button>
     `;
 
     if (modal) modal.classList.remove('hidden');
@@ -3557,6 +3572,215 @@ window.applyAiProductFromChat = function(nom, categorie, prix, stock, image, des
 
     toggleAiCopilotDrawer();
     showAdminToast(`✨ Produit "${nom}" pré-rempli dans le formulaire !`, "success");
+};
+
+// ================================================================
+// 📊 FONCTIONS D'EXPORTATION EXCEL / CSV & IMPRESSION TICKETS
+// ================================================================
+
+// 1. Export CSV des Commandes
+window.exportOrdersToCSV = function() {
+    if (!Array.isArray(allOrders) || allOrders.length === 0) {
+        showAdminToast("Aucune commande à exporter.", "warning");
+        return;
+    }
+
+    const headers = ["ID Commande", "Date & Heure", "Client", "Telephone", "Mode Retrait", "Code PIN", "Total (FCFA)", "Statut Commande", "Paiement", "Articles"];
+    const rows = allOrders.map(o => {
+        const itemsStr = Array.isArray(o.items) 
+            ? o.items.map(i => `${i.name || i.title} (x${i.qty || i.quantity || 1})`).join(' ; ')
+            : (o.itemsSummary || '');
+        return [
+            `#${o.id}`,
+            `"${o.date || o.created_at || ''}"`,
+            `"${(o.clientName || o.nom || 'Client').replace(/"/g, '""')}"`,
+            `"${o.phone || o.telephone || ''}"`,
+            `"${o.delivery_type === 'livraison' ? 'Livraison' : 'Click & Collect'}"`,
+            `"${o.pickup_pin || o.confCode || ''}"`,
+            Number(o.total_price || o.total_amount || 0),
+            `"${o.status || 'Nouveau'}"`,
+            `"${o.payment_status || 'En attente'}"`,
+            `"${itemsStr.replace(/"/g, '""')}"`
+        ].join(';');
+    });
+
+    const csvContent = "\uFEFF" + [headers.join(';'), ...rows].join('\r\n');
+    downloadCSVFile(csvContent, `BABI_Commandes_${new Date().toISOString().slice(0,10)}.csv`);
+    showAdminToast("📊 Export Excel / CSV des commandes généré !", "success");
+};
+
+// 2. Export CSV du Catalogue Produits & Stocks
+window.exportProductsToCSV = function() {
+    if (!Array.isArray(allProducts) || allProducts.length === 0) {
+        showAdminToast("Aucun produit à exporter.", "warning");
+        return;
+    }
+
+    const headers = ["ID Produit", "Nom du Produit", "Categorie", "Prix TTC (FCFA)", "Stock Disponible", "Seuil Alerte", "Valeur Stock (FCFA)", "Statut"];
+    const rows = allProducts.map(p => {
+        const qty = p.stock != null ? Number(p.stock) : 50;
+        const price = Number(p.prix || 0);
+        const isActive = p.is_active === 1 || p.is_active === undefined || p.is_active === true || p.is_active === '1';
+        return [
+            p.id,
+            `"${(p.nom || p.title || '').replace(/"/g, '""')}"`,
+            `"${(p.categorie || p.category || 'Pain').replace(/"/g, '""')}"`,
+            price,
+            qty,
+            p.seuil_alerte != null ? Number(p.seuil_alerte) : 10,
+            qty * price,
+            isActive ? "Actif" : "Masque"
+        ].join(';');
+    });
+
+    const csvContent = "\uFEFF" + [headers.join(';'), ...rows].join('\r\n');
+    downloadCSVFile(csvContent, `BABI_Catalogue_Stocks_${new Date().toISOString().slice(0,10)}.csv`);
+    showAdminToast("📊 Export Excel / CSV du catalogue généré !", "success");
+};
+
+// 3. Export CSV des Transactions Financières
+window.exportTransactionsToCSV = function() {
+    if (!Array.isArray(allTransactions) || allTransactions.length === 0) {
+        showAdminToast("Aucune transaction à exporter.", "warning");
+        return;
+    }
+
+    const headers = ["ID Transaction", "Reference Commande", "Client", "Montant (FCFA)", "Methode Paiement", "Statut", "Horodatage"];
+    const rows = allTransactions.map(t => [
+        `"${t.id || ''}"`,
+        `"#${t.order_id || ''}"`,
+        `"${(t.client || t.customer_name || 'Client').replace(/"/g, '""')}"`,
+        Number(t.amount || 0),
+        `"${t.method || 'Wave'}"`,
+        `"${t.status || 'Valide'}"`,
+        `"${t.timestamp || t.created_at || ''}"`
+    ].join(';'));
+
+    const csvContent = "\uFEFF" + [headers.join(';'), ...rows].join('\r\n');
+    downloadCSVFile(csvContent, `BABI_Grand_Livre_Transactions_${new Date().toISOString().slice(0,10)}.csv`);
+    showAdminToast("📊 Grand livre des transactions exporté !", "success");
+};
+
+// 4. Téléchargement d'un fichier CSV
+function downloadCSVFile(content, filename) {
+    const blob = new Blob([content], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', filename);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
+
+// 5. Impression du Bon de Commande / Ticket Fournil
+window.printOrderTicket = function(orderId) {
+    const order = allOrders.find(o => String(o.id) === String(orderId));
+    if (!order) {
+        showAdminToast("Commande introuvable.", "warning");
+        return;
+    }
+
+    const pin = order.pickup_pin || order.confCode || '7412';
+    const itemsHtml = Array.isArray(order.items) && order.items.length > 0
+        ? order.items.map(i => `
+            <tr>
+                <td style="padding: 6px 0; border-bottom: 1px dashed #ccc;"><strong>${escapeHtml(i.name || i.title)}</strong></td>
+                <td style="padding: 6px 0; border-bottom: 1px dashed #ccc; text-align: center;">× ${i.qty || i.quantity || 1}</td>
+                <td style="padding: 6px 0; border-bottom: 1px dashed #ccc; text-align: right;">${((i.price || 0) * (i.qty || 1)).toLocaleString()} F</td>
+            </tr>
+        `).join('')
+        : `<tr><td colspan="3" style="padding: 8px 0;">${escapeHtml(order.itemsSummary || 'Articles divers')}</td></tr>`;
+
+    const printWindow = window.open('', '_blank', 'width=440,height=620');
+    if (!printWindow) {
+        showAdminToast("Veuillez autoriser les fenêtres pop-up pour imprimer le ticket.", "warning");
+        return;
+    }
+
+    printWindow.document.write(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>Bon de Commande #${order.id} - Boulangerie de BABI</title>
+            <style>
+                body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', monospace; font-size: 13px; color: #000; padding: 15px; margin: 0; }
+                .center { text-align: center; }
+                .bold { font-weight: bold; }
+                .divider { border-top: 1px dashed #000; margin: 10px 0; }
+                .pin-box { border: 2px solid #000; padding: 8px; text-align: center; font-size: 19px; font-weight: bold; margin: 12px 0; background: #fffbeb; }
+                table { width: 100%; border-collapse: collapse; font-size: 12px; }
+            </style>
+        </head>
+        <body onload="window.print();">
+            <div class="center">
+                <h2 style="margin: 0; font-size: 17px; font-weight: 900;">🥖 BOULANGERIE DE BABI</h2>
+                <div style="font-size: 11px;">Abidjan Riviera Palmeraie</div>
+                <div style="font-size: 11px;">Tél : +225 07 04 38 92 01</div>
+            </div>
+            <div class="divider"></div>
+            <div><strong>BON DE COMMANDE : #${order.id}</strong></div>
+            <div>Date : ${order.date || new Date().toLocaleString('fr-FR')}</div>
+            <div>Client : ${escapeHtml(order.clientName || order.nom || 'Client')}</div>
+            <div>Tél : ${escapeHtml(order.phone || order.telephone || 'N/A')}</div>
+            <div>Mode : ${order.delivery_type === 'livraison' ? 'LIVRAISON EXPRESS' : 'RETRAIT CLICK & COLLECT'}</div>
+            
+            <div class="pin-box">CODE PIN RETRAIT : ${pin}</div>
+
+            <table>
+                <thead>
+                    <tr style="border-bottom: 1px solid #000;">
+                        <th style="text-align: left; padding: 4px 0;">Article</th>
+                        <th style="text-align: center; padding: 4px 0;">Qté</th>
+                        <th style="text-align: right; padding: 4px 0;">Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${itemsHtml}
+                </tbody>
+            </table>
+
+            <div class="divider"></div>
+            <div style="display: flex; justify-content: space-between; font-size: 15px; font-weight: bold;">
+                <span>TOTAL TTC :</span>
+                <span>${Number(order.total_price || order.total_amount || 0).toLocaleString()} FCFA</span>
+            </div>
+            <div style="font-size: 11px; margin-top: 4px;">Paiement : ${escapeHtml(order.payment_method || 'Wave Mobile Money')} (${order.payment_status || 'Payé'})</div>
+            
+            <div class="divider"></div>
+            <div class="center" style="font-size: 11px;">
+                Merci de votre confiance !<br>
+                Le bon goût du pain chaud ivoirien.
+            </div>
+        </body>
+        </html>
+    `);
+    printWindow.document.close();
+};
+
+// 6. Sauvegarde Intégrale du Système (Backup JSON)
+window.downloadCompleteAdminBackup = function() {
+    const backupData = {
+        meta: {
+            title: "Sauvegarde Intégrale — Boulangerie de BABI",
+            timestamp: new Date().toISOString(),
+            version: "2.4-Souverain"
+        },
+        products: allProducts,
+        categories: allCategories,
+        orders: allOrders,
+        transactions: allTransactions
+    };
+
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(backupData, null, 2));
+    const dlAnchor = document.createElement('a');
+    dlAnchor.setAttribute("href", dataStr);
+    dlAnchor.setAttribute("download", `BABI_Sauvegarde_Complete_${new Date().toISOString().slice(0,10)}.json`);
+    document.body.appendChild(dlAnchor);
+    dlAnchor.click();
+    dlAnchor.remove();
+    showAdminToast("💾 Sauvegarde intégrale téléchargée avec succès !", "success");
 };
 
 
