@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cockpit Administrateur & Direction — Boulangerie de BABI</title>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- CSS Dédié Admin -->
+    <link rel="stylesheet" href="css/animations.css">
+    <link rel="stylesheet" href="css/admin.css">
+    <link rel="icon" type="image/png" href="assets/logo.png">
+</head>
+<body class="admin-body">
+
+    <!-- ==========================================
+         1. TOP NAVBAR ADMIN
+         ========================================== -->
+    <header class="adm-navbar d-flex align-items-center justify-content-between">
+        <div class="d-flex align-items-center gap-3">
+            <a href="index.html" title="Boutique Client">
+                <img src="assets/logo.png" alt="Logo" class="adm-brand-logo">
+            </a>
+            <div>
+                <div class="d-flex align-items-center gap-2">
+                    <span class="fw-black fs-5 text-white">BOULANGERIE DE BABI</span>
+                    <span class="badge bg-danger text-white fw-bold px-2 py-1" style="font-size:0.7rem;">DIRECTION</span>
+                </div>
+                <div class="small text-white-50" style="font-size: 0.75rem;">
+                    Riviera, Abidjan • Cockpit Financier & Administration Centrale
+                </div>
+            </div>
+        </div>
+
+        <div class="d-flex align-items-center gap-2">
+            <div class="dropdown">
+                <button class="btn btn-outline-light dropdown-toggle d-flex align-items-center gap-2 py-1 px-2 border-0 bg-white bg-opacity-10 rounded-pill" type="button" data-bs-toggle="dropdown">
+                    <img id="adminAvatarDisplay" src="assets/avatar_admin.png" alt="Admin" class="rounded-circle" width="32" height="32" style="object-fit:cover; border:1px solid #D4AF37;">
+                    <div class="text-start d-none d-sm-block pe-1">
+                        <div id="adminNameDisplay" class="fw-bold text-white lh-1" style="font-size:0.85rem;">Super Admin BABI</div>
+                        <span class="text-warning lh-1" style="font-size:0.7rem;">Direction Générale</span>
+                    </div>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 mt-2" style="border-radius:12px; min-width:220px;">
+                    <li class="px-3 py-2 border-bottom bg-light">
+                        <small class="text-muted d-block">Basculer d'espace (Démo) :</small>
+                    </li>
+                    <li><a class="dropdown-item py-2" href="caissiere.html"><i class="fa-solid fa-cash-register me-2 text-warning"></i> Espace Caissière</a></li>
+                    <li><a class="dropdown-item py-2" href="gerante.html"><i class="fa-solid fa-user-tie me-2 text-info"></i> Espace Gérante</a></li>
+                    <li><a class="dropdown-item py-2 active" href="admin.html"><i class="fa-solid fa-shield-halved me-2 text-danger"></i> <strong>Espace Administrateur</strong></a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item py-2" href="index.html"><i class="fa-solid fa-store me-2 text-success"></i> Boutique Client</a></li>
+                    <li><a class="dropdown-item py-2 text-danger" href="connexion.html" onclick="localStorage.removeItem('babi_user');"><i class="fa-solid fa-right-from-bracket me-2"></i> Déconnexion</a></li>
+                </ul>
+            </div>
+        </div>
+    </header>
+
+    <!-- ==========================================
+         2. ONGLETS DE NAVIGATION ADMIN
+         ========================================== -->
+    <nav class="adm-nav-tabs">
+        <button class="adm-tab-btn active" onclick="switchAdminTab('cockpit', this)">
+            <i class="fa-solid fa-chart-pie fs-5"></i>
+            <span>Cockpit Financier</span>
+        </button>
+        <button class="adm-tab-btn" onclick="switchAdminTab('produits', this)">
+            <i class="fa-solid fa-bread-slice fs-5"></i>
+            <span>Catalogue Produits</span>
+            <span id="adminProductsCountBadge" class="badge bg-warning text-dark ms-1">0</span>
+        </button>
+        <button class="adm-tab-btn" onclick="switchAdminTab('categories', this)">
+            <i class="fa-solid fa-tags fs-5"></i>
+            <span>Catégories</span>
+        </button>
+        <button class="adm-tab-btn" onclick="switchAdminTab('caissieres', this)">
+            <i class="fa-solid fa-users-viewfinder fs-5"></i>
+            <span>Caissières & Droits</span>
+        </button>
+        <button class="adm-tab-btn" onclick="switchAdminTab('caisses', this)">
+            <i class="fa-solid fa-vault fs-5"></i>
+            <span>Contrôle des Caisses (Z)</span>
+        </button>
+        <button class="adm-tab-btn" onclick="switchAdminTab('securite', this)">
+            <i class="fa-solid fa-shield-check fs-5"></i>
+            <span>Audit & Sécurité</span>
+        </button>
+    </nav>
+
+    <!-- ==========================================
+         3. CONTENEUR PRINCIPAL ADMIN
+         ========================================== -->
+    <main class="container-fluid py-4" style="max-width: 1400px;">
+
+        <!-- ==========================================
+             VUE 1 : COCKPIT FINANCIER & KPIS
+             ========================================== -->
+        <section id="admView_cockpit" class="adm-tab-view">
+            <!-- Grille des KPIs Financiers -->
+            <div class="row g-3 mb-4">
+                <div class="col-6 col-md-3">
+                    <div class="adm-kpi-card border-start border-4 border-warning">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <span class="small text-muted fw-bold">Chiffre d'Affaires Global</span>
+                            <div class="fs-4 text-warning"><i class="fa-solid fa-sack-dollar"></i></div>
+                        </div>
+                        <div id="kpiAdminTotalRevenue" class="adm-kpi-value text-dark">0 FCFA</div>
+                        <small class="text-muted"><i class="fa-solid fa-circle-check text-success me-1"></i> Trésorerie cumulée</small>
+                    </div>
+                </div>
+
+                <div class="col-6 col-md-3">
+                    <div class="adm-kpi-card border-start border-4 border-info">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <span class="small text-muted fw-bold">Paiements Wave Mobile Money</span>
+                            <div class="fs-4 text-info"><i class="fa-solid fa-mobile-screen-button"></i></div>
+                        </div>
+                        <div id="kpiAdminWaveRevenue" class="adm-kpi-value text-info">0 F</div>
+                        <small class="text-muted"><i class="fa-solid fa-shield-halved text-info me-1"></i> Réservations Click & Collect</small>
+                    </div>
+                </div>
+
+                <div class="col-6 col-md-3">
+                    <div class="adm-kpi-card border-start border-4 border-success">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <span class="small text-muted fw-bold">Ventes Espèces (Comptoir)</span>
+                            <div class="fs-4 text-success"><i class="fa-solid fa-money-bill-wave"></i></div>
+                        </div>
+                        <div id="kpiAdminCashRevenue" class="adm-kpi-value text-success">0 F</div>
+                        <small class="text-muted"><i class="fa-solid fa-cash-register text-success me-1"></i> Ventes directes boutique</small>
+                    </div>
+                </div>
+
+                <div class="col-6 col-md-3">
+                    <div class="adm-kpi-card border-start border-4 border-primary">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <span class="small text-muted fw-bold">Volume Total Commandes</span>
+                            <div class="fs-4 text-primary"><i class="fa-solid fa-cart-shopping"></i></div>
+                        </div>
+                        <div id="kpiAdminTotalOrders" class="adm-kpi-value text-dark">0</div>
+                        <small class="text-muted"><i class="fa-solid fa-chart-line text-primary me-1"></i> Transactions validées</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Synthèse de Performance -->
+            <div class="row g-4">
+                <div class="col-lg-8">
+                    <div class="adm-table-card h-100">
+                        <h5 class="fw-bold text-dark mb-3"><i class="fa-solid fa-scale-balanced text-warning me-2"></i> Ventilation Omnicanal des Ventes</h5>
+                        <p class="text-muted small mb-4">Répartition entre les commandes Click & Collect réglées via Wave et les ventes directes au comptoir.</p>
+                        
+                        <div class="p-4 rounded-4 bg-light mb-3">
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="fw-bold text-dark"><i class="fa-solid fa-mobile-screen text-info me-2"></i> Wave Mobile Money (Click & Collect)</span>
+                                <span class="fw-black text-info">72% des flux</span>
+                            </div>
+                            <div class="progress" style="height: 12px;">
+                                <div class="progress-bar bg-info" style="width: 72%"></div>
+                            </div>
+                        </div>
+
+                        <div class="p-4 rounded-4 bg-light">
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="fw-bold text-dark"><i class="fa-solid fa-money-bill-wave text-success me-2"></i> Espèces & Monnaie Directe (Boutique)</span>
+                                <span class="fw-black text-success">28% des flux</span>
+                            </div>
+                            <div class="progress" style="height: 12px;">
+                                <div class="progress-bar bg-success" style="width: 28%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4">
+                    <div class="adm-table-card h-100 bg-dark text-white">
+                        <div class="d-flex align-items-center gap-2 mb-3">
+                            <i class="fa-solid fa-shield-halved text-warning fs-4"></i>
+                            <h5 class="fw-bold text-white m-0">Sécurité & Anti-Fraude</h5>
+                        </div>
+                        <p class="text-white-50 small mb-4">
+                            Toutes les transactions Wave et validations de codes PIN font l'objet d'une signature cryptographique immuable.
+                        </p>
+                        <ul class="list-unstyled d-flex flex-column gap-3 small">
+                            <li class="d-flex align-items-center gap-2">
+                                <i class="fa-solid fa-circle-check text-success"></i>
+                                <span>Zero faux engagements (Paiement préalable Wave)</span>
+                            </li>
+                            <li class="d-flex align-items-center gap-2">
+                                <i class="fa-solid fa-circle-check text-success"></i>
+                                <span>Contrôle strict des écarts de caisse (Ticket Z)</span>
+                            </li>
+                            <li class="d-flex align-items-center gap-2">
+                                <i class="fa-solid fa-circle-check text-success"></i>
+                                <span>Déconnexion des caissières à distance active</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==========================================
+             VUE 2 : CATALOGUE PRODUITS
+             ========================================== -->
+        <section id="admView_produits" class="adm-tab-view" style="display:none;">
+            <div class="adm-table-card">
+                <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+                    <div>
+                        <h4 class="fw-bold text-dark m-0"><i class="fa-solid fa-bread-slice text-warning me-2"></i> Catalogue des Produits & Tarifs</h4>
+                        <p class="text-muted small m-0">Créez de nouveaux produits, modifiez les prix en FCFA ou masquez temporairement des articles.</p>
+                    </div>
+                    <button class="btn btn-warning fw-bold px-4 py-2 rounded-3" onclick="openAddProductModal()">
+                        <i class="fa-solid fa-plus me-2"></i> Ajouter un Produit
+                    </button>
+                </div>
+
+                <div class="mb-3">
+                    <input type="text" class="form-control" placeholder="Rechercher par nom ou catégorie (ex: baguette, croissant, chocolat...)" oninput="filterAdminProducts(this.value)">
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Photo</th>
+                                <th>Désignation</th>
+                                <th>Catégorie</th>
+                                <th>Prix (FCFA)</th>
+                                <th>Stock</th>
+                                <th>Visibilité</th>
+                                <th class="text-end">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="adminProductsTableBody">
+                            <!-- Rendu Dynamique via admin.js -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==========================================
+             VUE 3 : CATÉGORIES
+             ========================================== -->
+        <section id="admView_categories" class="adm-tab-view" style="display:none;">
+            <div class="adm-table-card">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <h4 class="fw-bold text-dark m-0"><i class="fa-solid fa-tags text-warning me-2"></i> Rayons & Catégories de Produits</h4>
+                        <p class="text-muted small m-0">Structure des rayons de la boulangerie affichés sur la boutique en ligne et le POS.</p>
+                    </div>
+                </div>
+
+                <div id="adminCategoriesList" class="row g-3">
+                    <!-- Rendu Dynamique via admin.js -->
+                </div>
+            </div>
+        </section>
+
+        <!-- ==========================================
+             VUE 4 : CAISSIÈRES & UTILISATEURS
+             ========================================== -->
+        <section id="admView_caissieres" class="adm-tab-view" style="display:none;">
+            <div class="adm-table-card">
+                <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+                    <div>
+                        <h4 class="fw-bold text-dark m-0"><i class="fa-solid fa-users-viewfinder text-warning me-2"></i> Gestion des Profils Caissières</h4>
+                        <p class="text-muted small m-0">Affectez les postes de caisse, réinitialisez les codes PIN et gérez les accès en direct.</p>
+                    </div>
+                    <button class="btn btn-warning fw-bold px-4 py-2 rounded-3" onclick="openAddCashierModal()">
+                        <i class="fa-solid fa-user-plus me-2"></i> Créer un Profil Caissière
+                    </button>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Profil</th>
+                                <th>Caissière</th>
+                                <th>Caisse Assignée</th>
+                                <th>Code PIN</th>
+                                <th>Statut Session</th>
+                                <th class="text-end">Contrôle</th>
+                            </tr>
+                        </thead>
+                        <tbody id="adminCashiersTableBody">
+                            <!-- Rendu Dynamique via admin.js -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==========================================
+             VUE 5 : CONTRÔLE DES CAISSES (Z)
+             ========================================== -->
+        <section id="admView_caisses" class="adm-tab-view" style="display:none;">
+            <div class="adm-table-card">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <h4 class="fw-bold text-dark m-0"><i class="fa-solid fa-vault text-warning me-2"></i> Historique & Audit des Clôtures Z</h4>
+                        <p class="text-muted small m-0">Contrôle des espèces réelles déclarées par chaque caissière et détection automatique des écarts.</p>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Numéro Z</th>
+                                <th>Opérateur</th>
+                                <th>Date de Clôture</th>
+                                <th>Recette Totale</th>
+                                <th>Espèces</th>
+                                <th>Wave</th>
+                                <th>Écart de Caisse</th>
+                            </tr>
+                        </thead>
+                        <tbody id="adminRegisterHistoryTableBody">
+                            <!-- Rendu Dynamique via admin.js -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==========================================
+             VUE 6 : AUDIT & SÉCURITÉ
+             ========================================== -->
+        <section id="admView_securite" class="adm-tab-view" style="display:none;">
+            <div class="adm-table-card">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <h4 class="fw-bold text-dark m-0"><i class="fa-solid fa-shield-check text-warning me-2"></i> Journal d'Audit & Sécurité Souveraine</h4>
+                        <p class="text-muted small m-0">Traçabilité complète des connexions, validations PIN, encaissements et modifications administratives.</p>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Événement</th>
+                                <th>Auteur / Utilisateur</th>
+                                <th>Adresse IP</th>
+                                <th>Horodatage</th>
+                                <th>Niveau de Risque</th>
+                            </tr>
+                        </thead>
+                        <tbody id="adminAuditLogsTableBody">
+                            <!-- Rendu Dynamique via admin.js -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ==========================================
+         MODALS ADMIN
+         ========================================== -->
+
+    <!-- Modal Formulaire Produit -->
+    <div class="modal fade" id="modalProductForm" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content border-0 shadow-lg rounded-4">
+                <div class="modal-header bg-dark text-white border-0 py-3">
+                    <h5 id="modalProductTitle" class="modal-title fw-bold">➕ Ajouter un Produit</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <div class="row g-3">
+                        <div class="col-md-8">
+                            <label class="form-label fw-bold text-dark">Nom du Produit :</label>
+                            <input type="text" id="prodNomInput" class="form-control form-control-lg" placeholder="Ex: Baguette Tradition Française">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold text-dark">Prix de Vente (FCFA) :</label>
+                            <input type="number" id="prodPrixInput" class="form-control form-control-lg fw-bold" placeholder="Ex: 400">
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold text-dark">Rayon / Catégorie :</label>
+                            <select id="prodCategorieSelect" class="form-select">
+                                <option value="pain">🥖 Pains & Baguettes</option>
+                                <option value="pains_speciaux">🌾 Pains Spéciaux & Complets</option>
+                                <option value="viennoiserie">🥐 Viennoiseries</option>
+                                <option value="patisserie">🍰 Pâtisseries & Gâteaux</option>
+                                <option value="boisson">🧃 Boissons Fraîches & Jus Naturels</option>
+                                <option value="sale">🥪 Salés & Traiteur</option>
+                                <option value="snack">🍪 Biscuits & Snacks</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-3">
+                            <label class="form-label fw-bold text-dark">Stock Initial :</label>
+                            <input type="number" id="prodStockInput" class="form-control fw-bold" value="50">
+                        </div>
+
+                        <div class="col-md-3">
+                            <label class="form-label fw-bold text-dark">Seuil d'Alerte :</label>
+                            <input type="number" id="prodSeuilInput" class="form-control fw-bold" value="10">
+                        </div>
+
+                        <div class="col-md-8">
+                            <label class="form-label fw-bold text-dark">Photo du Produit :</label>
+                            <select id="prodImageSelect" class="form-select" onchange="updateProductImagePreview()">
+                                <option value="assets/product_baguette.png">🥖 Baguette Tradition</option>
+                                <option value="assets/product_croissant.png">🥐 Croissant Pur Beurre</option>
+                                <option value="assets/product_pain_choc.png">🍫 Pain au Chocolat</option>
+                                <option value="assets/product_complet.png">🌾 Pain Complet</option>
+                                <option value="assets/product_brioche.png">🍞 Brioche Dorée</option>
+                                <option value="assets/product_jus_bissap.png">🌺 Jus de Bissap Maison</option>
+                                <option value="assets/product_jus_ananas.png">🍍 Jus d'Ananas Naturel</option>
+                                <option value="assets/product_jus_orange.png">🍊 Jus d'Orange Frais</option>
+                                <option value="assets/product_sandwich.png">🥪 Sandwich Panini</option>
+                                <option value="assets/product_entremet.png">🍰 Entremet Gourmand</option>
+                                <option value="assets/product_foret_noire.png">🎂 Forêt Noire</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-4 text-center">
+                            <label class="form-label small text-muted d-block">Aperçu Photo :</label>
+                            <img id="prodImagePreview" src="assets/product_baguette.png" alt="Aperçu" class="adm-product-thumb" style="width:64px; height:64px;">
+                        </div>
+
+                        <div class="col-12">
+                            <label class="form-label fw-bold text-dark">Description courte :</label>
+                            <textarea id="prodDescInput" class="form-control" rows="2" placeholder="Description appétissante pour les clients..."></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 p-3">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Annuler</button>
+                    <button type="button" class="btn btn-warning fw-bold px-4" onclick="saveProduct()">
+                        <i class="fa-solid fa-check me-2"></i> Enregistrer le Produit
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Formulaire Caissière -->
+    <div class="modal fade" id="modalCashierForm" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg rounded-4">
+                <div class="modal-header bg-dark text-white border-0 py-3">
+                    <h5 id="modalCashierTitle" class="modal-title fw-bold">➕ Profil Caissière</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <div class="row g-3">
+                        <div class="col-6">
+                            <label class="form-label fw-bold text-dark">Prénom :</label>
+                            <input type="text" id="cashierPrenomInput" class="form-control" placeholder="Awa">
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label fw-bold text-dark">Nom :</label>
+                            <input type="text" id="cashierNomInput" class="form-control" placeholder="Traoré">
+                        </div>
+
+                        <div class="col-12">
+                            <label class="form-label fw-bold text-dark">Identifiant / Email :</label>
+                            <input type="email" id="cashierEmailInput" class="form-control" placeholder="caisse1@boulangeriedebabi.com">
+                        </div>
+
+                        <div class="col-6">
+                            <label class="form-label fw-bold text-dark">Téléphone :</label>
+                            <input type="text" id="cashierPhoneInput" class="form-control" placeholder="+225 05 55 12 34 56">
+                        </div>
+
+                        <div class="col-6">
+                            <label class="form-label fw-bold text-dark">Caisse Assignée :</label>
+                            <select id="cashierCaisseInput" class="form-select">
+                                <option value="Caisse 1 - Riviera">Caisse 1 - Riviera</option>
+                                <option value="Caisse 2 - Fournil Express">Caisse 2 - Fournil Express</option>
+                                <option value="Caisse 3 - Traiteur">Caisse 3 - Traiteur</option>
+                            </select>
+                        </div>
+
+                        <div class="col-6">
+                            <label class="form-label fw-bold text-dark">Code PIN de Caisse (4 chiffres) :</label>
+                            <input type="text" id="cashierPinInput" class="form-control fw-bold text-center" placeholder="1234" maxlength="6">
+                        </div>
+
+                        <div class="col-6">
+                            <label class="form-label fw-bold text-dark">Mot de passe :</label>
+                            <input type="password" id="cashierPassInput" class="form-control" placeholder="••••••••">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 p-3">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Annuler</button>
+                    <button type="button" class="btn btn-warning fw-bold px-4" onclick="saveCashier()">
+                        <i class="fa-solid fa-check me-2"></i> Enregistrer la Caissière
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Logique Admin -->
+    <script src="js/admin.js"></script>
+</body>
+</html>

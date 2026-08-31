@@ -326,7 +326,9 @@ app.post('/api/auth/login', async (req, res) => {
 
         // Determine destination redirect url based on role
         let redirectUrl = 'index.html';
-        if (user.role === 'admin' || user.role === 'gerante' || user.role === 'caissiere') redirectUrl = 'index.html';
+        if (user.role === 'admin') redirectUrl = 'admin.html';
+        else if (user.role === 'gerante') redirectUrl = 'gerante.html';
+        else if (user.role === 'caissiere') redirectUrl = 'caissiere.html';
         else if (user.role === 'client') redirectUrl = 'compte.html';
 
         await recordSecurityAudit('LOGIN_SUCCESS', 'N/A', 0, 'FAIBLE', req, { email: user.email, role: user.role });

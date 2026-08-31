@@ -17,11 +17,12 @@ start /b "" powershell -Command "Start-Sleep -Seconds 1; Start-Process 'http://l
 
 echo [2/2] Liens disponibles pour votre presentation :
 echo ----------------------------------------------------------------
-echo   * Boutique Client     : http://localhost:5000
-echo   * Catalogue Produits  : http://localhost:5000/produits.html
-echo   
+echo   * 🏪 Boutique Client     : http://localhost:5000
+echo   * 💻 Espace Caissiere    : http://localhost:5000/caissiere.html
+echo   * 👩 Espace Gerante      : http://localhost:5000/gerante.html
+echo   * 👔 Espace Administrateur : http://localhost:5000/admin.html
 echo.
-echo   * Sur Mobile/Tablette : http://192.168.1.12:5000/app
+echo   * Sur Mobile/Tablette    : http://192.168.1.12:5000/app
 echo ----------------------------------------------------------------
 echo.
 echo Ne fermez pas cette fenetre pendant votre demonstration !

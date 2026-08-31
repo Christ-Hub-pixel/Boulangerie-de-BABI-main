@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Espace Gérante & Supervision Fournil — Boulangerie de BABI</title>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- CSS Dédié Gérante -->
+    <link rel="stylesheet" href="css/animations.css">
+    <link rel="stylesheet" href="css/gerante.css">
+    <link rel="icon" type="image/png" href="assets/logo.png">
+</head>
+<body class="gerante-body">
+
+    <!-- ==========================================
+         1. TOP NAVBAR GÉRANTE
+         ========================================== -->
+    <header class="ger-navbar d-flex align-items-center justify-content-between">
+        <div class="d-flex align-items-center gap-3">
+            <a href="index.html" title="Boutique Client">
+                <img src="assets/logo.png" alt="Logo" class="ger-brand-logo">
+            </a>
+            <div>
+                <div class="d-flex align-items-center gap-2">
+                    <span class="fw-black fs-5 text-white">BOULANGERIE DE BABI</span>
+                    <span class="badge bg-warning text-dark fw-bold px-2 py-1" style="font-size:0.7rem;">SUPERVISION</span>
+                </div>
+                <div class="small text-white-50" style="font-size: 0.75rem;">
+                    Fournil Riviera • Espace Pilotage Opérationnel
+                </div>
+            </div>
+        </div>
+
+        <div class="d-flex align-items-center gap-3">
+            <span id="bakeryOpenBadge" class="badge bg-success px-3 py-2 fw-bold">
+                <i class="fa-solid fa-circle-check me-1"></i> Fournil Ouvert (05:45 - 23:00)
+            </span>
+            <div class="d-none d-md-flex align-items-center gap-2 bg-black bg-opacity-25 px-3 py-2 rounded-pill text-white small">
+                <i class="fa-regular fa-clock text-warning"></i>
+                <span id="geranteClock">--:--:-- (GMT)</span>
+            </div>
+        </div>
+
+        <div class="d-flex align-items-center gap-2">
+            <div class="dropdown">
+                <button class="btn btn-outline-light dropdown-toggle d-flex align-items-center gap-2 py-1 px-2 border-0 bg-white bg-opacity-10 rounded-pill" type="button" data-bs-toggle="dropdown">
+                    <img id="managerAvatarDisplay" src="assets/aicha.png" alt="Gérante" class="rounded-circle" width="32" height="32" style="object-fit:cover; border:1px solid #D4AF37;">
+                    <div class="text-start d-none d-sm-block pe-1">
+                        <div id="managerNameDisplay" class="fw-bold text-white lh-1" style="font-size:0.85rem;">Marie-Claire Kouamé</div>
+                        <span class="text-warning lh-1" style="font-size:0.7rem;">Gérante d'Exploitation</span>
+                    </div>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 mt-2" style="border-radius:12px; min-width:220px;">
+                    <li class="px-3 py-2 border-bottom bg-light">
+                        <small class="text-muted d-block">Basculer d'espace (Démo) :</small>
+                    </li>
+                    <li><a class="dropdown-item py-2" href="caissiere.html"><i class="fa-solid fa-cash-register me-2 text-warning"></i> Espace Caissière</a></li>
+                    <li><a class="dropdown-item py-2 active" href="gerante.html"><i class="fa-solid fa-user-tie me-2 text-info"></i> <strong>Espace Gérante</strong></a></li>
+                    <li><a class="dropdown-item py-2" href="admin.html"><i class="fa-solid fa-shield-halved me-2 text-danger"></i> Espace Administrateur</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item py-2" href="index.html"><i class="fa-solid fa-store me-2 text-success"></i> Boutique Client</a></li>
+                    <li><a class="dropdown-item py-2 text-danger" href="connexion.html" onclick="localStorage.removeItem('babi_user');"><i class="fa-solid fa-right-from-bracket me-2"></i> Déconnexion</a></li>
+                </ul>
+            </div>
+        </div>
+    </header>
+
+    <!-- ==========================================
+         2. ONGLETS DE NAVIGATION GÉRANTE
+         ========================================== -->
+    <nav class="ger-nav-tabs">
+        <button class="ger-tab-btn active" onclick="switchGeranteTab('fournil', this)">
+            <i class="fa-solid fa-fire-burner fs-5"></i>
+            <span>Fournil & Pain Chaud</span>
+        </button>
+        <button class="ger-tab-btn" onclick="switchGeranteTab('stocks', this)">
+            <i class="fa-solid fa-boxes-stacked fs-5"></i>
+            <span>Stocks & Anti-Gaspillage</span>
+        </button>
+        <button class="ger-tab-btn" onclick="switchGeranteTab('commandes', this)">
+            <i class="fa-solid fa-clipboard-list fs-5"></i>
+            <span>Suivi des Commandes</span>
+            <span id="tabOrdersPrepBadge" class="badge bg-warning text-dark ms-1">0</span>
+        </button>
+        <button class="ger-tab-btn" onclick="switchGeranteTab('equipe', this)">
+            <i class="fa-solid fa-users-gear fs-5"></i>
+            <span>Équipe & Pointage</span>
+        </button>
+    </nav>
+
+    <!-- ==========================================
+         3. CONTENEUR PRINCIPAL GÉRANTE
+         ========================================== -->
+    <main class="container-fluid py-4" style="max-width: 1400px;">
+
+        <!-- KPIS COCKPIT DU JOUR -->
+        <div class="row g-3 mb-4">
+            <div class="col-6 col-md-3">
+                <div class="ger-kpi-card">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <span class="small text-muted fw-bold">Recette du Jour</span>
+                        <div class="ger-kpi-icon bg-success bg-opacity-10 text-success"><i class="fa-solid fa-coins"></i></div>
+                    </div>
+                    <div id="kpiTodayRevenue" class="ger-kpi-value text-success">0 F</div>
+                    <small class="text-muted"><i class="fa-solid fa-arrow-trend-up text-success me-1"></i> Commandes et Caisse</small>
+                </div>
+            </div>
+
+            <div class="col-6 col-md-3">
+                <div class="ger-kpi-card">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <span class="small text-muted fw-bold">Commandes du Jour</span>
+                        <div class="ger-kpi-icon bg-warning bg-opacity-10 text-warning"><i class="fa-solid fa-bag-shopping"></i></div>
+                    </div>
+                    <div id="kpiTodayOrders" class="ger-kpi-value text-dark">0</div>
+                    <small class="text-muted"><i class="fa-solid fa-clock me-1"></i> Traitées & en cours</small>
+                </div>
+            </div>
+
+            <div class="col-6 col-md-3">
+                <div class="ger-kpi-card">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <span class="small text-muted fw-bold">Alertes Stocks Bas</span>
+                        <div class="ger-kpi-icon bg-danger bg-opacity-10 text-danger"><i class="fa-solid fa-triangle-exclamation"></i></div>
+                    </div>
+                    <div id="kpiLowStocks" class="ger-kpi-value text-danger">0</div>
+                    <small class="text-muted"><i class="fa-solid fa-bell me-1"></i> Sous seuil de sécurité</small>
+                </div>
+            </div>
+
+            <div class="col-6 col-md-3">
+                <div class="ger-kpi-card">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <span class="small text-muted fw-bold">Personnel en Poste</span>
+                        <div class="ger-kpi-icon bg-info bg-opacity-10 text-info"><i class="fa-solid fa-user-check"></i></div>
+                    </div>
+                    <div id="kpiStaffPresent" class="ger-kpi-value text-dark">0 / 0</div>
+                    <small class="text-muted"><i class="fa-solid fa-people-group me-1"></i> Équipe opérationnelle</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==========================================
+             VUE 1 : FOURNIL & PAIN CHAUD
+             ========================================== -->
+        <section id="gerView_fournil" class="ger-tab-view">
+            <!-- Grand Bandeau Déclencheur Pain Chaud -->
+            <div class="ger-bake-hero mb-4">
+                <div class="row align-items-center gy-4">
+                    <div class="col-lg-8">
+                        <span class="ger-bake-status-badge mb-3">
+                            <i class="fa-solid fa-temperature-three-quarters text-warning"></i>
+                            Fournil Traditionnel • Fours à 240°C
+                        </span>
+                        <h2 class="fw-black text-white display-6 mb-2">Pain Chaud & Cuisson Directe</h2>
+                        <p class="text-white-50 m-0" style="max-width: 650px;">
+                            Dès la sortie du four, déclenchez l'alerte pour avertir les clients connectés et l'application mobile que les baguettes croustillantes et viennoiseries chaudes sont prêtes au retrait.
+                        </p>
+                    </div>
+
+                    <div class="col-lg-4 text-lg-end">
+                        <button class="ger-bake-btn-fire w-100 w-lg-auto" onclick="FournilManager.triggerHotBread()">
+                            <i class="fa-solid fa-fire fs-4"></i>
+                            <span>LANCER UNE FOURNÉE DE PAIN CHAUD</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="row g-3 mt-4 pt-3 border-top border-white border-opacity-10">
+                    <div class="col-md-4">
+                        <div class="small text-white-50">Dernière Fournée Sortie :</div>
+                        <div id="hotBreadLastTime" class="fs-4 fw-black text-warning">18:15 (GMT)</div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="small text-white-50">Prochaine Fournée Programmée :</div>
+                        <div id="hotBreadNextTime" class="fs-4 fw-black text-white">19:30 (GMT)</div>
+                    </div>
+                    <div class="col-md-4 d-flex align-items-center">
+                        <div id="hotBreadLiveBadge" class="badge bg-success px-3 py-2 fw-bold w-100 text-center">
+                            <i class="fa-solid fa-check-circle me-1"></i> Pain Chaud Disponible au Fournil
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Planning des Fournées du Jour -->
+            <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
+                <h5 class="fw-bold text-dark mb-3"><i class="fa-solid fa-list-check text-warning me-2"></i> Planning des Fournées Journalières</h5>
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Fournée</th>
+                                <th>Type de Produits</th>
+                                <th>Quantité Estimée</th>
+                                <th>Statut Cuisson</th>
+                                <th>Boulanger Responsable</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="fw-bold">Fournée #1 (Matinée)</td>
+                                <td>Baguettes Tradition & Croissants Pur Beurre</td>
+                                <td>250 pièces</td>
+                                <td><span class="badge bg-secondary">Terminé (06:00)</span></td>
+                                <td>Mamadou Kouassi</td>
+                            </tr>
+                            <tr>
+                                <td class="fw-bold">Fournée #2 (Midi)</td>
+                                <td>Pains Complets, Pains de Mie & Salés</td>
+                                <td>150 pièces</td>
+                                <td><span class="badge bg-secondary">Terminé (11:30)</span></td>
+                                <td>Konan Yves</td>
+                            </tr>
+                            <tr>
+                                <td class="fw-bold text-warning">Fournée #3 (Soirée - En cours)</td>
+                                <td>Baguettes Chaudes & Brioches Dorées</td>
+                                <td>200 pièces</td>
+                                <td><span class="badge bg-warning text-dark"><i class="fa-solid fa-fire me-1"></i> En Cuisson Four</span></td>
+                                <td>Mamadou Kouassi</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==========================================
+             VUE 2 : GESTION DES STOCKS & ANTI-GASPI
+             ========================================== -->
+        <section id="gerView_stocks" class="ger-tab-view" style="display:none;">
+            <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
+                <!-- Actions Barre Supérieure -->
+                <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+                    <div>
+                        <h4 class="fw-bold text-dark m-0"><i class="fa-solid fa-boxes-stacked text-warning me-2"></i> Niveaux de Stocks & Disponibilités</h4>
+                        <p class="text-muted small m-0">Ajustez rapidement les quantités sorties du fournil ou appliquez le mode anti-gaspillage.</p>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <button id="btnAntiGaspi" class="btn btn-outline-success fw-bold px-3 py-2 rounded-3" onclick="toggleAntiGaspiMode()">
+                            <i class="fa-solid fa-recycle me-2"></i> Activer Mode Anti-Gaspi
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Recherche Stock -->
+                <div class="mb-3">
+                    <input type="text" class="form-control" placeholder="Rechercher un produit dans les stocks..." oninput="filterStocks(this.value)">
+                </div>
+
+                <!-- Tableau des Stocks -->
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Produit</th>
+                                <th>Catégorie</th>
+                                <th>État du Stock</th>
+                                <th>Seuil d'Alerte</th>
+                                <th>Prix Unitaire</th>
+                                <th class="text-end">Ajustement Rapide (+/-)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="geranteStocksTableBody">
+                            <!-- Rendu Dynamique via gerante.js -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==========================================
+             VUE 3 : SUIVI DES COMMANDES
+             ========================================== -->
+        <section id="gerView_commandes" class="ger-tab-view" style="display:none;">
+            <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
+                <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+                    <div>
+                        <h4 class="fw-bold text-dark m-0"><i class="fa-solid fa-clipboard-list text-warning me-2"></i> Suivi des Commandes Clients</h4>
+                        <p class="text-muted small m-0">Passez les commandes en préparation et marquez-les prêtes au retrait.</p>
+                    </div>
+                    <div class="btn-group">
+                        <button class="btn btn-outline-secondary ger-order-tab-btn active" onclick="filterOrders('all', this)">Toutes</button>
+                        <button class="btn btn-outline-secondary ger-order-tab-btn" onclick="filterOrders('en_cours', this)">Au Fournil</button>
+                        <button class="btn btn-outline-secondary ger-order-tab-btn" onclick="filterOrders('pret', this)">Prêtes au Comptoir</button>
+                        <button class="btn btn-outline-secondary ger-order-tab-btn" onclick="filterOrders('livre', this)">Terminées</button>
+                    </div>
+                </div>
+
+                <!-- Liste des Commandes -->
+                <div id="geranteOrdersList">
+                    <!-- Rendu Dynamique via gerante.js -->
+                </div>
+            </div>
+        </section>
+
+        <!-- ==========================================
+             VUE 4 : ÉQUIPE & POINTAGE
+             ========================================== -->
+        <section id="gerView_equipe" class="ger-tab-view" style="display:none;">
+            <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <h4 class="fw-bold text-dark m-0"><i class="fa-solid fa-users-gear text-warning me-2"></i> Équipe & Présence en Boutique</h4>
+                        <p class="text-muted small m-0">Consultez le statut des boulangers, pâtissiers et caissières en service.</p>
+                    </div>
+                </div>
+
+                <!-- Grille des Employés -->
+                <div id="geranteEmployeesGrid" class="row g-3">
+                    <!-- Rendu Dynamique via gerante.js -->
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ==========================================
+         MODAL AJUSTEMENT STOCK DÉTAILLÉ
+         ========================================== -->
+    <div class="modal fade" id="modalAdjustStock" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg rounded-4">
+                <div class="modal-header bg-warning text-dark border-0 py-3">
+                    <h5 class="modal-title fw-bold"><i class="fa-solid fa-box-open me-2"></i> Ajustement de Stock</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <div class="mb-3">
+                        <label class="form-label text-muted small fw-bold">Nom du Produit :</label>
+                        <input type="text" id="modalStockProdName" class="form-control fw-bold" readonly>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label text-muted small fw-bold">Quantité Actuelle : <strong id="modalStockCurrentQty" class="text-dark">0</strong></label>
+                    </div>
+                    <div class="row g-2 mb-3">
+                        <div class="col-6">
+                            <label class="form-label fw-bold text-dark">Opération :</label>
+                            <select id="modalStockType" class="form-select">
+                                <option value="entree">➕ Entrée (Fabrication Fournil)</option>
+                                <option value="sortie">➖ Sortie (Rebut / Perte / Ajustement)</option>
+                            </select>
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label fw-bold text-dark">Quantité :</label>
+                            <input type="number" id="modalStockNewQty" class="form-control fw-bold" placeholder="Ex: 20">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label text-muted small fw-bold">Motif de l'ajustement :</label>
+                        <input type="text" id="modalStockMotif" class="form-control" placeholder="Ex: Sortie de fournil supplémentaire...">
+                    </div>
+                </div>
+                <div class="modal-footer border-0 p-3">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Annuler</button>
+                    <button type="button" class="btn btn-warning fw-bold px-4" onclick="submitCustomStockAdjust()">
+                        <i class="fa-solid fa-check me-2"></i> Enregistrer
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Logique Gérante -->
+    <script src="js/gerante.js"></script>
+</body>
+</html>

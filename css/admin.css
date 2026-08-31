@@ -1,0 +1,173 @@
+/* ==========================================================================
+   👔 BOULANGERIE DE BABI — THEME DIRECTION & ADMINISTRATEUR
+   ========================================================================== */
+
+:root {
+    --adm-gold: #D4AF37;
+    --adm-gold-dark: #B8860B;
+    --adm-gold-light: #FBF4DE;
+    --adm-dark: #1A1008;
+    --adm-brown: #2B160C;
+    --adm-brown-light: #3D2314;
+    --adm-bg: #F5F3EF;
+    --adm-card: #FFFFFF;
+    --adm-border: #E5DFC5;
+    --adm-border-light: #EDE7DC;
+    --adm-green: #10B981;
+    --adm-red: #EF4444;
+    --adm-blue: #0284C7;
+    --adm-wave: #00B2FF;
+    --adm-radius: 16px;
+    --adm-radius-sm: 10px;
+    --adm-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+    --adm-shadow-hover: 0 8px 30px rgba(0, 0, 0, 0.12);
+}
+
+body.admin-body {
+    background-color: var(--adm-bg);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    color: #2D3748;
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+}
+
+/* ==========================================
+   1. ADMIN NAVBAR
+   ========================================== */
+.adm-navbar {
+    background: linear-gradient(135deg, var(--adm-dark) 0%, var(--adm-brown) 100%);
+    color: #ffffff;
+    padding: 12px 28px;
+    box-shadow: 0 2px 15px rgba(0,0,0,0.25);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.adm-brand-logo {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: 2px solid var(--adm-gold);
+    object-fit: cover;
+}
+
+/* ==========================================
+   2. ADMIN SIDEBAR & MAIN TABS
+   ========================================== */
+.adm-nav-tabs {
+    background: #ffffff;
+    border-bottom: 2px solid var(--adm-border-light);
+    padding: 8px 28px;
+    display: flex;
+    gap: 12px;
+    overflow-x: auto;
+    position: sticky;
+    top: 68px;
+    z-index: 900;
+}
+
+.adm-tab-btn {
+    border: none;
+    background: transparent;
+    padding: 12px 20px;
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: #64748B;
+    border-radius: var(--adm-radius-sm);
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.adm-tab-btn:hover {
+    background: var(--adm-bg);
+    color: var(--adm-dark);
+}
+
+.adm-tab-btn.active {
+    background: var(--adm-dark);
+    color: var(--adm-gold);
+    box-shadow: 0 4px 12px rgba(26, 16, 8, 0.2);
+}
+
+/* ==========================================
+   3. KPI CARDS
+   ========================================== */
+.adm-kpi-card {
+    background: #ffffff;
+    border-radius: var(--adm-radius);
+    padding: 22px;
+    border: 1px solid var(--adm-border-light);
+    box-shadow: var(--adm-shadow);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.adm-kpi-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--adm-shadow-hover);
+}
+
+.adm-kpi-value {
+    font-size: 2rem;
+    font-weight: 900;
+    color: var(--adm-dark);
+    line-height: 1.1;
+    margin: 10px 0 4px 0;
+}
+
+/* ==========================================
+   4. DATA TABLES & ACTIONS
+   ========================================== */
+.adm-table-card {
+    background: #ffffff;
+    border-radius: var(--adm-radius);
+    padding: 24px;
+    border: 1px solid var(--adm-border-light);
+    box-shadow: var(--adm-shadow);
+}
+
+.adm-product-thumb {
+    width: 44px;
+    height: 44px;
+    border-radius: 8px;
+    object-fit: cover;
+    background: #F4EFEB;
+    border: 1px solid var(--adm-border-light);
+}
+
+.adm-badge-active {
+    background: rgba(16, 185, 129, 0.12);
+    color: #059669;
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-weight: 700;
+    font-size: 0.75rem;
+}
+
+.adm-badge-inactive {
+    background: rgba(239, 68, 68, 0.12);
+    color: #DC2626;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-weight: 700;
+    font-size: 0.75rem;
+}
+
+.adm-avatar-user {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1px solid var(--adm-gold);
+}

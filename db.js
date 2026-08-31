@@ -384,7 +384,7 @@ async function initDB() {
             is_active INTEGER DEFAULT 1,
             created_at DATETIME DEFAULT CURRENT_TIMESTAMP
         )`);
-        const migrationCheck = await db.get("SELECT version FROM _schema_migrations WHERE version = 4");
+        const migrationCheck = await db.get("SELECT version FROM _schema_migrations WHERE version = 5");
         if (migrationCheck) {
             cachedDbInstance = db;
             isDbSchemaReady = true;
@@ -397,25 +397,85 @@ async function initDB() {
     // 🚀 Création globale rapide de toutes les tables en un seul batch
     try {
         await db.exec(FULL_SCHEMA_SQL);
-        await db.run("INSERT OR REPLACE INTO _schema_migrations (version) VALUES (4)");
+        await db.run("INSERT OR REPLACE INTO _schema_migrations (version) VALUES (5)");
     } catch (batchErr) {
         console.warn("[DB] Batch schema notice:", batchErr.message);
     }
 
-    // Initialisation / Vérification du Compte Administrateur Principal (1 requête ultra-rapide)
+    // Initialisation / Vérification des Comptes Clés (Admin, Gérante, Caissières)
     try {
         const secureAuth = require('./services/secure_auth.service.js');
+        
+        // 1. Super Administrateur
         const adminEmail = 'admin@boulangeriedebabi.com';
         const existingAdmin = await db.get("SELECT id FROM users WHERE email = ? OR role = 'admin'", [adminEmail]);
         if (!existingAdmin) {
             const hashedPassword = secureAuth.hashPassword('Admin@Babi2026!');
             await db.run(
-                "INSERT INTO users (nom, prenom, email, telephone, mot_de_passe, role, avatar) VALUES (?, ?, ?, ?, ?, 'admin', 'assets/avatar_admin.png')",
+                "INSERT INTO users (nom, prenom, email, telephone, mot_de_passe, role, avatar, caisse_assignee) VALUES (?, ?, ?, ?, ?, 'admin', 'assets/avatar_admin.png', 'Direction Centrale')",
                 ['BABI', 'Administrateur', adminEmail, '+225 07 04 38 92 01', hashedPassword]
             );
         }
-    } catch (adminErr) {
-        console.warn("[DB] Admin seed notice:", adminErr.message);
+
+        // 2. Gérante
+        const geranteEmail = 'gerante@boulangeriedebabi.com';
+        const existingGerante = await db.get("SELECT id FROM users WHERE email = ? OR role = 'gerante'", [geranteEmail]);
+        if (!existingGerante) {
+            const hashedPassword = secureAuth.hashPassword('Gerante@Babi2026!');
+            await db.run(
+                "INSERT INTO users (nom, prenom, email, telephone, mot_de_passe, role, avatar, caisse_assignee) VALUES (?, ?, ?, ?, ?, 'gerante', 'assets/aicha.png', 'Supervision Riviera')",
+                ['Kouamé', 'Marie-Claire', geranteEmail, '+225 07 06 81 79 77', hashedPassword]
+            );
+        }
+
+        // 3. Caissière 1
+        const caisse1Email = 'caisse1@boulangeriedebabi.com';
+        const existingCaisse1 = await db.get("SELECT id FROM users WHERE email = ? OR (role = 'caissiere' AND caisse_assignee LIKE '%Caisse 1%')", [caisse1Email]);
+        if (!existingCaisse1) {
+            const hashedPassword = secureAuth.hashPassword('Caisse@Babi2026!');
+            await db.run(
+                "INSERT INTO users (nom, prenom, email, telephone, mot_de_passe, role, avatar, statut, caisse_assignee, code_pin) VALUES (?, ?, ?, ?, ?, 'caissiere', 'assets/caissiere.png', 'actif', 'Caisse 1 - Riviera', '1234')",
+                ['Traoré', 'Awa', caisse1Email, '+225 05 55 12 34 56', hashedPassword]
+            );
+        }
+
+        // 4. Caissière 2
+        const caisse2Email = 'caisse2@boulangeriedebabi.com';
+        const existingCaisse2 = await db.get("SELECT id FROM users WHERE email = ? OR (role = 'caissiere' AND caisse_assignee LIKE '%Caisse 2%')", [caisse2Email]);
+        if (!existingCaisse2) {
+            const hashedPassword = secureAuth.hashPassword('Caisse@Babi2026!');
+            await db.run(
+                "INSERT INTO users (nom, prenom, email, telephone, mot_de_passe, role, avatar, statut, caisse_assignee, code_pin) VALUES (?, ?, ?, ?, ?, 'caissiere', 'assets/caissiere1.png', 'actif', 'Caisse 2 - Fournil Express', '5678')",
+                ['Bamba', 'Fatou', caisse2Email, '+225 05 55 78 90 12', hashedPassword]
+            );
+        }
+    } catch (usersErr) {
+        console.warn("[DB] Users seed notice:", usersErr.message);
+    }
+
+    // Auto-seed de l'équipe (Employés) si la table est vide
+    try {
+        const empCount = await db.get("SELECT COUNT(*) as count FROM employees");
+        if (!empCount || empCount.count === 0) {
+            const defaultEmployees = [
+                { nom: 'Kouassi', prenom: 'Mamadou', poste: 'Maître Boulanger', telephone: '+225 07 01 22 33 44', email: 'mamadou.boulanger@babi.ci', statut: 'present', avatar: 'assets/baker_profile.png' },
+                { nom: 'Diabaté', prenom: 'Sékou', poste: 'Chef Pâtissier', telephone: '+225 07 02 33 44 55', email: 'sekou.patissier@babi.ci', statut: 'present', avatar: 'assets/chef_profile.png' },
+                { nom: 'Traoré', prenom: 'Awa', poste: 'Caissière Principale', telephone: '+225 05 55 12 34 56', email: 'caisse1@boulangeriedebabi.com', statut: 'present', avatar: 'assets/caissiere.png' },
+                { nom: 'Bamba', prenom: 'Fatou', poste: 'Caissière Retrait Express', telephone: '+225 05 55 78 90 12', email: 'caisse2@boulangeriedebabi.com', statut: 'present', avatar: 'assets/caissiere1.png' },
+                { nom: 'Yao', prenom: 'Konan Yves', poste: 'Aide Fournil & Cuisson', telephone: '+225 07 09 88 77 66', email: 'yves.fournil@babi.ci', statut: 'present', avatar: 'assets/kouassi.png' },
+                { nom: 'Koné', prenom: 'Adjoua Salimata', poste: 'Vendeuse & Accueil', telephone: '+225 01 02 03 04 05', email: 'salimata.accueil@babi.ci', statut: 'present', avatar: 'assets/aicha.png' }
+            ];
+
+            for (const emp of defaultEmployees) {
+                await db.run(
+                    "INSERT INTO employees (nom, prenom, poste, telephone, email, statut_presence, avatar) VALUES (?, ?, ?, ?, ?, ?, ?)",
+                    [emp.nom, emp.prenom, emp.poste, emp.telephone, emp.email, emp.statut, emp.avatar]
+                );
+            }
+            console.log("[DB] 6 Employés par défaut initialisés avec succès.");
+        }
+    } catch (empErr) {
+        console.warn("[DB] Employees seed notice:", empErr.message);
     }
 
     // Auto-seed des produits si la table est vide (avec protection anti-résurrection)
