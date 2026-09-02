@@ -11,20 +11,18 @@ class OrderManagerService {
      * @returns {Promise<Object>} - Commande créée avec total recalculé et items enregistrés
      */
     async createVerifiedOrder(db, orderData) {
-        const {
-            customer_name,
-            customer_phone,
-            customer_email = '',
-            user_id = null,
-            items = [],
-            pickup_slot = 'Dès que possible (~15-20 min)',
-            pickup_point = 'Riviera (Boulangerie de BABI)',
-            notes = '',
-            delivery_type = 'click_collect',
-            delivery_address = 'Fournil Riviera'
-        } = orderData;
+        const customer_name = (orderData.customer_name || orderData.name || orderData.nom || '').trim();
+        const customer_phone = (orderData.customer_phone || orderData.phone || orderData.telephone || '').trim();
+        const customer_email = (orderData.customer_email || orderData.email || '').trim();
+        const user_id = orderData.user_id || null;
+        const items = orderData.items || [];
+        const pickup_slot = orderData.pickup_slot || 'Dès que possible (~15-20 min)';
+        const pickup_point = orderData.pickup_point || 'Riviera (Boulangerie de BABI)';
+        const notes = orderData.notes || '';
+        const delivery_type = orderData.delivery_type || orderData.delivery_mode || 'click_collect';
+        const delivery_address = orderData.delivery_address || 'Fournil Riviera';
 
-        const cleanPhone = (customer_phone || '').replace(/\D/g, '');
+        const cleanPhone = customer_phone.replace(/\D/g, '');
         if (!customer_name || !customer_phone || cleanPhone.length < 8) {
             throw new Error("Nom et numéro de téléphone portable valide obligatoires (au moins 8 à 10 chiffres pour Wave / SMS).");
         }

@@ -5,8 +5,8 @@
   "start_url": "/index.html",
   "scope": "/",
   "display": "standalone",
-  "background_color": "#24140C",
-  "theme_color": "#24140C",
+  "background_color": "#2B160C",
+  "theme_color": "#2B160C",
   "orientation": "portrait-primary",
   "icons": [
     {
@@ -26,6 +26,29 @@
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Caisse & Retrait",
+      "short_name": "Caisse",
+      "description": "Terminal de caisse et validation des retraits PIN",
+      "url": "/caissiere.html",
+      "icons": [{ "src": "assets/logoApp.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Fournil & Gérante",
+      "short_name": "Fournil",
+      "description": "Supervision opérationnelle du fournil et stocks",
+      "url": "/gerante.html",
+      "icons": [{ "src": "assets/logoApp.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Direction Générale",
+      "short_name": "Admin",
+      "description": "Cockpit financier et gestion du catalogue",
+      "url": "/admin.html",
+      "icons": [{ "src": "assets/logoApp.png", "sizes": "192x192" }]
     }
   ]
 }

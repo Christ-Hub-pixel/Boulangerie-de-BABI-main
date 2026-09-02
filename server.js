@@ -86,7 +86,16 @@ app.use((req, res, next) => {
 });
 
 // 📱 Service des fichiers statiques Web et de l'application mobile Flutter
-app.use(express.static(path.resolve(__dirname), { maxAge: '1h', etag: true }));
+app.use(express.static(path.resolve(__dirname), {
+    maxAge: 0,
+    setHeaders: (res, filePath) => {
+        if (filePath.endsWith('.html') || filePath.endsWith('.js') || filePath.endsWith('.css')) {
+            res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+            res.setHeader('Pragma', 'no-cache');
+            res.setHeader('Expires', '0');
+        }
+    }
+}));
 app.use('/flutter', express.static(path.resolve(__dirname, '../babi_flutter_web/build/web'), { maxAge: '1h', etag: true }));
 
 // 🍯 Active Honeytoken Trap Middleware (Capture & Bannissement des Scanners)
@@ -1882,12 +1891,12 @@ app.get(['/api/orders/pickup-queue', '/api/orders/queue'], async (req, res) => {
         const orders = await database.all(
             `SELECT o.*, COALESCE(p.pin_code, o.code_pin, '7412') as pin_code, COALESCE(p.is_used, 0) as is_used 
              FROM orders o
-             LEFT JOIN pickup_codes p ON (o.id = p.order_id OR p.order_id = 'ORD-' || o.id)
-             WHERE o.status NOT IN ('recupere', 'PICKED_UP', 'ANNULE', 'CANCELLED') 
+             LEFT JOIN pickup_codes p ON (o.id = p.order_id OR p.order_id = 'ORD-' || o.id OR CAST(p.order_id AS INTEGER) = o.id)
+             WHERE o.status NOT IN ('recupere', 'PICKED_UP', 'ANNULE', 'CANCELLED', 'livre') 
                 AND (p.is_used IS NULL OR p.is_used = 0)
              ORDER BY o.created_at DESC LIMIT 50`
         );
-        res.json({ success: true, orders: orders || [] });
+        res.json({ success: true, orders: orders || [], queue: orders || [] });
     } catch (err) {
         res.status(500).json({ success: false, error: err.message });
     }

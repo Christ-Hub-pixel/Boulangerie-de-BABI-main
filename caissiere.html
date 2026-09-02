@@ -1,506 +1,920 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html class="light" lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Terminal Caisse & Retrait Express — Boulangerie de BABI</title>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>Interface Caissière - Boulangerie de Babi</title>
     
-    <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
-    <!-- FontAwesome -->
+    <!-- Tailwind CSS with Forms and Container Queries -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    
+    <!-- Google Fonts Material Symbols Outlined & Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Montserrat:wght@600;700;800&amp;display=swap" rel="stylesheet">
+    <!-- FontAwesome 6 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Bootstrap 5 CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    
-    <!-- CSS Dédié Caisse -->
-    <link rel="stylesheet" href="css/animations.css">
-    <link rel="stylesheet" href="css/caissiere.css">
+
     <link rel="icon" type="image/png" href="assets/logo.png">
+    <link rel="apple-touch-icon" href="assets/logo.png">
+    <link rel="manifest" href="manifest.json">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#2B160C">
+
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .icon-filled {
+            font-variation-settings: 'FILL' 1, 'wght' 500, 'GRAD' 0, 'opsz' 24;
+        }
+        /* Hide scrollbar for cleaner UI but keep functionality */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        @keyframes pulse-slow {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+        .animate-pulse-slow {
+            animation: pulse-slow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+
+        /* ============================================================
+           IMPRESSION THERMIQUE PROFESSIONNELLE RÉELLE (ESC/POS 80mm / 58mm)
+           ============================================================ */
+        @media screen {
+            #thermalPrintContainer {
+                display: none;
+            }
+        }
+        @media print {
+            body {
+                background: #ffffff !important;
+                color: #000000 !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+            body > *:not(#thermalPrintContainer) {
+                display: none !important;
+            }
+            #thermalPrintContainer {
+                display: block !important;
+                position: absolute !important;
+                left: 0 !important;
+                top: 0 !important;
+                width: 72mm !important; /* Largeur d'impression réelle rouleau thermique standard 80mm */
+                margin: 0 auto !important;
+                padding: 2mm 3mm !important;
+                font-family: 'Courier New', Courier, 'Lucida Console', Monaco, monospace !important;
+                font-size: 11px !important;
+                line-height: 1.25 !important;
+                color: #000000 !important;
+                background: #ffffff !important;
+            }
+            #thermalPrintContainer .receipt-divider {
+                border-top: 1px dashed #000000 !important;
+                margin: 6px 0 !important;
+            }
+            #thermalPrintContainer .receipt-double-divider {
+                border-top: 2px solid #000000 !important;
+                margin: 6px 0 !important;
+            }
+            @page {
+                size: 80mm auto;
+                margin: 0mm;
+            }
+        }
+    </style>
+
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "inverse-surface": "#313030",
+                        "inverse-primary": "#e7bdb1",
+                        "on-secondary": "#ffffff",
+                        "surface-variant": "#e5e2e1",
+                        "background": "#FAF5EE",
+                        "outline": "#8D6E63",
+                        "on-tertiary-fixed": "#370e00",
+                        "primary-container": "#4E342E",
+                        "on-error": "#ffffff",
+                        "error": "#ba1a1a",
+                        "secondary-fixed": "#F5B800",
+                        "surface-tint": "#5D4037",
+                        "surface-cream": "#EFE6D8",
+                        "ivory-bg": "#FAF5EE",
+                        "on-secondary-fixed-variant": "#3E2723",
+                        "surface-container-lowest": "#ffffff",
+                        "secondary-container": "#F5B800",
+                        "on-surface": "#3E2723",
+                        "tertiary-container": "#802b00",
+                        "on-background": "#3E2723",
+                        "on-surface-variant": "#5D4037",
+                        "primary": "#3E2723",
+                        "surface": "#FAF5EE",
+                        "status-error": "#BC4749",
+                        "secondary-fixed-dim": "#E0A300",
+                        "on-primary-fixed": "#3E2723",
+                        "on-secondary-container": "#3E2723",
+                        "on-tertiary": "#ffffff",
+                        "primary-fixed": "#ffdbd0",
+                        "outline-variant": "#d4c3be",
+                        "on-secondary-fixed": "#3E2723",
+                        "primary-fixed-dim": "#e7bdb1",
+                        "error-container": "#ffdad6",
+                        "surface-bright": "#FAF5EE",
+                        "on-primary-fixed-variant": "#4E342E",
+                        "on-tertiary-fixed-variant": "#7f2b00",
+                        "on-primary": "#ffffff",
+                        "on-primary-container": "#d4ada1",
+                        "on-error-container": "#93000a",
+                        "surface-container-high": "#eae7e7",
+                        "secondary": "#B45309",
+                        "surface-container-low": "#FAF5EE",
+                        "surface-container-highest": "#e5e2e1",
+                        "on-tertiary-container": "#ff9d76",
+                        "status-success": "#2D6A4F",
+                        "tertiary": "#5b1c00",
+                        "surface-container": "#F5EFE6",
+                        "surface-dim": "#dcd9d9",
+                        "inverse-on-surface": "#f3f0ef",
+                        "marron": {
+                            "dark": "#2B160C",
+                            "DEFAULT": "#3E2723",
+                            "warm": "#4E342E",
+                            "medium": "#5D4037",
+                            "light": "#8D6E63",
+                            "cream": "#FAF5EE"
+                        },
+                        "tertiary-fixed": "#ffdbce",
+                        "tertiary-fixed-dim": "#ffb599"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "2xl": "1rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "margin-mobile": "16px",
+                        "container-max": "1440px",
+                        "unit": "8px",
+                        "gutter": "24px",
+                        "margin-desktop": "40px"
+                    },
+                    "fontFamily": {
+                        "body-md": ["Inter", "sans-serif"],
+                        "display-lg": ["Montserrat", "sans-serif"],
+                        "headline-md": ["Montserrat", "sans-serif"],
+                        "body-sm": ["Inter", "sans-serif"],
+                        "body-lg": ["Inter", "sans-serif"],
+                        "label-sm": ["Inter", "sans-serif"],
+                        "headline-sm": ["Montserrat", "sans-serif"],
+                        "headline-lg": ["Montserrat", "sans-serif"],
+                        "headline-lg-mobile": ["Montserrat", "sans-serif"],
+                        "label-md": ["Inter", "sans-serif"]
+                    },
+                    "fontSize": {
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "display-lg": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                        "body-sm": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                        "label-sm": ["12px", { "lineHeight": "16px", "letterSpacing": "0.04em", "fontWeight": "500" }],
+                        "headline-sm": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "fontWeight": "600" }],
+                        "headline-lg-mobile": ["28px", { "lineHeight": "34px", "fontWeight": "600" }],
+                        "label-md": ["14px", { "lineHeight": "16px", "letterSpacing": "0.01em", "fontWeight": "600" }]
+                    }
+                }
+            }
+        }
+    </script>
 </head>
-<body class="pos-body">
+<body class="bg-ivory-bg text-on-surface font-body-md antialiased overflow-hidden selection:bg-secondary-container selection:text-on-secondary-container h-screen flex flex-col">
 
-    <!-- ==========================================
-         1. TOP NAVBAR POS
-         ========================================== -->
-    <header class="pos-navbar d-flex align-items-center justify-content-between">
-        <!-- Logo & Titre Caisse -->
-        <div class="d-flex align-items-center gap-3">
-            <a href="index.html" title="Retour à la boutique">
-                <img src="assets/logo.png" alt="Logo" class="pos-brand-logo">
-            </a>
-            <div>
-                <div class="d-flex align-items-center gap-2">
-                    <span class="fw-black fs-5 text-white">BOULANGERIE DE BABI</span>
-                    <span class="badge bg-warning text-dark fw-bold px-2 py-1" style="font-size: 0.7rem;">POS v3.0</span>
-                </div>
-                <div class="small text-white-50" style="font-size: 0.75rem;">
-                    Fournil Riviera • <span id="cashierRegisterDisplay">Caisse 1 - Riviera</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- Centre : Horloge & Statut Caisse -->
-        <div class="d-flex align-items-center gap-3">
-            <div class="d-none d-md-flex align-items-center gap-2 bg-black bg-opacity-25 px-3 py-2 rounded-pill border border-secondary border-opacity-25">
-                <i class="fa-regular fa-clock text-warning"></i>
-                <span id="liveClock" class="fw-bold small text-white">--:--:-- (GMT)</span>
-            </div>
-            
-            <div id="caisseStatusBadge" class="pos-badge-status pos-badge-open">
-                <span class="pos-status-pulse"></span> Caisse Ouverte
-            </div>
-        </div>
-
-        <!-- Droite : Profil Caissière & Raccourcis Rôles -->
-        <div class="d-flex align-items-center gap-2">
-            <div class="dropdown">
-                <button class="btn btn-outline-light dropdown-toggle d-flex align-items-center gap-2 py-1 px-2 border-0 bg-white bg-opacity-10 rounded-pill" type="button" data-bs-toggle="dropdown">
-                    <img id="cashierAvatarDisplay" src="assets/caissiere.png" alt="Caissière" class="rounded-circle" width="32" height="32" style="object-fit:cover; border:1px solid #D4AF37;">
-                    <div class="text-start d-none d-sm-block pe-1">
-                        <div id="cashierNameDisplay" class="fw-bold text-white lh-1" style="font-size:0.85rem;">Awa Traoré</div>
-                        <span class="text-warning lh-1" style="font-size:0.7rem;">Caissière en poste</span>
-                    </div>
-                </button>
-                <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 mt-2" style="border-radius:12px; min-width:220px;">
-                    <li class="px-3 py-2 border-bottom bg-light">
-                        <small class="text-muted d-block">Basculer d'espace (Démo) :</small>
-                    </li>
-                    <li><a class="dropdown-item py-2 active" href="caissiere.html"><i class="fa-solid fa-cash-register me-2 text-warning"></i> <strong>Espace Caissière</strong></a></li>
-                    <li><a class="dropdown-item py-2" href="gerante.html"><i class="fa-solid fa-user-tie me-2 text-info"></i> Espace Gérante</a></li>
-                    <li><a class="dropdown-item py-2" href="admin.html"><i class="fa-solid fa-shield-halved me-2 text-danger"></i> Espace Administrateur</a></li>
-                    <li><hr class="dropdown-divider"></li>
-                    <li><a class="dropdown-item py-2" href="index.html"><i class="fa-solid fa-store me-2 text-success"></i> Boutique Client</a></li>
-                    <li><a class="dropdown-item py-2 text-danger" href="connexion.html" onclick="localStorage.removeItem('babi_user');"><i class="fa-solid fa-right-from-bracket me-2"></i> Déconnexion</a></li>
-                </ul>
-            </div>
-
-            <!-- Bouton Aide Express -->
-            <button class="btn btn-sm btn-outline-warning rounded-circle" data-bs-toggle="modal" data-bs-target="#modalHelpGuide" title="Guide d'utilisation">
-                <i class="fa-solid fa-question"></i>
-            </button>
-        </div>
-    </header>
-
-    <!-- ==========================================
-         2. SÉLECTEUR DE MODE POS (ONGLETS)
-         ========================================== -->
-    <nav class="pos-mode-nav">
-        <button id="modeBtn_vente" class="pos-mode-btn active" onclick="switchPosMode('vente')">
-            <i class="fa-solid fa-cash-register fs-5"></i>
-            <span>Vente Directe (Comptoir)</span>
-        </button>
-
-        <button id="modeBtn_retrait" class="pos-mode-btn" onclick="switchPosMode('retrait')">
-            <i class="fa-solid fa-key fs-5"></i>
-            <span>Retrait Express (Code PIN)</span>
-            <span id="pickupQueueCountBadge" class="badge bg-danger ms-1">0</span>
-        </button>
-
-        <button id="modeBtn_caisse" class="pos-mode-btn" onclick="switchPosMode('caisse')">
-            <i class="fa-solid fa-vault fs-5"></i>
-            <span>Gestion de Caisse & Z</span>
-        </button>
-    </nav>
-
-    <!-- ==========================================
-         3. CONTENEUR PRINCIPAL DU TERMINAL
-         ========================================== -->
-    <main class="pos-main-container">
+    <div class="flex h-screen w-full mx-auto max-w-container-max relative overflow-hidden">
         
         <!-- ==========================================
-             VUE 1 : VENTE DIRECTE COMPTOIR
+             1. DESKTOP SIDEBAR NAVIGATION
              ========================================== -->
-        <section id="modeView_vente" class="pos-content-panel pos-mode-view">
-            <!-- Recherche Rapide -->
-            <div class="pos-search-bar">
-                <i class="fa-solid fa-magnifying-glass pos-search-icon"></i>
-                <input type="text" class="pos-search-input" placeholder="Recherche rapide d'un article (ex: baguette, croissant, bissap...)" oninput="handleSearch(this.value)">
-            </div>
-
-            <!-- Filtres Catégories Défilables -->
-            <div class="pos-category-scroll">
-                <button class="pos-cat-pill active" onclick="filterCategory('all', this)">
-                    <span>Tous les articles</span>
-                </button>
-                <button class="pos-cat-pill" onclick="filterCategory('pain', this)">
-                    <span>🥖 Pains</span>
-                </button>
-                <button class="pos-cat-pill" onclick="filterCategory('viennoiserie', this)">
-                    <span>🥐 Viennoiseries</span>
-                </button>
-                <button class="pos-cat-pill" onclick="filterCategory('patisserie', this)">
-                    <span>🍰 Pâtisseries</span>
-                </button>
-                <button class="pos-cat-pill" onclick="filterCategory('boisson', this)">
-                    <span>🧃 Boissons</span>
-                </button>
-                <button class="pos-cat-pill" onclick="filterCategory('sale', this)">
-                    <span>🥪 Salés & Traiteur</span>
-                </button>
-            </div>
-
-            <!-- Grille Tactile des Produits -->
-            <div id="posProductsGrid" class="pos-products-grid">
-                <!-- Rendu Dynamique via caissiere.js -->
-            </div>
-        </section>
-
-        <!-- ==========================================
-             PANNEAU LATÉRAL : PANIER / TICKET COMPTOIR
-             ========================================== -->
-        <aside id="posCartPanel" class="pos-cart-panel">
-            <div class="pos-cart-header">
-                <div class="d-flex align-items-center gap-2">
-                    <i class="fa-solid fa-receipt text-warning fs-5"></i>
-                    <h5 class="fw-bold m-0 text-dark">Ticket en Cours</h5>
+        <aside class="hidden md:flex flex-col fixed left-0 top-0 h-full w-[280px] bg-gradient-to-b from-[#2B160C] via-[#221209] to-[#170B05] text-[#EFE6D8] border-r border-[#4E2B16]/60 shadow-2xl p-4 space-y-2 z-40">
+            
+            <!-- Cashier Header Profile -->
+            <div class="flex items-center gap-3 px-2 py-3 mb-2 border-b border-[#4E2B16]/70">
+                <div class="relative shrink-0">
+                    <img id="cashierAvatarDisplay" 
+                         alt="Avatar Caissière" 
+                         class="w-12 h-12 rounded-full object-cover shadow-[0_0_14px_rgba(245,184,0,0.35)] border-2 border-[#F5B800]" 
+                         src="assets/caissiere.png"
+                         onerror="this.src='assets/caissiere.png'">
+                    <span id="cashierStatusDot" class="absolute bottom-0 right-0 w-3 h-3 bg-emerald-500 rounded-full border-2 border-[#2B160C] shadow-[0_0_6px_rgba(16,185,129,0.8)]"></span>
                 </div>
-                <span id="posCartCount" class="badge bg-secondary">0 article</span>
-                <button class="btn btn-sm btn-outline-danger border-0" onclick="PosManager.clearCart()" title="Vider le ticket">
-                    <i class="fa-solid fa-trash-can"></i>
-                </button>
+                <div class="overflow-hidden">
+                    <h1 id="cashierNameDisplay" class="font-headline-sm text-[16px] text-white font-bold tracking-wide truncate">Awa Traoré</h1>
+                    <p id="cashierRegisterDisplay" class="font-label-sm text-xs text-[#F5B800] truncate">Caisse 1 - Riviera</p>
+                    <span id="caisseStatusBadge" class="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-400 uppercase mt-0.5">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse-slow"></span> Caisse Ouverte
+                    </span>
+                </div>
             </div>
 
-            <!-- Liste des Articles au Ticket -->
-            <div id="posCartItemsList" class="pos-cart-items">
-                <!-- Rendu Dynamique via caissiere.js -->
+            <!-- Espace Switcher Dropdown / Quick Links -->
+            <div class="bg-black/40 rounded-xl p-2.5 text-xs flex flex-col gap-1 border border-[#4E2B16]/70 mb-2 backdrop-blur-xs">
+                <div class="text-[#D7CCC8] font-medium flex items-center justify-between px-1 text-[11px]">
+                    <span class="text-[11px] uppercase tracking-wider text-[#A8988C]">Espaces Métiers :</span>
+                    <span class="bg-gradient-to-r from-[#F5B800] to-[#E0A300] text-[#2B160C] text-[9px] px-1.5 py-0.2 rounded font-extrabold shadow-2xs">PRO</span>
+                </div>
+                <div class="grid grid-cols-3 gap-1.5 pt-1">
+                    <a href="admin.html" class="px-2 py-1.5 text-center bg-white/10 hover:bg-[#F5B800] hover:text-[#2B160C] text-white rounded-lg transition-all text-[11px] font-semibold flex flex-col items-center gap-0.5 shadow-2xs hover:scale-105" title="Direction & Admin">
+                        <span class="material-symbols-outlined text-[16px]">shield</span>
+                        <span>Admin</span>
+                    </a>
+                    <a href="gerante.html" class="px-2 py-1.5 text-center bg-white/10 hover:bg-[#F5B800] hover:text-[#2B160C] text-white rounded-lg transition-all text-[11px] font-semibold flex flex-col items-center gap-0.5 shadow-2xs hover:scale-105" title="Fournil & Supervision">
+                        <span class="material-symbols-outlined text-[16px]">conveyor_belt</span>
+                        <span>Fournil</span>
+                    </a>
+                    <a href="index.html" class="px-2 py-1.5 text-center bg-white/10 hover:bg-[#F5B800] hover:text-[#2B160C] text-white rounded-lg transition-all text-[11px] font-semibold flex flex-col items-center gap-0.5 shadow-2xs hover:scale-105" title="Boutique en ligne Client">
+                        <span class="material-symbols-outlined text-[16px]">storefront</span>
+                        <span>Boutique</span>
+                    </a>
+                </div>
             </div>
 
-            <!-- Pied de Ticket & Règlement -->
-            <div class="pos-cart-footer">
-                <!-- Total Global -->
-                <div class="pos-total-row">
-                    <span class="pos-total-label">Total à Payer :</span>
-                    <span id="posCartTotalDisplay" class="pos-total-amount">0 FCFA</span>
-                </div>
-
-                <!-- Sélecteur Moyen de Règlement -->
-                <div class="pos-payment-methods">
-                    <button id="payBtn_especes" class="pos-pay-btn active" onclick="PosManager.setPaymentMethod('especes')">
-                        <i class="fa-solid fa-money-bill-wave text-success"></i>
-                        <span>💵 Espèces</span>
-                    </button>
-                    <button id="payBtn_wave" class="pos-pay-btn pay-wave" onclick="PosManager.setPaymentMethod('wave')">
-                        <i class="fa-solid fa-mobile-screen-button text-info"></i>
-                        <span>🌊 Wave Direct</span>
-                    </button>
-                </div>
-
-                <!-- Calculateur Automatique de Monnaie (Espèces) -->
-                <div id="cashCalculatorBox" class="pos-cash-calculator">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <small class="fw-bold text-muted">Montant Reçu du Client :</small>
-                        <input type="number" id="cashReceivedInput" class="form-control form-control-sm text-end fw-bold" style="width:130px; font-size:1rem;" placeholder="0 F" oninput="PosManager.handleReceivedInput(this.value)">
+            <!-- Navigation Links -->
+            <nav class="flex flex-col gap-1.5 flex-1 overflow-y-auto no-scrollbar pr-0.5">
+                <!-- Mode 1: Retrait Express Click & Collect (Default Active) -->
+                <button id="modeBtn_retrait" onclick="switchPosMode('retrait')" 
+                        class="pos-mode-btn flex items-center justify-between px-4 py-2.5 bg-gradient-to-r from-[#F5B800] to-[#E0A300] text-[#2B160C] rounded-xl font-extrabold transition-all shadow-[0_4px_14px_rgba(245,184,0,0.35)] scale-[1.01]">
+                    <div class="flex items-center gap-3">
+                        <span class="material-symbols-outlined icon-filled">verified_user</span>
+                        <span>Retrait Express</span>
                     </div>
+                    <span id="pickupQueueCountBadge" class="bg-[#2B160C] text-[#F5B800] text-[11px] px-2 py-0.5 rounded-full font-bold">0</span>
+                </button>
 
-                    <div class="pos-quick-bills">
-                        <button type="button" class="pos-bill-btn" onclick="PosManager.setQuickBill('exact')">Total Exact</button>
-                        <button type="button" class="pos-bill-btn" onclick="PosManager.setQuickBill(1000)">1 000 F</button>
-                        <button type="button" class="pos-bill-btn" onclick="PosManager.setQuickBill(2000)">2 000 F</button>
-                        <button type="button" class="pos-bill-btn" onclick="PosManager.setQuickBill(5000)">5 000 F</button>
-                        <button type="button" class="pos-bill-btn" onclick="PosManager.setQuickBill(10000)">10 000 F</button>
+                <!-- Mode 2: Vente Directe Comptoir -->
+                <button id="modeBtn_vente" onclick="switchPosMode('vente')" 
+                        class="pos-mode-btn flex items-center gap-3 px-4 py-2.5 rounded-xl text-[#D7CCC8] hover:text-white hover:bg-white/10 transition-all font-label-md text-label-md">
+                    <span class="material-symbols-outlined">point_of_sale</span>
+                    <span>Vente Comptoir (POS)</span>
+                </button>
+
+                <!-- Mode 3: Clôture de Caisse & Z -->
+                <button id="modeBtn_caisse" onclick="switchPosMode('caisse')" 
+                        class="pos-mode-btn flex items-center gap-3 px-4 py-2.5 rounded-xl text-[#D7CCC8] hover:text-white hover:bg-white/10 transition-all font-label-md text-label-md">
+                    <span class="material-symbols-outlined">receipt_long</span>
+                    <span>Gestion Caisse & Z</span>
+                </button>
+
+                <div class="h-[1px] bg-[#4E2B16]/70 my-2"></div>
+
+                <!-- Navigation Secondaire -->
+                <a href="admin.html" class="flex items-center gap-3 px-4 py-2 rounded-xl text-[#D7CCC8] hover:text-white hover:bg-white/10 transition-all font-label-md text-xs">
+                    <span class="material-symbols-outlined text-[18px]">analytics</span>
+                    <span>Rapports & Ventes</span>
+                </a>
+                <a href="gerante.html" class="flex items-center gap-3 px-4 py-2 rounded-xl text-[#D7CCC8] hover:text-white hover:bg-white/10 transition-all font-label-md text-xs">
+                    <span class="material-symbols-outlined text-[18px]">inventory</span>
+                    <span>Stocks Fournil</span>
+                </a>
+                <a href="#" onclick="toggleSoundFx(); return false;" class="flex items-center justify-between px-4 py-2 rounded-xl text-[#D7CCC8] hover:text-white hover:bg-white/10 transition-all font-label-md text-xs">
+                    <div class="flex items-center gap-3">
+                        <span id="soundIcon" class="material-symbols-outlined text-[18px]">volume_up</span>
+                        <span>Effets Sonores</span>
                     </div>
+                    <span id="soundStatusBadge" class="text-[10px] font-bold text-emerald-400">ACTIF</span>
+                </a>
+            </nav>
 
-                    <div id="changeDisplayBox" class="pos-change-box" style="display:none;">
-                        <span class="fw-bold text-dark small">Monnaie à Rendre :</span>
-                        <span id="changeAmountDisplay" class="fw-black fs-6 text-success">0 FCFA</span>
-                    </div>
-                </div>
-
-                <!-- Bouton Géant d'Encaissement -->
-                <button id="btnProcessSale" class="pos-checkout-btn" onclick="PosManager.processSale()" disabled>
-                    <i class="fa-solid fa-check-double"></i>
-                    <span>Encaisser la Vente</span>
+            <!-- Bottom Action Footer -->
+            <div class="mt-auto pt-2 border-t border-[#4E2B16]/70">
+                <button onclick="logoutCashier()" class="w-full flex items-center justify-center px-4 py-2 text-rose-300 hover:text-white hover:bg-rose-950/40 rounded-xl transition-all text-xs font-semibold gap-2 border border-rose-900/30">
+                    <span class="material-symbols-outlined text-[16px]">logout</span>
+                    <span>Fin de Poste / Déconnexion</span>
                 </button>
             </div>
         </aside>
 
         <!-- ==========================================
-             VUE 2 : RETRAIT EXPRESS CLICK & COLLECT (PIN)
+             2. MAIN CONTENT AREA
              ========================================== -->
-        <section id="modeView_retrait" class="pos-content-panel pos-mode-view" style="display:none;">
-            <div class="pos-pickup-container">
-                
-                <!-- Pavé Tactile Saisie Code PIN -->
-                <div class="pos-pinpad-card">
-                    <div class="d-flex align-items-center gap-2 mb-3">
-                        <i class="fa-solid fa-key text-warning fs-4"></i>
-                        <div>
-                            <h5 class="fw-bold m-0 text-dark">Saisie du Code PIN Confidentiel</h5>
-                            <small class="text-muted">Demandez le code à 4 chiffres fourni sur le reçu Wave du client</small>
-                        </div>
+        <main class="flex-1 w-full md:pl-[280px] h-screen overflow-hidden flex flex-col bg-ivory-bg">
+            
+            <!-- Top Search Header -->
+            <header class="w-full px-3 md:px-6 py-2.5 bg-gradient-to-r from-[#2B160C] via-[#24130A] to-[#1A0C06] md:bg-ivory-bg/95 md:from-transparent md:to-transparent backdrop-blur-sm z-30 flex items-center justify-between border-b border-[#4E2B16]/80 md:border-surface-cream shadow-xs shrink-0 text-white md:text-primary">
+                <!-- Mobile Avatar & Branding -->
+                <div class="md:hidden flex items-center gap-2 shrink-0">
+                    <img src="assets/caissiere.png" alt="Awa" class="w-8 h-8 rounded-full object-cover border border-[#F5B800] shadow-2xs">
+                    <div>
+                        <h2 class="font-bold text-xs leading-tight text-white">Awa Traoré</h2>
+                        <span class="text-[9px] text-[#F5B800] font-semibold flex items-center gap-1">
+                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> Caisse 1
+                        </span>
                     </div>
-
-                    <!-- Affichage du Code PIN en Gros -->
-                    <div id="pickupPinDisplay" class="pos-pin-display mb-3">
-                        ••••
-                    </div>
-
-                    <!-- Pavé Numérique Tactile -->
-                    <div class="pos-numpad">
-                        <button class="pos-numpad-btn" onclick="PickupManager.addPinDigit(1)">1</button>
-                        <button class="pos-numpad-btn" onclick="PickupManager.addPinDigit(2)">2</button>
-                        <button class="pos-numpad-btn" onclick="PickupManager.addPinDigit(3)">3</button>
-                        
-                        <button class="pos-numpad-btn" onclick="PickupManager.addPinDigit(4)">4</button>
-                        <button class="pos-numpad-btn" onclick="PickupManager.addPinDigit(5)">5</button>
-                        <button class="pos-numpad-btn" onclick="PickupManager.addPinDigit(6)">6</button>
-                        
-                        <button class="pos-numpad-btn" onclick="PickupManager.addPinDigit(7)">7</button>
-                        <button class="pos-numpad-btn" onclick="PickupManager.addPinDigit(8)">8</button>
-                        <button class="pos-numpad-btn" onclick="PickupManager.addPinDigit(9)">9</button>
-                        
-                        <button class="pos-numpad-btn btn-action" onclick="PickupManager.clearPin()">
-                            <i class="fa-solid fa-rotate-left"></i>
-                        </button>
-                        <button class="pos-numpad-btn" onclick="PickupManager.addPinDigit(0)">0</button>
-                        <button class="pos-numpad-btn btn-action" onclick="PickupManager.deletePinDigit()">
-                            <i class="fa-solid fa-delete-left"></i>
-                        </button>
-                    </div>
-
-                    <!-- Bouton Valider -->
-                    <button id="btnSubmitPin" class="pos-checkout-btn mt-3" onclick="PickupManager.verifyPin()">
-                        <i class="fa-solid fa-shield-check"></i>
-                        <span>Valider la Remise du Sachet</span>
-                    </button>
                 </div>
 
-                <!-- File des Commandes Prêtes au Retrait -->
-                <div class="pos-queue-card">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <div class="d-flex align-items-center gap-2">
-                            <i class="fa-solid fa-boxes-packing text-warning fs-4"></i>
+                <div class="relative w-full max-w-[170px] sm:max-w-xs md:max-w-xl group mx-2 md:mx-0">
+                    <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline group-focus-within:text-primary transition-colors text-[18px]">search</span>
+                    <input id="posQuickSearchInput" 
+                           class="w-full h-[36px] md:h-[40px] pl-9 pr-3 rounded-xl bg-surface-container-lowest border border-outline-variant shadow-xs text-xs md:text-sm text-primary placeholder:text-outline/70 focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all outline-none" 
+                           placeholder="Rechercher..." 
+                           type="text" 
+                           oninput="handleQuickSearch(this.value)">
+                </div>
+
+                <!-- Clock & Mobile Menu Button -->
+                <div class="flex items-center gap-2">
+                    <div class="hidden sm:flex items-center gap-1.5 px-2.5 py-1 bg-surface-container rounded-xl text-xs font-semibold text-primary border border-surface-cream">
+                        <span class="material-symbols-outlined text-[15px] text-secondary">schedule</span>
+                        <span id="liveClock">--:--:-- (GMT)</span>
+                    </div>
+                    <button onclick="toggleMobileCashierDrawer(true)" class="md:hidden w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-colors active:scale-95" title="Menu">
+                        <span class="material-symbols-outlined text-[20px]">menu</span>
+                    </button>
+                </div>
+            </header>
+
+            <!-- Main Content Panels Container -->
+            <div class="p-3 md:p-4 flex-1 flex flex-col overflow-hidden min-h-0">
+
+                <!-- ==========================================
+                     MODE 1 : RETRAIT EXPRESS CLICK & COLLECT
+                     ========================================== -->
+                <div id="modeView_retrait" class="pos-mode-view flex-1 flex flex-col gap-3 overflow-hidden min-h-0">
+                    
+                    <!-- KPI Summary Row (3 Equal Harmonious Stat Cards) -->
+                    <section class="grid grid-cols-3 gap-2 md:gap-3 shrink-0">
+                        <!-- Ready Orders (Priority Metric) -->
+                        <div class="bg-surface-container-lowest rounded-xl p-2 sm:p-3.5 border-l-4 border-l-status-success border border-surface-cream shadow-xs flex items-center justify-between">
                             <div>
-                                <h5 class="fw-bold m-0 text-dark">File d'Attente Fournil</h5>
-                                <small class="text-muted">Commandes payées en ligne en attente de retrait</small>
+                                <div class="flex items-center gap-1 text-status-success mb-0.5">
+                                    <span class="material-symbols-outlined text-[14px] sm:text-[16px] icon-filled">done_all</span>
+                                    <span class="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider">Prêtes</span>
+                                </div>
+                                <div id="kpiReadyOrdersCount" class="font-display-lg text-lg sm:text-2xl font-bold text-primary leading-tight">0</div>
+                                <p class="text-[9px] sm:text-[10px] text-on-surface-variant hidden sm:block">En attente de retrait</p>
+                            </div>
+                            <div class="hidden sm:flex w-10 h-10 rounded-xl bg-emerald-50 text-status-success items-center justify-center">
+                                <span class="material-symbols-outlined text-[22px]">shopping_bag</span>
                             </div>
                         </div>
-                        <button class="btn btn-sm btn-outline-secondary" onclick="loadPickupQueue()" title="Rafraîchir">
-                            <i class="fa-solid fa-arrows-rotate"></i>
-                        </button>
+
+                        <!-- Today's Pickups -->
+                        <div class="bg-surface-container-lowest rounded-xl p-2 sm:p-3.5 border-l-4 border-l-secondary border border-surface-cream shadow-xs flex items-center justify-between">
+                            <div>
+                                <div class="flex items-center gap-1 text-secondary mb-0.5">
+                                    <span class="material-symbols-outlined text-[14px] sm:text-[16px]">takeout_dining</span>
+                                    <span class="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider">Retraits</span>
+                                </div>
+                                <div id="kpiTodayPickupsCount" class="font-display-lg text-lg sm:text-2xl font-bold text-primary leading-tight">0</div>
+                                <p class="text-[9px] sm:text-[10px] text-on-surface-variant hidden sm:block">Sachets validés par PIN</p>
+                            </div>
+                            <div class="hidden sm:flex w-10 h-10 rounded-xl bg-amber-50 text-secondary items-center justify-center">
+                                <span class="material-symbols-outlined text-[22px]">verified</span>
+                            </div>
+                        </div>
+
+                        <!-- Cash Collected -->
+                        <div class="bg-surface-container-lowest rounded-xl p-2 sm:p-3.5 border-l-4 border-l-primary border border-surface-cream shadow-xs flex items-center justify-between">
+                            <div>
+                                <div class="flex items-center gap-1 text-primary mb-0.5">
+                                    <span class="material-symbols-outlined text-[14px] sm:text-[16px]">payments</span>
+                                    <span class="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider">Espèces</span>
+                                </div>
+                                <div class="flex items-baseline gap-0.5">
+                                    <span id="kpiCashCollectedCount" class="font-display-lg text-lg sm:text-2xl font-bold text-primary leading-tight">0</span>
+                                    <span class="text-[8px] sm:text-[10px] font-bold text-on-surface-variant">F</span>
+                                </div>
+                                <p class="text-[9px] sm:text-[10px] text-on-surface-variant hidden sm:block">Total en tiroir caisse</p>
+                            </div>
+                            <div class="hidden sm:flex w-10 h-10 rounded-xl bg-surface-container text-primary items-center justify-center">
+                                <span class="material-symbols-outlined text-[22px]">point_of_sale</span>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Main Split Area : Left = Terminal PIN / Right = Queue List -->
+                    <div class="flex-1 flex flex-col md:flex-row gap-3 overflow-y-auto md:overflow-hidden min-h-0 pb-20 md:pb-0">
+                        
+                        <!-- Left Column: Terminal de Validation (Adaptatif Mobile & Desktop) -->
+                        <div class="w-full md:w-[340px] xl:w-[370px] shrink-0 bg-surface-container-lowest rounded-2xl p-3.5 md:p-4 border border-surface-cream shadow-sm flex flex-col justify-between overflow-y-visible md:overflow-y-auto no-scrollbar">
+                            <div>
+                                <div class="flex items-center gap-2 mb-2.5 pb-2 border-b border-surface-cream">
+                                    <div class="w-8 h-8 rounded-lg bg-secondary-container text-on-secondary-container flex items-center justify-center shadow-xs">
+                                        <span class="material-symbols-outlined text-[18px]">verified_user</span>
+                                    </div>
+                                    <div>
+                                        <h3 class="font-headline-sm text-xs font-bold text-primary">Terminal de Remise</h3>
+                                        <p class="text-[10px] text-on-surface-variant">Code PIN Wave ou QR Client</p>
+                                    </div>
+                                </div>
+
+                                <!-- PIN Input -->
+                                <div class="mb-2">
+                                    <label class="block text-[10px] font-bold text-primary mb-1 text-center">Code PIN du Client (4 chiffres)</label>
+                                    <div class="relative w-full max-w-[220px] mx-auto">
+                                        <input id="pickupPinInput" 
+                                               class="w-full h-[46px] text-center font-display-lg text-xl bg-surface-container-low border-2 border-outline-variant rounded-xl focus:border-primary focus:bg-white outline-none transition-all tracking-[0.5em] text-primary shadow-inner font-bold" 
+                                               maxlength="4" 
+                                               placeholder="••••" 
+                                               type="text" 
+                                               inputmode="numeric" 
+                                               autocomplete="off" 
+                                               oninput="handlePinInput(this.value)">
+                                    </div>
+                                </div>
+
+                                <!-- Compact Numeric Keypad Built-in -->
+                                <div class="grid grid-cols-3 gap-1.5 max-w-[220px] mx-auto mb-2">
+                                    <button onclick="appendPinDigit('1')" class="h-9 bg-surface-container hover:bg-secondary-container text-primary font-bold text-sm rounded-xl transition-all active:scale-95 shadow-2xs">1</button>
+                                    <button onclick="appendPinDigit('2')" class="h-9 bg-surface-container hover:bg-secondary-container text-primary font-bold text-sm rounded-xl transition-all active:scale-95 shadow-2xs">2</button>
+                                    <button onclick="appendPinDigit('3')" class="h-9 bg-surface-container hover:bg-secondary-container text-primary font-bold text-sm rounded-xl transition-all active:scale-95 shadow-2xs">3</button>
+                                    <button onclick="appendPinDigit('4')" class="h-9 bg-surface-container hover:bg-secondary-container text-primary font-bold text-sm rounded-xl transition-all active:scale-95 shadow-2xs">4</button>
+                                    <button onclick="appendPinDigit('5')" class="h-9 bg-surface-container hover:bg-secondary-container text-primary font-bold text-sm rounded-xl transition-all active:scale-95 shadow-2xs">5</button>
+                                    <button onclick="appendPinDigit('6')" class="h-9 bg-surface-container hover:bg-secondary-container text-primary font-bold text-sm rounded-xl transition-all active:scale-95 shadow-2xs">6</button>
+                                    <button onclick="appendPinDigit('7')" class="h-9 bg-surface-container hover:bg-secondary-container text-primary font-bold text-sm rounded-xl transition-all active:scale-95 shadow-2xs">7</button>
+                                    <button onclick="appendPinDigit('8')" class="h-9 bg-surface-container hover:bg-secondary-container text-primary font-bold text-sm rounded-xl transition-all active:scale-95 shadow-2xs">8</button>
+                                    <button onclick="appendPinDigit('9')" class="h-9 bg-surface-container hover:bg-secondary-container text-primary font-bold text-sm rounded-xl transition-all active:scale-95 shadow-2xs">9</button>
+                                    <button onclick="clearPinDigit()" class="h-9 bg-red-50 text-status-error font-bold text-[10px] rounded-xl transition-all active:scale-95 shadow-2xs">EFFACER</button>
+                                    <button onclick="appendPinDigit('0')" class="h-9 bg-surface-container hover:bg-secondary-container text-primary font-bold text-sm rounded-xl transition-all active:scale-95 shadow-2xs">0</button>
+                                    <button onclick="verifyPickupPin()" class="h-9 bg-status-success text-white font-bold text-[10px] rounded-xl transition-all active:scale-95 shadow-2xs">VALIDER</button>
+                                </div>
+                            </div>
+
+                            <!-- Bottom Action Buttons -->
+                            <div class="space-y-1.5 pt-2 border-t border-surface-cream">
+                                <button id="btnAuthorizePickup" 
+                                        onclick="verifyPickupPin()" 
+                                        class="w-full h-[42px] bg-primary text-on-primary font-headline-sm text-xs font-bold rounded-xl flex items-center justify-center gap-2 hover:bg-primary-container active:scale-[0.98] transition-all shadow-md">
+                                    <span class="material-symbols-outlined text-[16px]">lock_open</span>
+                                    <span>AUTORISER LA REMISE</span>
+                                </button>
+                                <button onclick="openQrScanner()" 
+                                        class="w-full h-[36px] bg-transparent border border-secondary text-primary font-label-md text-xs font-bold rounded-xl flex items-center justify-center gap-1.5 hover:bg-surface-cream active:scale-[0.98] transition-all shadow-xs">
+                                    <span class="material-symbols-outlined text-[15px] text-secondary">qr_code_scanner</span>
+                                    <span>Scanner Code QR</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Right Column: Queue List (Flex-1) -->
+                        <div class="flex-1 bg-surface-container-lowest rounded-2xl p-4 border border-surface-cream shadow-sm flex flex-col overflow-hidden min-h-0">
+                            <div class="flex justify-between items-center pb-2 border-b border-surface-cream mb-2 shrink-0">
+                                <div class="flex items-center gap-1.5">
+                                    <span class="material-symbols-outlined text-secondary text-[18px]">receipt_long</span>
+                                    <h3 class="font-headline-sm text-xs font-bold text-primary">Commandes Prêtes au Comptoir</h3>
+                                </div>
+                                <button onclick="loadPickupQueue()" class="text-xs text-secondary hover:underline font-bold flex items-center gap-1">
+                                    <span class="material-symbols-outlined text-[14px]">refresh</span>
+                                    Actualiser
+                                </button>
+                            </div>
+                            <!-- Queue Cards (Internal Scroll with content-start) -->
+                            <div id="posPickupQueueList" class="flex-1 overflow-y-auto no-scrollbar grid grid-cols-1 xl:grid-cols-2 gap-2 pr-1 content-start min-h-0">
+                                <!-- Rendu Dynamique via caissiere.js -->
+                            </div>
+                        </div>
+
                     </div>
 
-                    <!-- Aperçu de la Commande Sélectionnée -->
-                    <div id="selectedOrderPreviewBox"></div>
+                </div>
 
-                    <!-- Liste des Commandes -->
-                    <div id="posPickupQueueList" class="pos-queue-list">
-                        <!-- Rendu Dynamique via caissiere.js -->
+                <!-- ==========================================
+                     MODE 2 : VENTE DIRECTE COMPTOIR (POS TACTILE)
+                     ========================================== -->
+                <div id="modeView_vente" class="pos-mode-view hidden flex-1 flex-col lg:flex-row gap-3 overflow-y-auto lg:overflow-hidden min-h-0 pb-20 lg:pb-0">
+                    
+                    <!-- Left Section : Catalogue des Produits -->
+                    <div class="flex-1 flex flex-col overflow-hidden min-h-0 gap-2">
+                        <!-- Category Filter Pills -->
+                        <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5 shrink-0">
+                            <button class="pos-cat-pill px-3 py-1.5 rounded-xl text-xs font-bold bg-secondary-container text-on-secondary-container shadow-xs whitespace-nowrap" onclick="filterCategory('all', this)">
+                                Tous les articles
+                            </button>
+                            <button class="pos-cat-pill px-3 py-1.5 rounded-xl text-xs font-semibold bg-surface-container text-primary hover:bg-surface-cream whitespace-nowrap" onclick="filterCategory('pain', this)">
+                                🥖 Pains
+                            </button>
+                            <button class="pos-cat-pill px-3 py-1.5 rounded-xl text-xs font-semibold bg-surface-container text-primary hover:bg-surface-cream whitespace-nowrap" onclick="filterCategory('viennoiserie', this)">
+                                🥐 Viennoiseries
+                            </button>
+                            <button class="pos-cat-pill px-3 py-1.5 rounded-xl text-xs font-semibold bg-surface-container text-primary hover:bg-surface-cream whitespace-nowrap" onclick="filterCategory('patisserie', this)">
+                                🍰 Pâtisseries
+                            </button>
+                            <button class="pos-cat-pill px-3 py-1.5 rounded-xl text-xs font-semibold bg-surface-container text-primary hover:bg-surface-cream whitespace-nowrap" onclick="filterCategory('boisson', this)">
+                                🧃 Boissons
+                            </button>
+                            <button class="pos-cat-pill px-3 py-1.5 rounded-xl text-xs font-semibold bg-surface-container text-primary hover:bg-surface-cream whitespace-nowrap" onclick="filterCategory('sale', this)">
+                                🥪 Salés
+                            </button>
+                        </div>
+
+                        <!-- Grille Tactile des Produits Compacte (2 cols mobile, 4-5 desktop) -->
+                        <div id="posProductsGrid" class="flex-1 overflow-y-visible lg:overflow-y-auto no-scrollbar grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-2 md:gap-2.5 content-start pr-1 p-0.5 min-h-0">
+                            <!-- Rendu Dynamique via caissiere.js -->
+                        </div>
+                    </div>
+
+                    <!-- Right Section : Panier / Ticket de Caisse Compact -->
+                    <div class="w-full lg:w-[330px] xl:w-[350px] shrink-0 bg-surface-container-lowest rounded-2xl p-3.5 border border-surface-cream shadow-md flex flex-col justify-between overflow-hidden">
+                        <!-- Ticket Header -->
+                        <div class="shrink-0">
+                            <div class="flex justify-between items-center pb-2 border-b border-surface-cream mb-2">
+                                <div class="flex items-center gap-1.5">
+                                    <span class="material-symbols-outlined text-secondary text-[18px]">receipt</span>
+                                    <h4 class="font-headline-sm text-xs font-bold text-primary">Ticket en Cours</h4>
+                                </div>
+                                <span id="posCartCount" class="bg-primary text-white text-[10px] px-2 py-0.5 rounded-full font-bold">0 article</span>
+                                <button onclick="PosManager.clearCart()" class="text-status-error hover:bg-red-50 p-1 rounded-lg transition-colors" title="Vider le ticket">
+                                    <span class="material-symbols-outlined text-[15px]">delete</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Cart Items List -->
+                        <div id="posCartItemsList" class="flex-1 overflow-y-auto no-scrollbar space-y-1 my-1 pr-1 min-h-0">
+                            <div class="text-center py-6 text-on-surface-variant text-xs">
+                                <span class="material-symbols-outlined text-3xl block mb-1 text-outline">shopping_cart</span>
+                                Touchez un article pour l'ajouter au ticket.
+                            </div>
+                        </div>
+
+                        <!-- Ticket Footer & Encaissement -->
+                        <div class="shrink-0 pt-2 border-t border-surface-cream space-y-2">
+                            <!-- Total Row -->
+                            <div class="flex justify-between items-baseline p-1.5 rounded-xl bg-surface-container-low">
+                                <span class="font-bold text-primary text-xs">Total à Payer :</span>
+                                <span id="posCartTotalDisplay" class="font-display-lg text-lg font-bold text-primary">0 FCFA</span>
+                            </div>
+
+                            <!-- Modes de Paiement -->
+                            <div class="grid grid-cols-2 gap-1.5">
+                                <button id="payBtn_especes" onclick="PosManager.setPaymentMethod('especes')" class="py-1 px-2 rounded-xl border-2 border-status-success bg-emerald-50 text-status-success font-bold text-xs flex items-center justify-center gap-1 shadow-xs">
+                                    <span class="material-symbols-outlined text-[14px]">payments</span>
+                                    <span>Espèces</span>
+                                </button>
+                                <button id="payBtn_wave" onclick="PosManager.setPaymentMethod('wave')" class="py-1 px-2 rounded-xl border border-outline-variant text-sky-700 font-bold text-xs flex items-center justify-center gap-1">
+                                    <span class="material-symbols-outlined text-[14px]">smartphone</span>
+                                    <span>Wave Direct</span>
+                                </button>
+                            </div>
+
+                            <!-- Calculateur de Monnaie -->
+                            <div id="cashCalculatorBox" class="space-y-1.5">
+                                <div class="flex items-center justify-between gap-2">
+                                    <label class="text-[11px] font-bold text-primary whitespace-nowrap">Reçu :</label>
+                                    <input id="cashReceivedInput" type="number" oninput="PosManager.handleReceivedInput(this.value)" class="w-24 bg-surface-container-low border border-outline-variant rounded-lg px-2 py-0.5 text-right font-bold text-xs focus:border-primary focus:ring-0" placeholder="0 F">
+                                </div>
+
+                                <!-- Coupures Rapides -->
+                                <div class="grid grid-cols-5 gap-1 text-[10px] font-bold">
+                                    <button onclick="PosManager.setQuickBill('exact')" class="py-0.5 bg-surface-container hover:bg-secondary-container rounded text-center">Exact</button>
+                                    <button onclick="PosManager.setQuickBill(1000)" class="py-0.5 bg-surface-container hover:bg-secondary-container rounded text-center">1 000</button>
+                                    <button onclick="PosManager.setQuickBill(2000)" class="py-0.5 bg-surface-container hover:bg-secondary-container rounded text-center">2 000</button>
+                                    <button onclick="PosManager.setQuickBill(5000)" class="py-0.5 bg-surface-container hover:bg-secondary-container rounded text-center">5 000</button>
+                                    <button onclick="PosManager.setQuickBill(10000)" class="py-0.5 bg-surface-container hover:bg-secondary-container rounded text-center">10k</button>
+                                </div>
+
+                                <div id="changeDisplayBox" class="flex justify-between items-center p-1 rounded-lg bg-emerald-50 text-status-success font-bold text-xs">
+                                    <span class="text-[10px]">Monnaie :</span>
+                                    <span id="changeAmountDisplay" class="text-xs font-bold">0 FCFA</span>
+                                </div>
+                            </div>
+
+                            <!-- Checkout Button -->
+                            <button id="btnProcessSale" onclick="PosManager.processSale()" disabled class="w-full py-2.5 bg-primary text-on-primary font-headline-sm text-sm font-bold rounded-xl flex items-center justify-center gap-2 hover:bg-primary-container disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-md">
+                                <span class="material-symbols-outlined text-[16px]">point_of_sale</span>
+                                <span>Encaisser la Vente</span>
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- ==========================================
+                     MODE 3 : GESTION DE CAISSE & CLÔTURE Z
+                     ========================================== -->
+                <div id="modeView_caisse" class="pos-mode-view hidden flex-col gap-6">
+                    <div class="bg-surface-container-lowest rounded-2xl p-6 border border-surface-cream shadow-xs">
+                        <div class="flex justify-between items-center mb-6">
+                            <div>
+                                <h3 class="font-headline-sm text-lg font-bold text-primary flex items-center gap-2">
+                                    <span class="material-symbols-outlined text-secondary">point_of_sale</span>
+                                    Gestion de la Caisse Active & Clôture Z
+                                </h3>
+                                <p class="text-xs text-on-surface-variant">Pointage des encaissements de la session, impression du Ticket X et clôture quotidienne.</p>
+                            </div>
+                        </div>
+
+                        <!-- Session Summary Cards -->
+                        <div class="grid grid-cols-1 sm:grid-cols-4 gap-4 mb-6">
+                            <div class="p-4 rounded-xl bg-surface-container-low border border-surface-cream">
+                                <span class="text-xs text-on-surface-variant block mb-1">Fond de Caisse Initial</span>
+                                <div id="regInitialFund" class="font-bold text-xl text-primary">50 000 FCFA</div>
+                            </div>
+                            <div class="p-4 rounded-xl bg-surface-container-low border border-surface-cream">
+                                <span class="text-xs text-on-surface-variant block mb-1">Recette Espèces Session</span>
+                                <div id="regCashRevenue" class="font-bold text-xl text-status-success">0 FCFA</div>
+                            </div>
+                            <div class="p-4 rounded-xl bg-surface-container-low border border-surface-cream">
+                                <span class="text-xs text-on-surface-variant block mb-1">Paiements Wave Session</span>
+                                <div id="regWaveRevenue" class="font-bold text-xl text-sky-700">0 FCFA</div>
+                            </div>
+                            <div class="p-4 rounded-xl bg-surface-container-low border border-surface-cream">
+                                <span class="text-xs text-on-surface-variant block mb-1">Total Ventes Comptoir</span>
+                                <div id="regTotalSales" class="font-bold text-xl text-primary">0 FCFA</div>
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="flex flex-wrap gap-3">
+                            <button onclick="RegisterManager.generateTicketX()" class="px-5 py-2.5 bg-surface-container hover:bg-surface-variant text-primary font-bold rounded-xl text-sm transition-colors flex items-center gap-2">
+                                <span class="material-symbols-outlined text-[18px]">receipt</span>
+                                <span>Imprimer Ticket X (Provisoire)</span>
+                            </button>
+                            <button onclick="RegisterManager.openCloseZModal()" class="px-5 py-2.5 bg-status-error text-white font-bold rounded-xl text-sm hover:opacity-90 transition-opacity flex items-center gap-2 shadow-sm">
+                                <span class="material-symbols-outlined text-[18px]">lock</span>
+                                <span>Clôturer Définitivement la Caisse (Ticket Z)</span>
+                            </button>
+                        </div>
                     </div>
                 </div>
 
             </div>
-        </section>
+        </main>
 
         <!-- ==========================================
-             VUE 3 : GESTION DE CAISSE & CLÔTURE Z
+             MOBILE DRAWER OVERLAY & MENU (Caissière)
              ========================================== -->
-        <section id="modeView_caisse" class="pos-content-panel pos-mode-view" style="display:none;">
-            <div class="container-fluid" style="max-width: 1000px;">
-                
-                <!-- En-tête de Caisse -->
-                <div class="card border-0 shadow-sm rounded-4 p-4 mb-4 bg-white">
-                    <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
-                        <div>
-                            <h4 class="fw-bold text-dark m-0"><i class="fa-solid fa-cash-register text-warning me-2"></i> État de Caisse en Temps Réel</h4>
-                            <p class="text-muted small m-0">Consultez les totaux encaissés, imprimez le ticket X ou clôturez votre service avec le Ticket Z.</p>
-                        </div>
-                        <div class="d-flex gap-2">
-                            <button class="btn btn-warning fw-bold px-3 py-2 rounded-3" onclick="generateTicketX()">
-                                <i class="fa-solid fa-print me-2"></i> Ticket X (Lecture)
-                            </button>
-                            <button class="btn btn-danger fw-bold px-3 py-2 rounded-3" data-bs-toggle="modal" data-bs-target="#modalCloseZ">
-                                <i class="fa-solid fa-lock me-2"></i> Clôture Z Définitive
-                            </button>
-                            <button class="btn btn-success fw-bold px-3 py-2 rounded-3" data-bs-toggle="modal" data-bs-target="#modalOpenRegister">
-                                <i class="fa-solid fa-door-open me-2"></i> Ouvrir Session
-                            </button>
-                        </div>
+        <div id="mobileCashierOverlay" onclick="toggleMobileCashierDrawer(false)" class="fixed inset-0 bg-black/60 backdrop-blur-xs z-50 hidden transition-opacity"></div>
+
+        <div id="mobileCashierDrawer" class="fixed inset-y-0 left-0 w-[285px] bg-gradient-to-b from-[#2B160C] via-[#221209] to-[#170B05] text-[#EFE6D8] z-50 transform -translate-x-full transition-transform duration-300 ease-in-out p-4 flex flex-col space-y-3 shadow-2xl md:hidden">
+            <div class="flex items-center justify-between pb-3 border-b border-[#4E2B16]/70">
+                <div class="flex items-center gap-2.5">
+                    <img class="w-10 h-10 rounded-full border-2 border-[#F5B800] object-cover shadow-[0_0_10px_rgba(245,184,0,0.35)]" src="assets/caissiere.png" alt="Awa">
+                    <div>
+                        <h2 class="font-bold text-sm text-white">Awa Traoré</h2>
+                        <p class="text-[10px] text-[#F5B800] font-semibold">Caisse 1 - Riviera</p>
                     </div>
                 </div>
-
-                <!-- Grille des Statistiques Financières du Poste -->
-                <div class="row g-3 mb-4">
-                    <div class="col-6 col-md-4">
-                        <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100">
-                            <div class="small text-muted fw-bold">Fond de Caisse Initial</div>
-                            <div id="statFondDeCaisse" class="fs-4 fw-black text-dark mt-1">50 000 F</div>
-                            <div class="small text-muted mt-auto"><i class="fa-solid fa-coins text-warning me-1"></i> Monnaie de départ</div>
-                        </div>
-                    </div>
-
-                    <div class="col-6 col-md-4">
-                        <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100 border-start border-4 border-success">
-                            <div class="small text-muted fw-bold">Total Ventes Directes</div>
-                            <div id="statTotalVentes" class="fs-4 fw-black text-success mt-1">0 F</div>
-                            <div class="small text-muted mt-auto"><i class="fa-solid fa-arrow-trend-up text-success me-1"></i> Recette totale de service</div>
-                        </div>
-                    </div>
-
-                    <div class="col-6 col-md-4">
-                        <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100">
-                            <div class="small text-muted fw-bold">Total Encaissé Espèces</div>
-                            <div id="statTotalEspeces" class="fs-4 fw-black text-dark mt-1">0 F</div>
-                            <div class="small text-muted mt-auto"><i class="fa-solid fa-money-bill-wave text-success me-1"></i> Espèces en tiroir</div>
-                        </div>
-                    </div>
-
-                    <div class="col-6 col-md-4">
-                        <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100">
-                            <div class="small text-muted fw-bold">Total Encaissé Wave</div>
-                            <div id="statTotalWave" class="fs-4 fw-black text-info mt-1">0 F</div>
-                            <div class="small text-muted mt-auto"><i class="fa-solid fa-mobile-screen text-info me-1"></i> Paiements mobiles Wave</div>
-                        </div>
-                    </div>
-
-                    <div class="col-6 col-md-4">
-                        <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100">
-                            <div class="small text-muted fw-bold">Nombre de Tickets</div>
-                            <div id="statTotalTickets" class="fs-4 fw-black text-dark mt-1">0</div>
-                            <div class="small text-muted mt-auto"><i class="fa-solid fa-receipt text-warning me-1"></i> Ventes validées</div>
-                        </div>
-                    </div>
-
-                    <div class="col-6 col-md-4">
-                        <div class="card border-0 shadow-sm rounded-4 p-3 bg-warning bg-opacity-10 border border-warning h-100">
-                            <div class="small text-dark fw-bold">Espèces Attendues en Tiroir</div>
-                            <div id="statEspecesTheoriques" class="fs-4 fw-black text-dark mt-1">50 000 F</div>
-                            <div class="small text-muted mt-auto"><i class="fa-solid fa-scale-balanced me-1"></i> Fond + Ventes Espèces</div>
-                        </div>
-                    </div>
-                </div>
-
+                <button onclick="toggleMobileCashierDrawer(false)" class="text-[#D7CCC8] hover:text-white p-1 rounded-lg hover:bg-white/10">
+                    <span class="material-symbols-outlined text-[20px]">close</span>
+                </button>
             </div>
-        </section>
 
-    </main>
+            <!-- Espaces Métiers -->
+            <div class="bg-black/40 rounded-xl p-2.5 text-xs flex flex-col gap-1 border border-[#4E2B16]/70 backdrop-blur-xs">
+                <span class="text-[10px] uppercase text-[#A8988C] font-bold px-1 tracking-wider">Espaces Métiers :</span>
+                <div class="grid grid-cols-3 gap-1 pt-1">
+                    <a href="admin.html" class="p-1.5 text-center bg-white/10 hover:bg-[#F5B800] hover:text-[#2B160C] text-white rounded-lg text-[10px] font-bold flex flex-col items-center gap-0.5 transition-colors">
+                        <span class="material-symbols-outlined text-[15px]">shield</span>
+                        <span>Admin</span>
+                    </a>
+                    <a href="gerante.html" class="p-1.5 text-center bg-white/10 hover:bg-[#F5B800] hover:text-[#2B160C] text-white rounded-lg text-[10px] font-bold flex flex-col items-center gap-0.5 transition-colors">
+                        <span class="material-symbols-outlined text-[15px]">conveyor_belt</span>
+                        <span>Fournil</span>
+                    </a>
+                    <a href="index.html" class="p-1.5 text-center bg-white/10 hover:bg-[#F5B800] hover:text-[#2B160C] text-white rounded-lg text-[10px] font-bold flex flex-col items-center gap-0.5 transition-colors">
+                        <span class="material-symbols-outlined text-[15px]">storefront</span>
+                        <span>Boutique</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Modes & Outils -->
+            <nav class="flex-1 space-y-1 overflow-y-auto no-scrollbar py-1">
+                <a href="#" onclick="switchPosMode('retrait'); toggleMobileCashierDrawer(false); return false;" class="flex items-center gap-3 px-3 py-2 text-white hover:bg-white/10 rounded-xl text-xs font-semibold">
+                    <span class="material-symbols-outlined text-[18px]">verified_user</span>
+                    <span>Retrait Express (PIN)</span>
+                </a>
+                <a href="#" onclick="switchPosMode('vente'); toggleMobileCashierDrawer(false); return false;" class="flex items-center gap-3 px-3 py-2 text-[#D7CCC8] hover:text-white hover:bg-white/10 rounded-xl text-xs font-semibold">
+                    <span class="material-symbols-outlined text-[18px]">point_of_sale</span>
+                    <span>Vente Comptoir (POS)</span>
+                </a>
+                <a href="#" onclick="switchPosMode('caisse'); toggleMobileCashierDrawer(false); return false;" class="flex items-center gap-3 px-3 py-2 text-[#D7CCC8] hover:text-white hover:bg-white/10 rounded-xl text-xs font-semibold">
+                    <span class="material-symbols-outlined text-[18px]">receipt_long</span>
+                    <span>Gestion Caisse & Z</span>
+                </a>
+                <a href="#" onclick="toggleSoundFx(); return false;" class="flex items-center justify-between px-3 py-2 text-[#D7CCC8] hover:text-white hover:bg-white/10 rounded-xl text-xs font-semibold">
+                    <div class="flex items-center gap-3">
+                        <span class="material-symbols-outlined text-[18px]">volume_up</span>
+                        <span>Effets Sonores</span>
+                    </div>
+                    <span class="text-[10px] text-emerald-400 font-bold">ACTIF</span>
+                </a>
+            </nav>
+
+            <div class="pt-2 border-t border-[#4E2B16]/70">
+                <button onclick="logoutCashier()" class="w-full flex items-center justify-center gap-2 py-2 text-rose-300 hover:text-white hover:bg-rose-950/40 rounded-xl text-xs font-bold border border-rose-900/30">
+                    <span class="material-symbols-outlined text-[16px]">logout</span>
+                    <span>Fin de Poste</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- ==========================================
+             3. MOBILE BOTTOM APP BAR (Caissière)
+             ========================================== -->
+        <nav class="md:hidden fixed bottom-0 left-0 w-full z-40 bg-[#25130A]/95 backdrop-blur-md border-t border-[#4E2B16]/80 shadow-[0_-4px_20px_rgba(0,0,0,0.35)] flex justify-around items-center py-2 px-1">
+            <a id="mobilePosNav_retrait" href="#" onclick="switchPosMode('retrait'); return false;" class="pos-mobile-bottom-nav flex flex-col items-center justify-center text-[#F5B800] px-2 py-1 text-[10px] font-bold">
+                <span class="material-symbols-outlined text-[22px] icon-filled">verified_user</span>
+                <span>Retrait</span>
+            </a>
+            <a href="#" onclick="openQrScanner(); return false;" class="pos-mobile-bottom-nav flex flex-col items-center justify-center text-[#D7CCC8] hover:text-white px-2 py-1 text-[10px] font-medium">
+                <span class="material-symbols-outlined text-[22px]">qr_code_scanner</span>
+                <span>Scanner</span>
+            </a>
+            <button onclick="switchPosMode('vente'); return false;" class="-mt-5 w-12 h-12 rounded-full bg-gradient-to-r from-[#F5B800] to-[#E0A300] text-[#2B160C] flex items-center justify-center shadow-[0_4px_16px_rgba(245,184,0,0.4)] active:scale-95 transition-transform" title="Vente Caisse POS">
+                <span class="material-symbols-outlined text-[24px]">point_of_sale</span>
+            </button>
+            <a id="mobilePosNav_caisse" href="#" onclick="switchPosMode('caisse'); return false;" class="pos-mobile-bottom-nav flex flex-col items-center justify-center text-[#D7CCC8] hover:text-white px-2 py-1 text-[10px] font-medium">
+                <span class="material-symbols-outlined text-[22px]">receipt_long</span>
+                <span>Clôture Z</span>
+            </a>
+            <a id="mobilePosNav_menu" href="#" onclick="toggleMobileCashierDrawer(true); return false;" class="pos-mobile-bottom-nav flex flex-col items-center justify-center text-[#D7CCC8] hover:text-white px-2 py-1 text-[10px] font-medium">
+                <span class="material-symbols-outlined text-[22px]">menu</span>
+                <span>Menu</span>
+            </a>
+        </nav>
+
+    </div>
 
     <!-- ==========================================
-         MODALS & IMPRESSIONS
+         4. MODAL PAVÉ TACTILE NUMÉRIQUE (TOUCHSCREEN)
          ========================================== -->
+    <div id="modalTactilePinpad" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50 p-4 backdrop-blur-sm">
+        <div class="bg-white rounded-3xl shadow-2xl max-w-xs w-full p-6 border border-surface-cream text-center">
+            <h4 class="font-headline-sm text-lg font-bold text-primary mb-1">Code PIN Retrait</h4>
+            <p class="text-xs text-on-surface-variant mb-4">Saisissez les 4 chiffres du reçu Wave</p>
 
-    <!-- 1. Modal Ticket Thermique 80mm -->
-    <div class="modal fade" id="modalThermalReceipt" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" style="max-width: 380px;">
-            <div class="modal-content border-0 shadow-lg" style="border-radius: 16px;">
-                <div class="modal-header bg-dark text-white border-0 py-3">
-                    <h6 class="modal-title fw-bold"><i class="fa-solid fa-receipt text-warning me-2"></i> Reçu Thermique 80mm</h6>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body p-3 bg-light d-flex justify-content-center">
-                    <div id="thermalReceiptContainer">
-                        <!-- Rendu dynamique du ticket -->
-                    </div>
-                </div>
-                <div class="modal-footer border-0 p-3 bg-white">
-                    <button type="button" class="btn btn-secondary w-100 mb-2 rounded-3" data-bs-dismiss="modal">Fermer</button>
-                    <button type="button" class="btn btn-warning fw-bold w-100 rounded-3" onclick="printCurrentThermal()">
-                        <i class="fa-solid fa-print me-2"></i> Imprimer le Reçu (80mm)
-                    </button>
-                </div>
+            <div id="tactilePinDisplay" class="h-14 bg-surface-container-low rounded-2xl flex items-center justify-center font-display-lg text-3xl font-bold tracking-widest text-primary mb-5 border border-outline-variant">
+                ••••
+            </div>
+
+            <div class="grid grid-cols-3 gap-2.5 mb-4">
+                <button onclick="PickupManager.addPinDigit(1)" class="h-14 rounded-2xl bg-surface-container hover:bg-surface-variant font-bold text-xl text-primary transition-all active:scale-95 shadow-xs">1</button>
+                <button onclick="PickupManager.addPinDigit(2)" class="h-14 rounded-2xl bg-surface-container hover:bg-surface-variant font-bold text-xl text-primary transition-all active:scale-95 shadow-xs">2</button>
+                <button onclick="PickupManager.addPinDigit(3)" class="h-14 rounded-2xl bg-surface-container hover:bg-surface-variant font-bold text-xl text-primary transition-all active:scale-95 shadow-xs">3</button>
+                <button onclick="PickupManager.addPinDigit(4)" class="h-14 rounded-2xl bg-surface-container hover:bg-surface-variant font-bold text-xl text-primary transition-all active:scale-95 shadow-xs">4</button>
+                <button onclick="PickupManager.addPinDigit(5)" class="h-14 rounded-2xl bg-surface-container hover:bg-surface-variant font-bold text-xl text-primary transition-all active:scale-95 shadow-xs">5</button>
+                <button onclick="PickupManager.addPinDigit(6)" class="h-14 rounded-2xl bg-surface-container hover:bg-surface-variant font-bold text-xl text-primary transition-all active:scale-95 shadow-xs">6</button>
+                <button onclick="PickupManager.addPinDigit(7)" class="h-14 rounded-2xl bg-surface-container hover:bg-surface-variant font-bold text-xl text-primary transition-all active:scale-95 shadow-xs">7</button>
+                <button onclick="PickupManager.addPinDigit(8)" class="h-14 rounded-2xl bg-surface-container hover:bg-surface-variant font-bold text-xl text-primary transition-all active:scale-95 shadow-xs">8</button>
+                <button onclick="PickupManager.addPinDigit(9)" class="h-14 rounded-2xl bg-surface-container hover:bg-surface-variant font-bold text-xl text-primary transition-all active:scale-95 shadow-xs">9</button>
+                <button onclick="PickupManager.clearPin()" class="h-14 rounded-2xl bg-rose-50 text-status-error font-bold text-base transition-all active:scale-95">C</button>
+                <button onclick="PickupManager.addPinDigit(0)" class="h-14 rounded-2xl bg-surface-container hover:bg-surface-variant font-bold text-xl text-primary transition-all active:scale-95 shadow-xs">0</button>
+                <button onclick="PickupManager.deletePinDigit()" class="h-14 rounded-2xl bg-surface-container text-primary font-bold text-base transition-all active:scale-95">⌫</button>
+            </div>
+
+            <div class="flex gap-2">
+                <button onclick="closeModal('modalTactilePinpad')" class="flex-1 py-2.5 bg-surface-container-low text-primary font-bold rounded-xl text-sm">Fermer</button>
+                <button onclick="closeModal('modalTactilePinpad'); verifyPickupPin();" class="flex-1 py-2.5 bg-primary text-white font-bold rounded-xl text-sm shadow-sm">Valider</button>
             </div>
         </div>
     </div>
 
-    <!-- 2. Modal Clôture Z Définitive -->
-    <div class="modal fade" id="modalCloseZ" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content border-0 shadow-lg rounded-4">
-                <div class="modal-header bg-danger text-white border-0 py-3">
-                    <h5 class="modal-title fw-bold"><i class="fa-solid fa-lock me-2"></i> Clôture de Caisse (Ticket Z)</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body p-4">
-                    <p class="text-muted small mb-3">
-                        Veuillez compter la totalité des espèces (billets et pièces) présentes physiquement dans le tiroir-caisse.
-                    </p>
+    <!-- ==========================================
+         5. MODAL SCANNER QR CODE (SIMULÉ / WEBCAM)
+         ========================================== -->
+    <div id="modalQrScanner" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/60 p-4 backdrop-blur-sm">
+        <div class="bg-white rounded-3xl shadow-2xl max-w-sm w-full p-6 border border-surface-cream text-center">
+            <div class="w-12 h-12 rounded-full bg-secondary-container mx-auto flex items-center justify-center mb-3">
+                <span class="material-symbols-outlined text-on-secondary-container text-2xl">qr_code_scanner</span>
+            </div>
+            <h4 class="font-headline-sm text-lg font-bold text-primary mb-1">Scanner de Reçu Wave</h4>
+            <p class="text-xs text-on-surface-variant mb-4">Pointez la caméra vers le code QR du reçu client</p>
 
-                    <div class="mb-3">
-                        <label class="form-label fw-bold text-dark">Montant Total des Espèces Comptées (FCFA) :</label>
-                        <input type="number" id="countEspecesReellesInput" class="form-control form-control-lg fw-bold" placeholder="Ex: 85000">
-                    </div>
+            <div class="relative w-56 h-56 mx-auto bg-black rounded-2xl overflow-hidden mb-4 border-2 border-dashed border-secondary flex items-center justify-center">
+                <div class="absolute inset-x-0 h-1 bg-secondary animate-pulse-slow shadow-lg"></div>
+                <span class="material-symbols-outlined text-white/40 text-6xl">photo_camera</span>
+            </div>
 
-                    <div class="mb-3">
-                        <label class="form-label fw-bold text-dark">Remarques ou Justification d'Écart (optionnel) :</label>
-                        <textarea id="clotureNotesInput" class="form-control" rows="2" placeholder="Ex: Rendu de monnaie régularisé..."></textarea>
-                    </div>
-                </div>
-                <div class="modal-footer border-0 p-3">
-                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Annuler</button>
-                    <button type="button" class="btn btn-danger fw-bold px-4" onclick="submitCloseRegisterZ()">
-                        <i class="fa-solid fa-check me-2"></i> Confirmer & Clôturer Z
-                    </button>
-                </div>
+            <div class="space-y-2">
+                <button onclick="simulateQrScanSuccess()" class="w-full py-2.5 bg-secondary-container text-on-secondary-container font-bold rounded-xl text-xs hover:opacity-90 transition-opacity">
+                    ✨ Simuler un Scan Réussi (Démo PIN #5029)
+                </button>
+                <button onclick="closeModal('modalQrScanner')" class="w-full py-2 bg-surface-container text-primary font-semibold rounded-xl text-xs">
+                    Annuler
+                </button>
             </div>
         </div>
     </div>
 
-    <!-- 3. Modal Ouvrir Caisse -->
-    <div class="modal fade" id="modalOpenRegister" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content border-0 shadow-lg rounded-4">
-                <div class="modal-header bg-success text-white border-0 py-3">
-                    <h5 class="modal-title fw-bold"><i class="fa-solid fa-door-open me-2"></i> Ouverture de Session Caisse</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+    <!-- ==========================================
+         6. MODAL REÇU / TICKET DE CAISSE
+         ========================================== -->
+    <div id="modalReceipt" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50 p-4 backdrop-blur-sm">
+        <div class="bg-white rounded-3xl shadow-2xl max-w-sm w-full p-6 border border-surface-cream">
+            <div class="text-center pb-3 border-b border-dashed border-outline-variant">
+                <img src="assets/logo.png" alt="Logo" class="w-12 h-12 mx-auto rounded-full mb-1">
+                <h4 class="font-bold text-base text-primary uppercase">Boulangerie de BABI</h4>
+                <p class="text-[11px] text-on-surface-variant">Fournil Artisanal Riviera • Abidjan</p>
+                <div id="receiptTicketNo" class="font-mono text-xs font-bold text-primary mt-1">#TICKET-2026-001</div>
+                <div id="receiptDate" class="text-[10px] text-outline">01/09/2026 14:00</div>
+            </div>
+
+            <!-- Items -->
+            <div id="receiptItemsList" class="py-3 border-b border-dashed border-outline-variant space-y-1.5 text-xs">
+                <!-- Dynamique -->
+            </div>
+
+            <!-- Total -->
+            <div class="py-3 border-b border-dashed border-outline-variant space-y-1 text-xs">
+                <div class="flex justify-between font-bold text-sm text-primary">
+                    <span>TOTAL :</span>
+                    <span id="receiptTotal">0 FCFA</span>
                 </div>
-                <div class="modal-body p-4">
-                    <div class="mb-3">
-                        <label class="form-label fw-bold text-dark">Fond de Caisse de Départ (FCFA) :</label>
-                        <input type="number" id="openFondDeCaisseInput" class="form-control form-control-lg fw-bold" value="50000">
-                        <small class="text-muted">Par défaut : 50 000 FCFA pour le rendu de monnaie.</small>
-                    </div>
+                <div class="flex justify-between text-on-surface-variant text-[11px]">
+                    <span>Règlement :</span>
+                    <span id="receiptMode">Espèces</span>
                 </div>
-                <div class="modal-footer border-0 p-3">
-                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Annuler</button>
-                    <button type="button" class="btn btn-success fw-bold px-4" onclick="submitOpenRegister()">
-                        <i class="fa-solid fa-check me-2"></i> Ouvrir la Caisse
-                    </button>
+                <div id="receiptChangeRow" class="flex justify-between text-status-success font-semibold text-[11px]">
+                    <span>Monnaie rendue :</span>
+                    <span id="receiptChange">0 FCFA</span>
                 </div>
+            </div>
+
+            <div class="text-center pt-3 text-[11px] text-on-surface-variant">
+                <p class="font-bold text-primary">Merci de votre visite !</p>
+                <p class="text-[10px]">Pain chaud pétri avec passion chaque jour.</p>
+            </div>
+
+            <div class="mt-4 flex gap-2">
+                <button onclick="closeModal('modalReceipt')" class="flex-1 py-2 bg-surface-container text-primary rounded-xl font-semibold text-xs">Fermer</button>
+                <button onclick="printReceipt()" class="flex-1 py-2 bg-primary text-white rounded-xl font-bold text-xs flex items-center justify-center gap-1">
+                    <span class="material-symbols-outlined text-[16px]">print</span>
+                    <span>Imprimer</span>
+                </button>
             </div>
         </div>
     </div>
 
-    <!-- 4. Modal Guide d'Utilisation Caissière -->
-    <div class="modal fade" id="modalHelpGuide" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content border-0 shadow-lg rounded-4">
-                <div class="modal-header bg-warning text-dark border-0 py-3">
-                    <h5 class="modal-title fw-bold"><i class="fa-solid fa-circle-question me-2"></i> Guide Caissière en 30 Secondes</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+    <!-- ==========================================
+         7. MODAL CLÔTURE DE CAISSE (TICKET Z)
+         ========================================== -->
+    <div id="modalCloseZ" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50 p-4 backdrop-blur-sm">
+        <div class="bg-white rounded-3xl shadow-2xl max-w-md w-full p-6 border border-surface-cream">
+            <div class="flex items-center gap-2 text-status-error mb-2">
+                <span class="material-symbols-outlined text-2xl">lock</span>
+                <h4 class="font-headline-sm text-lg font-bold text-primary">Clôture Définitive (Ticket Z)</h4>
+            </div>
+            <p class="text-xs text-on-surface-variant mb-4">
+                Comptez les espèces physiques présentes dans votre tiroir-caisse pour détecter tout écart avant fermeture.
+            </p>
+
+            <div class="space-y-3 mb-5 text-xs">
+                <div class="p-3 bg-surface-container-low rounded-xl flex justify-between items-center">
+                    <span class="text-on-surface-variant font-medium">Recette Théorique Espèces :</span>
+                    <span id="closeZTheoricalCash" class="font-bold text-primary text-sm">0 FCFA</span>
                 </div>
-                <div class="modal-body p-4">
-                    <div class="d-flex align-items-start gap-3 mb-3">
-                        <div class="badge bg-warning text-dark fs-6 rounded-circle p-2 px-3">1</div>
-                        <div>
-                            <h6 class="fw-bold mb-1">Retrait Express (Click & Collect)</h6>
-                            <p class="small text-muted m-0">Le client arrive au comptoir et vous donne son <strong>Code PIN à 4 chiffres</strong>. Tapez-le sur le pavé numérique et appuyez sur <strong>Valider</strong> pour lui remettre son sachet.</p>
-                        </div>
-                    </div>
-                    <div class="d-flex align-items-start gap-3 mb-3">
-                        <div class="badge bg-warning text-dark fs-6 rounded-circle p-2 px-3">2</div>
-                        <div>
-                            <h6 class="fw-bold mb-1">Vente Directe en Boutique</h6>
-                            <p class="small text-muted m-0">Touchez les photos des articles choisis par le client. Choisissez <strong>Espèces</strong> (la calculatrice vous indique la monnaie exacte à rendre) ou <strong>Wave</strong>, puis cliquez sur <strong>Encaisser</strong>.</p>
-                        </div>
-                    </div>
-                    <div class="d-flex align-items-start gap-3">
-                        <div class="badge bg-warning text-dark fs-6 rounded-circle p-2 px-3">3</div>
-                        <div>
-                            <h6 class="fw-bold mb-1">Clôture de Caisse (Fin de journée)</h6>
-                            <p class="small text-muted m-0">Allez dans l'onglet <strong>Gestion de Caisse</strong> et cliquez sur <strong>Clôture Z</strong> pour compter vos espèces et imprimer le rapport officiel.</p>
-                        </div>
-                    </div>
+
+                <div>
+                    <label class="block font-bold text-primary mb-1">Espèces Réelles Comptées :</label>
+                    <input id="closeZActualCashInput" type="number" oninput="RegisterManager.calculateVariance(this.value)" class="w-full bg-surface-container-low border border-outline-variant rounded-xl p-2.5 text-base font-bold focus:border-primary focus:ring-0" placeholder="Ex: 85000">
                 </div>
-                <div class="modal-footer border-0 p-3">
-                    <button type="button" class="btn btn-warning fw-bold w-100" data-bs-dismiss="modal">J'ai Compris !</button>
+
+                <div id="closeZVarianceBox" class="p-3 rounded-xl bg-surface-container flex justify-between items-center font-bold">
+                    <span>Écart de Caisse :</span>
+                    <span id="closeZVarianceDisplay" class="text-sm">0 FCFA</span>
                 </div>
+            </div>
+
+            <div class="flex gap-2">
+                <button onclick="closeModal('modalCloseZ')" class="flex-1 py-2.5 bg-surface-container text-primary font-semibold rounded-xl text-xs">Annuler</button>
+                <button id="btnConfirmCloseZ" onclick="RegisterManager.confirmCloseZ()" class="flex-1 py-2.5 bg-status-error text-white font-bold rounded-xl text-xs shadow-sm">Confirmer la Clôture</button>
+            </div>
+
+            <div id="closeZSuccessActions" class="hidden mt-3 pt-3 border-t border-surface-cream flex flex-col gap-2">
+                <button onclick="printTicketZ()" class="w-full py-2.5 bg-primary hover:bg-primary-container text-white font-bold rounded-xl text-xs shadow-sm flex items-center justify-center gap-2">
+                    <span class="material-symbols-outlined text-[16px]">print</span>
+                    <span>Imprimer le Ticket Z Thermique</span>
+                </button>
+                <button onclick="closeModal('modalCloseZ')" class="w-full py-2 bg-surface-container text-primary font-semibold rounded-xl text-xs">
+                    Fermer la Caisse
+                </button>
             </div>
         </div>
     </div>
 
-    <!-- Bootstrap 5 JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- Logique Caissière POS -->
-    <script src="js/caissiere.js"></script>
+    <!-- ============================================================
+         CONTENEUR D'IMPRESSION THERMIQUE ESC/POS RÉELLE (80mm / 58mm)
+         ============================================================ -->
+    <div id="thermalPrintContainer"></div>
+
+    <!-- Toast Container -->
+    <div id="toastContainer" class="fixed bottom-20 md:bottom-6 right-4 md:right-6 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+    <!-- Script de logique Caissière -->
+    <script src="js/caissiere.js?v=thermal_pwa_1"></script>
 </body>
 </html>

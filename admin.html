@@ -1,516 +1,1049 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html class="light" lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cockpit Administrateur & Direction — Boulangerie de BABI</title>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>Boulangerie de Babi - Tableau de Bord Administrateur</title>
     
-    <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
-    <!-- FontAwesome -->
+    <!-- Tailwind CSS with Forms and Container Queries -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Material Symbols Outlined -->
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+    <!-- Google Fonts Inter & Montserrat -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Montserrat:wght@600;700;800&amp;display=swap" rel="stylesheet">
+    <!-- FontAwesome 6 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Bootstrap 5 CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    
-    <!-- CSS Dédié Admin -->
-    <link rel="stylesheet" href="css/animations.css">
-    <link rel="stylesheet" href="css/admin.css">
+
     <link rel="icon" type="image/png" href="assets/logo.png">
+    <link rel="apple-touch-icon" href="assets/logo.png">
+    <link rel="manifest" href="manifest.json">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#2B160C">
+
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "inverse-surface": "#313030",
+                        "inverse-primary": "#e7bdb1",
+                        "on-secondary": "#ffffff",
+                        "surface-variant": "#e5e2e1",
+                        "background": "#FAF5EE",
+                        "outline": "#8D6E63",
+                        "on-tertiary-fixed": "#370e00",
+                        "primary-container": "#4E342E",
+                        "on-error": "#ffffff",
+                        "error": "#ba1a1a",
+                        "secondary-fixed": "#F5B800",
+                        "surface-tint": "#5D4037",
+                        "surface-cream": "#EFE6D8",
+                        "ivory-bg": "#FAF5EE",
+                        "on-secondary-fixed-variant": "#3E2723",
+                        "surface-container-lowest": "#ffffff",
+                        "secondary-container": "#F5B800",
+                        "on-surface": "#3E2723",
+                        "tertiary-container": "#802b00",
+                        "on-background": "#3E2723",
+                        "on-surface-variant": "#5D4037",
+                        "primary": "#3E2723",
+                        "surface": "#FAF5EE",
+                        "status-error": "#BC4749",
+                        "secondary-fixed-dim": "#E0A300",
+                        "on-primary-fixed": "#3E2723",
+                        "on-secondary-container": "#3E2723",
+                        "on-tertiary": "#ffffff",
+                        "primary-fixed": "#ffdbd0",
+                        "outline-variant": "#d4c3be",
+                        "on-secondary-fixed": "#3E2723",
+                        "primary-fixed-dim": "#e7bdb1",
+                        "error-container": "#ffdad6",
+                        "surface-bright": "#FAF5EE",
+                        "on-primary-fixed-variant": "#4E342E",
+                        "on-tertiary-fixed-variant": "#7f2b00",
+                        "on-primary": "#ffffff",
+                        "on-primary-container": "#d4ada1",
+                        "on-error-container": "#93000a",
+                        "surface-container-high": "#eae7e7",
+                        "secondary": "#B45309",
+                        "surface-container-low": "#FAF5EE",
+                        "surface-container-highest": "#e5e2e1",
+                        "on-tertiary-container": "#ff9d76",
+                        "status-success": "#2D6A4F",
+                        "tertiary": "#5b1c00",
+                        "surface-container": "#F5EFE6",
+                        "surface-dim": "#dcd9d9",
+                        "inverse-on-surface": "#f3f0ef",
+                        "marron": {
+                            "dark": "#2B160C",
+                            "DEFAULT": "#3E2723",
+                            "warm": "#4E342E",
+                            "medium": "#5D4037",
+                            "light": "#8D6E63",
+                            "cream": "#FAF5EE"
+                        },
+                        "tertiary-fixed": "#ffdbce",
+                        "tertiary-fixed-dim": "#ffb599"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "2xl": "1rem",
+                        "3xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "margin-mobile": "16px",
+                        "container-max": "1440px",
+                        "unit": "8px",
+                        "gutter": "24px",
+                        "margin-desktop": "40px"
+                    },
+                    "fontFamily": {
+                        "body-md": ["Inter", "sans-serif"],
+                        "display-lg": ["Montserrat", "sans-serif"],
+                        "headline-md": ["Montserrat", "sans-serif"],
+                        "body-sm": ["Inter", "sans-serif"],
+                        "body-lg": ["Inter", "sans-serif"],
+                        "label-sm": ["Inter", "sans-serif"],
+                        "headline-sm": ["Montserrat", "sans-serif"],
+                        "headline-lg": ["Montserrat", "sans-serif"],
+                        "headline-lg-mobile": ["Montserrat", "sans-serif"],
+                        "label-md": ["Inter", "sans-serif"]
+                    },
+                    "fontSize": {
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "display-lg": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                        "body-sm": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                        "label-sm": ["12px", { "lineHeight": "16px", "letterSpacing": "0.04em", "fontWeight": "500" }],
+                        "headline-sm": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "fontWeight": "600" }],
+                        "headline-lg-mobile": ["28px", { "lineHeight": "34px", "fontWeight": "600" }],
+                        "label-md": ["14px", { "lineHeight": "16px", "letterSpacing": "0.01em", "fontWeight": "600" }]
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #FDFBF0;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #d4c3be;
+            border-radius: 9999px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #827470;
+        }
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .icon-filled {
+            font-variation-settings: 'FILL' 1, 'wght' 500, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
 </head>
-<body class="admin-body">
+<body class="bg-ivory-bg text-on-surface font-body-md text-body-md antialiased h-screen overflow-hidden flex">
 
     <!-- ==========================================
-         1. TOP NAVBAR ADMIN
+         1. SIDEBAR NAVIGATION ADMIN
          ========================================== -->
-    <header class="adm-navbar d-flex align-items-center justify-content-between">
-        <div class="d-flex align-items-center gap-3">
-            <a href="index.html" title="Boutique Client">
-                <img src="assets/logo.png" alt="Logo" class="adm-brand-logo">
+    <aside class="hidden md:flex flex-col h-screen p-4 space-y-2 bg-gradient-to-b from-[#2B160C] via-[#221209] to-[#170B05] text-[#EFE6D8] font-label-md text-label-md fixed left-0 top-0 w-[280px] border-r border-[#4E2B16]/60 shadow-2xl z-40">
+        <!-- Logo & Admin Profile Info -->
+        <div class="mb-4 px-2">
+            <div class="flex items-center space-x-3 pb-3 border-b border-[#4E2B16]/70">
+                <a href="index.html" title="Retour boutique" class="relative">
+                    <img id="adminAvatarDisplay" class="w-11 h-11 rounded-full object-cover border-2 border-[#F5B800] shadow-[0_0_14px_rgba(245,184,0,0.35)]" 
+                         src="assets/logo.png" 
+                         alt="Admin Avatar"
+                         onerror="this.src='assets/logo.png'">
+                    <span class="absolute bottom-0 right-0 w-3 h-3 bg-emerald-500 rounded-full border-2 border-[#2B160C] shadow-[0_0_6px_rgba(16,185,129,0.8)]"></span>
+                </a>
+                <div class="min-w-0 flex-1">
+                    <h2 id="adminNameDisplay" class="font-bold text-sm leading-tight text-white tracking-wide truncate" title="Administrateur BABI">Administrateur BABI</h2>
+                    <p class="font-label-sm text-xs text-[#F5B800] flex items-center gap-1.5 mt-0.5">
+                        <span class="inline-block w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                        Direction Générale
+                    </p>
+                </div>
+            </div>
+
+            <!-- Espace Switcher Dropdown / Quick Links -->
+            <div class="mt-3 bg-black/40 rounded-xl p-2.5 text-xs flex flex-col gap-1 border border-[#4E2B16]/70 backdrop-blur-xs">
+                <div class="text-[#D7CCC8] font-medium flex items-center justify-between px-1">
+                    <span class="text-[11px] uppercase tracking-wider text-[#A8988C]">Espaces Métiers :</span>
+                    <span class="bg-gradient-to-r from-[#F5B800] to-[#E0A300] text-[#2B160C] text-[9px] px-1.5 py-0.2 rounded font-extrabold shadow-2xs">PRO</span>
+                </div>
+                <div class="grid grid-cols-3 gap-1.5 pt-1">
+                    <a href="caissiere.html" class="px-2 py-1.5 text-center bg-white/10 hover:bg-[#F5B800] hover:text-[#2B160C] text-white rounded-lg transition-all text-[11px] font-semibold flex flex-col items-center gap-0.5 shadow-2xs hover:scale-105" title="Accéder au POS Caisse">
+                        <span class="material-symbols-outlined text-[16px]">point_of_sale</span>
+                        <span>Caisse</span>
+                    </a>
+                    <a href="gerante.html" class="px-2 py-1.5 text-center bg-white/10 hover:bg-[#F5B800] hover:text-[#2B160C] text-white rounded-lg transition-all text-[11px] font-semibold flex flex-col items-center gap-0.5 shadow-2xs hover:scale-105" title="Espace Gérante & Stocks">
+                        <span class="material-symbols-outlined text-[16px]">conveyor_belt</span>
+                        <span>Fournil</span>
+                    </a>
+                    <a href="index.html" class="px-2 py-1.5 text-center bg-white/10 hover:bg-[#F5B800] hover:text-[#2B160C] text-white rounded-lg transition-all text-[11px] font-semibold flex flex-col items-center gap-0.5 shadow-2xs hover:scale-105" title="Boutique en ligne Client">
+                        <span class="material-symbols-outlined text-[16px]">storefront</span>
+                        <span>Boutique</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation Links -->
+        <nav class="flex-1 space-y-1 overflow-y-auto no-scrollbar">
+            <a id="navItem_cockpit" href="#" onclick="switchAdminTab('cockpit', this); return false;" 
+               class="adm-nav-link flex items-center px-4 py-2.5 bg-gradient-to-r from-[#F5B800] to-[#E0A300] text-[#2B160C] rounded-xl font-extrabold transition-all shadow-[0_4px_14px_rgba(245,184,0,0.35)] scale-[1.01]">
+                <span class="material-symbols-outlined mr-3 icon-filled">dashboard</span>
+                Tableau de bord
             </a>
-            <div>
-                <div class="d-flex align-items-center gap-2">
-                    <span class="fw-black fs-5 text-white">BOULANGERIE DE BABI</span>
-                    <span class="badge bg-danger text-white fw-bold px-2 py-1" style="font-size:0.7rem;">DIRECTION</span>
+
+            <a id="navItem_produits" href="#" onclick="switchAdminTab('produits', this); return false;" 
+               class="adm-nav-link flex items-center justify-between px-4 py-2.5 text-[#D7CCC8] hover:text-white hover:bg-white/10 rounded-xl transition-all">
+                <div class="flex items-center">
+                    <span class="material-symbols-outlined mr-3">bakery_dining</span>
+                    Produits
                 </div>
-                <div class="small text-white-50" style="font-size: 0.75rem;">
-                    Riviera, Abidjan • Cockpit Financier & Administration Centrale
+                <span id="adminProductsCountBadge" class="bg-white/20 text-[#F5B800] text-[11px] px-2 py-0.5 rounded-full font-bold">0</span>
+            </a>
+
+            <a id="navItem_categories" href="#" onclick="switchAdminTab('categories', this); return false;" 
+               class="adm-nav-link flex items-center px-4 py-2.5 text-[#D7CCC8] hover:text-white hover:bg-white/10 rounded-xl transition-all">
+                <span class="material-symbols-outlined mr-3">category</span>
+                Catégories
+            </a>
+
+            <a id="navItem_caissieres" href="#" onclick="switchAdminTab('caissieres', this); return false;" 
+               class="adm-nav-link flex items-center px-4 py-2.5 text-[#D7CCC8] hover:text-white hover:bg-white/10 rounded-xl transition-all">
+                <span class="material-symbols-outlined mr-3">badge</span>
+                Personnel & Caissières
+            </a>
+
+            <a id="navItem_commandes" href="#" onclick="switchAdminTab('commandes', this); return false;" 
+               class="adm-nav-link flex items-center justify-between px-4 py-2.5 text-[#D7CCC8] hover:text-white hover:bg-white/10 rounded-xl transition-all">
+                <div class="flex items-center">
+                    <span class="material-symbols-outlined mr-3">receipt_long</span>
+                    Commandes
+                </div>
+                <span id="adminOrdersCountBadge" class="bg-[#F5B800] text-[#2B160C] text-[11px] px-2 py-0.5 rounded-full font-extrabold">0</span>
+            </a>
+
+            <a id="navItem_caisses" href="#" onclick="switchAdminTab('caisses', this); return false;" 
+               class="adm-nav-link flex items-center px-4 py-2.5 text-[#D7CCC8] hover:text-white hover:bg-white/10 rounded-xl transition-all">
+                <span class="material-symbols-outlined mr-3">point_of_sale</span>
+                Contrôle Caisses (Z)
+            </a>
+
+            <a id="navItem_securite" href="#" onclick="switchAdminTab('securite', this); return false;" 
+               class="adm-nav-link flex items-center px-4 py-2.5 text-[#D7CCC8] hover:text-white hover:bg-white/10 rounded-xl transition-all">
+                <span class="material-symbols-outlined mr-3">history</span>
+                Journal d'Activité
+            </a>
+
+            <a id="navItem_users" href="#" onclick="switchAdminTab('users', this); return false;" 
+               class="adm-nav-link flex items-center px-4 py-2.5 text-[#D7CCC8] hover:text-white hover:bg-white/10 rounded-xl transition-all">
+                <span class="material-symbols-outlined mr-3">group</span>
+                Utilisateurs
+            </a>
+        </nav>
+
+        <!-- Sidebar Bottom Footer -->
+        <div class="mt-auto pt-3 border-t border-[#4E2B16]/70 space-y-2">
+            <button onclick="openAddProductModal()" class="w-full bg-gradient-to-r from-[#F5B800] to-[#E5A800] text-[#2B160C] font-extrabold rounded-xl py-2.5 px-3 hover:brightness-110 active:scale-98 transition-all shadow-[0_4px_16px_rgba(245,184,0,0.35)] flex items-center justify-center gap-2 text-sm">
+                <span class="material-symbols-outlined text-[18px]">add_circle</span>
+                <span>Nouveau Produit</span>
+            </button>
+            <button onclick="logoutAdmin()" class="w-full flex items-center justify-center px-4 py-2 text-rose-300 hover:text-white hover:bg-rose-950/40 rounded-xl transition-all text-sm font-semibold gap-2 border border-rose-900/30">
+                <span class="material-symbols-outlined text-[18px]">logout</span>
+                <span>Déconnexion</span>
+            </button>
+        </div>
+    </aside>
+
+    <!-- ==========================================
+         2. MAIN CONTENT AREA
+         ========================================== -->
+    <main class="flex-1 md:ml-[280px] h-screen overflow-y-auto pb-24 md:pb-8 bg-ivory-bg">
+        
+        <!-- Top Navigation Area (Mobile App Header) -->
+        <header class="md:hidden flex justify-between items-center px-4 h-14 w-full sticky top-0 z-30 bg-gradient-to-r from-[#2B160C] via-[#24130A] to-[#1A0C06] text-white border-b border-[#4E2B16]/80 shadow-md">
+            <div class="flex items-center gap-2.5">
+                <img src="assets/logo.png" alt="Logo" class="w-8 h-8 rounded-full border border-[#F5B800] shadow-[0_0_8px_rgba(245,184,0,0.4)]">
+                <div>
+                    <h1 class="font-bold text-sm leading-tight text-white">Le pain de Babi</h1>
+                    <p class="text-[10px] text-[#F5B800] font-semibold leading-none">Direction & Cockpit</p>
                 </div>
             </div>
-        </div>
-
-        <div class="d-flex align-items-center gap-2">
-            <div class="dropdown">
-                <button class="btn btn-outline-light dropdown-toggle d-flex align-items-center gap-2 py-1 px-2 border-0 bg-white bg-opacity-10 rounded-pill" type="button" data-bs-toggle="dropdown">
-                    <img id="adminAvatarDisplay" src="assets/avatar_admin.png" alt="Admin" class="rounded-circle" width="32" height="32" style="object-fit:cover; border:1px solid #D4AF37;">
-                    <div class="text-start d-none d-sm-block pe-1">
-                        <div id="adminNameDisplay" class="fw-bold text-white lh-1" style="font-size:0.85rem;">Super Admin BABI</div>
-                        <span class="text-warning lh-1" style="font-size:0.7rem;">Direction Générale</span>
-                    </div>
+            <div class="flex items-center space-x-2">
+                <button onclick="openAddProductModal()" class="w-8 h-8 rounded-full bg-[#F5B800] text-[#2B160C] flex items-center justify-center font-bold shadow-sm active:scale-95" title="Ajouter Produit">
+                    <span class="material-symbols-outlined text-[18px]">add</span>
                 </button>
-                <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 mt-2" style="border-radius:12px; min-width:220px;">
-                    <li class="px-3 py-2 border-bottom bg-light">
-                        <small class="text-muted d-block">Basculer d'espace (Démo) :</small>
-                    </li>
-                    <li><a class="dropdown-item py-2" href="caissiere.html"><i class="fa-solid fa-cash-register me-2 text-warning"></i> Espace Caissière</a></li>
-                    <li><a class="dropdown-item py-2" href="gerante.html"><i class="fa-solid fa-user-tie me-2 text-info"></i> Espace Gérante</a></li>
-                    <li><a class="dropdown-item py-2 active" href="admin.html"><i class="fa-solid fa-shield-halved me-2 text-danger"></i> <strong>Espace Administrateur</strong></a></li>
-                    <li><hr class="dropdown-divider"></li>
-                    <li><a class="dropdown-item py-2" href="index.html"><i class="fa-solid fa-store me-2 text-success"></i> Boutique Client</a></li>
-                    <li><a class="dropdown-item py-2 text-danger" href="connexion.html" onclick="localStorage.removeItem('babi_user');"><i class="fa-solid fa-right-from-bracket me-2"></i> Déconnexion</a></li>
-                </ul>
+                <button onclick="toggleMobileAdminDrawer(true)" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-colors active:scale-95" title="Menu">
+                    <span class="material-symbols-outlined text-[20px]">menu</span>
+                </button>
             </div>
+        </header>
+
+        <!-- Container Principal Desktop/Tablet -->
+        <div class="max-w-[1440px] mx-auto p-3 md:p-6">
+            
+            <!-- Dynamic Header Bar -->
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 mb-5 pb-3 border-b border-surface-cream">
+                <div>
+                    <h1 id="admHeaderTitle" class="text-xl md:text-2xl font-bold text-primary mb-0.5">Tableau de Bord Administrateur - Vue Globale</h1>
+                    <p id="admHeaderSubtitle" class="text-xs text-on-surface-variant">Supervision financière, catalogue et exploitation en temps réel.</p>
+                </div>
+                <div class="flex items-center space-x-2 w-full md:w-auto justify-end shrink-0">
+                    <div class="hidden sm:flex items-center gap-1.5 px-3 py-1.5 bg-surface-container rounded-xl text-xs font-semibold text-primary border border-surface-cream">
+                        <span class="material-symbols-outlined text-[15px] text-secondary">schedule</span>
+                        <span id="admClockDisplay">--:--:-- (GMT Abidjan)</span>
+                    </div>
+                    <button onclick="exportAdminData()" class="px-3 py-1.5 bg-white border border-secondary text-secondary rounded-xl font-bold text-xs hover:bg-surface-cream transition-colors flex items-center gap-1.5 shadow-2xs">
+                        <span class="material-symbols-outlined text-[16px]">download</span>
+                        <span>Exporter</span>
+                    </button>
+                    <button id="admHeaderActionBtn" onclick="openAddProductModal()" class="px-3.5 py-1.5 bg-primary text-on-primary rounded-xl font-bold text-xs hover:bg-primary-container transition-colors flex items-center gap-1.5 shadow-sm">
+                        <span class="material-symbols-outlined text-[16px]">add</span>
+                        <span>Nouveau Produit</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- ==========================================
+                 VUE 1 : COCKPIT / TABLEAU DE BORD (BENTO GRID)
+                 ========================================== -->
+            <section id="admView_cockpit" class="adm-tab-view space-y-4">
+                
+                <!-- Bento Grid KPIs -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-3 md:gap-4">
+                    
+                    <!-- KPI 1 : Chiffre d'Affaires Total -->
+                    <div class="lg:col-span-4 bg-surface-container-lowest rounded-2xl shadow-[0_4px_20px_rgba(93,64,55,0.06)] border border-surface-cream p-5 hover:shadow-md transition-shadow">
+                        <div class="flex justify-between items-start mb-2">
+                            <div class="flex items-center gap-2">
+                                <h3 class="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Chiffre d'Affaires</h3>
+                                <span class="bg-secondary-container text-on-secondary-container text-[9px] px-2 py-0.5 rounded-full font-bold uppercase tracking-tighter">Global</span>
+                            </div>
+                            <span class="w-8 h-8 rounded-xl bg-amber-50 flex items-center justify-center text-secondary">
+                                <span class="material-symbols-outlined text-[18px]">payments</span>
+                            </span>
+                        </div>
+                        <div id="kpiAdminTotalRevenue" class="font-display-lg text-2xl lg:text-3xl text-primary font-bold mb-1">0 FCFA</div>
+                        <div class="flex items-center text-status-success text-xs font-semibold">
+                            <span class="material-symbols-outlined text-sm mr-1">trending_up</span>
+                            <span>Trésorerie cumulée boutique & en ligne</span>
+                        </div>
+                    </div>
+
+                    <!-- KPI 2 : Ventes Wave Mobile Money -->
+                    <div class="lg:col-span-4 bg-surface-container-lowest rounded-2xl shadow-[0_4px_20px_rgba(93,64,55,0.06)] border border-surface-cream p-5 hover:shadow-md transition-shadow">
+                        <div class="flex justify-between items-start mb-2">
+                            <div class="flex items-center gap-2">
+                                <h3 class="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Paiements Wave</h3>
+                                <span class="bg-sky-100 text-sky-800 text-[9px] px-2 py-0.5 rounded-full font-bold uppercase tracking-tighter whitespace-nowrap">Click & Collect</span>
+                            </div>
+                            <span class="w-8 h-8 rounded-xl bg-sky-50 flex items-center justify-center text-sky-600">
+                                <span class="material-symbols-outlined text-[18px]">smartphone</span>
+                            </span>
+                        </div>
+                        <div id="kpiAdminWaveRevenue" class="font-display-lg text-2xl lg:text-3xl text-sky-800 font-bold mb-1">0 F</div>
+                        <div class="flex items-center text-sky-600 text-xs font-semibold">
+                            <span class="material-symbols-outlined text-sm mr-1">verified_user</span>
+                            <span>Réservations sécurisées Wave</span>
+                        </div>
+                    </div>
+
+                    <!-- KPI 3 : Commandes & Ventes Directes -->
+                    <div class="lg:col-span-4 bg-surface-container-lowest rounded-2xl shadow-[0_4px_20px_rgba(93,64,55,0.06)] border border-surface-cream p-5 hover:shadow-md transition-shadow">
+                        <div class="flex justify-between items-start mb-2">
+                            <div class="flex items-center gap-2">
+                                <h3 class="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Commandes Totales</h3>
+                                <span class="bg-emerald-100 text-emerald-800 text-[9px] px-2 py-0.5 rounded-full font-bold uppercase tracking-tighter">Validées</span>
+                            </div>
+                            <span class="w-8 h-8 rounded-xl bg-emerald-50 flex items-center justify-center text-status-success">
+                                <span class="material-symbols-outlined text-[18px]">receipt_long</span>
+                            </span>
+                        </div>
+                        <div id="kpiAdminTotalOrders" class="font-display-lg text-2xl lg:text-3xl text-primary font-bold mb-1">0</div>
+                        <div class="flex items-center text-status-success text-xs font-semibold">
+                            <span class="material-symbols-outlined text-sm mr-1">shopping_cart</span>
+                            <span id="kpiAdminCashSummary">Ventes caisse & Click & Collect</span>
+                        </div>
+                    </div>
+
+                    <!-- Graphique Interactif des Revenus -->
+                    <div class="lg:col-span-8 bg-surface-container-lowest rounded-2xl shadow-[0_4px_20px_rgba(93,64,55,0.06)] border border-surface-cream p-5">
+                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-4">
+                            <div>
+                                <h3 class="font-headline-sm text-sm font-bold text-primary">Aperçu des Revenus (Wave & Espèces)</h3>
+                                <p class="text-xs text-on-surface-variant">Progression des flux de trésorerie sur la période</p>
+                            </div>
+                            <select id="revenueChartPeriodSelect" onchange="updateRevenueChartPeriod(this.value)" class="bg-surface border border-outline-variant rounded-xl px-2.5 py-1 text-xs text-on-surface focus:border-primary focus:ring-0 cursor-pointer font-medium">
+                                <option value="7">7 derniers jours</option>
+                                <option value="30">30 derniers jours</option>
+                            </select>
+                        </div>
+                        <div class="h-60 relative">
+                            <canvas id="revenueChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Panneau Activité Récente & Audit Express -->
+                    <div class="lg:col-span-4 bg-surface-container-lowest rounded-2xl shadow-[0_4px_20px_rgba(93,64,55,0.06)] border border-surface-cream p-5 flex flex-col">
+                        <div class="flex justify-between items-center mb-3">
+                            <h3 class="font-headline-sm text-sm font-bold text-primary">Activité Récente</h3>
+                            <button onclick="switchAdminTab('securite', null)" class="text-xs text-secondary hover:underline font-bold">Voir tout</button>
+                        </div>
+                        <div id="adminRecentActivityList" class="flex-1 overflow-y-auto space-y-2.5 max-h-[240px] pr-1">
+                            <!-- Rendu Dynamique via admin.js -->
+                            <div class="flex items-start gap-2.5">
+                                <div class="w-7 h-7 rounded-full bg-surface-container flex items-center justify-center text-primary flex-shrink-0">
+                                    <span class="material-symbols-outlined text-xs">inventory_2</span>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <p class="text-xs text-on-surface"><span class="font-bold">Système</span> synchronisation des stocks active</p>
+                                    <span class="text-[10px] text-on-surface-variant">À l'instant</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Ventilation Omnicanal (Wave vs Espèces) -->
+                    <div class="lg:col-span-7 bg-surface-container-lowest rounded-2xl shadow-[0_4px_20px_rgba(93,64,55,0.06)] border border-surface-cream p-5">
+                        <h4 class="font-headline-sm text-sm font-bold text-primary mb-1 flex items-center gap-2">
+                            <span class="material-symbols-outlined text-secondary text-[18px]">pie_chart</span>
+                            Ventilation Omnicanal des Ventes
+                        </h4>
+                        <p class="text-xs text-on-surface-variant mb-3">Répartition en direct entre réservations Wave Mobile Money et règlements comptoir en espèces.</p>
+
+                        <div class="space-y-3">
+                            <div class="p-3 rounded-xl bg-surface-container-low border border-surface-cream">
+                                <div class="flex justify-between items-center mb-1.5">
+                                    <span class="text-xs font-bold text-primary flex items-center gap-1.5">
+                                        <span class="material-symbols-outlined text-sky-600 text-[16px]">smartphone</span>
+                                        Wave Mobile Money (Click & Collect)
+                                    </span>
+                                    <span id="kpiAdminWavePercent" class="font-bold text-sky-700 text-xs">70%</span>
+                                </div>
+                                <div class="w-full bg-surface-container rounded-full h-2.5 overflow-hidden">
+                                    <div id="kpiAdminWaveBar" class="bg-sky-600 h-2.5 rounded-full transition-all duration-500" style="width: 70%;"></div>
+                                </div>
+                            </div>
+
+                            <div class="p-3 rounded-xl bg-surface-container-low border border-surface-cream">
+                                <div class="flex justify-between items-center mb-1.5">
+                                    <span class="text-xs font-bold text-primary flex items-center gap-1.5">
+                                        <span class="material-symbols-outlined text-status-success text-[16px]">payments</span>
+                                        Espèces & Monnaie Directe (Boutique)
+                                    </span>
+                                    <span id="kpiAdminCashPercent" class="font-bold text-status-success text-xs">30%</span>
+                                </div>
+                                <div class="w-full bg-surface-container rounded-full h-2.5 overflow-hidden">
+                                    <div id="kpiAdminCashBar" class="bg-status-success h-2.5 rounded-full transition-all duration-500" style="width: 30%;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sécurité Souveraine & Anti-Fraude -->
+                    <div class="lg:col-span-5 bg-primary text-white rounded-2xl shadow-[0_4px_20px_rgba(93,64,55,0.1)] p-6 flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center gap-2 mb-2 text-secondary-container">
+                                <span class="material-symbols-outlined text-2xl">shield_lock</span>
+                                <h4 class="font-headline-sm text-[18px] font-bold text-white">Sécurité & Anti-Fraude</h4>
+                            </div>
+                            <p class="text-xs text-white/80 mb-4">
+                                Transactions Wave signées et traçabilité des codes PIN de retrait à double facteur.
+                            </p>
+                            <ul class="space-y-2.5 text-xs text-white/90">
+                                <li class="flex items-center gap-2">
+                                    <span class="material-symbols-outlined text-status-success text-[18px]">check_circle</span>
+                                    <span>Zéro faux engagement (Paiement préalable Wave)</span>
+                                </li>
+                                <li class="flex items-center gap-2">
+                                    <span class="material-symbols-outlined text-status-success text-[18px]">check_circle</span>
+                                    <span>Contrôle strict des écarts de caisse (Ticket Z)</span>
+                                </li>
+                                <li class="flex items-center gap-2">
+                                    <span class="material-symbols-outlined text-status-success text-[18px]">check_circle</span>
+                                    <span>Déconnexion des caissières à distance active</span>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="mt-4 pt-4 border-t border-white/10 flex justify-between items-center text-xs">
+                            <span class="text-white/60">Système IDS/IPS actif</span>
+                            <span class="bg-white/10 text-secondary-container px-2 py-0.5 rounded-full font-bold">Grade Banque</span>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+
+            <!-- ==========================================
+                 VUE 2 : CATALOGUE PRODUITS
+                 ========================================== -->
+            <section id="admView_produits" class="adm-tab-view hidden space-y-4">
+                <div class="bg-surface-container-lowest rounded-2xl shadow-[0_4px_20px_rgba(93,64,55,0.06)] border border-surface-cream p-5">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
+                        <div>
+                            <h3 class="font-headline-sm text-sm font-bold text-primary flex items-center gap-2">
+                                <span class="material-symbols-outlined text-secondary text-[20px]">bakery_dining</span>
+                                <span>Catalogue des Produits & Tarifs</span>
+                            </h3>
+                            <p class="text-xs text-on-surface-variant">Modifiez les tarifs en FCFA, mettez à jour les stocks ou masquez temporairement des articles.</p>
+                        </div>
+                    </div>
+
+                    <!-- Search & Filter Controls -->
+                    <div class="flex flex-col sm:flex-row gap-3 mb-4">
+                        <div class="relative flex-1">
+                            <span class="material-symbols-outlined absolute left-3 top-2.5 text-outline text-[20px]">search</span>
+                            <input type="text" class="w-full pl-10 pr-4 py-2 bg-surface-container-low border border-outline-variant rounded-xl text-sm focus:border-primary focus:ring-0" 
+                                   placeholder="Rechercher par nom, catégorie (ex: baguette, croissant, chocolat...)" 
+                                   oninput="filterAdminProducts(this.value)">
+                        </div>
+                        <select onchange="filterAdminProductsByCategory(this.value)" class="bg-surface-container-low border border-outline-variant rounded-xl px-3 py-2 text-sm focus:border-primary focus:ring-0">
+                            <option value="">Tous les Rayons</option>
+                            <option value="pain">🥖 Pains & Baguettes</option>
+                            <option value="pains_speciaux">🌾 Pains Spéciaux</option>
+                            <option value="viennoiserie">🥐 Viennoiseries</option>
+                            <option value="patisserie">🍰 Pâtisseries</option>
+                            <option value="boisson">🧃 Boissons Fraîches</option>
+                            <option value="sale">🥪 Salés & Traiteur</option>
+                            <option value="snack">🍪 Biscuits & Snacks</option>
+                        </select>
+                    </div>
+
+                    <!-- Products Table -->
+                    <div class="overflow-x-auto rounded-xl border border-surface-cream">
+                        <table class="w-full text-left border-collapse text-sm">
+                            <thead class="bg-surface-container text-primary font-semibold text-xs uppercase tracking-wider border-b border-surface-cream">
+                                <tr>
+                                    <th class="p-3.5">Photo</th>
+                                    <th class="p-3.5">Désignation</th>
+                                    <th class="p-3.5">Catégorie</th>
+                                    <th class="p-3.5">Prix (FCFA)</th>
+                                    <th class="p-3.5">Stock</th>
+                                    <th class="p-3.5">Visibilité</th>
+                                    <th class="p-3.5 text-right">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="adminProductsTableBody" class="divide-y divide-surface-cream bg-white">
+                                <!-- Rendu Dynamique via admin.js -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ==========================================
+                 VUE 3 : CATÉGORIES & RAYONS
+                 ========================================== -->
+            <section id="admView_categories" class="adm-tab-view hidden space-y-4">
+                <div class="bg-surface-container-lowest rounded-2xl shadow-[0_4px_20px_rgba(93,64,55,0.06)] border border-surface-cream p-6">
+                    <div class="flex justify-between items-center mb-6">
+                        <div>
+                            <h3 class="font-headline-sm text-headline-sm text-primary font-bold flex items-center gap-2">
+                                <span class="material-symbols-outlined text-secondary">category</span>
+                                Rayons & Catégories de Produits
+                            </h3>
+                            <p class="text-xs text-on-surface-variant">Organisation du catalogue affiché sur la boutique en ligne et le terminal caissière.</p>
+                        </div>
+                    </div>
+
+                    <div id="adminCategoriesList" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <!-- Rendu Dynamique via admin.js -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- ==========================================
+                 VUE 4 : PERSONNEL & CAISSIÈRES
+                 ========================================== -->
+            <section id="admView_caissieres" class="adm-tab-view hidden space-y-4">
+                <div class="bg-surface-container-lowest rounded-2xl shadow-[0_4px_20px_rgba(93,64,55,0.06)] border border-surface-cream p-6">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+                        <div>
+                            <h3 class="font-headline-sm text-headline-sm text-primary font-bold flex items-center gap-2">
+                                <span class="material-symbols-outlined text-secondary">badge</span>
+                                Gestion des Profils Caissières & Droits
+                            </h3>
+                            <p class="text-xs text-on-surface-variant">Affectez les postes de caisse, réinitialisez les codes PIN et supervisez les sessions en direct.</p>
+                        </div>
+                        <button onclick="openAddCashierModal()" class="px-4 py-2 bg-primary text-on-primary rounded-xl font-label-md text-label-md hover:bg-primary-container transition-colors flex items-center gap-2 shadow-sm whitespace-nowrap">
+                            <span class="material-symbols-outlined text-[18px]">person_add</span>
+                            <span>Créer un Profil Caissière</span>
+                        </button>
+                    </div>
+
+                    <div class="overflow-x-auto rounded-xl border border-surface-cream">
+                        <table class="w-full text-left border-collapse text-sm">
+                            <thead class="bg-surface-container text-primary font-semibold text-xs uppercase tracking-wider border-b border-surface-cream">
+                                <tr>
+                                    <th class="p-3.5">Profil</th>
+                                    <th class="p-3.5">Caissière</th>
+                                    <th class="p-3.5">Caisse Assignée</th>
+                                    <th class="p-3.5">Code PIN</th>
+                                    <th class="p-3.5">Statut Session</th>
+                                    <th class="p-3.5 text-right">Contrôle</th>
+                                </tr>
+                            </thead>
+                            <tbody id="adminCashiersTableBody" class="divide-y divide-surface-cream bg-white">
+                                <!-- Rendu Dynamique via admin.js -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ==========================================
+                 VUE 5 : SUIVI DES COMMANDES
+                 ========================================== -->
+            <section id="admView_commandes" class="adm-tab-view hidden space-y-4">
+                <div class="bg-surface-container-lowest rounded-2xl shadow-[0_4px_20px_rgba(93,64,55,0.06)] border border-surface-cream p-6">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+                        <div>
+                            <h3 class="font-headline-sm text-headline-sm text-primary font-bold flex items-center gap-2">
+                                <span class="material-symbols-outlined text-secondary">receipt_long</span>
+                                Suivi Centralisé des Commandes
+                            </h3>
+                            <p class="text-xs text-on-surface-variant">Toutes les réservations Click & Collect et encaissements enregistrés.</p>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <select id="orderStatusFilter" onchange="filterAdminOrders(this.value)" class="bg-surface-container-low border border-outline-variant rounded-xl px-3 py-1.5 text-sm focus:border-primary focus:ring-0">
+                                <option value="">Tous les Statuts</option>
+                                <option value="en_attente">En attente</option>
+                                <option value="payee">Payée (Wave)</option>
+                                <option value="prete">Prête à retirer</option>
+                                <option value="livree">Livrée / Récupérée</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="overflow-x-auto rounded-xl border border-surface-cream">
+                        <table class="w-full text-left border-collapse text-sm">
+                            <thead class="bg-surface-container text-primary font-semibold text-xs uppercase tracking-wider border-b border-surface-cream">
+                                <tr>
+                                    <th class="p-3.5">Réf.</th>
+                                    <th class="p-3.5">Client & Contact</th>
+                                    <th class="p-3.5">Mode / Retrait</th>
+                                    <th class="p-3.5">Montant</th>
+                                    <th class="p-3.5">Paiement</th>
+                                    <th class="p-3.5">Statut</th>
+                                    <th class="p-3.5 text-right">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="adminOrdersTableBody" class="divide-y divide-surface-cream bg-white">
+                                <!-- Rendu Dynamique via admin.js -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ==========================================
+                 VUE 6 : CONTRÔLE DES CAISSES (TICKETS Z)
+                 ========================================== -->
+            <section id="admView_caisses" class="adm-tab-view hidden space-y-4">
+                <div class="bg-surface-container-lowest rounded-2xl shadow-[0_4px_20px_rgba(93,64,55,0.06)] border border-surface-cream p-6">
+                    <div class="flex justify-between items-center mb-6">
+                        <div>
+                            <h3 class="font-headline-sm text-headline-sm text-primary font-bold flex items-center gap-2">
+                                <span class="material-symbols-outlined text-secondary">point_of_sale</span>
+                                Historique & Audit des Clôtures Z
+                            </h3>
+                            <p class="text-xs text-on-surface-variant">Contrôle des espèces déclarées par chaque caissière et détection automatique des écarts.</p>
+                        </div>
+                    </div>
+
+                    <div class="overflow-x-auto rounded-xl border border-surface-cream">
+                        <table class="w-full text-left border-collapse text-sm">
+                            <thead class="bg-surface-container text-primary font-semibold text-xs uppercase tracking-wider border-b border-surface-cream">
+                                <tr>
+                                    <th class="p-3.5">Numéro Z</th>
+                                    <th class="p-3.5">Opérateur</th>
+                                    <th class="p-3.5">Date de Clôture</th>
+                                    <th class="p-3.5">Recette Totale</th>
+                                    <th class="p-3.5">Espèces</th>
+                                    <th class="p-3.5">Wave</th>
+                                    <th class="p-3.5 text-right">Écart de Caisse</th>
+                                </tr>
+                            </thead>
+                            <tbody id="adminRegisterHistoryTableBody" class="divide-y divide-surface-cream bg-white">
+                                <!-- Rendu Dynamique via admin.js -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ==========================================
+                 VUE 7 : JOURNAL D'ACTIVITÉ & SÉCURITÉ
+                 ========================================== -->
+            <section id="admView_securite" class="adm-tab-view hidden space-y-4">
+                <div class="bg-surface-container-lowest rounded-2xl shadow-[0_4px_20px_rgba(93,64,55,0.06)] border border-surface-cream p-6">
+                    <div class="flex justify-between items-center mb-6">
+                        <div>
+                            <h3 class="font-headline-sm text-sm font-bold text-primary flex items-center gap-2">
+                                <span class="material-symbols-outlined text-secondary text-[20px]">history</span>
+                                <span>Journal d'Audit & Sécurité Souveraine</span>
+                            </h3>
+                            <p class="text-xs text-on-surface-variant">Traçabilité complète des connexions, validations PIN, encaissements et modifications administratives.</p>
+                        </div>
+                    </div>
+
+                    <div class="overflow-x-auto rounded-xl border border-surface-cream">
+                        <table class="w-full text-left border-collapse text-sm">
+                            <thead class="bg-surface-container text-primary font-semibold text-xs uppercase tracking-wider border-b border-surface-cream">
+                                <tr>
+                                    <th class="p-3.5">Événement</th>
+                                    <th class="p-3.5">Auteur / Utilisateur</th>
+                                    <th class="p-3.5">Adresse IP</th>
+                                    <th class="p-3.5">Horodatage</th>
+                                    <th class="p-3.5 text-right">Niveau de Risque</th>
+                                </tr>
+                            </thead>
+                            <tbody id="adminAuditLogsTableBody" class="divide-y divide-surface-cream bg-white">
+                                <!-- Rendu Dynamique via admin.js -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ==========================================
+                 VUE 8 : UTILISATEURS & CLIENTS
+                 ========================================== -->
+            <section id="admView_users" class="adm-tab-view hidden space-y-4">
+                <div class="bg-surface-container-lowest rounded-2xl shadow-[0_4px_20px_rgba(93,64,55,0.06)] border border-surface-cream p-6">
+                    <div class="flex justify-between items-center mb-6">
+                        <div>
+                            <h3 class="font-headline-sm text-headline-sm text-primary font-bold flex items-center gap-2">
+                                <span class="material-symbols-outlined text-secondary">group</span>
+                                Comptes Utilisateurs & Clients
+                            </h3>
+                            <p class="text-xs text-on-surface-variant">Gestion des comptes clients enregistrés et rôles d'administration.</p>
+                        </div>
+                    </div>
+
+                    <div class="overflow-x-auto rounded-xl border border-surface-cream">
+                        <table class="w-full text-left border-collapse text-sm">
+                            <thead class="bg-surface-container text-primary font-semibold text-xs uppercase tracking-wider border-b border-surface-cream">
+                                <tr>
+                                    <th class="p-3.5">ID</th>
+                                    <th class="p-3.5">Nom & Prénom</th>
+                                    <th class="p-3.5">Email / Identifiant</th>
+                                    <th class="p-3.5">Rôle</th>
+                                    <th class="p-3.5">Téléphone</th>
+                                    <th class="p-3.5 text-right">Date d'inscription</th>
+                                </tr>
+                            </thead>
+                            <tbody id="adminUsersTableBody" class="divide-y divide-surface-cream bg-white">
+                                <!-- Rendu Dynamique via admin.js -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
         </div>
-    </header>
-
-    <!-- ==========================================
-         2. ONGLETS DE NAVIGATION ADMIN
-         ========================================== -->
-    <nav class="adm-nav-tabs">
-        <button class="adm-tab-btn active" onclick="switchAdminTab('cockpit', this)">
-            <i class="fa-solid fa-chart-pie fs-5"></i>
-            <span>Cockpit Financier</span>
-        </button>
-        <button class="adm-tab-btn" onclick="switchAdminTab('produits', this)">
-            <i class="fa-solid fa-bread-slice fs-5"></i>
-            <span>Catalogue Produits</span>
-            <span id="adminProductsCountBadge" class="badge bg-warning text-dark ms-1">0</span>
-        </button>
-        <button class="adm-tab-btn" onclick="switchAdminTab('categories', this)">
-            <i class="fa-solid fa-tags fs-5"></i>
-            <span>Catégories</span>
-        </button>
-        <button class="adm-tab-btn" onclick="switchAdminTab('caissieres', this)">
-            <i class="fa-solid fa-users-viewfinder fs-5"></i>
-            <span>Caissières & Droits</span>
-        </button>
-        <button class="adm-tab-btn" onclick="switchAdminTab('caisses', this)">
-            <i class="fa-solid fa-vault fs-5"></i>
-            <span>Contrôle des Caisses (Z)</span>
-        </button>
-        <button class="adm-tab-btn" onclick="switchAdminTab('securite', this)">
-            <i class="fa-solid fa-shield-check fs-5"></i>
-            <span>Audit & Sécurité</span>
-        </button>
-    </nav>
-
-    <!-- ==========================================
-         3. CONTENEUR PRINCIPAL ADMIN
-         ========================================== -->
-    <main class="container-fluid py-4" style="max-width: 1400px;">
-
-        <!-- ==========================================
-             VUE 1 : COCKPIT FINANCIER & KPIS
-             ========================================== -->
-        <section id="admView_cockpit" class="adm-tab-view">
-            <!-- Grille des KPIs Financiers -->
-            <div class="row g-3 mb-4">
-                <div class="col-6 col-md-3">
-                    <div class="adm-kpi-card border-start border-4 border-warning">
-                        <div class="d-flex justify-content-between align-items-start">
-                            <span class="small text-muted fw-bold">Chiffre d'Affaires Global</span>
-                            <div class="fs-4 text-warning"><i class="fa-solid fa-sack-dollar"></i></div>
-                        </div>
-                        <div id="kpiAdminTotalRevenue" class="adm-kpi-value text-dark">0 FCFA</div>
-                        <small class="text-muted"><i class="fa-solid fa-circle-check text-success me-1"></i> Trésorerie cumulée</small>
-                    </div>
-                </div>
-
-                <div class="col-6 col-md-3">
-                    <div class="adm-kpi-card border-start border-4 border-info">
-                        <div class="d-flex justify-content-between align-items-start">
-                            <span class="small text-muted fw-bold">Paiements Wave Mobile Money</span>
-                            <div class="fs-4 text-info"><i class="fa-solid fa-mobile-screen-button"></i></div>
-                        </div>
-                        <div id="kpiAdminWaveRevenue" class="adm-kpi-value text-info">0 F</div>
-                        <small class="text-muted"><i class="fa-solid fa-shield-halved text-info me-1"></i> Réservations Click & Collect</small>
-                    </div>
-                </div>
-
-                <div class="col-6 col-md-3">
-                    <div class="adm-kpi-card border-start border-4 border-success">
-                        <div class="d-flex justify-content-between align-items-start">
-                            <span class="small text-muted fw-bold">Ventes Espèces (Comptoir)</span>
-                            <div class="fs-4 text-success"><i class="fa-solid fa-money-bill-wave"></i></div>
-                        </div>
-                        <div id="kpiAdminCashRevenue" class="adm-kpi-value text-success">0 F</div>
-                        <small class="text-muted"><i class="fa-solid fa-cash-register text-success me-1"></i> Ventes directes boutique</small>
-                    </div>
-                </div>
-
-                <div class="col-6 col-md-3">
-                    <div class="adm-kpi-card border-start border-4 border-primary">
-                        <div class="d-flex justify-content-between align-items-start">
-                            <span class="small text-muted fw-bold">Volume Total Commandes</span>
-                            <div class="fs-4 text-primary"><i class="fa-solid fa-cart-shopping"></i></div>
-                        </div>
-                        <div id="kpiAdminTotalOrders" class="adm-kpi-value text-dark">0</div>
-                        <small class="text-muted"><i class="fa-solid fa-chart-line text-primary me-1"></i> Transactions validées</small>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Synthèse de Performance -->
-            <div class="row g-4">
-                <div class="col-lg-8">
-                    <div class="adm-table-card h-100">
-                        <h5 class="fw-bold text-dark mb-3"><i class="fa-solid fa-scale-balanced text-warning me-2"></i> Ventilation Omnicanal des Ventes</h5>
-                        <p class="text-muted small mb-4">Répartition entre les commandes Click & Collect réglées via Wave et les ventes directes au comptoir.</p>
-                        
-                        <div class="p-4 rounded-4 bg-light mb-3">
-                            <div class="d-flex justify-content-between mb-2">
-                                <span class="fw-bold text-dark"><i class="fa-solid fa-mobile-screen text-info me-2"></i> Wave Mobile Money (Click & Collect)</span>
-                                <span class="fw-black text-info">72% des flux</span>
-                            </div>
-                            <div class="progress" style="height: 12px;">
-                                <div class="progress-bar bg-info" style="width: 72%"></div>
-                            </div>
-                        </div>
-
-                        <div class="p-4 rounded-4 bg-light">
-                            <div class="d-flex justify-content-between mb-2">
-                                <span class="fw-bold text-dark"><i class="fa-solid fa-money-bill-wave text-success me-2"></i> Espèces & Monnaie Directe (Boutique)</span>
-                                <span class="fw-black text-success">28% des flux</span>
-                            </div>
-                            <div class="progress" style="height: 12px;">
-                                <div class="progress-bar bg-success" style="width: 28%"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-lg-4">
-                    <div class="adm-table-card h-100 bg-dark text-white">
-                        <div class="d-flex align-items-center gap-2 mb-3">
-                            <i class="fa-solid fa-shield-halved text-warning fs-4"></i>
-                            <h5 class="fw-bold text-white m-0">Sécurité & Anti-Fraude</h5>
-                        </div>
-                        <p class="text-white-50 small mb-4">
-                            Toutes les transactions Wave et validations de codes PIN font l'objet d'une signature cryptographique immuable.
-                        </p>
-                        <ul class="list-unstyled d-flex flex-column gap-3 small">
-                            <li class="d-flex align-items-center gap-2">
-                                <i class="fa-solid fa-circle-check text-success"></i>
-                                <span>Zero faux engagements (Paiement préalable Wave)</span>
-                            </li>
-                            <li class="d-flex align-items-center gap-2">
-                                <i class="fa-solid fa-circle-check text-success"></i>
-                                <span>Contrôle strict des écarts de caisse (Ticket Z)</span>
-                            </li>
-                            <li class="d-flex align-items-center gap-2">
-                                <i class="fa-solid fa-circle-check text-success"></i>
-                                <span>Déconnexion des caissières à distance active</span>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- ==========================================
-             VUE 2 : CATALOGUE PRODUITS
-             ========================================== -->
-        <section id="admView_produits" class="adm-tab-view" style="display:none;">
-            <div class="adm-table-card">
-                <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
-                    <div>
-                        <h4 class="fw-bold text-dark m-0"><i class="fa-solid fa-bread-slice text-warning me-2"></i> Catalogue des Produits & Tarifs</h4>
-                        <p class="text-muted small m-0">Créez de nouveaux produits, modifiez les prix en FCFA ou masquez temporairement des articles.</p>
-                    </div>
-                    <button class="btn btn-warning fw-bold px-4 py-2 rounded-3" onclick="openAddProductModal()">
-                        <i class="fa-solid fa-plus me-2"></i> Ajouter un Produit
-                    </button>
-                </div>
-
-                <div class="mb-3">
-                    <input type="text" class="form-control" placeholder="Rechercher par nom ou catégorie (ex: baguette, croissant, chocolat...)" oninput="filterAdminProducts(this.value)">
-                </div>
-
-                <div class="table-responsive">
-                    <table class="table table-hover align-middle">
-                        <thead class="table-light">
-                            <tr>
-                                <th>Photo</th>
-                                <th>Désignation</th>
-                                <th>Catégorie</th>
-                                <th>Prix (FCFA)</th>
-                                <th>Stock</th>
-                                <th>Visibilité</th>
-                                <th class="text-end">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="adminProductsTableBody">
-                            <!-- Rendu Dynamique via admin.js -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </section>
-
-        <!-- ==========================================
-             VUE 3 : CATÉGORIES
-             ========================================== -->
-        <section id="admView_categories" class="adm-tab-view" style="display:none;">
-            <div class="adm-table-card">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <div>
-                        <h4 class="fw-bold text-dark m-0"><i class="fa-solid fa-tags text-warning me-2"></i> Rayons & Catégories de Produits</h4>
-                        <p class="text-muted small m-0">Structure des rayons de la boulangerie affichés sur la boutique en ligne et le POS.</p>
-                    </div>
-                </div>
-
-                <div id="adminCategoriesList" class="row g-3">
-                    <!-- Rendu Dynamique via admin.js -->
-                </div>
-            </div>
-        </section>
-
-        <!-- ==========================================
-             VUE 4 : CAISSIÈRES & UTILISATEURS
-             ========================================== -->
-        <section id="admView_caissieres" class="adm-tab-view" style="display:none;">
-            <div class="adm-table-card">
-                <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
-                    <div>
-                        <h4 class="fw-bold text-dark m-0"><i class="fa-solid fa-users-viewfinder text-warning me-2"></i> Gestion des Profils Caissières</h4>
-                        <p class="text-muted small m-0">Affectez les postes de caisse, réinitialisez les codes PIN et gérez les accès en direct.</p>
-                    </div>
-                    <button class="btn btn-warning fw-bold px-4 py-2 rounded-3" onclick="openAddCashierModal()">
-                        <i class="fa-solid fa-user-plus me-2"></i> Créer un Profil Caissière
-                    </button>
-                </div>
-
-                <div class="table-responsive">
-                    <table class="table table-hover align-middle">
-                        <thead class="table-light">
-                            <tr>
-                                <th>Profil</th>
-                                <th>Caissière</th>
-                                <th>Caisse Assignée</th>
-                                <th>Code PIN</th>
-                                <th>Statut Session</th>
-                                <th class="text-end">Contrôle</th>
-                            </tr>
-                        </thead>
-                        <tbody id="adminCashiersTableBody">
-                            <!-- Rendu Dynamique via admin.js -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </section>
-
-        <!-- ==========================================
-             VUE 5 : CONTRÔLE DES CAISSES (Z)
-             ========================================== -->
-        <section id="admView_caisses" class="adm-tab-view" style="display:none;">
-            <div class="adm-table-card">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <div>
-                        <h4 class="fw-bold text-dark m-0"><i class="fa-solid fa-vault text-warning me-2"></i> Historique & Audit des Clôtures Z</h4>
-                        <p class="text-muted small m-0">Contrôle des espèces réelles déclarées par chaque caissière et détection automatique des écarts.</p>
-                    </div>
-                </div>
-
-                <div class="table-responsive">
-                    <table class="table table-hover align-middle">
-                        <thead class="table-light">
-                            <tr>
-                                <th>Numéro Z</th>
-                                <th>Opérateur</th>
-                                <th>Date de Clôture</th>
-                                <th>Recette Totale</th>
-                                <th>Espèces</th>
-                                <th>Wave</th>
-                                <th>Écart de Caisse</th>
-                            </tr>
-                        </thead>
-                        <tbody id="adminRegisterHistoryTableBody">
-                            <!-- Rendu Dynamique via admin.js -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </section>
-
-        <!-- ==========================================
-             VUE 6 : AUDIT & SÉCURITÉ
-             ========================================== -->
-        <section id="admView_securite" class="adm-tab-view" style="display:none;">
-            <div class="adm-table-card">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <div>
-                        <h4 class="fw-bold text-dark m-0"><i class="fa-solid fa-shield-check text-warning me-2"></i> Journal d'Audit & Sécurité Souveraine</h4>
-                        <p class="text-muted small m-0">Traçabilité complète des connexions, validations PIN, encaissements et modifications administratives.</p>
-                    </div>
-                </div>
-
-                <div class="table-responsive">
-                    <table class="table table-hover align-middle">
-                        <thead class="table-light">
-                            <tr>
-                                <th>Événement</th>
-                                <th>Auteur / Utilisateur</th>
-                                <th>Adresse IP</th>
-                                <th>Horodatage</th>
-                                <th>Niveau de Risque</th>
-                            </tr>
-                        </thead>
-                        <tbody id="adminAuditLogsTableBody">
-                            <!-- Rendu Dynamique via admin.js -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </section>
-
     </main>
 
+
+
     <!-- ==========================================
-         MODALS ADMIN
+         4. MODAL PRODUIT (TAILWIND CSS)
          ========================================== -->
-
-    <!-- Modal Formulaire Produit -->
-    <div class="modal fade" id="modalProductForm" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-lg">
-            <div class="modal-content border-0 shadow-lg rounded-4">
-                <div class="modal-header bg-dark text-white border-0 py-3">
-                    <h5 id="modalProductTitle" class="modal-title fw-bold">➕ Ajouter un Produit</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body p-4">
-                    <div class="row g-3">
-                        <div class="col-md-8">
-                            <label class="form-label fw-bold text-dark">Nom du Produit :</label>
-                            <input type="text" id="prodNomInput" class="form-control form-control-lg" placeholder="Ex: Baguette Tradition Française">
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label fw-bold text-dark">Prix de Vente (FCFA) :</label>
-                            <input type="number" id="prodPrixInput" class="form-control form-control-lg fw-bold" placeholder="Ex: 400">
-                        </div>
-
-                        <div class="col-md-6">
-                            <label class="form-label fw-bold text-dark">Rayon / Catégorie :</label>
-                            <select id="prodCategorieSelect" class="form-select">
-                                <option value="pain">🥖 Pains & Baguettes</option>
-                                <option value="pains_speciaux">🌾 Pains Spéciaux & Complets</option>
-                                <option value="viennoiserie">🥐 Viennoiseries</option>
-                                <option value="patisserie">🍰 Pâtisseries & Gâteaux</option>
-                                <option value="boisson">🧃 Boissons Fraîches & Jus Naturels</option>
-                                <option value="sale">🥪 Salés & Traiteur</option>
-                                <option value="snack">🍪 Biscuits & Snacks</option>
-                            </select>
-                        </div>
-
-                        <div class="col-md-3">
-                            <label class="form-label fw-bold text-dark">Stock Initial :</label>
-                            <input type="number" id="prodStockInput" class="form-control fw-bold" value="50">
-                        </div>
-
-                        <div class="col-md-3">
-                            <label class="form-label fw-bold text-dark">Seuil d'Alerte :</label>
-                            <input type="number" id="prodSeuilInput" class="form-control fw-bold" value="10">
-                        </div>
-
-                        <div class="col-md-8">
-                            <label class="form-label fw-bold text-dark">Photo du Produit :</label>
-                            <select id="prodImageSelect" class="form-select" onchange="updateProductImagePreview()">
-                                <option value="assets/product_baguette.png">🥖 Baguette Tradition</option>
-                                <option value="assets/product_croissant.png">🥐 Croissant Pur Beurre</option>
-                                <option value="assets/product_pain_choc.png">🍫 Pain au Chocolat</option>
-                                <option value="assets/product_complet.png">🌾 Pain Complet</option>
-                                <option value="assets/product_brioche.png">🍞 Brioche Dorée</option>
-                                <option value="assets/product_jus_bissap.png">🌺 Jus de Bissap Maison</option>
-                                <option value="assets/product_jus_ananas.png">🍍 Jus d'Ananas Naturel</option>
-                                <option value="assets/product_jus_orange.png">🍊 Jus d'Orange Frais</option>
-                                <option value="assets/product_sandwich.png">🥪 Sandwich Panini</option>
-                                <option value="assets/product_entremet.png">🍰 Entremet Gourmand</option>
-                                <option value="assets/product_foret_noire.png">🎂 Forêt Noire</option>
-                            </select>
-                        </div>
-
-                        <div class="col-md-4 text-center">
-                            <label class="form-label small text-muted d-block">Aperçu Photo :</label>
-                            <img id="prodImagePreview" src="assets/product_baguette.png" alt="Aperçu" class="adm-product-thumb" style="width:64px; height:64px;">
-                        </div>
-
-                        <div class="col-12">
-                            <label class="form-label fw-bold text-dark">Description courte :</label>
-                            <textarea id="prodDescInput" class="form-control" rows="2" placeholder="Description appétissante pour les clients..."></textarea>
-                        </div>
+    <div id="modalProductForm" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50 p-4 backdrop-blur-sm">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-xl w-full max-h-[90vh] overflow-y-auto border border-surface-cream">
+            <!-- Modal Header -->
+            <div class="bg-primary text-white p-4 rounded-t-2xl flex justify-between items-center">
+                <h4 id="modalProductTitle" class="font-headline-sm text-lg font-bold flex items-center gap-2">
+                    <span class="material-symbols-outlined">add_circle</span>
+                    Ajouter un Produit
+                </h4>
+                <button onclick="closeModal('modalProductForm')" class="text-white/80 hover:text-white text-2xl leading-none">&times;</button>
+            </div>
+            <!-- Modal Body -->
+            <div class="p-6 space-y-4 text-sm">
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-3">
+                    <div class="md:col-span-8">
+                        <label class="block font-bold text-primary mb-1">Nom du Produit :</label>
+                        <input type="text" id="prodNomInput" class="w-full bg-surface-container-low border border-outline-variant rounded-xl px-3 py-2 focus:border-primary focus:ring-0" placeholder="Ex: Baguette Tradition Française">
+                    </div>
+                    <div class="md:col-span-4">
+                        <label class="block font-bold text-primary mb-1">Prix (FCFA) :</label>
+                        <input type="number" id="prodPrixInput" class="w-full bg-surface-container-low border border-outline-variant rounded-xl px-3 py-2 font-bold focus:border-primary focus:ring-0" placeholder="Ex: 400">
                     </div>
                 </div>
-                <div class="modal-footer border-0 p-3">
-                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Annuler</button>
-                    <button type="button" class="btn btn-warning fw-bold px-4" onclick="saveProduct()">
-                        <i class="fa-solid fa-check me-2"></i> Enregistrer le Produit
-                    </button>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                    <div>
+                        <label class="block font-bold text-primary mb-1">Rayon / Catégorie :</label>
+                        <select id="prodCategorieSelect" class="w-full bg-surface-container-low border border-outline-variant rounded-xl px-3 py-2 focus:border-primary focus:ring-0">
+                            <option value="pain">🥖 Pains & Baguettes</option>
+                            <option value="pains_speciaux">🌾 Pains Spéciaux</option>
+                            <option value="viennoiserie">🥐 Viennoiseries</option>
+                            <option value="patisserie">🍰 Pâtisseries</option>
+                            <option value="boisson">🧃 Boissons Fraîches</option>
+                            <option value="sale">🥪 Salés & Traiteur</option>
+                            <option value="snack">🍪 Biscuits & Snacks</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block font-bold text-primary mb-1">Stock Initial :</label>
+                        <input type="number" id="prodStockInput" value="50" class="w-full bg-surface-container-low border border-outline-variant rounded-xl px-3 py-2 font-bold focus:border-primary focus:ring-0">
+                    </div>
+                    <div>
+                        <label class="block font-bold text-primary mb-1">Seuil d'Alerte :</label>
+                        <input type="number" id="prodSeuilInput" value="10" class="w-full bg-surface-container-low border border-outline-variant rounded-xl px-3 py-2 font-bold focus:border-primary focus:ring-0">
+                    </div>
                 </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+                    <div class="md:col-span-9">
+                        <label class="block font-bold text-primary mb-1">Photo du Produit :</label>
+                        <select id="prodImageSelect" onchange="updateProductImagePreview()" class="w-full bg-surface-container-low border border-outline-variant rounded-xl px-3 py-2 focus:border-primary focus:ring-0">
+                            <option value="assets/product_baguette.png">🥖 Baguette Tradition</option>
+                            <option value="assets/product_croissant.png">🥐 Croissant Pur Beurre</option>
+                            <option value="assets/product_pain_choc.png">🍫 Pain au Chocolat</option>
+                            <option value="assets/product_complet.png">🌾 Pain Complet</option>
+                            <option value="assets/product_brioche.png">🍞 Brioche Dorée</option>
+                            <option value="assets/product_jus_bissap.png">🌺 Jus de Bissap Maison</option>
+                            <option value="assets/product_jus_ananas.png">🍍 Jus d'Ananas Naturel</option>
+                            <option value="assets/product_jus_orange.png">🍊 Jus d'Orange Frais</option>
+                            <option value="assets/product_sandwich.png">🥪 Sandwich Panini</option>
+                            <option value="assets/product_entremet.png">🍰 Entremet Gourmand</option>
+                            <option value="assets/product_foret_noire.png">🎂 Forêt Noire</option>
+                        </select>
+                    </div>
+                    <div class="md:col-span-3 text-center">
+                        <span class="block text-xs text-on-surface-variant mb-1">Aperçu :</span>
+                        <img id="prodImagePreview" src="assets/product_baguette.png" alt="Aperçu" class="w-14 h-14 object-cover rounded-xl border border-surface-cream mx-auto">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block font-bold text-primary mb-1">Description courte :</label>
+                    <textarea id="prodDescInput" rows="2" class="w-full bg-surface-container-low border border-outline-variant rounded-xl px-3 py-2 focus:border-primary focus:ring-0" placeholder="Description appétissante pour la boutique en ligne..."></textarea>
+                </div>
+            </div>
+            <!-- Modal Footer -->
+            <div class="bg-surface-container-low p-4 rounded-b-2xl flex justify-end gap-2 border-t border-surface-cream">
+                <button onclick="closeModal('modalProductForm')" class="px-4 py-2 bg-white border border-outline-variant rounded-xl text-primary font-semibold hover:bg-surface-cream transition-colors">Annuler</button>
+                <button onclick="saveProduct()" class="px-5 py-2 bg-primary text-on-primary rounded-xl font-bold hover:bg-primary-container transition-colors shadow-sm flex items-center gap-1.5">
+                    <span class="material-symbols-outlined text-[18px]">check</span>
+                    <span>Enregistrer</span>
+                </button>
             </div>
         </div>
     </div>
 
-    <!-- Modal Formulaire Caissière -->
-    <div class="modal fade" id="modalCashierForm" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content border-0 shadow-lg rounded-4">
-                <div class="modal-header bg-dark text-white border-0 py-3">
-                    <h5 id="modalCashierTitle" class="modal-title fw-bold">➕ Profil Caissière</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body p-4">
-                    <div class="row g-3">
-                        <div class="col-6">
-                            <label class="form-label fw-bold text-dark">Prénom :</label>
-                            <input type="text" id="cashierPrenomInput" class="form-control" placeholder="Awa">
-                        </div>
-                        <div class="col-6">
-                            <label class="form-label fw-bold text-dark">Nom :</label>
-                            <input type="text" id="cashierNomInput" class="form-control" placeholder="Traoré">
-                        </div>
-
-                        <div class="col-12">
-                            <label class="form-label fw-bold text-dark">Identifiant / Email :</label>
-                            <input type="email" id="cashierEmailInput" class="form-control" placeholder="caisse1@boulangeriedebabi.com">
-                        </div>
-
-                        <div class="col-6">
-                            <label class="form-label fw-bold text-dark">Téléphone :</label>
-                            <input type="text" id="cashierPhoneInput" class="form-control" placeholder="+225 05 55 12 34 56">
-                        </div>
-
-                        <div class="col-6">
-                            <label class="form-label fw-bold text-dark">Caisse Assignée :</label>
-                            <select id="cashierCaisseInput" class="form-select">
-                                <option value="Caisse 1 - Riviera">Caisse 1 - Riviera</option>
-                                <option value="Caisse 2 - Fournil Express">Caisse 2 - Fournil Express</option>
-                                <option value="Caisse 3 - Traiteur">Caisse 3 - Traiteur</option>
-                            </select>
-                        </div>
-
-                        <div class="col-6">
-                            <label class="form-label fw-bold text-dark">Code PIN de Caisse (4 chiffres) :</label>
-                            <input type="text" id="cashierPinInput" class="form-control fw-bold text-center" placeholder="1234" maxlength="6">
-                        </div>
-
-                        <div class="col-6">
-                            <label class="form-label fw-bold text-dark">Mot de passe :</label>
-                            <input type="password" id="cashierPassInput" class="form-control" placeholder="••••••••">
-                        </div>
+    <!-- ==========================================
+         5. MODAL CAISSIÈRE (TAILWIND CSS)
+         ========================================== -->
+    <div id="modalCashierForm" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50 p-4 backdrop-blur-sm">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto border border-surface-cream">
+            <!-- Header -->
+            <div class="bg-primary text-white p-4 rounded-t-2xl flex justify-between items-center">
+                <h4 id="modalCashierTitle" class="font-headline-sm text-lg font-bold flex items-center gap-2">
+                    <span class="material-symbols-outlined">badge</span>
+                    Profil Caissière
+                </h4>
+                <button onclick="closeModal('modalCashierForm')" class="text-white/80 hover:text-white text-2xl leading-none">&times;</button>
+            </div>
+            <!-- Body -->
+            <div class="p-6 space-y-3.5 text-sm">
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-bold text-primary mb-1">Prénom :</label>
+                        <input type="text" id="cashierPrenomInput" class="w-full bg-surface-container-low border border-outline-variant rounded-xl px-3 py-2 focus:border-primary focus:ring-0" placeholder="Awa">
+                    </div>
+                    <div>
+                        <label class="block font-bold text-primary mb-1">Nom :</label>
+                        <input type="text" id="cashierNomInput" class="w-full bg-surface-container-low border border-outline-variant rounded-xl px-3 py-2 focus:border-primary focus:ring-0" placeholder="Traoré">
                     </div>
                 </div>
-                <div class="modal-footer border-0 p-3">
-                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Annuler</button>
-                    <button type="button" class="btn btn-warning fw-bold px-4" onclick="saveCashier()">
-                        <i class="fa-solid fa-check me-2"></i> Enregistrer la Caissière
-                    </button>
+
+                <div>
+                    <label class="block font-bold text-primary mb-1">Identifiant / Email :</label>
+                    <input type="email" id="cashierEmailInput" class="w-full bg-surface-container-low border border-outline-variant rounded-xl px-3 py-2 focus:border-primary focus:ring-0" placeholder="caisse1@boulangeriedebabi.com">
                 </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-bold text-primary mb-1">Téléphone :</label>
+                        <input type="text" id="cashierPhoneInput" class="w-full bg-surface-container-low border border-outline-variant rounded-xl px-3 py-2 focus:border-primary focus:ring-0" placeholder="+225 05 55 12 34 56">
+                    </div>
+                    <div>
+                        <label class="block font-bold text-primary mb-1">Caisse Assignée :</label>
+                        <select id="cashierCaisseInput" class="w-full bg-surface-container-low border border-outline-variant rounded-xl px-3 py-2 focus:border-primary focus:ring-0">
+                            <option value="Caisse 1 - Riviera">Caisse 1 - Riviera</option>
+                            <option value="Caisse 2 - Fournil Express">Caisse 2 - Fournil Express</option>
+                            <option value="Caisse 3 - Traiteur">Caisse 3 - Traiteur</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-bold text-primary mb-1">Code PIN (4 chiffres) :</label>
+                        <input type="text" id="cashierPinInput" maxlength="6" class="w-full bg-surface-container-low border border-outline-variant rounded-xl px-3 py-2 text-center font-bold tracking-widest focus:border-primary focus:ring-0" placeholder="1234">
+                    </div>
+                    <div>
+                        <label class="block font-bold text-primary mb-1">Mot de passe :</label>
+                        <input type="password" id="cashierPassInput" class="w-full bg-surface-container-low border border-outline-variant rounded-xl px-3 py-2 focus:border-primary focus:ring-0" placeholder="••••••••">
+                    </div>
+                </div>
+            </div>
+            <!-- Footer -->
+            <div class="bg-surface-container-low p-4 rounded-b-2xl flex justify-end gap-2 border-t border-surface-cream">
+                <button onclick="closeModal('modalCashierForm')" class="px-4 py-2 bg-white border border-outline-variant rounded-xl text-primary font-semibold hover:bg-surface-cream transition-colors">Annuler</button>
+                <button onclick="saveCashier()" class="px-5 py-2 bg-primary text-on-primary rounded-xl font-bold hover:bg-primary-container transition-colors shadow-sm flex items-center gap-1.5">
+                    <span class="material-symbols-outlined text-[18px]">check</span>
+                    <span>Enregistrer</span>
+                </button>
             </div>
         </div>
     </div>
 
-    <!-- Bootstrap 5 JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- Logique Admin -->
-    <script src="js/admin.js"></script>
+    <!-- ==========================================
+         MOBILE DRAWER OVERLAY & MENU
+         ========================================== -->
+    <!-- Mobile Drawer Overlay -->
+    <div id="mobileAdminOverlay" onclick="toggleMobileAdminDrawer(false)" class="fixed inset-0 bg-black/60 backdrop-blur-xs z-50 hidden transition-opacity"></div>
+
+    <!-- Mobile Slide-in Drawer Menu -->
+    <div id="mobileAdminDrawer" class="fixed inset-y-0 left-0 w-[285px] bg-gradient-to-b from-[#2B160C] via-[#221209] to-[#170B05] text-[#EFE6D8] z-50 transform -translate-x-full transition-transform duration-300 ease-in-out p-4 flex flex-col space-y-3 shadow-2xl md:hidden">
+        <div class="flex items-center justify-between pb-3 border-b border-[#4E2B16]/70">
+            <div class="flex items-center gap-2.5">
+                <img class="w-10 h-10 rounded-full border-2 border-[#F5B800] shadow-[0_0_10px_rgba(245,184,0,0.35)]" src="assets/logo.png" alt="Admin">
+                <div>
+                    <h2 class="font-bold text-sm text-white">Administrateur BABI</h2>
+                    <p class="text-[10px] text-[#F5B800] font-semibold">Direction Générale</p>
+                </div>
+            </div>
+            <button onclick="toggleMobileAdminDrawer(false)" class="text-[#D7CCC8] hover:text-white p-1 rounded-lg hover:bg-white/10">
+                <span class="material-symbols-outlined text-[20px]">close</span>
+            </button>
+        </div>
+
+        <!-- Espaces Métiers -->
+        <div class="bg-black/40 rounded-xl p-2.5 text-xs flex flex-col gap-1 border border-[#4E2B16]/70 backdrop-blur-xs">
+            <span class="text-[10px] uppercase text-[#A8988C] font-bold px-1 tracking-wider">Espaces Métiers :</span>
+            <div class="grid grid-cols-3 gap-1 pt-1">
+                <a href="caissiere.html" class="p-1.5 text-center bg-white/10 hover:bg-[#F5B800] hover:text-[#2B160C] text-white rounded-lg text-[10px] font-bold flex flex-col items-center gap-0.5 transition-colors">
+                    <span class="material-symbols-outlined text-[15px]">point_of_sale</span>
+                    <span>Caisse</span>
+                </a>
+                <a href="gerante.html" class="p-1.5 text-center bg-white/10 hover:bg-[#F5B800] hover:text-[#2B160C] text-white rounded-lg text-[10px] font-bold flex flex-col items-center gap-0.5 transition-colors">
+                    <span class="material-symbols-outlined text-[15px]">conveyor_belt</span>
+                    <span>Fournil</span>
+                </a>
+                <a href="index.html" class="p-1.5 text-center bg-white/10 hover:bg-[#F5B800] hover:text-[#2B160C] text-white rounded-lg text-[10px] font-bold flex flex-col items-center gap-0.5 transition-colors">
+                    <span class="material-symbols-outlined text-[15px]">storefront</span>
+                    <span>Boutique</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- Full Nav inside Drawer -->
+        <nav class="flex-1 space-y-1 overflow-y-auto no-scrollbar py-1">
+            <a href="#" onclick="switchAdminTab('cockpit', null); toggleMobileAdminDrawer(false); return false;" class="flex items-center gap-3 px-3 py-2 text-white hover:bg-white/10 rounded-xl text-xs font-semibold">
+                <span class="material-symbols-outlined text-[18px]">dashboard</span>
+                <span>Tableau de bord</span>
+            </a>
+            <a href="#" onclick="switchAdminTab('produits', null); toggleMobileAdminDrawer(false); return false;" class="flex items-center gap-3 px-3 py-2 text-[#D7CCC8] hover:text-white hover:bg-white/10 rounded-xl text-xs font-semibold">
+                <span class="material-symbols-outlined text-[18px]">bakery_dining</span>
+                <span>Produits</span>
+            </a>
+            <a href="#" onclick="switchAdminTab('categories', null); toggleMobileAdminDrawer(false); return false;" class="flex items-center gap-3 px-3 py-2 text-[#D7CCC8] hover:text-white hover:bg-white/10 rounded-xl text-xs font-semibold">
+                <span class="material-symbols-outlined text-[18px]">category</span>
+                <span>Catégories</span>
+            </a>
+            <a href="#" onclick="switchAdminTab('caissieres', null); toggleMobileAdminDrawer(false); return false;" class="flex items-center gap-3 px-3 py-2 text-[#D7CCC8] hover:text-white hover:bg-white/10 rounded-xl text-xs font-semibold">
+                <span class="material-symbols-outlined text-[18px]">badge</span>
+                <span>Personnel Caissières</span>
+            </a>
+            <a href="#" onclick="switchAdminTab('commandes', null); toggleMobileAdminDrawer(false); return false;" class="flex items-center gap-3 px-3 py-2 text-[#D7CCC8] hover:text-white hover:bg-white/10 rounded-xl text-xs font-semibold">
+                <span class="material-symbols-outlined text-[18px]">receipt_long</span>
+                <span>Commandes</span>
+            </a>
+            <a href="#" onclick="switchAdminTab('caisses', null); toggleMobileAdminDrawer(false); return false;" class="flex items-center gap-3 px-3 py-2 text-[#D7CCC8] hover:text-white hover:bg-white/10 rounded-xl text-xs font-semibold">
+                <span class="material-symbols-outlined text-[18px]">point_of_sale</span>
+                <span>Contrôle Caisses (Z)</span>
+            </a>
+            <a href="#" onclick="switchAdminTab('securite', null); toggleMobileAdminDrawer(false); return false;" class="flex items-center gap-3 px-3 py-2 text-[#D7CCC8] hover:text-white hover:bg-white/10 rounded-xl text-xs font-semibold">
+                <span class="material-symbols-outlined text-[18px]">history</span>
+                <span>Journal d'Activité</span>
+            </a>
+            <a href="#" onclick="switchAdminTab('users', null); toggleMobileAdminDrawer(false); return false;" class="flex items-center gap-3 px-3 py-2 text-[#D7CCC8] hover:text-white hover:bg-white/10 rounded-xl text-xs font-semibold">
+                <span class="material-symbols-outlined text-[18px]">group</span>
+                <span>Utilisateurs</span>
+            </a>
+        </nav>
+
+        <div class="pt-2 border-t border-[#4E2B16]/70">
+            <button onclick="logoutAdmin()" class="w-full flex items-center justify-center gap-2 py-2 text-rose-300 hover:text-white hover:bg-rose-950/40 rounded-xl text-xs font-bold border border-rose-900/30">
+                <span class="material-symbols-outlined text-[16px]">logout</span>
+                <span>Déconnexion</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- ==========================================
+         MOBILE BOTTOM APP BAR (Native App Feel)
+         ========================================== -->
+    <nav class="md:hidden fixed bottom-0 left-0 w-full z-40 bg-[#25130A]/95 backdrop-blur-md border-t border-[#4E2B16]/80 shadow-[0_-4px_20px_rgba(0,0,0,0.35)] flex justify-around items-center py-2 px-1">
+        <a id="mobileNav_cockpit" href="#" onclick="switchAdminTab('cockpit', null); return false;" class="mobile-bottom-nav flex flex-col items-center justify-center text-[#F5B800] px-2 py-1 text-[10px] font-bold">
+            <span class="material-symbols-outlined text-[22px] icon-filled">dashboard</span>
+            <span>Cockpit</span>
+        </a>
+        <a id="mobileNav_produits" href="#" onclick="switchAdminTab('produits', null); return false;" class="mobile-bottom-nav flex flex-col items-center justify-center text-[#D7CCC8] hover:text-white px-2 py-1 text-[10px] font-medium">
+            <span class="material-symbols-outlined text-[22px]">bakery_dining</span>
+            <span>Produits</span>
+        </a>
+        <button onclick="openAddProductModal()" class="-mt-5 w-12 h-12 rounded-full bg-gradient-to-r from-[#F5B800] to-[#E0A300] text-[#2B160C] flex items-center justify-center shadow-[0_4px_16px_rgba(245,184,0,0.4)] active:scale-95 transition-transform" title="Ajouter Produit">
+            <span class="material-symbols-outlined text-[24px]">add</span>
+        </button>
+        <a id="mobileNav_commandes" href="#" onclick="switchAdminTab('commandes', null); return false;" class="mobile-bottom-nav flex flex-col items-center justify-center text-[#D7CCC8] hover:text-white px-2 py-1 text-[10px] font-medium">
+            <span class="material-symbols-outlined text-[22px]">receipt_long</span>
+            <span>Commandes</span>
+        </a>
+        <a id="mobileNav_menu" href="#" onclick="toggleMobileAdminDrawer(true); return false;" class="mobile-bottom-nav flex flex-col items-center justify-center text-[#D7CCC8] hover:text-white px-2 py-1 text-[10px] font-medium">
+            <span class="material-symbols-outlined text-[22px]">menu</span>
+            <span>Menu</span>
+        </a>
+    </nav>
+
+    <!-- Container Toasts Notifications -->
+    <div id="toastContainer" class="fixed bottom-20 md:bottom-6 right-4 md:right-6 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+    <!-- Script de logique Admin -->
+    <script src="js/admin.js?v=mobile_app_1"></script>
 </body>
 </html>
