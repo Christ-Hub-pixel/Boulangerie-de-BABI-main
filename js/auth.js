@@ -144,15 +144,15 @@ document.addEventListener('DOMContentLoaded', () => {
         const path = window.location.pathname.toLowerCase();
         const user = JSON.parse(localStorage.getItem('babi_user'));
 
-        if (path.includes('bix.html')) {
+        if (path.includes('admin.html')) {
             if (!user || user.role !== 'admin') {
                 console.warn("⛔ Redirection : Privilèges Administrateur requis.");
             }
-        } else if (path.includes('index.html')) {
+        } else if (path.includes('gerante.html')) {
             if (!user || (user.role !== 'gerante' && user.role !== 'admin')) {
                 console.warn("⛔ Redirection : Privilèges Gérance requis.");
             }
-        } else if (path.includes('index.html')) {
+        } else if (path.includes('caissiere.html')) {
             if (!user || (user.role !== 'caissiere' && user.role !== 'gerante' && user.role !== 'admin')) {
                 console.warn("⛔ Redirection : Privilèges Caisse requis.");
             }
@@ -171,13 +171,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (user.role === 'caissiere') {
                 roleBadge = ' <span class="badge bg-warning text-dark ms-1">POS</span>';
-                targetUrl = 'index.html';
+                targetUrl = 'caissiere.html';
             } else if (user.role === 'gerante') {
                 roleBadge = ' <span class="badge bg-success ms-1">GÉRANCE</span>';
-                targetUrl = 'index.html';
+                targetUrl = 'gerante.html';
             } else if (user.role === 'admin') {
                 roleBadge = ' <span class="badge bg-info ms-1">ADMIN</span>';
-                targetUrl = 'bix.html';
+                targetUrl = 'admin.html';
             }
 
             accountBtns.forEach(btn => {

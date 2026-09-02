@@ -4,868 +4,868 @@
     "nom": "Baguette 150F",
     "prix": 150,
     "categorie": "pain",
-    "stock": 120,
-    "seuil_alerte": 25,
-    "description": "Baguette artisanale croustillante et légère cuite au fournil.",
     "image": "assets/baguette 150.png",
-    "is_active": 1
+    "description": "Baguette artisanale croustillante et légère cuite au fournil.",
+    "is_active": 1,
+    "stock": 120,
+    "seuil_alerte": 25
   },
   {
     "id": 2,
     "nom": "Baguette Tradition 200F",
     "prix": 200,
     "categorie": "pain",
-    "stock": 150,
-    "seuil_alerte": 30,
-    "description": "Baguette tradition au levain naturel, mie alvéolée et croûte dorée.",
     "image": "assets/baguette 200.png",
-    "is_active": 1
+    "description": "Baguette tradition au levain naturel, mie alvéolée et croûte dorée.",
+    "is_active": 1,
+    "stock": 150,
+    "seuil_alerte": 30
   },
   {
     "id": 3,
     "nom": "Ficelle Croquante",
     "prix": 500,
     "categorie": "pain",
-    "stock": 50,
-    "seuil_alerte": 15,
-    "description": "Ficelle fine extra croustillante idéale pour l'apéritif et les toasts.",
     "image": "assets/baguette 150.png",
-    "is_active": 1
+    "description": "Ficelle fine extra croustillante idéale pour l'apéritif et les toasts.",
+    "is_active": 1,
+    "stock": 50,
+    "seuil_alerte": 15
   },
   {
     "id": 4,
     "nom": "Pain Complet (Grand Format)",
     "prix": 1000,
     "categorie": "pain",
-    "stock": 40,
-    "seuil_alerte": 10,
-    "description": "Pain complet grand format riche en fibres et farine intégrale de blé.",
     "image": "assets/Pain Complet (Grand).png",
-    "is_active": 1
+    "description": "Pain complet grand format riche en fibres et farine intégrale de blé.",
+    "is_active": 1,
+    "stock": 40,
+    "seuil_alerte": 10
   },
   {
     "id": 5,
     "nom": "Pain Complet (Format Moyen)",
     "prix": 500,
     "categorie": "pain",
-    "stock": 60,
-    "seuil_alerte": 15,
-    "description": "Pain complet format moyen pour tartines saines du petit-déjeuner.",
     "image": "assets/pain complet 2.png",
-    "is_active": 1
+    "description": "Pain complet format moyen pour tartines saines du petit-déjeuner.",
+    "is_active": 1,
+    "stock": 60,
+    "seuil_alerte": 15
   },
   {
     "id": 6,
     "nom": "Pain Sans Sel Diététique",
     "prix": 150,
     "categorie": "pain",
-    "stock": 45,
-    "seuil_alerte": 10,
-    "description": "Pain sans sel recommandé pour les régimes hyposodés et l'équilibre cardiovasculaire.",
     "image": "assets/pain sans sel.png",
-    "is_active": 1
+    "description": "Pain sans sel recommandé pour les régimes hyposodés et l'équilibre cardiovasculaire.",
+    "is_active": 1,
+    "stock": 45,
+    "seuil_alerte": 10
   },
   {
     "id": 7,
     "nom": "Pain Panini Moelleux",
     "prix": 100,
     "categorie": "pain",
-    "stock": 80,
-    "seuil_alerte": 20,
-    "description": "Pain panini blanc moelleux à griller pour sandwiches chauds.",
     "image": "assets/Panini.png",
-    "is_active": 1
+    "description": "Pain panini blanc moelleux à griller pour sandwiches chauds.",
+    "is_active": 1,
+    "stock": 80,
+    "seuil_alerte": 20
   },
   {
     "id": 8,
     "nom": "Petit Pain Rond 50F",
     "prix": 50,
     "categorie": "pain",
-    "stock": 200,
-    "seuil_alerte": 40,
-    "description": "Petit pain individuel de table à 50 FCFA pour repas et collations.",
     "image": "assets/pain individuel.png",
-    "is_active": 1
+    "description": "Petit pain individuel de table à 50 FCFA pour repas et collations.",
+    "is_active": 1,
+    "stock": 200,
+    "seuil_alerte": 40
   },
   {
     "id": 9,
     "nom": "Petit Pain Rond 100F",
     "prix": 100,
     "categorie": "pain",
-    "stock": 180,
-    "seuil_alerte": 35,
-    "description": "Petit pain individuel de table à 100 FCFA, mie aérée et savoureuse.",
     "image": "assets/pain individuel.png",
-    "is_active": 1
+    "description": "Petit pain individuel de table à 100 FCFA, mie aérée et savoureuse.",
+    "is_active": 1,
+    "stock": 180,
+    "seuil_alerte": 35
   },
   {
     "id": 10,
     "nom": "Pain Parisien Croustillant",
     "prix": 300,
     "categorie": "pain",
-    "stock": 60,
-    "seuil_alerte": 15,
-    "description": "Pain parisien traditionnel long et généreux, mie tendre et croûte fine.",
     "image": "assets/baguette 200.png",
-    "is_active": 1
+    "description": "Pain parisien traditionnel long et généreux, mie tendre et croûte fine.",
+    "is_active": 1,
+    "stock": 60,
+    "seuil_alerte": 15
   },
   {
     "id": 11,
     "nom": "Pain Câbre Artisanal",
     "prix": 700,
     "categorie": "pains_speciaux",
-    "stock": 35,
-    "seuil_alerte": 10,
-    "description": "Pain spécial câbre recette traditionnelle d'antan au goût rustique.",
     "image": "assets/cabre.png",
-    "is_active": 1
+    "description": "Pain spécial câbre recette traditionnelle d'antan au goût rustique.",
+    "is_active": 1,
+    "stock": 35,
+    "seuil_alerte": 10
   },
   {
     "id": 12,
     "nom": "Pain Breton Tradition",
     "prix": 700,
     "categorie": "pains_speciaux",
-    "stock": 40,
-    "seuil_alerte": 10,
-    "description": "Pain breton rustique à la croûte dorée et arômes de céréales cuites.",
     "image": "assets/product_campagne.png",
-    "is_active": 1
+    "description": "Pain breton rustique à la croûte dorée et arômes de céréales cuites.",
+    "is_active": 1,
+    "stock": 40,
+    "seuil_alerte": 10
   },
   {
     "id": 13,
     "nom": "Pain Délice aux Céréales",
     "prix": 700,
     "categorie": "pains_speciaux",
-    "stock": 45,
-    "seuil_alerte": 10,
-    "description": "Pain délice parsemé de graines sélectionnées (lin, tournesol, sésame).",
     "image": "assets/product_cereal.png",
-    "is_active": 1
+    "description": "Pain délice parsemé de graines sélectionnées (lin, tournesol, sésame).",
+    "is_active": 1,
+    "stock": 45,
+    "seuil_alerte": 10
   },
   {
     "id": 14,
     "nom": "Pain Marbré Moelleux",
     "prix": 500,
     "categorie": "pains_speciaux",
-    "stock": 50,
-    "seuil_alerte": 15,
-    "description": "Pain marbré artisanal bicolore à la mie douce et fondante.",
     "image": "assets/marbre.png",
-    "is_active": 1
+    "description": "Pain marbré artisanal bicolore à la mie douce et fondante.",
+    "is_active": 1,
+    "stock": 50,
+    "seuil_alerte": 15
   },
   {
     "id": 15,
     "nom": "Pain Amour Brioché",
     "prix": 1000,
     "categorie": "pains_speciaux",
-    "stock": 30,
-    "seuil_alerte": 8,
-    "description": "Pain spécial amour enrichi d'une touche briochée gourmande.",
     "image": "assets/product_brioche.png",
-    "is_active": 1
+    "description": "Pain spécial amour enrichi d'une touche briochée gourmande.",
+    "is_active": 1,
+    "stock": 30,
+    "seuil_alerte": 8
   },
   {
     "id": 16,
     "nom": "Pain Canadien aux Graines",
     "prix": 700,
     "categorie": "pains_speciaux",
-    "stock": 35,
-    "seuil_alerte": 10,
-    "description": "Pain canadien aux farines nobles et graines croquantes.",
     "image": "assets/product_cereal.png",
-    "is_active": 1
+    "description": "Pain canadien aux farines nobles et graines croquantes.",
+    "is_active": 1,
+    "stock": 35,
+    "seuil_alerte": 10
   },
   {
     "id": 17,
     "nom": "Grand Pain de Mie Tranché",
     "prix": 2000,
     "categorie": "pains_speciaux",
-    "stock": 40,
-    "seuil_alerte": 10,
-    "description": "Grand pain de mie familial extra moelleux pour toasts et sandwiches.",
     "image": "assets/pain de mie.png",
-    "is_active": 1
+    "description": "Grand pain de mie familial extra moelleux pour toasts et sandwiches.",
+    "is_active": 1,
+    "stock": 40,
+    "seuil_alerte": 10
   },
   {
     "id": 18,
     "nom": "Pain Viennois Moelleux (Moyen)",
     "prix": 500,
     "categorie": "pains_speciaux",
-    "stock": 50,
-    "seuil_alerte": 15,
-    "description": "Pain viennois format moyen à la texture fine et légèrement sucrée.",
     "image": "assets/product_brioche.png",
-    "is_active": 1
+    "description": "Pain viennois format moyen à la texture fine et légèrement sucrée.",
+    "is_active": 1,
+    "stock": 50,
+    "seuil_alerte": 15
   },
   {
     "id": 19,
     "nom": "Pain Viennois Grand Format",
     "prix": 700,
     "categorie": "pains_speciaux",
-    "stock": 40,
-    "seuil_alerte": 10,
-    "description": "Grand pain viennois doré idéal pour goûters et sandwiches doux.",
     "image": "assets/product_brioche.png",
-    "is_active": 1
+    "description": "Grand pain viennois doré idéal pour goûters et sandwiches doux.",
+    "is_active": 1,
+    "stock": 40,
+    "seuil_alerte": 10
   },
   {
     "id": 20,
     "nom": "Suzette Spéciale",
     "prix": 300,
     "categorie": "pains_speciaux",
-    "stock": 45,
-    "seuil_alerte": 10,
-    "description": "Spécialité boulangère suzette sucrée parfumée.",
     "image": "assets/Crêpe Suzette.png",
-    "is_active": 1
+    "description": "Spécialité boulangère suzette sucrée parfumée.",
+    "is_active": 1,
+    "stock": 45,
+    "seuil_alerte": 10
   },
   {
     "id": 21,
     "nom": "Croissant Pur Beurre",
     "prix": 500,
     "categorie": "viennoiserie",
-    "stock": 80,
-    "seuil_alerte": 20,
-    "description": "Croissant artisanal feuilleté croustillant pur beurre de baratte.",
     "image": "assets/Croissant.png",
-    "is_active": 1
+    "description": "Croissant artisanal feuilleté croustillant pur beurre de baratte.",
+    "is_active": 1,
+    "stock": 80,
+    "seuil_alerte": 20
   },
   {
     "id": 22,
     "nom": "Pain au Chocolat Feuilleté",
     "prix": 500,
     "categorie": "viennoiserie",
-    "stock": 85,
-    "seuil_alerte": 20,
-    "description": "Pain au chocolat pur beurre garni de deux barres de chocolat noir.",
     "image": "assets/pain au chocolat.png",
-    "is_active": 1
+    "description": "Pain au chocolat pur beurre garni de deux barres de chocolat noir.",
+    "is_active": 1,
+    "stock": 85,
+    "seuil_alerte": 20
   },
   {
     "id": 23,
     "nom": "Chausson aux Pommes Doré",
     "prix": 1000,
     "categorie": "viennoiserie",
-    "stock": 40,
-    "seuil_alerte": 10,
-    "description": "Feuilletage doré croustillant garni d'une compote de pommes fondante.",
     "image": "assets/chausson aux pommes.png",
-    "is_active": 1
+    "description": "Feuilletage doré croustillant garni d'une compote de pommes fondante.",
+    "is_active": 1,
+    "stock": 40,
+    "seuil_alerte": 10
   },
   {
     "id": 24,
     "nom": "Choco Suisse Crème Pâtissière",
     "prix": 800,
     "categorie": "viennoiserie",
-    "stock": 45,
-    "seuil_alerte": 10,
-    "description": "Brioche feuilletée garnie de crème pâtissière et pépites de chocolat.",
     "image": "assets/choco suisse.png",
-    "is_active": 1
+    "description": "Brioche feuilletée garnie de crème pâtissière et pépites de chocolat.",
+    "is_active": 1,
+    "stock": 45,
+    "seuil_alerte": 10
   },
   {
     "id": 25,
     "nom": "Pain Suisse Pépites & Crème",
     "prix": 800,
     "categorie": "viennoiserie",
-    "stock": 45,
-    "seuil_alerte": 10,
-    "description": "Viennoiserie suisse traditionnelle riche en crème et chocolat.",
     "image": "assets/choco suisse.png",
-    "is_active": 1
+    "description": "Viennoiserie suisse traditionnelle riche en crème et chocolat.",
+    "is_active": 1,
+    "stock": 45,
+    "seuil_alerte": 10
   },
   {
     "id": 26,
     "nom": "Pain Helvétique Moelleux",
     "prix": 800,
     "categorie": "viennoiserie",
-    "stock": 35,
-    "seuil_alerte": 10,
-    "description": "Spécialité helvétique savoureuse au cœur fondant.",
     "image": "assets/choco suisse.png",
-    "is_active": 1
+    "description": "Spécialité helvétique savoureuse au cœur fondant.",
+    "is_active": 1,
+    "stock": 35,
+    "seuil_alerte": 10
   },
   {
     "id": 27,
     "nom": "Star Suisse Gourmand",
     "prix": 800,
     "categorie": "viennoiserie",
-    "stock": 40,
-    "seuil_alerte": 10,
-    "description": "Forme étoilée gourmande pur beurre et chocolat.",
     "image": "assets/choco suisse.png",
-    "is_active": 1
+    "description": "Forme étoilée gourmande pur beurre et chocolat.",
+    "is_active": 1,
+    "stock": 40,
+    "seuil_alerte": 10
   },
   {
     "id": 28,
     "nom": "Charaphe aux Raisins",
     "prix": 700,
     "categorie": "viennoiserie",
-    "stock": 40,
-    "seuil_alerte": 10,
-    "description": "Viennoiserie charaphe dorée au four parsemée de raisins secs moelleux.",
     "image": "assets/charaphe au raisin.png",
-    "is_active": 1
+    "description": "Viennoiserie charaphe dorée au four parsemée de raisins secs moelleux.",
+    "is_active": 1,
+    "stock": 40,
+    "seuil_alerte": 10
   },
   {
     "id": 29,
     "nom": "Pain aux Raisins Doré",
     "prix": 700,
     "categorie": "viennoiserie",
-    "stock": 45,
-    "seuil_alerte": 10,
-    "description": "Spirale feuilletée à la crème pâtissière et raisins blonds macérés.",
     "image": "assets/pain au raisin.png",
-    "is_active": 1
+    "description": "Spirale feuilletée à la crème pâtissière et raisins blonds macérés.",
+    "is_active": 1,
+    "stock": 45,
+    "seuil_alerte": 10
   },
   {
     "id": 30,
     "nom": "Escargot Gourmand Cannelle/Raisin",
     "prix": 700,
     "categorie": "viennoiserie",
-    "stock": 40,
-    "seuil_alerte": 10,
-    "description": "Roulé viennois croustillant aux épices douces et raisins.",
     "image": "assets/pain au raisin.png",
-    "is_active": 1
+    "description": "Roulé viennois croustillant aux épices douces et raisins.",
+    "is_active": 1,
+    "stock": 40,
+    "seuil_alerte": 10
   },
   {
     "id": 31,
     "nom": "Torsade aux Pépites de Chocolat",
     "prix": 800,
     "categorie": "viennoiserie",
-    "stock": 45,
-    "seuil_alerte": 10,
-    "description": "Torsade feuilletée croustillante garnie de crème et pépites.",
     "image": "assets/torsade.png",
-    "is_active": 1
+    "description": "Torsade feuilletée croustillante garnie de crème et pépites.",
+    "is_active": 1,
+    "stock": 45,
+    "seuil_alerte": 10
   },
   {
     "id": 32,
     "nom": "Pain au Lait Moelleux",
     "prix": 200,
     "categorie": "viennoiserie",
-    "stock": 70,
-    "seuil_alerte": 15,
-    "description": "Pain au lait brioché doux idéal pour le goûter des enfants.",
     "image": "assets/product_brioche.png",
-    "is_active": 1
+    "description": "Pain au lait brioché doux idéal pour le goûter des enfants.",
+    "is_active": 1,
+    "stock": 70,
+    "seuil_alerte": 15
   },
   {
     "id": 33,
     "nom": "Palmier Feuilleté Sucré",
     "prix": 200,
     "categorie": "viennoiserie",
-    "stock": 60,
-    "seuil_alerte": 15,
-    "description": "Cœur feuilleté caramélisé croustillant au sucre de canne.",
     "image": "assets/palmier.png",
-    "is_active": 1
+    "description": "Cœur feuilleté caramélisé croustillant au sucre de canne.",
+    "is_active": 1,
+    "stock": 60,
+    "seuil_alerte": 15
   },
   {
     "id": 34,
     "nom": "Cookie Pépites de Chocolat (Unité)",
     "prix": 200,
     "categorie": "viennoiserie",
-    "stock": 75,
-    "seuil_alerte": 15,
-    "description": "Grand cookie américain croustillant aux pépites de chocolat fondant.",
     "image": "assets/cookies_unite.png",
-    "is_active": 1
+    "description": "Grand cookie américain croustillant aux pépites de chocolat fondant.",
+    "is_active": 1,
+    "stock": 75,
+    "seuil_alerte": 15
   },
   {
     "id": 35,
     "nom": "Lot de Cookies Artisanaux (Sachet)",
     "prix": 1000,
     "categorie": "viennoiserie",
-    "stock": 40,
-    "seuil_alerte": 10,
-    "description": "Sachet de cookies croustillants faits maison pour toute la famille.",
     "image": "assets/cookies.png",
-    "is_active": 1
+    "description": "Sachet de cookies croustillants faits maison pour toute la famille.",
+    "is_active": 1,
+    "stock": 40,
+    "seuil_alerte": 10
   },
   {
     "id": 36,
     "nom": "Paquet de Biscottes Artisanales",
     "prix": 1000,
     "categorie": "viennoiserie",
-    "stock": 35,
-    "seuil_alerte": 10,
-    "description": "Biscottes dorées au four ultra croquantes pour le petit-déjeuner.",
     "image": "assets/biscottes.png",
-    "is_active": 1
+    "description": "Biscottes dorées au four ultra croquantes pour le petit-déjeuner.",
+    "is_active": 1,
+    "stock": 35,
+    "seuil_alerte": 10
   },
   {
     "id": 37,
     "nom": "Madeleine Moelleuse (Unité)",
     "prix": 100,
     "categorie": "viennoiserie",
-    "stock": 120,
-    "seuil_alerte": 25,
-    "description": "Madeleine artisanale au pur beurre et zeste de citron.",
     "image": "assets/madeleine unite.png",
-    "is_active": 1
+    "description": "Madeleine artisanale au pur beurre et zeste de citron.",
+    "is_active": 1,
+    "stock": 120,
+    "seuil_alerte": 25
   },
   {
     "id": 38,
     "nom": "Gâteau Événementiel (Format Standard)",
     "prix": 10000,
     "categorie": "patisserie",
-    "stock": 10,
-    "seuil_alerte": 2,
-    "description": "Gâteau pâtissier décoré pour anniversaires et petites réceptions (6-8 parts).",
     "image": "assets/Gateau1.png",
-    "is_active": 1
+    "description": "Gâteau pâtissier décoré pour anniversaires et petites réceptions (6-8 parts).",
+    "is_active": 1,
+    "stock": 10,
+    "seuil_alerte": 2
   },
   {
     "id": 39,
     "nom": "Gâteau Événementiel (Moyen Format)",
     "prix": 15000,
     "categorie": "patisserie",
-    "stock": 10,
-    "seuil_alerte": 2,
-    "description": "Gâteau de fête personnalisé (10-12 parts) aux saveurs vanille, choco ou fruits.",
     "image": "assets/gateau2.png",
-    "is_active": 1
+    "description": "Gâteau de fête personnalisé (10-12 parts) aux saveurs vanille, choco ou fruits.",
+    "is_active": 1,
+    "stock": 10,
+    "seuil_alerte": 2
   },
   {
     "id": 40,
     "nom": "Gâteau Événementiel Prestige (Grand Format)",
     "prix": 20000,
     "categorie": "patisserie",
-    "stock": 8,
-    "seuil_alerte": 2,
-    "description": "Grand gâteau de cérémonie haut de gamme (15-20 parts) garniture gourmande.",
     "image": "assets/gateau evenement.png",
-    "is_active": 1
+    "description": "Grand gâteau de cérémonie haut de gamme (15-20 parts) garniture gourmande.",
+    "is_active": 1,
+    "stock": 8,
+    "seuil_alerte": 2
   },
   {
     "id": 41,
     "nom": "Gâteau Prestige Royal (XXL Cérémonie)",
     "prix": 25000,
     "categorie": "patisserie",
-    "stock": 6,
-    "seuil_alerte": 1,
-    "description": "Pièce maîtresse pâtissière majestueuse pour mariages et grands galas.",
     "image": "assets/gateau mariage.png",
-    "is_active": 1
+    "description": "Pièce maîtresse pâtissière majestueuse pour mariages et grands galas.",
+    "is_active": 1,
+    "stock": 6,
+    "seuil_alerte": 1
   },
   {
     "id": 42,
     "nom": "Grande Bûche de Noël Gourmande",
     "prix": 7000,
     "categorie": "patisserie",
-    "stock": 15,
-    "seuil_alerte": 3,
-    "description": "Grande bûche pâtissière festive roulée au chocolat noir et praliné.",
     "image": "assets/buche de noel.png",
-    "is_active": 1
+    "description": "Grande bûche pâtissière festive roulée au chocolat noir et praliné.",
+    "is_active": 1,
+    "stock": 15,
+    "seuil_alerte": 3
   },
   {
     "id": 43,
     "nom": "Bûche de Noël Traditionnelle",
     "prix": 5000,
     "categorie": "patisserie",
-    "stock": 20,
-    "seuil_alerte": 5,
-    "description": "Bûche de Noël classique crème au beurre vanille ou café.",
     "image": "assets/buche de noel.png",
-    "is_active": 1
+    "description": "Bûche de Noël classique crème au beurre vanille ou café.",
+    "is_active": 1,
+    "stock": 20,
+    "seuil_alerte": 5
   },
   {
     "id": 44,
     "nom": "Moka Pâtissier au Café",
     "prix": 1500,
     "categorie": "patisserie",
-    "stock": 25,
-    "seuil_alerte": 5,
-    "description": "Entremets moka génoise légère imbibée et crème onctueuse au café d'Abidjan.",
     "image": "assets/moka1.png",
-    "is_active": 1
+    "description": "Entremets moka génoise légère imbibée et crème onctueuse au café d'Abidjan.",
+    "is_active": 1,
+    "stock": 25,
+    "seuil_alerte": 5
   },
   {
     "id": 45,
     "nom": "Flan Pâtissier Traditionnel",
     "prix": 1000,
     "categorie": "patisserie",
-    "stock": 30,
-    "seuil_alerte": 8,
-    "description": "Part généreuse de flan crémeux vanillé sur pâte brisée dorée.",
     "image": "assets/Flan.png",
-    "is_active": 1
+    "description": "Part généreuse de flan crémeux vanillé sur pâte brisée dorée.",
+    "is_active": 1,
+    "stock": 30,
+    "seuil_alerte": 8
   },
   {
     "id": 46,
     "nom": "Lot de Madeleines Moelleuses (Sachet)",
     "prix": 500,
     "categorie": "patisserie",
-    "stock": 45,
-    "seuil_alerte": 10,
-    "description": "Sachet gourmand de madeleines artisanales moelleuses.",
     "image": "assets/lots de madeleine.png",
-    "is_active": 1
+    "description": "Sachet gourmand de madeleines artisanales moelleuses.",
+    "is_active": 1,
+    "stock": 45,
+    "seuil_alerte": 10
   },
   {
     "id": 47,
     "nom": "Madeleine Pâtissière Vanillée",
     "prix": 100,
     "categorie": "patisserie",
-    "stock": 100,
-    "seuil_alerte": 20,
-    "description": "Madeleine individuelle parfumée à la vanille Bourbon.",
     "image": "assets/madeleine unite.png",
-    "is_active": 1
+    "description": "Madeleine individuelle parfumée à la vanille Bourbon.",
+    "is_active": 1,
+    "stock": 100,
+    "seuil_alerte": 20
   },
   {
     "id": 48,
     "nom": "Cupcake Glaçage Onctueux",
     "prix": 500,
     "categorie": "patisserie",
-    "stock": 35,
-    "seuil_alerte": 8,
-    "description": "Petit gâteau individuel avec dôme de glaçage crémeux et décors sucrés.",
     "image": "assets/Gateau1.1.png",
-    "is_active": 1
+    "description": "Petit gâteau individuel avec dôme de glaçage crémeux et décors sucrés.",
+    "is_active": 1,
+    "stock": 35,
+    "seuil_alerte": 8
   },
   {
     "id": 49,
     "nom": "Tranche de Cake Moelleux",
     "prix": 300,
     "categorie": "patisserie",
-    "stock": 50,
-    "seuil_alerte": 15,
-    "description": "Tranche individuelle de cake marbré ou vanille fait maison.",
     "image": "assets/cake.png",
-    "is_active": 1
+    "description": "Tranche individuelle de cake marbré ou vanille fait maison.",
+    "is_active": 1,
+    "stock": 50,
+    "seuil_alerte": 15
   },
   {
     "id": 50,
     "nom": "Cake Entier Artisanal",
     "prix": 700,
     "categorie": "patisserie",
-    "stock": 30,
-    "seuil_alerte": 8,
-    "description": "Cake entier familial aux fruits confits, chocolat ou citron.",
     "image": "assets/cake1.png",
-    "is_active": 1
+    "description": "Cake entier familial aux fruits confits, chocolat ou citron.",
+    "is_active": 1,
+    "stock": 30,
+    "seuil_alerte": 8
   },
   {
     "id": 51,
     "nom": "Crêpe Gourmande au Nutella",
     "prix": 2000,
     "categorie": "patisserie",
-    "stock": 30,
-    "seuil_alerte": 5,
-    "description": "Crêpe chaude préparée minute généreusement nappée de Nutella fondant.",
     "image": "assets/crepe au nutella.png",
-    "is_active": 1
+    "description": "Crêpe chaude préparée minute généreusement nappée de Nutella fondant.",
+    "is_active": 1,
+    "stock": 30,
+    "seuil_alerte": 5
   },
   {
     "id": 52,
     "nom": "Crêpe Moelleuse à la Vanille",
     "prix": 1000,
     "categorie": "patisserie",
-    "stock": 35,
-    "seuil_alerte": 8,
-    "description": "Crêpe légère et dorée parfumée au sucre vanillé.",
     "image": "assets/crepe a la vanille.png",
-    "is_active": 1
+    "description": "Crêpe légère et dorée parfumée au sucre vanillé.",
+    "is_active": 1,
+    "stock": 35,
+    "seuil_alerte": 8
   },
   {
     "id": 53,
     "nom": "Crêpe Suzette Parfumée",
     "prix": 1500,
     "categorie": "patisserie",
-    "stock": 25,
-    "seuil_alerte": 5,
-    "description": "Crêpe traditionnelle parfumée aux zestes d'orange et caramel doux.",
     "image": "assets/Crêpe Suzette.png",
-    "is_active": 1
+    "description": "Crêpe traditionnelle parfumée aux zestes d'orange et caramel doux.",
+    "is_active": 1,
+    "stock": 25,
+    "seuil_alerte": 5
   },
   {
     "id": 54,
     "nom": "Fondant Cœur Coulant Chocolat",
     "prix": 1000,
     "categorie": "patisserie",
-    "stock": 40,
-    "seuil_alerte": 10,
-    "description": "Gâteau individuel pur chocolat avec cœur chaud intensément coulant.",
     "image": "assets/Fondant au Chocolat.png",
-    "is_active": 1
+    "description": "Gâteau individuel pur chocolat avec cœur chaud intensément coulant.",
+    "is_active": 1,
+    "stock": 40,
+    "seuil_alerte": 10
   },
   {
     "id": 55,
     "nom": "Glace Artisanale Pot VIP",
     "prix": 1000,
     "categorie": "patisserie",
-    "stock": 60,
-    "seuil_alerte": 15,
-    "description": "Crème glacée artisanale onctueuse en pot individuel (Vanille, Chocolat, Fraise).",
     "image": "assets/glace.png",
-    "is_active": 1
+    "description": "Crème glacée artisanale onctueuse en pot individuel (Vanille, Chocolat, Fraise).",
+    "is_active": 1,
+    "stock": 60,
+    "seuil_alerte": 15
   },
   {
     "id": 56,
     "nom": "Chill 700F",
     "prix": 700,
     "categorie": "boisson",
-    "stock": 50,
-    "seuil_alerte": 15,
-    "description": "Boisson rafraîchissante gazeuse Chill servie bien glacée.",
     "image": "assets/chill.png",
-    "is_active": 1
+    "description": "Boisson rafraîchissante gazeuse Chill servie bien glacée.",
+    "is_active": 1,
+    "stock": 50,
+    "seuil_alerte": 15
   },
   {
     "id": 57,
     "nom": "Youzou Fruité",
     "prix": 500,
     "categorie": "boisson",
-    "stock": 60,
-    "seuil_alerte": 15,
-    "description": "Boisson fruitée Youzou locale et désaltérante idéale avec vos viennoiseries.",
     "image": "assets/youzou.png",
-    "is_active": 1
+    "description": "Boisson fruitée Youzou locale et désaltérante idéale avec vos viennoiseries.",
+    "is_active": 1,
+    "stock": 60,
+    "seuil_alerte": 15
   },
   {
     "id": 58,
     "nom": "World Cola Frais",
     "prix": 500,
     "categorie": "boisson",
-    "stock": 70,
-    "seuil_alerte": 20,
-    "description": "Soda cola très pétillant servi bien frais en canette.",
     "image": "assets/world cola.png",
-    "is_active": 1
+    "description": "Soda cola très pétillant servi bien frais en canette.",
+    "is_active": 1,
+    "stock": 70,
+    "seuil_alerte": 20
   },
   {
     "id": 59,
     "nom": "Youki Orange",
     "prix": 500,
     "categorie": "boisson",
-    "stock": 55,
-    "seuil_alerte": 15,
-    "description": "Soda pétillant à l'orange très fruité et tonifiant.",
     "image": "assets/youki moka cafe.png",
-    "is_active": 1
+    "description": "Soda pétillant à l'orange très fruité et tonifiant.",
+    "is_active": 1,
+    "stock": 55,
+    "seuil_alerte": 15
   },
   {
     "id": 60,
     "nom": "Youki Pomme",
     "prix": 500,
     "categorie": "boisson",
-    "stock": 55,
-    "seuil_alerte": 15,
-    "description": "Soda pétillant parfum pomme verte désaltérant.",
     "image": "assets/youki pomme.png",
-    "is_active": 1
+    "description": "Soda pétillant parfum pomme verte désaltérant.",
+    "is_active": 1,
+    "stock": 55,
+    "seuil_alerte": 15
   },
   {
     "id": 61,
     "nom": "Jus Naturel (Petit Format)",
     "prix": 300,
     "categorie": "boisson",
-    "stock": 60,
-    "seuil_alerte": 15,
-    "description": "Petit gobelet de jus 100% naturel pressé chaque matin.",
     "image": "assets/Jus Naturel (Petit).png",
-    "is_active": 1
+    "description": "Petit gobelet de jus 100% naturel pressé chaque matin.",
+    "is_active": 1,
+    "stock": 60,
+    "seuil_alerte": 15
   },
   {
     "id": 62,
     "nom": "Jus Naturel (Format Moyen)",
     "prix": 500,
     "categorie": "boisson",
-    "stock": 70,
-    "seuil_alerte": 20,
-    "description": "Verre moyen de jus frais pressé riche en vitamines.",
     "image": "assets/Jus Naturel (Moyen).png",
-    "is_active": 1
+    "description": "Verre moyen de jus frais pressé riche en vitamines.",
+    "is_active": 1,
+    "stock": 70,
+    "seuil_alerte": 20
   },
   {
     "id": 63,
     "nom": "Jus Naturel (Grand Format)",
     "prix": 2000,
     "categorie": "boisson",
-    "stock": 40,
-    "seuil_alerte": 10,
-    "description": "Grande bouteille de jus naturel artisanal 1L pour toute la table.",
     "image": "assets/Jus Naturel (Grand).png",
-    "is_active": 1
+    "description": "Grande bouteille de jus naturel artisanal 1L pour toute la table.",
+    "is_active": 1,
+    "stock": 40,
+    "seuil_alerte": 10
   },
   {
     "id": 64,
     "nom": "Orangina 500F",
     "prix": 500,
     "categorie": "boisson",
-    "stock": 65,
-    "seuil_alerte": 15,
-    "description": "Boisson gazeuse à la pulpe d'orange naturelle à secouer avant dégustation.",
     "image": "assets/Orangina.png",
-    "is_active": 1
+    "description": "Boisson gazeuse à la pulpe d'orange naturelle à secouer avant dégustation.",
+    "is_active": 1,
+    "stock": 65,
+    "seuil_alerte": 15
   },
   {
     "id": 65,
     "nom": "Sprite Citron-Lime",
     "prix": 500,
     "categorie": "boisson",
-    "stock": 70,
-    "seuil_alerte": 20,
-    "description": "Boisson gazeuse rafraîchissante aux arômes naturels de citron et lime.",
     "image": "assets/sprite.png",
-    "is_active": 1
+    "description": "Boisson gazeuse rafraîchissante aux arômes naturels de citron et lime.",
+    "is_active": 1,
+    "stock": 70,
+    "seuil_alerte": 20
   },
   {
     "id": 66,
     "nom": "Énergie Malt",
     "prix": 700,
     "categorie": "boisson",
-    "stock": 50,
-    "seuil_alerte": 15,
-    "description": "Boisson maltée sans alcool énergisante et riche en goût.",
     "image": "assets/energie malt .png",
-    "is_active": 1
+    "description": "Boisson maltée sans alcool énergisante et riche en goût.",
+    "is_active": 1,
+    "stock": 50,
+    "seuil_alerte": 15
   },
   {
     "id": 67,
     "nom": "Eau Minérale (Petite Bouteille)",
     "prix": 200,
     "categorie": "boisson",
-    "stock": 150,
-    "seuil_alerte": 40,
-    "description": "Bouteille d'eau minérale naturelle Céleste 0.5L bien fraîche.",
     "image": "assets/bouteille celeste.png",
-    "is_active": 1
+    "description": "Bouteille d'eau minérale naturelle Céleste 0.5L bien fraîche.",
+    "is_active": 1,
+    "stock": 150,
+    "seuil_alerte": 40
   },
   {
     "id": 68,
     "nom": "Eau Minérale (Grande Bouteille 1.5L)",
     "prix": 1000,
     "categorie": "boisson",
-    "stock": 90,
-    "seuil_alerte": 25,
-    "description": "Grande bouteille d'eau minérale 1.5L pour hydratation quotidienne.",
     "image": "assets/bouteille celeste.png",
-    "is_active": 1
+    "description": "Grande bouteille d'eau minérale 1.5L pour hydratation quotidienne.",
+    "is_active": 1,
+    "stock": 90,
+    "seuil_alerte": 25
   },
   {
     "id": 69,
     "nom": "Déguê Artisanal",
     "prix": 500,
     "categorie": "boisson",
-    "stock": 50,
-    "seuil_alerte": 15,
-    "description": "Délicieux yaourt onctueux aux grains de mil perlé fait maison.",
     "image": "assets/baobab(petit).png",
-    "is_active": 1
+    "description": "Délicieux yaourt onctueux aux grains de mil perlé fait maison.",
+    "is_active": 1,
+    "stock": 50,
+    "seuil_alerte": 15
   },
   {
     "id": 70,
     "nom": "Lait Frais",
     "prix": 500,
     "categorie": "boisson",
-    "stock": 45,
-    "seuil_alerte": 10,
-    "description": "Bouteille de lait frais pasteurisé doux et nutritif.",
     "image": "assets/bouteille celeste.png",
-    "is_active": 1
+    "description": "Bouteille de lait frais pasteurisé doux et nutritif.",
+    "is_active": 1,
+    "stock": 45,
+    "seuil_alerte": 10
   },
   {
     "id": 71,
     "nom": "Jus de Passion (Bouteille 1.5L)",
     "prix": 3000,
     "categorie": "boisson",
-    "stock": 30,
-    "seuil_alerte": 8,
-    "description": "Grand flacon 1.5L de pur jus de fruits de la passion parfumés de Côte d'Ivoire.",
     "image": "assets/jus de passion.png",
-    "is_active": 1
+    "description": "Grand flacon 1.5L de pur jus de fruits de la passion parfumés de Côte d'Ivoire.",
+    "is_active": 1,
+    "stock": 30,
+    "seuil_alerte": 8
   },
   {
     "id": 72,
     "nom": "Jus de Passion (Petite Bouteille)",
     "prix": 700,
     "categorie": "boisson",
-    "stock": 50,
-    "seuil_alerte": 15,
-    "description": "Petite bouteille nomade de jus de passion acidulé et vitaminé.",
     "image": "assets/jus de passion.png",
-    "is_active": 1
+    "description": "Petite bouteille nomade de jus de passion acidulé et vitaminé.",
+    "is_active": 1,
+    "stock": 50,
+    "seuil_alerte": 15
   },
   {
     "id": 73,
     "nom": "Jus de Baobab (Petite Bouteille)",
     "prix": 500,
     "categorie": "boisson",
-    "stock": 50,
-    "seuil_alerte": 15,
-    "description": "Jus onctueux au pain de singe (baobab) riche en calcium et vitamine C.",
     "image": "assets/baobab(petit).png",
-    "is_active": 1
+    "description": "Jus onctueux au pain de singe (baobab) riche en calcium et vitamine C.",
+    "is_active": 1,
+    "stock": 50,
+    "seuil_alerte": 15
   },
   {
     "id": 74,
     "nom": "Jus de Bissap (Bouteille)",
     "prix": 2000,
     "categorie": "boisson",
-    "stock": 40,
-    "seuil_alerte": 10,
-    "description": "Infusion naturelle de fleurs d'hibiscus karkadé et menthe fraîche.",
     "image": "assets/jus de bissap.png",
-    "is_active": 1
+    "description": "Infusion naturelle de fleurs d'hibiscus karkadé et menthe fraîche.",
+    "is_active": 1,
+    "stock": 40,
+    "seuil_alerte": 10
   },
   {
     "id": 75,
     "nom": "Jus de Gingembre (Bouteille 1.5L)",
     "prix": 3000,
     "categorie": "boisson",
-    "stock": 35,
-    "seuil_alerte": 8,
-    "description": "Pur jus de gingembre épicé et tonique avec une pointe d'ananas.",
     "image": "assets/jus de gingembre.png",
-    "is_active": 1
+    "description": "Pur jus de gingembre épicé et tonique avec une pointe d'ananas.",
+    "is_active": 1,
+    "stock": 35,
+    "seuil_alerte": 8
   },
   {
     "id": 76,
     "nom": "Jus de Tamarin (Bouteille)",
     "prix": 2000,
     "categorie": "boisson",
-    "stock": 35,
-    "seuil_alerte": 8,
-    "description": "Jus doux et acidulé de tamarin traditionnel bien frais.",
     "image": "assets/jus de tamari.png",
-    "is_active": 1
+    "description": "Jus doux et acidulé de tamarin traditionnel bien frais.",
+    "is_active": 1,
+    "stock": 35,
+    "seuil_alerte": 8
   },
   {
     "id": 77,
     "nom": "Cocktail Pur Jus (Bouteille 1.5L)",
     "prix": 3000,
     "categorie": "boisson",
-    "stock": 30,
-    "seuil_alerte": 8,
-    "description": "Mélange tonique de fruits tropicaux (Ananas, Passion, Orange, Goyave).",
     "image": "assets/cocktail.png",
-    "is_active": 1
+    "description": "Mélange tonique de fruits tropicaux (Ananas, Passion, Orange, Goyave).",
+    "is_active": 1,
+    "stock": 30,
+    "seuil_alerte": 8
   },
   {
     "id": 78,
     "nom": "Jus de Citron Pur (Bouteille)",
     "prix": 2000,
     "categorie": "boisson",
-    "stock": 35,
-    "seuil_alerte": 8,
-    "description": "Jus de citron pressé désaltérant et riche en antioxydants.",
     "image": "assets/jus de citron.png",
-    "is_active": 1
+    "description": "Jus de citron pressé désaltérant et riche en antioxydants.",
+    "is_active": 1,
+    "stock": 35,
+    "seuil_alerte": 8
   },
   {
     "id": 79,
     "nom": "Chocolat Chaud Gourmand (Grande Bouteille)",
     "prix": 3000,
     "categorie": "boisson",
-    "stock": 25,
-    "seuil_alerte": 5,
-    "description": "Grand format de pur chocolat ivoirien onctueux et velouté.",
     "image": "assets/Chocolat Chaud.png",
-    "is_active": 1
+    "description": "Grand format de pur chocolat ivoirien onctueux et velouté.",
+    "is_active": 1,
+    "stock": 25,
+    "seuil_alerte": 5
   }
 ]
