@@ -1600,7 +1600,7 @@ app.get('/api/pos/daily-summary', async (req, res) => {
 // ==========================================
 
 // 1. Get Live Cash Register Status & Today's Sales
-app.get(['/api/pos/register/status', '/api/pos/cash-register/current'], async (req, res) => {
+app.get(['/api/pos/register/status', '/api/pos/cash-register/current', '/api/pos/register/current'], async (req, res) => {
     try {
         const today = new Date().toISOString().split('T')[0];
         let register = await db.get("SELECT * FROM cash_registers WHERE statut = 'ouvert' ORDER BY id DESC LIMIT 1");
@@ -1700,7 +1700,7 @@ app.get(['/api/pos/register/ticket-x', '/api/pos/cash-register/ticket-x'], async
 });
 
 // 4. Close Cash Register Definitive (Ticket Z with Cash Counting & Discrepancy)
-app.post(['/api/pos/register/close-z', '/api/pos/cash-register/close-z'], async (req, res) => {
+app.post(['/api/pos/register/close-z', '/api/pos/cash-register/close-z', '/api/pos/register/close'], async (req, res) => {
     try {
         const {
             caissiere_nom,
