@@ -563,7 +563,7 @@ function saveOrderLocally(order) {
 
 window.generateWhatsAppOrderUrl = function(order) {
     if (!order) return '#';
-    const bakeryWhatsApp = "2250704389201";
+    const bakeryWhatsApp = "22507 00 00 00 00";
     const origin = window.location.origin || '';
     const basePath = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/') + 1);
     const trackingUrl = `${origin}${basePath}suivi.html?orderId=${order.id}&phone=${encodeURIComponent(order.phone || '')}`;
@@ -749,8 +749,8 @@ function openOperatorPaymentModal(op) {
         });
     }
 
-    let phoneVal = document.getElementById('momoPhoneInput') ? document.getElementById('momoPhoneInput').value : '0704389201';
-    if (!phoneVal) phoneVal = '0704389201';
+    let phoneVal = document.getElementById('momoPhoneInput') ? document.getElementById('momoPhoneInput').value : '07 00 00 00 00';
+    if (!phoneVal) phoneVal = '07 00 00 00 00';
 
     // Lien Marchand Officiel Wave Côte d'Ivoire (Direct & Reconnecté)
     const certCode = 'CERT-BABI-WAVE-' + Math.floor(1000 + Math.random() * 9000);

@@ -56323,7 +56323,7 @@ n=A.a([k,B.ax,A.bF(A.G(e,A.cd(f.r===3?B.hz:B.xV,B.av,e,36),B.h,e,e,new A.K(j,e,i
 k=f.r
 if(k===1){k=A.q("R\xe9initialiser votre mot de passe",e,e,e,e,e,A.cn().$3$color$fontSize$fontWeight(B.e,22,B.v),B.a9,e,e)
 j=A.q("Entrez votre email ou t\xe9l\xe9phone pour recevoir votre code s\xe9curis\xe9",e,e,e,e,e,A.dn().$3$color$fontSize$height(B.iC,12.5,1.3),B.a9,e,e)
-i=f.YQ(f.d,"ex: contact@babi.ci ou 0704389201",B.xG,B.jX,"Email ou T\xe9l\xe9phone")
+i=f.YQ(f.d,"ex: contact@babi.ci ou 07 00 00 00 00",B.xG,B.jX,"Email ou T\xe9l\xe9phone")
 h=f.w
 B.b.E(n,A.a([k,B.bs,j,B.jO,i,B.ax,f.M2(B.Z0,h,"ENVOYER LE CODE DE S\xc9CURIT\xc9",h?e:f.gaCy())],l))}else if(k===2){k=A.q("V\xe9rification & Nouveau mot de passe",e,e,e,e,e,A.cn().$3$color$fontSize$fontWeight(B.e,21,B.v),B.a9,e,e)
 j=A.q("Saisissez le code re\xe7u sur "+f.d.a.a+" et choisissez votre nouveau mot de passe.",e,e,e,e,e,A.dn().$3$color$fontSize$height(B.iC,12,1.3),B.a9,e,e)
@@ -56485,7 +56485,7 @@ j=A.bF(A.G(a4,A.X(A.a([B.lH,B.ai,A.q("MAISON FOND\xc9E \xc0 ABIDJAN",a4,a4,a4,a4
 i=A.bF(A.G(a4,B.Mg,B.h,a4,a4,new A.K(a4,a4,a4,a4,A.a([new A.ag(4,B.u,B.az.J(0.35),B.o,24)],m),a4,B.a1),a4,a4,a4,B.dm,a4,a4,a4),a4,a4)
 k=A.q("Bon retour dans votre Boulangerie",a4,a4,a4,a4,a4,A.cn().$4$color$fontSize$fontWeight$letterSpacing(B.e,25,B.v,0.2),B.a9,a4,a4)
 g=A.q("Commandez vos viennoiseries & pains chauds dor\xe9s",a4,a4,a4,a4,a4,A.dn().$4$color$fontSize$fontWeight$height(B.iC,12.5,B.F,1.3),B.a9,a4,a4)
-f=a3.anl(a3.w,"ex: contact@babi.ci ou 0704389201",B.xQ,B.jX,"Email ou T\xe9l\xe9phone")
+f=a3.anl(a3.w,"ex: contact@babi.ci ou 07 00 00 00 00",B.xQ,B.jX,"Email ou T\xe9l\xe9phone")
 e=a3.ank(a3.x,"\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022",B.xM,!0,"Mot de passe secret")
 d=A.xz(a4,a4,a4,a4,a4,a4,a4,a4,a4,a4,a4,a4,B.dm,a4,a4,a4,a4,B.eF,a4,a4)
 d=A.hF(A.q("Mot de passe oubli\xe9 ?",a4,a4,a4,a4,a4,A.dn().$3$color$fontSize$fontWeight(B.av,12,B.r),a4,a4,a4),new A.aS2(b0),d)
@@ -56675,7 +56675,7 @@ k=A.q("Cr\xe9er votre compte gourmand",a5,a5,a5,a5,a5,A.cn().$4$color$fontSize$f
 g=A.q("Profitez des sorties de pain chaud & de vos avantages fid\xe9lit\xe9",a5,a5,a5,a5,a5,A.dn().$3$color$fontSize$fontWeight(B.iC,12,B.F),B.a9,a5,a5)
 f=a4.aBf(a4.w,"ex: A\xefcha Ouattara",B.q_,"Nom & Pr\xe9noms *")
 e=a4.aBg(a4.x,"ex: aicha@gmail.com",B.xG,B.jX,"Adresse email *")
-d=a4.aBh(a4.y,"0704389201",B.xR,B.mD,"Num\xe9ro de t\xe9l\xe9phone * (WhatsApp)",new A.a3(B.Wb,A.X(A.a([B.aq0,B.ai,A.q("+225",a5,a5,a5,a5,a5,A.dn().$3$color$fontSize$fontWeight(B.av,13,B.cP),a5,a5,a5),B.as,A.G(a5,a5,B.h,B.e.J(0.25),a5,a5,a5,18,a5,a5,a5,a5,1)],h),B.j,B.i,B.J,0,a5,a5),a5))
+d=a4.aBh(a4.y,"07 00 00 00 00",B.xR,B.mD,"Num\xe9ro de t\xe9l\xe9phone * (WhatsApp)",new A.a3(B.Wb,A.X(A.a([B.aq0,B.ai,A.q("+225",a5,a5,a5,a5,a5,A.dn().$3$color$fontSize$fontWeight(B.av,13,B.cP),a5,a5,a5),B.as,A.G(a5,a5,B.h,B.e.J(0.25),a5,a5,a5,18,a5,a5,a5,a5,1)],h),B.j,B.i,B.J,0,a5,a5),a5))
 c=A.q("Civilit\xe9 / Genre",a5,a5,a5,a5,a5,A.dn().$3$color$fontSize$fontWeight(B.aC,12,B.r),a5,a5,a5)
 b=B.p.J(0.38)
 a=A.y(16)
@@ -60258,7 +60258,7 @@ s=q}for(;;)switch(s){case 0:f=o.a.c
 e=A.bt("^ORD-|^REC-|^POS-|^BAB-",!0,!1,!1)
 d=A.d_(f,e,"")
 f=o.a
-e="\ud83e\udd56 *BOULANGERIE DE BABI* \ud83e\udd50\n_Le Pain de Babi_\nTEL: 2722564123 / 0704389201 / 0706817977\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n"+("\ud83e\uddfe *Receipt:* "+d+"\n")+("\ud83d\udcc5 *Date:* "+f.d+"\n")+("\ud83d\udc64 *Caissier(e):* "+f.f+"\n")+"\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n*Article* | *Prix* | *Qte* | *Valeur*\n"
+e="\ud83e\udd56 *BOULANGERIE DE BABI* \ud83e\udd50\n_Le Pain de Babi_\nTEL: 27 00 00 00 00 / 07 00 00 00 00 / 07 00 00 00 01\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n"+("\ud83e\uddfe *Receipt:* "+d+"\n")+("\ud83d\udcc5 *Date:* "+f.d+"\n")+("\ud83d\udc64 *Caissier(e):* "+f.f+"\n")+"\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n*Article* | *Prix* | *Qte* | *Valeur*\n"
 for(l=a.length,k=0;k<l;++k,e=h){j=a[k]
 i=j.b
 h=j.c
@@ -60293,7 +60293,7 @@ case 1:return A.u(p.at(-1),r)}})
 return A.w($async$rM,r)},
 apa(a,b){var s,r,q,p,o=this,n=o.a.c,m=A.bt("^ORD-|^REC-|^POS-|^BAB-",!0,!1,!1),l=A.d_(n,m,"")
 n=o.a
-n="BOULANGERIE DE BABI\nLe Pain de Babi\nTEL: 2722564123 / 0704389201 / 0706817977\nRecu\n\n"+("Receipt:     "+l+"\n")+("Date:        "+n.d+"\n")+"Terminal:    DESKTOP-FEHP3HD\n"+("Caissier(e): "+n.f+"\n\n")+"Article                 Prix    Qte    Valeur\n--------------------------------------------\n"
+n="BOULANGERIE DE BABI\nLe Pain de Babi\nTEL: 27 00 00 00 00 / 07 00 00 00 00 / 07 00 00 00 01\nRecu\n\n"+("Receipt:     "+l+"\n")+("Date:        "+n.d+"\n")+"Terminal:    DESKTOP-FEHP3HD\n"+("Caissier(e): "+n.f+"\n\n")+"Article                 Prix    Qte    Valeur\n--------------------------------------------\n"
 for(m=a.length,s=0;s<m;++s,n=p){r=a[s]
 q=r.b
 p=r.c
@@ -61190,13 +61190,13 @@ r=J.bmS(h)
 h=A.mO(j,j,j,!0,!0,B.c_,j,1,!0,j,0,!1,j,!1,j,j,A.cp(j,j,B.eD,j,j,new A.aN5(a),j,j,j),j,!0,j,j,j,j,j,B.aop,j,j,j,1,j,!0)
 s=t.p
 q=A.bF(A.cW(B.aq,A.a([A.fV(j,A.bal(3,r,40,g,100),B.G,!1,j,j,j,j,j,j,j,j,j,j,j,j,j,j,j,j,new A.aN6(k,a,g),j,j,j,j,j,j),A.dQ(0,A.fV(j,A.G(j,B.a0r,B.h,j,j,new A.K(B.y,j,A.aE(B.e,2),j,B.yy,j,B.a1),j,j,j,B.ld,j,j,j),B.G,!1,j,j,j,j,j,j,j,j,j,j,j,j,j,j,j,j,new A.aN7(k,a,g),j,j,j,j,j,j),j,j,j,0,j,j)],s),B.x,B.ap,j),j,j)
-f=k.Z_("Pr\xe9nom",f,B.Y2,"Ex: Ezoua")
+f=k.Z_("Pr\xe9nom",f,B.Y2,"Ex: Yao")
 p=k.x
 p===$&&A.b()
-p=k.Z_("Nom",p,B.Yd,"Ex: Emian")
+p=k.Z_("Nom",p,B.Yd,"Ex: Kouassi")
 o=k.y
 o===$&&A.b()
-o=k.Mh("Num\xe9ro de t\xe9l\xe9phone",o,B.Yn,"Ex: 01 61 40 70 64",B.mD)
+o=k.Mh("Num\xe9ro de t\xe9l\xe9phone",o,B.Yn,"Ex: 07 00 00 00 00",B.mD)
 n=k.z
 n===$&&A.b()
 n=k.Mh("Adresse E-mail",n,B.Yh,"Ex: contact@email.com",B.jX)
@@ -61257,7 +61257,7 @@ A.aN7.prototype={
 $0(){return this.a.a4f(this.b,this.c)},
 $S:0}
 A.uv.prototype={
-a2(){return new A.a2S(A.a([A.H(["id","babi_riviera","name","Fournil Riviera","address","Riviera, Abidjan","distance","Fournil Unique","hours","05:45 - 23:00","isOpen",!0,"phone","+225 01 61 40 70 64","mapUrl","https://maps.app.goo.gl/6JrQ1ryZj2KeD5zG7"],t.N,t.z)],t.H7))}}
+a2(){return new A.a2S(A.a([A.H(["id","babi_riviera","name","Fournil Riviera","address","Riviera, Abidjan","distance","Fournil Unique","hours","05:45 - 23:00","isOpen",!0,"phone","+225 07 00 00 00 00","mapUrl","https://maps.app.goo.gl/6JrQ1ryZj2KeD5zG7"],t.N,t.z)],t.H7))}}
 A.a2S.prototype={
 ai(){var s,r
 this.aF()
@@ -61366,7 +61366,7 @@ M3(a,b,c){var s=null,r=t.p
 return new A.a3(B.l6,A.X(A.a([A.G(s,A.bF(A.q(a,s,s,s,s,s,B.akR,s,s,s),s,s),B.h,s,s,B.NQ,s,26,s,s,s,s,26),B.bV,A.aY(A.a6(A.a([A.q(b,s,s,s,s,s,B.rQ,s,s,s),B.bF,A.q(c,s,s,s,s,s,B.ak9,s,s,s)],r),B.z,s,B.i,B.f,0,B.m),1)],r),B.z,B.i,B.f,0,s,s),s)}}
 A.auW.prototype={
 $1(a){var s=null,r=this.a
-return new A.a3(new A.a_(20,20,20,A.aw(a,s,t.w).w.f.d+20),A.a6(A.a([A.G(B.W,s,B.h,s,s,new A.K(B.ew,s,s,A.y(2),s,s,B.n),s,4,s,s,s,s,40),B.a7,B.aqY,B.a5,B.aqr,B.ax,A.j0(s,B.bM,!1,s,!0,B.x,s,A.jL(),r,s,s,s,s,s,2,A.i5(s,new A.eg(4,A.y(12),B.nA),s,s,s,s,s,s,!0,s,s,s,s,s,s,B.vL,!0,s,s,s,s,s,s,s,s,s,s,s,s,s,s,"Ex: 01 61 40 70 64",s,s,s,s,s,s,s,s,s,!0,!0,!1,s,B.a_x,s,s,s,s,s,s,s,s,s,s,s,s),B.G,!0,s,!0,s,!1,s,B.bG,s,s,s,s,B.mD,s,s,s,1,s,s,!1,"\u2022",s,s,s,s,s,!1,s,s,!1,s,!0,s,B.aU,s,s,s,s,s,s,s,s,s,s,s,s,!0,B.am,s,B.cg,s,s,s,s),B.ax,A.el(B.anE,new A.auV(r,this.b,a,this.c),A.cN(s,s,B.bu,s,s,s,s,s,s,B.e,s,s,B.dF,s,new A.aM(A.y(12),B.q),s,s,s,s,s))],t.p),B.aT,s,B.i,B.J,0,B.m),s)},
+return new A.a3(new A.a_(20,20,20,A.aw(a,s,t.w).w.f.d+20),A.a6(A.a([A.G(B.W,s,B.h,s,s,new A.K(B.ew,s,s,A.y(2),s,s,B.n),s,4,s,s,s,s,40),B.a7,B.aqY,B.a5,B.aqr,B.ax,A.j0(s,B.bM,!1,s,!0,B.x,s,A.jL(),r,s,s,s,s,s,2,A.i5(s,new A.eg(4,A.y(12),B.nA),s,s,s,s,s,s,!0,s,s,s,s,s,s,B.vL,!0,s,s,s,s,s,s,s,s,s,s,s,s,s,s,"Ex: 07 00 00 00 00",s,s,s,s,s,s,s,s,s,!0,!0,!1,s,B.a_x,s,s,s,s,s,s,s,s,s,s,s,s),B.G,!0,s,!0,s,!1,s,B.bG,s,s,s,s,B.mD,s,s,s,1,s,s,!1,"\u2022",s,s,s,s,s,!1,s,s,!1,s,!0,s,B.aU,s,s,s,s,s,s,s,s,s,s,s,s,!0,B.am,s,B.cg,s,s,s,s),B.ax,A.el(B.anE,new A.auV(r,this.b,a,this.c),A.cN(s,s,B.bu,s,s,s,s,s,s,B.e,s,s,B.dF,s,new A.aM(A.y(12),B.q),s,s,s,s,s))],t.p),B.aT,s,B.i,B.J,0,B.m),s)},
 $S:700}
 A.auV.prototype={
 $0(){var s=0,r=A.x(t.H),q=this,p,o,n,m,l,k
@@ -61474,7 +61474,7 @@ A.b_(s,!1).c_(null)},
 $S:0}
 A.zD.prototype={
 K(a){var s=null
-return A.eM(A.mO(s,s,s,!0,!0,B.c_,s,1,!0,s,0,!1,s,!1,s,s,A.cp(s,s,B.eD,s,s,new A.ahZ(a),s,s,s),s,!0,s,s,s,s,s,B.aq9,s,s,s,1,s,!0),B.c_,A.ey(A.a6(A.a([A.G(s,B.ZN,B.h,s,s,new A.K(B.Tu,s,A.aE(B.w.J(0.4),2),s,s,s,B.a1),s,s,s,B.la,s,s,s),B.bE,B.anQ,B.a5,B.ank,B.rp,this.M0("https://wa.me/2250704389201?text=Bonjour%20Boulangerie%20de%20BABI,%20j'ai%20une%20question",B.YD,B.o8,"+225 07 04 38 92 01","WhatsApp Service Client"),B.bh,this.M0("tel:+2250161407064",B.YV,B.y,"+225 01 61 40 70 64","Ligne Directe Boulangerie Riviera"),B.bh,this.M0("mailto:contact@boulangeriedebabi.com",B.xN,B.vs,"contact@boulangeriedebabi.com","Email Boulangerie")],t.p),B.aT,s,B.i,B.f,0,B.m),s,B.G,B.cA,s,s,B.a0),s,s,!1,s,s)},
+return A.eM(A.mO(s,s,s,!0,!0,B.c_,s,1,!0,s,0,!1,s,!1,s,s,A.cp(s,s,B.eD,s,s,new A.ahZ(a),s,s,s),s,!0,s,s,s,s,s,B.aq9,s,s,s,1,s,!0),B.c_,A.ey(A.a6(A.a([A.G(s,B.ZN,B.h,s,s,new A.K(B.Tu,s,A.aE(B.w.J(0.4),2),s,s,s,B.a1),s,s,s,B.la,s,s,s),B.bE,B.anQ,B.a5,B.ank,B.rp,this.M0("https://wa.me/22507 00 00 00 00?text=Bonjour%20Boulangerie%20de%20BABI,%20j'ai%20une%20question",B.YD,B.o8,"+225 07 00 00 00 00","WhatsApp Service Client"),B.bh,this.M0("tel:+225 07 00 00 00 00",B.YV,B.y,"+225 07 00 00 00 00","Ligne Directe Boulangerie Riviera"),B.bh,this.M0("mailto:contact@boulangeriedebabi.com",B.xN,B.vs,"contact@boulangeriedebabi.com","Email Boulangerie")],t.p),B.aT,s,B.i,B.f,0,B.m),s,B.G,B.cA,s,s,B.a0),s,s,!1,s,s)},
 M0(a,b,c,d,e){var s=null,r=A.y(16),q=A.aE(B.di,1),p=c.J(0.12),o=A.y(12)
 o=A.G(s,A.cd(b,c,s,24),B.h,s,s,new A.K(p,s,s,o,s,s,B.n),s,s,s,B.dl,s,s,s)
 p=A.q(e,s,s,s,s,s,B.eP,s,s,s)
@@ -134003,7 +134003,7 @@ B.anQ=new A.P("Une question sur votre commande ?",null,B.aj4,B.a9,null,null,null
 B.anR=new A.P("R\xe9servez vos produits pr\xe9f\xe9r\xe9s en ligne et passez les r\xe9cup\xe9rer directement en boutique.",null,B.rV,null,null,null,null,null,null,null,null)
 B.amD=new A.i(!0,B.b1,null,null,null,null,12,B.r,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null)
 B.anV=new A.P("Comment \xe7a marche ?",null,B.amD,null,null,null,null,null,null,null,null)
-B.anW=new A.P("TEL: 2722564123 / 0704389201 / 0706817977\nRecu",null,B.mK,B.a9,null,null,null,null,null,null,null)
+B.anW=new A.P("TEL: 27 00 00 00 00 / 07 00 00 00 00 / 07 00 00 00 01\nRecu",null,B.mK,B.a9,null,null,null,null,null,null,null)
 B.akE=new A.i(!0,B.b1,null,null,null,null,13.5,B.r,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null)
 B.anY=new A.P("R\xe9servation en boutique",null,B.akE,null,null,null,null,null,null,null,null)
 B.ao2=new A.P("Recu:",null,null,null,null,null,null,null,null,null,null)

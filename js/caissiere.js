@@ -721,7 +721,7 @@ async function loadPickupQueue() {
     } catch (_) {
         if (PosState.pickupQueue.length === 0) {
             PosState.pickupQueue = [
-                { id: 28, customer_name: 'Kouassi Jean-Marc', phone: '07 04 38 92 01', total_price: 1900, code_pin: '5029', status: 'pret_comptoir', items: '[{"nom":"Baguette Tradition","prix":400,"quantity":2},{"nom":"Croissant Pur Beurre","prix":600,"quantity":1}]' },
+                { id: 28, customer_name: 'Kouassi Jean-Marc', phone: '07 00 00 00 00', total_price: 1900, code_pin: '5029', status: 'pret_comptoir', items: '[{"nom":"Baguette Tradition","prix":400,"quantity":2},{"nom":"Croissant Pur Beurre","prix":600,"quantity":1}]' },
                 { id: 27, customer_name: 'Adjoua Salimata', phone: '05 55 12 34 56', total_price: 3600, code_pin: '4443', status: 'pret_comptoir', items: '[{"nom":"Pain Complet","prix":800,"quantity":2},{"nom":"Jus de Bissap","prix":1000,"quantity":2}]' },
                 { id: 26, customer_name: 'Koné Ibrahim', phone: '01 02 03 04 05', total_price: 2400, code_pin: '7812', status: 'pret_comptoir', items: '[{"nom":"Pain au Chocolat","prix":650,"quantity":2},{"nom":"Brioche Dorée","prix":1200,"quantity":1}]' }
             ];

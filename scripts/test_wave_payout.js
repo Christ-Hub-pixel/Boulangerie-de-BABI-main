@@ -4,12 +4,12 @@ async function testWavePayoutSuite() {
     console.log("🧪 Démarrage des Tests Unitaires Wave Payout API v1...");
 
     // Test 1: Phone Formatting
-    const p1 = wavePayoutService.formatE164Phone("0704389201");
-    const p2 = wavePayoutService.formatE164Phone("+2250704389201");
-    const p3 = wavePayoutService.formatE164Phone("2250704389201");
-    console.assert(p1 === "+2250704389201", `Phone 1 mismatch: ${p1}`);
-    console.assert(p2 === "+2250704389201", `Phone 2 mismatch: ${p2}`);
-    console.assert(p3 === "+2250704389201", `Phone 3 mismatch: ${p3}`);
+    const p1 = wavePayoutService.formatE164Phone("07 00 00 00 00");
+    const p2 = wavePayoutService.formatE164Phone("+225 07 00 00 00 00");
+    const p3 = wavePayoutService.formatE164Phone("22507 00 00 00 00");
+    console.assert(p1 === "+225 07 00 00 00 00", `Phone 1 mismatch: ${p1}`);
+    console.assert(p2 === "+225 07 00 00 00 00", `Phone 2 mismatch: ${p2}`);
+    console.assert(p3 === "+225 07 00 00 00 00", `Phone 3 mismatch: ${p3}`);
     console.log("✅ 1. Formatage E.164 : Succès");
 
     // Test 2: Signature HMAC-SHA256
@@ -24,7 +24,7 @@ async function testWavePayoutSuite() {
 
     // Test 3: Create Payout
     const payoutRes = await wavePayoutService.createPayout({
-        mobile: "0704389201",
+        mobile: "07 00 00 00 00",
         receive_amount: 5000,
         name: "Client Test Wave",
         client_reference: "REF-TEST-001",
@@ -47,7 +47,7 @@ async function testWavePayoutSuite() {
 
     // Test 6: Create Batch Payout
     const batchRes = await wavePayoutService.createPayoutBatch([
-        { mobile: "0704389201", receive_amount: 1000, name: "Destinataire Test 1" },
+        { mobile: "07 00 00 00 00", receive_amount: 1000, name: "Destinataire Test 1" },
         { mobile: "0501020304", receive_amount: 2500, name: "Destinataire Test 2" }
     ]);
     console.assert(batchRes.success === true, "createPayoutBatch failed");
@@ -64,7 +64,7 @@ async function testWavePayoutSuite() {
     console.log("✅ 8. POST /v1/payout/:id/reverse (Annulation sous 3j) : Succès");
 
     // Test 9: Verify Recipient
-    const verifyRes = await wavePayoutService.verifyRecipient({ mobile: "0704389201", name: "Client Test Wave", amount: 5000 });
+    const verifyRes = await wavePayoutService.verifyRecipient({ mobile: "07 00 00 00 00", name: "Client Test Wave", amount: 5000 });
     console.assert(verifyRes.success === true, "verifyRecipient failed");
     console.log("✅ 9. POST /v1/verify_recipient/ : Succès");
 

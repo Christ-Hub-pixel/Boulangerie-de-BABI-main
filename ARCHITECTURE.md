@@ -2,7 +2,7 @@
 
 > **Plateforme E-Commerce & Click & Collect Omnicanal avec Backend Ultra-Intelligent (BBE v3.0)**  
 > **Localisation Officielle :** Riviera, Abidjan, Côte d'Ivoire  
-> **Téléphones Officiels :** Fixe `27 22 56 41 23` | Mobiles `07 04 38 92 01` / `07 06 81 79 77`  
+> **Téléphones Officiels :** Fixe `27 00 00 00 00` | Mobiles `07 00 00 00 00` / `07 00 00 00 01`  
 
 ---
 
@@ -97,7 +97,7 @@ sequenceDiagram
 +--------------------------------------------------+
 |              BOULANGERIE DE BABI                 |
 |         Riviera, Abidjan - Côte d'Ivoire         |
-|           TEL: 27 22 56 41 23 / 07 04 38 92 01   |
+|           TEL: 27 00 00 00 00 / 07 00 00 00 00   |
 |--------------------------------------------------|
 | Ticket N°: #1042                                 |
 | Date: 23 août 2026 à 18:30:15                    |

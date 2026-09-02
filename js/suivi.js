@@ -201,7 +201,7 @@ function displayOrderOnUI(order) {
     if (sealEl) {
         const rawId = String(order.id || 'BABI-100');
         const p1 = Math.abs(rawId.split('').reduce((a, b) => ((a << 5) - a) + b.charCodeAt(0), 0)).toString(16).toUpperCase().padStart(4, '0').substring(0, 4);
-        const p2 = Math.abs((order.phone || '0704389201').split('').reduce((a, b) => ((a << 5) - a) + b.charCodeAt(0), 0)).toString(16).toUpperCase().padStart(4, '0').substring(0, 4);
+        const p2 = Math.abs((order.phone || '07 00 00 00 00').split('').reduce((a, b) => ((a << 5) - a) + b.charCodeAt(0), 0)).toString(16).toUpperCase().padStart(4, '0').substring(0, 4);
         const p3 = Math.abs(Number(order.total_price || 3500) * 17).toString(16).toUpperCase().padStart(4, '0').substring(0, 4);
         sealEl.innerText = `CERT-BABI-${p1}-${p2}-${p3}`;
     }
@@ -295,7 +295,7 @@ window.openThermalReceiptModal = function() {
         order = {
             id: 'BABI-CMD-2512',
             clientName: 'Client Passant',
-            phone: '0704389201',
+            phone: '07 00 00 00 00',
             commune: 'Riviera',
             address: 'Près de l’Église Sainte Famille',
             delivery_method: 'standard',
@@ -422,7 +422,7 @@ function populateThermalReceiptData(order) {
     if (recModalWhatsapp) {
         let text = `🥖 *BOULANGERIE DE BABI* 🥐\n`;
         text += `_Le Pain de Babi_\n`;
-        text += `TEL: 2722564123 / 0704389201 / 0706817977\n`;
+        text += `TEL: 27 00 00 00 00 / 07 00 00 00 00 / 07 00 00 00 01\n`;
         text += `━━━━━━━━━━━━━━━━━━━━\n`;
         text += `🧾 *Receipt:* ${cleanNum || '2512'}\n`;
         text += `📅 *Date:* ${formattedDate}\n`;

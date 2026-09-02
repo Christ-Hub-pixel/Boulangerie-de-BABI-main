@@ -24,7 +24,7 @@ class WavePayoutService {
     }
 
     /**
-     * Normalise un numéro de téléphone au format international E.164 (+2250704389201)
+     * Normalise un numéro de téléphone au format international E.164 (+225 07 00 00 00 00)
      */
     formatE164Phone(phone) {
         if (!phone) return '';

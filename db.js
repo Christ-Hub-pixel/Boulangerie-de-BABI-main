@@ -413,7 +413,7 @@ async function initDB() {
             const hashedPassword = secureAuth.hashPassword('Admin@Babi2026!');
             await db.run(
                 "INSERT INTO users (nom, prenom, email, telephone, mot_de_passe, role, avatar, caisse_assignee) VALUES (?, ?, ?, ?, ?, 'admin', 'assets/avatar_admin.png', 'Direction Centrale')",
-                ['BABI', 'Administrateur', adminEmail, '+225 07 04 38 92 01', hashedPassword]
+                ['BABI', 'Administrateur', adminEmail, '+225 07 00 00 00 00', hashedPassword]
             );
         }
 
@@ -424,7 +424,7 @@ async function initDB() {
             const hashedPassword = secureAuth.hashPassword('Gerante@Babi2026!');
             await db.run(
                 "INSERT INTO users (nom, prenom, email, telephone, mot_de_passe, role, avatar, caisse_assignee) VALUES (?, ?, ?, ?, ?, 'gerante', 'assets/aicha.png', 'Supervision Riviera')",
-                ['Kouamé', 'Marie-Claire', geranteEmail, '+225 07 06 81 79 77', hashedPassword]
+                ['Kouamé', 'Marie-Claire', geranteEmail, '+225 07 00 00 00 01', hashedPassword]
             );
         }
 

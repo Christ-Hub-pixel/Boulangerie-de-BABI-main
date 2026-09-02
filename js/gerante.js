@@ -312,7 +312,7 @@ async function fetchOrders() {
         filterOrders(GeranteState.selectedOrderFilter);
     } catch (_) {
         GeranteState.orders = [
-            { id: 28, customer_name: 'Kouassi Jean-Marc', phone: '07 04 38 92 01', total_price: 1900, status: 'pret_comptoir', code_pin: '5029', created_at: '18:20', items: '[{"nom":"Baguette Tradition","quantity":2},{"nom":"Croissant Pur Beurre","quantity":1}]' },
+            { id: 28, customer_name: 'Kouassi Jean-Marc', phone: '07 00 00 00 00', total_price: 1900, status: 'pret_comptoir', code_pin: '5029', created_at: '18:20', items: '[{"nom":"Baguette Tradition","quantity":2},{"nom":"Croissant Pur Beurre","quantity":1}]' },
             { id: 27, customer_name: 'Adjoua Salimata', phone: '05 55 12 34 56', total_price: 3600, status: 'en_preparation', code_pin: '4443', created_at: '18:10', items: '[{"nom":"Pain Complet Gourmand","quantity":2},{"nom":"Jus de Bissap Maison","quantity":2}]' },
             { id: 26, customer_name: 'Touré Ibrahim', phone: '07 09 88 77 66', total_price: 1200, status: 'en_preparation', code_pin: '7112', created_at: '18:05', items: '[{"nom":"Pain au Chocolat","quantity":2}]' }
         ];
